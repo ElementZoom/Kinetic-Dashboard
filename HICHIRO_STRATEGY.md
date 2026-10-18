@@ -21,6 +21,8 @@
    (it is already in upstream's `.gitignore`; leave it that way).
 5. **Never put tokens / passwords / private URLs** in the public fork.
 6. Modify the engine (`dash.html`, `src/`) as little as possible; when unavoidable: small isolated commit, prefixed `engine:`.
+7. Do not edit upstream's `.github/workflows/build.yml` (avoids sync conflicts). Our own workflows are separate files.
+8. Do not edit the upstream `VERSION` file; the deployed fork SHA is recorded in `www/kinetic/VERSION` in the private repo.
 
 ## 3. Fork branches
 
@@ -36,19 +38,26 @@ upstream/main ──► main (mirror, Sync fork)
 ```
 HomeAssistant-backup/
 └── www/kinetic/            (served by HA at /local/kinetic/)
-    ├── dash.html  ┐
-    ├── src/...    ├─ pushed automatically by the pipeline from hichiro/ha-config
-    ├── VERSION    ┘  (deployed commit SHA, to know which version is running)
-    └── config.js     <- edited only in the private repo, NEVER overwritten by the pipeline
+    ├── dash.html           <- pushed by the pipeline (the single built file from the fork)
+    ├── VERSION             <- pushed by the pipeline (upstream engine version + fork commit SHA)
+    └── config.js           <- edited only in the private repo, NEVER overwritten by the pipeline
 ```
 
-## 5. Pipeline (to be created - not yet done)
+Note: the dashboard is a single built file (`dash.html`, generated from `src/` by `build.mjs`), so only that file is deployed, not `src/`.
 
-GitHub Action in the fork, triggered on push to `hichiro/ha-config` (+ manual run):
-1. Checkout the fork.
-2. Checkout the private repo using a **fine-grained PAT** (secret `BACKUP_REPO_TOKEN`, *Contents: write* + *Pull requests: write* on `HomeAssistant-backup` only).
-3. Copy the engine files into `www/kinetic/`, **excluding `config.js`, `config.example.js`, `.github/`, `*.md`**.
-4. Write `VERSION`, commit `chore(dash): deploy <sha>` on a **branch** `dash-deploy` of the private repo -> PR into `master` (human validation before production).
+## 5. Pipeline
+
+File: `.github/workflows/deploy-to-backup.yml` (in the fork).
+Trigger: push to `hichiro/ha-config`, or manual run.
+
+1. Checkout the fork and run `node build.mjs --check` (refuses to deploy a stale `dash.html`).
+2. Checkout the private repo (`master`) using the fine-grained PAT stored as secret `BACKUP_REPO_TOKEN`
+   (*Contents: write* + *Pull requests: write* on `HomeAssistant-backup` only).
+3. Copy `dash.html` to `www/kinetic/dash.html` and write `www/kinetic/VERSION`. `config.js` is never touched.
+4. If `dash.html` changed: commit `chore(dash): deploy <sha>` on branch `dash-deploy` and open a PR into `master`.
+   Nothing goes live until a human merges that PR.
+
+The PAT expires (90 days suggested): when the pipeline starts failing at the private checkout, renew the token and update the secret.
 
 ## 6. Pulling an upstream update
 
@@ -77,3 +86,4 @@ Update this table whenever something progresses.
 
 - 2026-10-18: created branch `hichiro/ha-config` and this file. Strategy validated.
 - 2026-10-18: file translated to English. Target folder confirmed: `www/kinetic/`.
+- 2026-10-18: `BACKUP_REPO_TOKEN` secret created in the fork. Pipeline written on `feat/pipeline` (PR into `hichiro/ha-config`).

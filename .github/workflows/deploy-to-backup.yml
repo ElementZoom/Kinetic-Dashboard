@@ -1,0 +1,83 @@
+name: Deploy to private backup
+
+# Copies the built dash.html into the private HomeAssistant-backup repo
+# (www/kinetic/) on a dedicated branch and opens a PR into master.
+# Nothing goes live until the PR is merged by a human.
+# config.js is never touched.
+
+on:
+  push:
+    branches: [hichiro/ha-config]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-to-backup
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  BACKUP_REPO: Hichiro6/HomeAssistant-backup
+  BACKUP_BASE: master
+  DEPLOY_BRANCH: dash-deploy
+  TARGET_DIR: www/kinetic
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout fork
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Check dash.html is up to date with src/
+        run: node build.mjs --check
+
+      - name: Checkout private backup repo
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.BACKUP_REPO }}
+          ref: ${{ env.BACKUP_BASE }}
+          token: ${{ secrets.BACKUP_REPO_TOKEN }}
+          path: backup
+
+      - name: Copy dashboard into backup (config.js untouched)
+        run: |
+          set -euo pipefail
+          mkdir -p "backup/${TARGET_DIR}"
+          cp dash.html "backup/${TARGET_DIR}/dash.html"
+          UPSTREAM_VER="$(tr -d '[:space:]' < VERSION)"
+          printf 'engine=%s\nfork_sha=%s\ndeployed_at=%s\n' \
+            "$UPSTREAM_VER" "${GITHUB_SHA}" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            > "backup/${TARGET_DIR}/VERSION"
+
+      - name: Commit to deploy branch and open PR
+        working-directory: backup
+        env:
+          GH_TOKEN: ${{ secrets.BACKUP_REPO_TOKEN }}
+        run: |
+          set -euo pipefail
+          # Ignore the timestamp line when deciding if anything really changed
+          git add "${TARGET_DIR}"
+          if git diff --cached --quiet -- "${TARGET_DIR}/dash.html"; then
+            echo "dash.html unchanged - nothing to deploy."
+            exit 0
+          fi
+          SHORT="${GITHUB_SHA::7}"
+          git config user.name "kinetic-deploy[bot]"
+          git config user.email "kinetic-deploy@users.noreply.github.com"
+          git checkout -B "${DEPLOY_BRANCH}"
+          git commit -m "chore(dash): deploy ${SHORT}"
+          git push --force origin "${DEPLOY_BRANCH}"
+          if [ -z "$(gh pr list --repo "${BACKUP_REPO}" --head "${DEPLOY_BRANCH}" --base "${BACKUP_BASE}" --state open --json number --jq '.[0].number')" ]; then
+            gh pr create --repo "${BACKUP_REPO}" \
+              --base "${BACKUP_BASE}" --head "${DEPLOY_BRANCH}" \
+              --title "Deploy Kinetic dashboard (${SHORT})" \
+              --body "Automated deploy from Hichiro6/Kinetic-Dashboard@${GITHUB_SHA}. Only \`${TARGET_DIR}/dash.html\` and \`${TARGET_DIR}/VERSION\` change. \`config.js\` is never touched. Merge to go live."
+          else
+            echo "A deploy PR is already open - it was updated by the force push."
+          fi

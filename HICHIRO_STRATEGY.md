@@ -1,78 +1,79 @@
-# Stratégie de personnalisation – Kinetic-Dashboard (fork Hichiro6)
+# Customization strategy – Kinetic-Dashboard (Hichiro6 fork)
 
-> Fichier de référence pour toute future conversation / session de travail.
-> À lire en premier avant de modifier quoi que ce soit.
+> Reference file for every future conversation / work session.
+> Read this first before changing anything.
 
-## 1. Les dépôts
+## 1. Repositories
 
-| Dépôt | Visibilité | Rôle |
+| Repository | Visibility | Role |
 |---|---|---|
-| `Hichiro6/Kinetic-Dashboard` | public (fork) | Moteur du dashboard (`dash.html`, `src/`…). **Aucune donnée perso.** |
-| Dépôt original (upstream) | public | Continue d'évoluer, on récupère ses mises à jour. |
-| `Hichiro6/HomeAssistant-backup` (branche `master`) | **privé**, **LIVE** | Config réelle de Home Assistant. Contient le dashboard déployé + `config.js`. |
+| `Hichiro6/Kinetic-Dashboard` | public (fork) | Dashboard engine (`dash.html`, `src/`...). **No personal data.** |
+| Original repository (upstream) | public | Keeps evolving; we pull its updates. |
+| `Hichiro6/HomeAssistant-backup` (branch `master`) | **private**, **LIVE** | Real Home Assistant config. Holds the deployed dashboard + `config.js`. |
 
-## 2. Règles absolues
+## 2. Absolute rules
 
-1. **Ne jamais modifier `HomeAssistant-backup` à la main depuis une session IA.** C'est la prod.
-   Seule la pipeline (GitHub Action) a le droit d'y écrire, et uniquement dans `dash/` (hors `config.js`).
-2. **Toujours travailler sur une branche**, jamais directement sur `main`.
-3. **`main` du fork = miroir exact de l'upstream.** Aucun commit dessus. Mise à jour via « Sync fork ».
-4. **`config.js` (données perso) n'existe QUE dans le dépôt privé.** Jamais dans le fork public
-   (il est déjà dans le `.gitignore` upstream, on le laisse ainsi).
-5. **Jamais de token / mot de passe / URL privée** dans le fork public.
-6. Modifier le moteur (`dash.html`, `src/`) le moins possible ; si nécessaire : petit commit isolé, préfixé `engine:`.
+1. **Never modify `HomeAssistant-backup` by hand from an AI session.** It is production.
+   Only the pipeline (GitHub Action) may write to it, and only inside `www/kinetic/` (never `config.js`).
+2. **Always work on a branch**, never directly on `main`.
+3. **Fork `main` = exact mirror of upstream.** No commits on it. Updated via "Sync fork".
+4. **`config.js` (personal data) lives ONLY in the private repo.** Never in the public fork
+   (it is already in upstream's `.gitignore`; leave it that way).
+5. **Never put tokens / passwords / private URLs** in the public fork.
+6. Modify the engine (`dash.html`, `src/`) as little as possible; when unavoidable: small isolated commit, prefixed `engine:`.
 
-## 3. Branches du fork
+## 3. Fork branches
 
 ```
-upstream/main ──► main (miroir, Sync fork)
-                    │  merge régulier
-                    └──► hichiro/ha-config   (branche de travail = version "à déployer")
-                            └──► feat/xxx    (une branche par page / fonctionnalité, PR vers hichiro/ha-config)
+upstream/main ──► main (mirror, Sync fork)
+                    │  regular merge
+                    └──► hichiro/ha-config   (working branch = "to deploy" version)
+                            └──► feat/xxx    (one branch per page / feature, PR into hichiro/ha-config)
 ```
 
-## 4. Structure cible dans le dépôt privé
+## 4. Target layout in the private repo
 
 ```
 HomeAssistant-backup/
-└── www/kinetic/            (ou dash/ – à confirmer selon où HA sert les fichiers : /local = config/www)
+└── www/kinetic/            (served by HA at /local/kinetic/)
     ├── dash.html  ┐
-    ├── src/…      ├─ poussés automatiquement par la pipeline depuis hichiro/ha-config
-    ├── VERSION    ┘  (SHA du commit déployé, pour savoir quelle version tourne)
-    └── config.js     ← édité uniquement dans le dépôt privé, JAMAIS écrasé par la pipeline
+    ├── src/...    ├─ pushed automatically by the pipeline from hichiro/ha-config
+    ├── VERSION    ┘  (deployed commit SHA, to know which version is running)
+    └── config.js     <- edited only in the private repo, NEVER overwritten by the pipeline
 ```
 
-## 5. Pipeline (à mettre en place – non encore créée)
+## 5. Pipeline (to be created - not yet done)
 
-GitHub Action dans le fork, déclenchée sur push vers `hichiro/ha-config` (+ manuel) :
-1. Checkout du fork.
-2. Checkout du dépôt privé avec un **fine-grained PAT** (secret `BACKUP_REPO_TOKEN`, droits *Contents: write* sur `HomeAssistant-backup` uniquement).
-3. Copie des fichiers du moteur dans le dossier cible, **en excluant `config.js`, `config.example.js`, `.github/`, `*.md`**.
-4. Écrit `VERSION`, commit `chore(dash): deploy <sha>` sur une **branche** `dash-deploy` du dépôt privé → PR vers `master` (validation humaine avant la prod).
+GitHub Action in the fork, triggered on push to `hichiro/ha-config` (+ manual run):
+1. Checkout the fork.
+2. Checkout the private repo using a **fine-grained PAT** (secret `BACKUP_REPO_TOKEN`, *Contents: write* + *Pull requests: write* on `HomeAssistant-backup` only).
+3. Copy the engine files into `www/kinetic/`, **excluding `config.js`, `config.example.js`, `.github/`, `*.md`**.
+4. Write `VERSION`, commit `chore(dash): deploy <sha>` on a **branch** `dash-deploy` of the private repo -> PR into `master` (human validation before production).
 
-## 6. Récupérer une mise à jour upstream
+## 6. Pulling an upstream update
 
-1. GitHub → fork → **Sync fork** (met à jour `main`).
-2. PR `main` → `hichiro/ha-config`, résoudre les éventuels conflits (normalement aucun).
-3. Comparer `config.example.js` (nouvelles options ?) et reporter dans `config.js` du dépôt privé si besoin.
-4. Le merge déclenche la pipeline → PR de déploiement dans le dépôt privé.
+1. GitHub -> fork -> **Sync fork** (updates `main`).
+2. PR `main` -> `hichiro/ha-config`, resolve possible conflicts (normally none).
+3. Compare `config.example.js` (new options?) and port them into the private repo's `config.js` if needed.
+4. The merge triggers the pipeline -> deploy PR in the private repo.
 
-## 7. Pages – activation progressive
+## 7. Pages - progressive activation
 
-Commencer par les pages « sûres » (entités déjà identifiables dans le backup), ajouter le reste au fil de l'eau.
+Start with the "safe" pages (entities already identifiable in the backup), add the rest over time.
 
-| Page | Statut |
+| Page | Status |
 |---|---|
-| home | à faire (prioritaire) |
-| rooms | à faire (prioritaire) |
-| climate | à faire (prioritaire) |
-| weather | à faire (prioritaire) |
-| theme | à faire (prioritaire, quasi sans config) |
-| security / energy / media / events | plus tard (travail manuel) |
-| irrigation / vehicle / hazards / scenes | plus tard / peut-être jamais |
+| home | todo (priority) |
+| rooms | todo (priority) |
+| climate | todo (priority) |
+| weather | todo (priority) |
+| theme | todo (priority, almost no config) |
+| security / energy / media / events | later (manual work) |
+| irrigation / vehicle / hazards / scenes | later / maybe never |
 
-Mettre à jour ce tableau à chaque avancement.
+Update this table whenever something progresses.
 
-## 8. Journal
+## 8. Log
 
-- 2026-10-18 : création de la branche `hichiro/ha-config` et de ce fichier. Stratégie validée.
+- 2026-10-18: created branch `hichiro/ha-config` and this file. Strategy validated.
+- 2026-10-18: file translated to English. Target folder confirmed: `www/kinetic/`.

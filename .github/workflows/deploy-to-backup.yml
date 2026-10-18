@@ -1,7 +1,8 @@
 name: Deploy to private backup
 
 # Copies the built dash.html into the private HomeAssistant-backup repo
-# (www/kinetic/) on a dedicated branch and opens a PR into master.
+# (dashboard/) on a dedicated branch and opens a PR into master.
+# The file is then copied manually into www/ on the HA instance.
 # Nothing goes live until the PR is merged by a human.
 # config.js is never touched.
 
@@ -21,7 +22,7 @@ env:
   BACKUP_REPO: Hichiro6/HomeAssistant-backup
   BACKUP_BASE: master
   DEPLOY_BRANCH: dash-deploy
-  TARGET_DIR: www/kinetic
+  TARGET_DIR: dashboard
 
 jobs:
   deploy:

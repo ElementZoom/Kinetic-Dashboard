@@ -43,7 +43,7 @@ function mpCard(mem, ctl) {
   const bt = (m, i, on) => '<button class="rnd' + (on ? " on" : "") + '" data-mp="' + m + '" data-e="' + ctl + '">' + i + '</button>';
   const vols = mem.map(x => { const v = states[x] ? states[x].attributes : {}; return '<div class="mv"><span>' + esc(fname(x)) + '</span><input type="range" min="0" max="100" data-vol="' + x + '" value="' + Math.round((v.volume_level || 0) * 100) + '"><button class="rnd s" data-mp="mute" data-e="' + x + '">' + mdi(v.is_volume_muted ? "volume-off" : "volume-high") + '</button></div>'; }).join("");
   const mg = artColor(pic);
-  return '<div class="pn mpc' + (/^(playing|paused)$/.test(s.state) ? "" : " idle") + (play ? " pl" : "") + (mpVo ? " vo" : "") + '"' + (mg ? ' style="--mg:' + mg + '"' : "") + '><div class="lbl">' + esc(title) + ' · ' + esc(s.state) + (a.source ? " · " + esc(a.source) : "") + '</div><div class="mpa">' + art + '<div>' + info + '</div></div>' +
+  return '<div class="pn mpc' + (/^(playing|paused)$/.test(s.state) ? "" : " idle") + (play ? " pl" : "") + (mpVo ? " vo" : "") + '"' + (mg ? ' style="--mg:' + mg + '"' : "") + '>' + (/^(playing|paused)$/.test(s.state) && mt ? '<button class="rnd on mly" data-ly="open" data-e="' + ctl + '" aria-label="Lyrics">' + mdi("lyrics") + '</button>' : "") + '<div class="lbl">' + esc(title) + ' · ' + esc(s.state) + (a.source ? " · " + esc(a.source) : "") + '</div><div class="mpa">' + art + '<div>' + info + '</div></div>' +
     '<div class="mpb" ' + mpData(ctl) + '><i></i></div>' +
     '<div class="mpt">' + bt("shuffle", mdi("shuffle-variant"), a.shuffle) + bt("prev", mdi("skip-previous")) + bt("pp", mdi(play ? "pause" : "play")) + bt("next", mdi("skip-next")) + bt("repeat", mdi(a.repeat === "one" ? "repeat-once" : a.repeat === "all" ? "repeat" : "repeat-off"), a.repeat && a.repeat !== "off") + '<button class="rnd mvt' + (mpVo ? " on" : "") + '" data-mp="voltog">' + mdi("volume-high") + '</button></div>' +
     '<div class="mvs">' + vols + '</div></div>';
@@ -62,7 +62,13 @@ function mpGroups() {   // Sonos lists the group coordinator first
 function drawMedia() {
   const ae = document.activeElement; if (ae && ae.type === "range" && $("#media").contains(ae)) return;
   const ids = CONFIG.media, rk = g => ({ playing: 0, paused: 1 }[(states[g.ctl] || {}).state] ?? 2), cards = mpGroups().map((g, i) => [rk(g), i, mpCard(g.mem, g.ctl)]).sort((a, b) => a[0] - b[0] || a[1] - b[1]).map(x => x[2]);
-  $("#mp").innerHTML = '<div class="mpg">' + cards.join("") + '</div>' + (ids.length > 1 ? '<div style="margin-top:14px"><button class="eb" data-mp="' + (cards.length > 1 ? "join" : "unjoin") + '">' + (cards.length > 1 ? "GROUP SPEAKERS" : "UNGROUP") + '</button></div>' : "");
+  const html = '<div class="mpg">' + cards.join("") + '</div>', mp = $("#mp"), key = html.replace(/ data-(pos|upd)="[^"]*"/g, "");
+  if (mp._k === key && mp.firstChild) {   // nothing visible changed (some other entity updated): keep the cards as they are, so the glow does not restart and a tap is never lost; only the progress timing is refreshed
+    const t = document.createElement("template"); t.innerHTML = html;
+    const nb = t.content.querySelectorAll(".mpb"), ob = mp.querySelectorAll(".mpb");
+    nb.forEach((b, i) => { if (ob[i]) Object.assign(ob[i].dataset, b.dataset); });
+  } else { mp.innerHTML = html; mp._k = key; }
+  const gb = $("#mpgrp"); if (gb) { gb.hidden = ids.length < 2; gb.dataset.mp = cards.length > 1 ? "join" : "unjoin"; const t = cards.length > 1 ? "GROUP SPEAKERS" : "UNGROUP"; gb.setAttribute("aria-label", t.toLowerCase()); gb.querySelector("span").textContent = t; gb.querySelector("svg").outerHTML = mdi(cards.length > 1 ? "speaker-multiple" : "link-variant"); }
   tickMedia(); lyrUpdate();
 }
 function tickMedia() {

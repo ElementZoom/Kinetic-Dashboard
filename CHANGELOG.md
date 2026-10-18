@@ -4,6 +4,23 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
+## 1.2.0 - 2026-10-19
+
+### New
+- **Phone Media page: lyrics icon and a compact player.** The player card is about half the height, so the next speaker stays in view, and the lyrics open from an icon on the card as a sheet that slides up (with a small play/pause row). The sideways pager is gone on phones, which also makes the page scroll in one normal swipe. Tablets and computers keep the lyrics beside the player.
+- **Security tabs slide like the Rooms tabs.** Switching between Live and Detections slides and staggers the content the same way.
+- **Notifications has a Batteries tab.** Low batteries moved out of Alerts into their own tab (Alerts, Active, Batteries), with a count; the header glow still counts them.
+
+### Changed
+- **The garage door is no longer listed under Doors** in Notifications (it has its own alert).
+- **Media page header: Open Spotify and Group Speakers buttons have icons**, and show icons only on phones. Group Speakers turns into Ungroup while speakers are grouped.
+
+### Fixes
+- **Now Playing glow no longer flickers.** The Media page only redraws a player card when something you can see changes, so the album-art glow keeps running smoothly instead of restarting on every update from Home Assistant.
+- **Play/pause ignores an accidental double tap.** A second tap within about a third of a second is ignored, so a double fire can no longer pause and resume at once.
+- **Selected buttons in the light Liquid Glass theme** (tabs, chips, toggles) are a brighter translucent glass capsule with a bright rim and a soft shadow, and the label takes the accent colour, instead of a plain white blob.
+- **Room card chips are coloured again.** Open doors are red, windows amber, curtains purple, fans blue, lights warm and the garage red when open, in light and dark mode.
+
 ## 1.1.0 - 2026-10-19
 
 ### New

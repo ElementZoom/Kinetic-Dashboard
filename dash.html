@@ -527,6 +527,9 @@ html[data-mode=light] .rooms2 .rc{background:rgba(255,255,255,.72)}
 /* phones: glass pills with a tinted icon (A) */
 .cb2.cA{height:30px;padding:0 12px 0 9px;border-radius:999px;background:rgba(var(--w),.07);border:1px solid var(--line);font-weight:500;font-size:14px;color:var(--ink)}.cb2.cA svg{width:17px;height:17px;fill:var(--k);margin:0!important;vertical-align:middle}
 .cb2.cA.al{background:color-mix(in srgb,var(--k) 15%,transparent);border-color:color-mix(in srgb,var(--k) 42%,transparent)}
+/* room card chips: the colour of what is open / on, the same hues as the tiles inside the room */
+.cb2.k-lights{--k:#c9a227}.cb2.k-doors,.cb2.k-gopen{--k:#bc000a}.cb2.k-windows{--k:#e69500}.cb2.k-covers{--k:#702963}.cb2.k-fans{--k:#2f8fc7}
+html[data-mode=dark] .cb2.k-lights{--k:#fcf2d4}html[data-mode=dark] .cb2.k-doors,html[data-mode=dark] .cb2.k-gopen{--k:#ff5a5f}html[data-mode=dark] .cb2.k-windows{--k:#ffaa00}html[data-mode=dark] .cb2.k-covers{--k:#c46bb5}html[data-mode=dark] .cb2.k-fans{--k:#89cff0}
 /* tablet and up: status dot + mono label (B) */
 .cb2.cB{display:none;height:28px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:rgba(var(--w),.04);font-weight:600;font-size:11px;letter-spacing:.08em;color:var(--ink);white-space:nowrap}.cb2.cB i{width:8px;height:8px;border-radius:50%;background:var(--k);box-shadow:0 0 8px var(--k);flex:none}
 @media(min-width:761px){.cb2.cA{display:none}.cb2.cB{display:inline-flex}}
@@ -1115,6 +1118,7 @@ html[data-style=glass] :where(.tl,.bd){border-radius:22px}
 html[data-style=glass] :where(.chip,.eb,.vch){border-radius:999px}
 html[data-style=glass] :where(.rnd){border-radius:50%}
 html[data-style=glass] :is(.eb.on,.chip.on,.seg .on){background:var(--gsel);color:var(--ink);border-color:var(--gfl);box-shadow:var(--gss),inset 0 1px 0 rgba(255,255,255,.45)}
+html[data-style=glass][data-mode=light]:not(#x) :is(.eb.on,.chip.on,.seg .on){background:linear-gradient(rgba(255,255,255,.7),rgba(255,255,255,.38));border-color:rgba(255,255,255,.95);color:var(--mint);-webkit-backdrop-filter:blur(10px) saturate(180%);backdrop-filter:blur(10px) saturate(180%);box-shadow:0 3px 12px rgba(60,70,120,.16),inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(255,255,255,.4)}   /* light glass, like iOS: a brighter translucent capsule with a bright rim; only the label carries the accent */
 html[data-style=glass] #btab{border-radius:999px;padding:7px}
 html[data-style=glass] #btab a,html[data-style=glass] #btab button{border-radius:999px}
 html[data-style=glass] :is(#btab a.on,#btab button.on,#mshe a.on){background:var(--gsel);color:var(--mint);box-shadow:var(--gss),inset 0 1px 0 rgba(255,255,255,.5)}
@@ -1262,21 +1266,24 @@ html.camls .vwx{display:none}
 .r12 .bar{display:block;position:relative;width:100%;max-width:26px;height:64px;border-radius:7px;background:rgba(var(--w),.08);overflow:hidden}.r12 .bar i{position:absolute;left:0;right:0;bottom:0;border-radius:5px}.r12 .wi{font-size:16px;color:var(--ink)}.r12 .wi svg{width:16px;height:16px}
 .mvt{display:none}.mvs{display:contents}
 @media(max-width:760px){
-/* phone: swipe sideways between the player (page 1) and full-height lyrics (page 2) */
+/* phone: a compact player card; the lyrics open from an icon on the card as a sheet that slides up (no sideways pager, no scroll area inside the page) */
 .mvt{display:none!important}.mvs{display:contents}
-.mlay.hasly{display:flex;flex-direction:row;gap:12px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;height:calc(100dvh - 256px);min-height:380px;overscroll-behavior-x:contain}
-.mlay.hasly::-webkit-scrollbar{display:none}
-.mlay.hasly>#mp,.mlay.hasly>#lyr{flex:0 0 100%;min-width:0;height:100%;margin:0;scroll-snap-align:start;scroll-snap-stop:always}
-.mlay.hasly>#mp{overflow-y:auto;scrollbar-width:none}.mlay.hasly>#mp::-webkit-scrollbar{display:none}
-.mlay.hasly #mp .mpg{display:flex;flex-direction:column;gap:12px;min-height:100%}.mlay.hasly #mp .mpc:not(.idle){flex:1;justify-content:space-between}
-.mlay.hasly .mpc:not(.idle) .mpa{flex-direction:column;text-align:center;gap:12px}
-.mlay.hasly .mpc:not(.idle) .mpa img,.mlay.hasly .mpc:not(.idle) .mpa .ph{width:min(60vw,250px);height:auto;aspect-ratio:1;border-radius:18px}
-.mlay.hasly .mpc:not(.idle) .mpa b{font-size:20px}
-.mlay.hasly #lyr{display:flex;flex-direction:column;padding-bottom:12px}
-.mlay.hasly .lyb{flex:1;max-height:none;min-height:0;margin-top:6px}
-.mlay.hasly .ly{font-size:20px;padding:8px 10px}.mlay.hasly .ly.on{font-size:26px}
-.mdt{display:none}.mlay.hasly+.mdt{display:flex;margin-top:8px;padding:0}
+.mpc{position:relative}.mpc:not(.idle) .lbl{padding-right:48px}
+.mly{display:flex!important;position:absolute;top:10px;right:12px;width:40px;height:40px;z-index:1}
+.mpc:not(.idle) .mpa{flex-direction:row;text-align:left;gap:12px}
+.mpc:not(.idle) .mpa img,.mpc:not(.idle) .mpa .ph{width:76px;height:76px;aspect-ratio:auto;border-radius:14px}
+.mpc:not(.idle) .mpa b{font-size:17px}
+.mpc:not(.idle){gap:10px}.mpc .mpt .rnd{width:46px;height:46px}
+.mlay #lyr{display:none}.mlay.hasly #lyr{margin:0}
+body.ly-open::after{content:"";position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.45)}
+body.ly-open .mlay #lyr{display:flex;flex-direction:column;position:fixed;left:0;right:0;bottom:0;top:110px;z-index:81;margin:0;box-sizing:border-box;padding:12px 18px calc(12px + env(safe-area-inset-bottom,0px));border-radius:26px 26px 0 0;background:var(--bg);border:1px solid var(--line);border-bottom:0;box-shadow:0 -10px 40px rgba(0,0,0,.4);animation:shUp .36s cubic-bezier(.2,.85,.3,1) both}
+body.ly-open .mlay.hasly .lyb{flex:1;max-height:none;min-height:0;margin-top:6px}
+body.ly-open .mlay.hasly .ly{font-size:20px;padding:8px 10px}body.ly-open .mlay.hasly .ly.on{font-size:26px}
+.lyf{display:flex;align-items:center;gap:12px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}.lyf .npi{flex:1;min-width:0}.lyf .npi b,.lyf .npi small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lyf .npi small{color:var(--mut)}
+.mdt,.mlay.hasly+.mdt{display:none}
 }
+.mly,.lyx,.lyf{display:none}
+@media(max-width:760px){.lyx{display:inline-flex;align-items:center;justify-content:center;margin-left:8px;width:36px;height:36px;padding:0;min-width:0}.lyx svg{width:18px;height:18px;fill:currentColor}.lyh .npch{display:none}.lyf{display:flex}}
 .mdt{justify-content:center;gap:8px}.mdt i{width:8px;height:8px;border-radius:8px;background:rgba(var(--ink-rgb),.25);cursor:pointer;transition:width .2s,background .2s}.mdt i.on{width:22px;background:var(--mint)}
 .lyb{position:relative}
 .lyo{display:inline-flex;align-items:center;gap:6px;margin-left:auto;font:12px var(--mono);color:var(--ink);text-transform:none}.lyo .chip{padding:2px 10px;min-width:0;font-size:14px}.lyo+.npch{margin-left:8px}.lyh .lyo~.npch{margin-left:8px}
@@ -1291,7 +1298,7 @@ html.camls .vwx{display:none}
 .npw .nply{display:flex;flex-direction:column;justify-content:center;gap:4px;min-height:74px;padding:0 4px;box-sizing:border-box}.npw .nply div{font-size:14px;color:var(--mut);opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:18px}.npw .nply div.on{font-size:22px;font-weight:600;line-height:1.2;color:var(--mint);opacity:1;white-space:normal;max-height:2.4em;overflow:hidden}
 .npw .nps .npg>.npr .npart{width:84px;height:84px;border-radius:16px}.npw .nps .npg>.npr .npi b{font-size:19px;white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .npw .npc{margin-top:12px;gap:8px}.npw .npc .rnd{width:48px;height:48px;flex:none}.npw .nply{height:100%;min-height:150px}
-@media(max-width:760px){.mlay.hasly #mp .mpg{min-height:0}.mlay.hasly #mp .mpc:not(.idle){flex:none;gap:10px}.mlay.hasly .mpc:not(.idle) .mpa{gap:8px}.mlay.hasly .mpc:not(.idle) .mpa img,.mlay.hasly .mpc:not(.idle) .mpa .ph{width:min(40vw,160px)}.mlay.hasly .mpc:not(.idle) .mpa b{font-size:18px}.mlay.hasly #mp .mpc .mpt .rnd{width:46px;height:46px}}
+
 .npw .npdt{display:flex;justify-content:center;gap:8px;padding-top:8px}.npw .npdt i{width:8px;height:8px;border-radius:8px;background:rgba(var(--ink-rgb),.25);cursor:pointer}.npw .npdt i.on{width:22px;background:var(--mint)}
 .npr{display:flex;align-items:center;gap:12px;cursor:pointer;margin-top:10px}
 .npart{width:48px;height:48px;border-radius:10px;overflow:hidden;flex:none;background:rgba(var(--w),.08)}.npart img{width:100%;height:100%;object-fit:cover;display:block}.npart .ph,.npa .ph{display:flex;align-items:center;justify-content:center;color:var(--mut)}.ph svg{width:24px;height:24px;fill:currentColor}
@@ -1332,6 +1339,13 @@ html[data-style] #npmini{background-color:var(--bg)}
 .dots,.npw .npdt,#npbody .npdt{gap:8px}
 :is(.dots,.npdt) i,html:not(#x) .wdots i{width:8px;height:8px;border-radius:8px;background:rgba(var(--ink-rgb),.25);cursor:pointer;transition:width .2s,background .2s}
 :is(.dots,.npdt) i.on,html:not(#x) .wdots i.on{width:22px;background:var(--mint)}
+
+#mpgrp[hidden]{display:none}
+.chips.nptabs{gap:6px}
+.chips.nptabs>.chip{flex:1 1 auto;padding:0 8px!important;font-size:11px;letter-spacing:.02em}
+.mph{display:flex;gap:10px;align-items:center;margin-left:auto}
+.eb.ic{display:inline-flex;align-items:center;gap:8px;text-decoration:none}
+@media(max-width:760px){.eb.ic span{display:none}.eb.ic{width:44px;height:44px;padding:0;justify-content:center;border-radius:50%}.eb.ic svg{width:22px;height:22px}}
 /* phone, Theme + Scenes: closed = the same card as the floating Now Playing bar; open = the same bottom sheet as the Now Playing player */
 .schx{display:none}
 @keyframes shUp{from{transform:translateY(102%)}to{transform:none}}@keyframes shDn{from{transform:none}to{transform:translateY(102%)}}
@@ -1554,7 +1568,7 @@ body.vwm #vw.two{padding:8px;gap:8px}
 
   <div id="scenes" class="page"></div>
 
-  <div id="media" class="page"><div class="eh" style="margin-bottom:14px"><b class="pt">Speakers</b><a class="eb" href="spotify://home">OPEN SPOTIFY</a></div><div class="mlay"><div id="mp"></div><div id="lyr" class="pn" style="display:none"></div></div><div class="mdt"><i class="on" data-pg="0"></i><i data-pg="1"></i></div></div>
+  <div id="media" class="page"><div class="eh" style="margin-bottom:14px"><b class="pt">Speakers</b><span class="mph"><a class="eb ic" id="mpsp" href="spotify://home" aria-label="Open Spotify" data-i2="spotify"><span>OPEN SPOTIFY</span></a><button class="eb ic" id="mpgrp" data-mp="join" aria-label="Group speakers" data-i2="speaker-multiple" hidden><span>GROUP SPEAKERS</span></button></span></div><div class="mlay"><div id="mp"></div><div id="lyr" class="pn" style="display:none"></div></div><div class="mdt"><i class="on" data-pg="0"></i><i data-pg="1"></i></div></div>
 
   <div id="theme" class="page"></div>
   <div id="vehicle" class="page"></div>
@@ -1581,7 +1595,7 @@ body.vwm #vw.two{padding:8px;gap:8px}
 // (notification tap such as #view/driveway, #security ...), not the return from the login, and the device has not asked for reduced motion.
 window.brandLogo = function () { var L = window.DASH_LOGO, B = (window.DASH_CONFIG || {}).brand; return L && L.svg ? { svg: L.svg, lockup: !!L.lockup } : B && B.mark ? { svg: B.mark, lockup: false } : null; };   // brand-logo.js wins over brand.mark in config.js
 window.brandMark = function (s) { var g = window.brandLogo(); if (!g) return ""; return g.svg.replace(/\bid="([\w-]+)"/g, 'id="$1' + s + '"').replace(/url\(#([\w-]+)\)/g, 'url(#$1' + s + ')'); };
-window.DASH_VER = "1.1.0";   // the one place to change the version
+window.DASH_VER = "1.2.0";   // the one place to change the version
 (function () { try {
   var B = (window.DASH_CONFIG || {}).brand, el = document.getElementById("bootld"), r = document.documentElement, lp = "on";
   try { lp = localStorage.getItem("dashLogo") || "on"; } catch (e) {}   // Theme page -> "Start-up logo": on | load (no intro) | off (plain spinner, as before)
@@ -1769,6 +1783,9 @@ function entIcon(e, over) {
 
 
 Object.assign(MDI, {"water-alert": {"v": "3 1.5 18 21", "p": "M12,3.77L11.25,4.61C11.25,4.61 9.97,6.06 8.68,7.94C7.39,9.82 6,12.07 6,14.23A6,6 0 0,0 12,20.23A6,6 0 0,0 18,14.23C18,12.07 16.61,9.82 15.32,7.94C14.03,6.06 12.75,4.61 12.75,4.61L12,3.77ZM11,9H13V14H11ZM11,15.5H13V17.5H11Z"}});
+Object.assign(MDI, {"plus":"M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"});
+
+Object.assign(MDI, {"lyrics":"M4,5H14V7H4V5M4,9H14V11H4V9M4,13H10V15H4V13M18,3V12.6A3,3 0 1,0 20,15.4V6H22V3H18Z"});
 const isMobile = () => window.matchMedia("(max-width:760px)").matches;
 const MAIN = CONFIG.rooms.filter(r => r.main)[0].id, W = CONFIG.weather;
 const MODE = { heat_cool: "AUTO", fan_only: "FAN", off: "OFF", heat: "HEAT", cool: "COOL", dry: "DRY", auto: "AUTO" };
@@ -3684,7 +3701,10 @@ function secTab(t) {   // Security page: LIVE (alarm + cameras) or DETECTIONS (l
   const pg = $("#security"), tb = $("#stabs"), has = dtCams().length && CONFIG.detections !== false && ruSec("detections"); pg.dataset.tab = has ? t : "live";
   tb.style.display = has ? "" : "none"; tb.innerHTML = has ? [["live", "LIVE", "#security"], ["det", "DETECTIONS", "#security/detections"]].map(x => '<button class="chip' + (pg.dataset.tab === x[0] ? " on" : "") + '" data-st="' + x[2] + '">' + x[1] + '</button>').join("") : "";
   if (pg.dataset.tab === "det") { stopCams(); dtInit(); } else drawAlarm();
+  if (secPrev && secPrev !== pg.dataset.tab) { const d = pg.dataset.tab === "det" ? 1 : -1; ["#alp", "#scams", "#dtp"].forEach(q => txGo($(q), d, true)); }   // same slide as the Rooms tabs
+  secPrev = pg.dataset.tab;
 }
+let secPrev = "";
 $("#stabs").onclick = e => { const b = e.target.closest("[data-st]"); if (b && location.hash !== b.dataset.st) location.hash = b.dataset.st; };
 function dtInit() { if (!dtCams().length || CONFIG.detections === false || !ruSec("detections")) return; if (!DT.stored) { DT.stored = 1; THDB.load().then(n => { if (n && location.hash === "#security/detections") dtDraw(true); }); } dtDraw(); if (!DT.t0 || Date.now() - DT.t0 > 5 * 60000) dtLoad(); }
 function dtClose() { const m = $("#dtm"), v = $("#dtm video"); m.classList.remove("on"); v.pause(); v.removeAttribute("src"); try { v.load(); } catch (e) {} }
@@ -3951,12 +3971,13 @@ const tapZone = e => (CONFIG.irrigation || []).find(z => z.switch === e);
 const tileTimer = e => { const m = (CONFIG.tileTimers || {})[e]; if (m) return m; const z = tapZone(e); if (z && z.timer) return z.timer; const o = e.split(".")[1]; return ["timer." + o, "timer." + o + "_timer"].find(t => states[t]) || ""; };
 const npItem = (e, o) => { const z = tapZone(e), tap = /^switch\..*water_tap$/.test(e); return Object.assign({ entity: e, timer: tileTimer(e) }, tap ? { water: (z && z.flow) || true } : {}, o || {}); };
 function notif(full) {
-  let n = 0, h = "";
+  let n = 0, h = "", bh = "", nb = 0, hasB = false;
   const sec = (t, b) => { if (full && b) h += '<div class="lbl np2">' + t + '</div>' + b; };
   const grid = a => a.length ? '<div class="tg3">' + a.map(tileHtml).join("") + '</div>' : "";
   const al = volcHtml().concat(quakeHtml() || []); n += al.length; sec("Alerts", al.join(""));
-  const dr = members(E("doorsGroup")).filter(x => x !== E("doorsGroup") && isOn(x));
-  if (dr.length || isOn(E("doorsGroup"))) { n++; sec("Doors", '<div class="alert q"><b>' + (dr.length || 1) + ' open</b><div>' + dr.map(x => esc(fname(x))).join(" · ") + '</div></div>'); }
+  const gar = x => /garage/i.test(x + " " + fname(x)) || Object.keys(galCfg()).some(k => (galCfg()[k] || {}).sensor === x);   // the garage door has its own alert, so it is not listed here
+  const dr0 = members(E("doorsGroup")).filter(x => x !== E("doorsGroup") && isOn(x)), dr = dr0.filter(x => !gar(x));
+  if (dr.length || (isOn(E("doorsGroup")) && !dr0.length)) { n++; sec("Doors", '<div class="alert q"><b>' + (dr.length || 1) + ' open</b><div>' + dr.map(x => esc(fname(x))).join(" · ") + '</div></div>'); }
   const LK = LEAKS().filter(x => isOn(x[0])), W2 = (CONFIG.alerts || []).filter(x => isOn(x[0]));   // leak sensors first, as red cards
   n += LK.length + W2.length; sec("Warnings", LK.map(x => '<div class="alert q"><div class="lbl">' + mdi("water-alert") + ' WATER LEAK</div><b>' + esc(x[1]) + '</b><div>' + esc(x[2]) + '</div></div>').join("") + grid(W2.map(x => npItem(x[0], { name: x[1], sub: x[2], confirm: /rubbish|recycle/.test(x[0]) }))));
   const wr = states[E("weatherWarnings")];
@@ -3974,9 +3995,9 @@ function notif(full) {
   n += tm.length;
   sec("Timers", tm.map(x => { const t = states[x].attributes, fin = Date.parse(t.finishes_at || "") || 0, dur = (t.duration || "0:00:00").split(":").reduce((p, q) => p * 60 + +q, 0) * 1000; return '<div class="ws" style="margin-bottom:8px"><span class="lbl">' + esc(fname(x)) + '</span><div class="lbl tmr" data-fin="' + fin + '">--</div><div class="zb"><i data-dur="' + dur + '"></i></div></div>'; }).join(""));
   const bl = Object.keys(states).filter(k => /^sensor\..*battery_plus$/.test(k) && parseFloat(states[k].state) < 61).sort((x, y) => states[x].state - states[y].state);
-  if (bl.length || parseFloat(sv(E("lowBatteryCount"))) > 0) { n++; sec("Low batteries", bl.map(x => '<div class="nrow"><span>' + esc(fname(x).replace(/ battery plus$/i, "")) + '</span><b>' + Math.round(states[x].state) + '%</b></div>').join("")); }
+  if (bl.length || parseFloat(sv(E("lowBatteryCount"))) > 0) { n++; hasB = true; nb = bl.length; if (full) bh = bl.map(x => '<div class="nrow"><span>' + esc(fname(x).replace(/ battery plus$/i, "")) + '</span><b>' + Math.round(states[x].state) + '%</b></div>').join(""); }
   sec("Controls", TOG.map(g => { const c = parseInt(sv(g[1])) || 0, sub = c === 0 ? "All " + g[2] + "s active" : c + " " + g[2] + (c > 1 ? "s" : "") + " disabled"; return '<div class="ws" style="margin-bottom:10px"><span class="lbl">' + g[0] + '</span><div style="margin:6px 0 10px;color:var(--mut)">' + sub + '</div><div class="chips cscr">' + g[3].map(x => '<button class="chip' + (isOn(x[0]) ? " on" : "") + '" data-nt="' + x[0] + '"' + (x[2] ? ' data-sc="' + x[2] + '"' : "") + '>' + x[1] + '</button>').join("") + '</div></div>'; }).join(""));
-  return { n: n, html: h };
+  return { n: n - (hasB ? 1 : 0), all: n, nb: nb, html: h, bh: bh };
 }
 // header strip: normally a glowing bar while something is waiting; it turns into an icon for the conditions below. Priority when several are true:
 // water leak, then weather warning, then garage door open, then water on. The top one shows and a small "+n" says how many more there are.
@@ -4019,25 +4040,25 @@ function drawNotif() {
   const ks = NSK.filter(k => k[3]()), top = ks[0], nacc = $("#nacc");   // the strip turns into the icon of the most urgent condition
   if ((nacc.dataset.k || "") !== (top ? top[0] : "")) { nacc.dataset.k = top ? top[0] : ""; nacc.innerHTML = top ? mdi(top[1]) : ""; }
   nacc.dataset.more = ks.length > 1 ? "+" + (ks.length - 1) : "";
-  nacc.classList.toggle("on", !!r.n || !!top);
-  $("#hc").title = ks.length ? ks.map(k => k[2]).join(" · ") + (r.n ? " · " : "") + (r.n ? r.n + " notification" + (r.n > 1 ? "s" : "") : "") : r.n ? r.n + " notification" + (r.n > 1 ? "s" : "") : "Notifications";
+  nacc.classList.toggle("on", !!r.all || !!top);
+  $("#hc").title = ks.length ? ks.map(k => k[2]).join(" · ") + (r.all ? " · " : "") + (r.all ? r.all + " notification" + (r.all > 1 ? "s" : "") : "") : r.all ? r.all + " notification" + (r.all > 1 ? "s" : "") : "Notifications";
   if (!open) return;
   const A = actList(), tot = A.reduce((s, x) => s + x.ids.length, 0);
   $("#np").innerHTML = '<div class="nh"><b>Notifications</b><button class="eb" data-close="1">' + mdi("close") + '</button></div>' +
-    '<div class="chips tabs nptabs"><button class="chip' + (npTab === "alerts" ? " on" : "") + '" data-npt="alerts">ALERTS' + (r.n ? " · " + r.n : "") + '</button><button class="chip' + (npTab === "active" ? " on" : "") + '" data-npt="active">ACTIVE' + (tot ? " · " + tot : "") + '</button></div>' +
-    (npTab === "active" ? actHtml(A) : (r.n ? "" : '<div class="lbl" style="margin:14px 0">All clear</div>') + r.html);
+    '<div class="chips tabs nptabs"><button class="chip' + (npTab === "alerts" ? " on" : "") + '" data-npt="alerts">ALERTS' + (r.n ? " · " + r.n : "") + '</button><button class="chip' + (npTab === "active" ? " on" : "") + '" data-npt="active">ACTIVE' + (tot ? " · " + tot : "") + '</button><button class="chip' + (npTab === "batteries" ? " on" : "") + '" data-npt="batteries">BATTERIES' + (r.nb ? " · " + r.nb : "") + '</button></div>' +
+    (npTab === "active" ? actHtml(A) : npTab === "batteries" ? (r.bh || '<div class="lbl" style="margin:14px 0">All batteries are fine</div>') : (r.n ? "" : '<div class="lbl" style="margin:14px 0">All clear</div>') + r.html);
   updTiles(); tickIrr();
 }
 let nq = 0;
 function queueNotif() { if (!nq) nq = requestAnimationFrame(() => { nq = 0; drawNotif(); }); }
 $("#hc").onclick = () => { document.body.classList.toggle("np-open"); drawNotif(); };
-const npClose = () => { document.body.classList.remove("np-open"); if (/^#(notifications|active)/.test(location.hash)) location.hash = "#home"; };
+const npClose = () => { document.body.classList.remove("np-open"); if (/^#(notifications|active|batteries)/.test(location.hash)) location.hash = "#home"; };
 $("#nbd").onclick = npClose;
 $("#np").onclick = e => {
   if (e.target.closest("[data-close]")) { npClose(); return; }
   const tb = e.target.closest("[data-npt]"); if (tb) { npTab = tb.dataset.npt; drawNotif(); return; }
   const of = e.target.closest("[data-off]"); if (of) { const ids = actList()[+of.dataset.off].ids; const cl = actList()[+of.dataset.off].c[3] === "close"; if (ids.length) { if (!cl) npDismiss(ids); call(cl ? "cover" : "homeassistant", cl ? "close_cover" : "turn_off", ids); } return; }
-  const vw = e.target.closest("[data-vw]"); if (vw) { VW.back = /^#(view|camera|notifications|active)/.test(location.hash) ? "#home" : (location.hash || "#home"); location.hash = "#view/" + vw.dataset.vw; return; }
+  const vw = e.target.closest("[data-vw]"); if (vw) { VW.back = /^#(view|camera|notifications|active|batteries)/.test(location.hash) ? "#home" : (location.hash || "#home"); location.hash = "#view/" + vw.dataset.vw; return; }
   const c = e.target.closest("[data-nt]");
   if (c) { if (c.dataset.sc) send({ type: "call_service", domain: "script", service: c.dataset.sc }); else call(c.dataset.nt.split(".")[0], "toggle", c.dataset.nt); return; }
   tapH(e);
@@ -4090,7 +4111,7 @@ function mpCard(mem, ctl) {
   const bt = (m, i, on) => '<button class="rnd' + (on ? " on" : "") + '" data-mp="' + m + '" data-e="' + ctl + '">' + i + '</button>';
   const vols = mem.map(x => { const v = states[x] ? states[x].attributes : {}; return '<div class="mv"><span>' + esc(fname(x)) + '</span><input type="range" min="0" max="100" data-vol="' + x + '" value="' + Math.round((v.volume_level || 0) * 100) + '"><button class="rnd s" data-mp="mute" data-e="' + x + '">' + mdi(v.is_volume_muted ? "volume-off" : "volume-high") + '</button></div>'; }).join("");
   const mg = artColor(pic);
-  return '<div class="pn mpc' + (/^(playing|paused)$/.test(s.state) ? "" : " idle") + (play ? " pl" : "") + (mpVo ? " vo" : "") + '"' + (mg ? ' style="--mg:' + mg + '"' : "") + '><div class="lbl">' + esc(title) + ' · ' + esc(s.state) + (a.source ? " · " + esc(a.source) : "") + '</div><div class="mpa">' + art + '<div>' + info + '</div></div>' +
+  return '<div class="pn mpc' + (/^(playing|paused)$/.test(s.state) ? "" : " idle") + (play ? " pl" : "") + (mpVo ? " vo" : "") + '"' + (mg ? ' style="--mg:' + mg + '"' : "") + '>' + (/^(playing|paused)$/.test(s.state) && mt ? '<button class="rnd on mly" data-ly="open" data-e="' + ctl + '" aria-label="Lyrics">' + mdi("lyrics") + '</button>' : "") + '<div class="lbl">' + esc(title) + ' · ' + esc(s.state) + (a.source ? " · " + esc(a.source) : "") + '</div><div class="mpa">' + art + '<div>' + info + '</div></div>' +
     '<div class="mpb" ' + mpData(ctl) + '><i></i></div>' +
     '<div class="mpt">' + bt("shuffle", mdi("shuffle-variant"), a.shuffle) + bt("prev", mdi("skip-previous")) + bt("pp", mdi(play ? "pause" : "play")) + bt("next", mdi("skip-next")) + bt("repeat", mdi(a.repeat === "one" ? "repeat-once" : a.repeat === "all" ? "repeat" : "repeat-off"), a.repeat && a.repeat !== "off") + '<button class="rnd mvt' + (mpVo ? " on" : "") + '" data-mp="voltog">' + mdi("volume-high") + '</button></div>' +
     '<div class="mvs">' + vols + '</div></div>';
@@ -4109,7 +4130,13 @@ function mpGroups() {   // Sonos lists the group coordinator first
 function drawMedia() {
   const ae = document.activeElement; if (ae && ae.type === "range" && $("#media").contains(ae)) return;
   const ids = CONFIG.media, rk = g => ({ playing: 0, paused: 1 }[(states[g.ctl] || {}).state] ?? 2), cards = mpGroups().map((g, i) => [rk(g), i, mpCard(g.mem, g.ctl)]).sort((a, b) => a[0] - b[0] || a[1] - b[1]).map(x => x[2]);
-  $("#mp").innerHTML = '<div class="mpg">' + cards.join("") + '</div>' + (ids.length > 1 ? '<div style="margin-top:14px"><button class="eb" data-mp="' + (cards.length > 1 ? "join" : "unjoin") + '">' + (cards.length > 1 ? "GROUP SPEAKERS" : "UNGROUP") + '</button></div>' : "");
+  const html = '<div class="mpg">' + cards.join("") + '</div>', mp = $("#mp"), key = html.replace(/ data-(pos|upd)="[^"]*"/g, "");
+  if (mp._k === key && mp.firstChild) {   // nothing visible changed (some other entity updated): keep the cards as they are, so the glow does not restart and a tap is never lost; only the progress timing is refreshed
+    const t = document.createElement("template"); t.innerHTML = html;
+    const nb = t.content.querySelectorAll(".mpb"), ob = mp.querySelectorAll(".mpb");
+    nb.forEach((b, i) => { if (ob[i]) Object.assign(ob[i].dataset, b.dataset); });
+  } else { mp.innerHTML = html; mp._k = key; }
+  const gb = $("#mpgrp"); if (gb) { gb.hidden = ids.length < 2; gb.dataset.mp = cards.length > 1 ? "join" : "unjoin"; const t = cards.length > 1 ? "GROUP SPEAKERS" : "UNGROUP"; gb.setAttribute("aria-label", t.toLowerCase()); gb.querySelector("span").textContent = t; gb.querySelector("svg").outerHTML = mdi(cards.length > 1 ? "speaker-multiple" : "link-variant"); }
   tickMedia(); lyrUpdate();
 }
 function tickMedia() {
@@ -4310,13 +4337,22 @@ function lyrLoad(tr, key) {
     LY.busy = ""; LY.cache[key] = r; if (LY.key === key) { Object.assign(LY, r); lyrDraw(); }
   }).catch(e => { LY.busy = ""; LY.cache[key] = { st: "err", lines: null, plain: "", t: Date.now(), dbg: dbg.join(" · ") + " · " + String(e && e.message || e) }; if (LY.key === key) { Object.assign(LY, LY.cache[key]); lyrDraw(); } });
 }
+// phone: the lyrics are a sheet, so it carries a close button and a small player row at the bottom
+function lyFoot() {
+  const s = states[LY.ctl] || { state: "", attributes: {} }, a = s.attributes, pl = s.state === "playing";
+  return '<div class="lyf"><span class="npart">' + mpArt(a, s.state, a.entity_picture) + '</span><div class="npi"><b>' + esc(a.media_title || "") + '</b><small>' + esc(a.media_artist || "") + '</small></div><button class="rnd on" data-mp="pp" data-e="' + LY.ctl + '">' + mdi(pl ? "pause" : "play") + '</button></div>';
+}
+const lyClose = () => document.body.classList.remove("ly-open");
+function lyOpen(ctl) { if (ctl) LY.sel = ctl; LY.open = true; try { localStorage.setItem("dashLyr", "1"); } catch (_) {} document.body.classList.add("ly-open"); LY.drawn = ""; lyrUpdate(); }
+document.addEventListener("click", e => { if (e.target === document.body && document.body.classList.contains("ly-open")) lyClose(); });
+addEventListener("hashchange", lyClose);
 function lyrDraw(tr) {
-  const el = $("#lyr"), k = [LY.key, LY.st, LY.open, LY.sel, LY.tabs.join(), LY.off].join("|"); if (k === LY.drawn) return; LY.drawn = k;
+  const el = $("#lyr"), k = [LY.key, LY.st, LY.open, LY.sel, LY.tabs.join(), LY.off, (states[LY.ctl] || {}).state].join("|"); if (k === LY.drawn) return; LY.drawn = k;
   const msg = { load: "Looking for lyrics…", none: "No lyrics found for this song.", inst: "Instrumental.", err: "Couldn’t reach the lyrics service (the device needs internet).", "": "" }[LY.st] || "";
   const body = !LY.open ? "" : LY.st === "sync" ? '<div class="lyb">' + LY.lines.map((l, i) => '<div class="ly" data-t="' + l.t + '" data-i="' + i + '">' + (esc(l.s) || "♪") + '</div>').join("") + '</div>'
     : LY.st === "plain" ? '<div class="lyb plain">' + esc(LY.plain) + '</div>' : '<div class="sm" style="margin-top:12px">' + msg + '</div><div class="sm lyd">' + esc((LY.key || "").replace(/\|/g, " · ") + (LY.dbg ? "  →  " + LY.dbg : "")) + '</div><button class="eb" style="margin-top:10px" data-ly="retry">TRY AGAIN</button>';
-  el.innerHTML = '<div class="lbl lyh" data-ly="tog">' + mdi("music-note") + ' Lyrics' + (LY.st === "sync" ? ' · synced' : "") + (LY.st === "sync" && LY.open ? '<span class="lyo" title="Lyrics running late? press +. Too early? press −"><button class="chip" data-ly="off-">−</button><b>' + (LY.off > 0 ? "+" : "") + LY.off.toFixed(1) + 's</b><button class="chip" data-ly="off+">+</button></span>' : "") + '<span class="npch">' + mdi(LY.open ? "chevron-up" : "chevron-down") + '</span></div>' +
-    (LY.open && LY.tabs.length ? '<div class="chips tabs lyt">' + LY.tabs.map(t => '<button class="chip' + (t[0] === LY.sel ? " on" : "") + '" data-ly="sel" data-c="' + t[0] + '">' + mdi("speaker") + esc(t[1]) + '</button>').join("") + '</div>' : "") + body;
+  el.innerHTML = '<div class="lbl lyh" data-ly="tog">' + mdi("music-note") + ' Lyrics' + (LY.st === "sync" ? ' · synced' : "") + (LY.st === "sync" && LY.open ? '<span class="lyo" title="Lyrics running late? press +. Too early? press −"><button class="chip" data-ly="off-">−</button><b>' + (LY.off > 0 ? "+" : "") + LY.off.toFixed(1) + 's</b><button class="chip" data-ly="off+">+</button></span>' : "") + '<span class="npch">' + mdi(LY.open ? "chevron-up" : "chevron-down") + '</span><button class="chip lyx" data-ly="close" aria-label="Close">' + mdi("close") + '</button></div>' +
+    (LY.open && LY.tabs.length ? '<div class="chips tabs lyt">' + LY.tabs.map(t => '<button class="chip' + (t[0] === LY.sel ? " on" : "") + '" data-ly="sel" data-c="' + t[0] + '">' + mdi("speaker") + esc(t[1]) + '</button>').join("") + '</div>' : "") + body + lyFoot();
   LY.cur = -1; lyrTick(true);
 }
 function lyrTick(jump) {
@@ -4335,6 +4371,7 @@ $("#lyr").onclick = e => {
   if (of) { LY.off = Math.max(-10, Math.min(10, Math.round((LY.off + (of.dataset.ly === "off+" ? 0.5 : -0.5)) * 10) / 10)); try { localStorage.setItem("dashLyOff", LY.off); } catch (_) {} LY.drawn = ""; lyrDraw(); return; }
   const sb = e.target.closest("[data-ly=sel]"); if (sb) { LY.sel = sb.dataset.c; LY.drawn = ""; lyrUpdate(); return; }
   if (e.target.closest("[data-ly=retry]")) { delete LY.cache[LY.key]; LY.busy = ""; LY.drawn = ""; LY.st = ""; lyrUpdate(); return; }
+  if (e.target.closest("[data-ly]") && innerWidth <= 760) { lyClose(); return; }
   if (e.target.closest("[data-ly]")) { LY.open = !LY.open; try { localStorage.setItem("dashLyr", LY.open ? "1" : "0"); } catch (_) {} LY.drawn = ""; lyrUpdate(); return; }
   const l = e.target.closest(".ly"); if (l && LY.ctl) { mpSeek(LY.ctl); call("media_player", "media_seek", LY.ctl, { seek_position: +l.dataset.t }); }
 };
@@ -4371,14 +4408,15 @@ function mpPos(id) {
 }
 const mpData = id => { const q = mpPos(id); return 'data-pos="' + q.pos.toFixed(2) + '" data-upd="' + new Date(srvNow()).toISOString() + '" data-dur="' + q.dur + '" data-play="' + (q.play ? 1 : 0) + '"'; };
 const mpSeek = id => { (MPK[id] = MPK[id] || {}).seek = srvNow(); };
+const MPT = {};   // last play / pause tap per speaker: a second tap within 350 ms is ignored (a double fire would pause then resume at once)
 function mpDo(m, id) {
   if (m === "prev" || m === "next") mpSeek(id);
-  const a = (states[id] || {}).attributes || {}, ids = CONFIG.media;
-  if (m === "pp") call("media_player", "media_play_pause", id);
-  else if (m === "prev") call("media_player", "media_previous_track", id);
-  else if (m === "next") call("media_player", "media_next_track", id);
-  else if (m === "shuffle") call("media_player", "shuffle_set", id, { shuffle: !a.shuffle });
-  else if (m === "repeat") call("media_player", "repeat_set", id, { repeat: !a.repeat || a.repeat === "off" ? "all" : a.repeat === "all" ? "one" : "off" });
+  const a = (states[id] || {}).attributes || {}, ids = CONFIG.media, tg = id, ta = (states[tg] || {}).attributes || a;
+  if (m === "pp") { const n = Date.now(); if (n - (MPT[id] || 0) < 350) return true; MPT[id] = n; call("media_player", "media_play_pause", tg); }
+  else if (m === "prev") call("media_player", "media_previous_track", tg);
+  else if (m === "next") call("media_player", "media_next_track", tg);
+  else if (m === "shuffle") call("media_player", "shuffle_set", tg, { shuffle: !ta.shuffle });
+  else if (m === "repeat") call("media_player", "repeat_set", tg, { repeat: !ta.repeat || ta.repeat === "off" ? "all" : ta.repeat === "all" ? "one" : "off" });
   else if (m === "mute") call("media_player", "volume_mute", id, { is_volume_muted: !a.is_volume_muted });
   else if (m === "join") { const c = ids.filter(x => states[x] && states[x].state === "playing")[0] || ids[0]; call("media_player", "join", c, { group_members: ids.filter(x => x !== c) }); }
   else if (m === "unjoin") ids.forEach(x => call("media_player", "unjoin", x));
@@ -4386,7 +4424,7 @@ function mpDo(m, id) {
   else return false;
   return true;
 }
-$("#media").onclick = e => { const b = e.target.closest("[data-mp]"); if (b) mpDo(b.dataset.mp, b.dataset.e); };
+$("#media").onclick = e => { const lo = e.target.closest('[data-ly="open"]'); if (lo) { lyOpen(lo.dataset.e); return; } const b = e.target.closest("[data-mp]"); if (b) mpDo(b.dataset.mp, b.dataset.e); };
 $("#media").onchange = e => { const t = e.target; if (t.dataset.vol) call("media_player", "volume_set", t.dataset.vol, { volume_level: +t.value / 100 }); };
 
 // ---------- weather animation (greeting card) ----------
@@ -4617,6 +4655,7 @@ function route() {
       if (h[2] === "doors") [120, 700, 1800].forEach(ms => setTimeout(() => { if (curRoom && curRoom.id === h[1] && location.hash.split("/")[2] === "doors") { const t = $('#rv [data-sec="doors"]'); if (t) { t.scrollIntoView({ block: "center", behavior: ms > 120 ? "auto" : "smooth" }); if (ms === 120) { t.classList.add("flash"); setTimeout(() => t.classList.remove("flash"), 1800); } } } }, ms)); }   // #rooms/<room>/doors scrolls to that room's Doors & windows panel   // list -> room slides in from the right
     else { const was = !!curRoom; drawRooms(); if (was) txGo($("#rl"), -1, true); }   // room -> list slides back from the left
   }
+  if (p !== "security") secPrev = "";
   if (p === "security") secTab(h[1] === "detections" && dtCams().length && CONFIG.detections !== false && ruSec("detections") ? "det" : "live");
   if (p === "weather") {   // #weather/wind | rain | uv opens that forecast tab and scrolls to it
     const ti = { temp: 0, wind: 1, rain: 2, uv: 3, cloud: 3 }[h[1]];
@@ -4635,7 +4674,7 @@ function route() {
   if (p === "vehicle") drawVehicle();
   if (p === "hazards") { HZ.vb = null; HZ.slide = 0; HZ.view = HZ.view || (states["zone.home"] ? "home" : "ni"); requestAnimationFrame(drawHaz); }
   if (h[0] === "disarm") alarmLink("disarm"); else if (h[0] === "arm") alarmLink("arm_" + (h[1] || "away"));
-  if (h[0] === "notifications" || h[0] === "active") { npTab = h[0] === "active" ? "active" : "alerts"; document.body.classList.add("np-open"); drawNotif();
+  if (h[0] === "notifications" || h[0] === "active" || h[0] === "batteries") { npTab = h[0] === "active" ? "active" : h[0] === "batteries" ? "batteries" : "alerts"; document.body.classList.add("np-open"); drawNotif();
     if (h[0] === "active" && h[1]) [80, 1500].forEach(ms => setTimeout(() => { if (document.body.classList.contains("np-open")) { const t = $('#np [data-sec="' + h[1] + '"]'); if (t) t.scrollIntoView({ block: "start" }); } }, ms)); }
 }
 // tablet battery pill: shown on the Fully Kiosk tablet only ("kiosk" = the Fully JS interface, a FullyKiosk user agent, or ?tablet=1 once; "always" / "never" override)

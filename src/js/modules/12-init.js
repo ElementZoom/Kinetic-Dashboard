@@ -123,7 +123,7 @@ function mkCam(c, host) {
   { const ar = m => { const w = m.videoWidth || m.naturalWidth, h = m.videoHeight || m.naturalHeight; if (w > 0 && h > 0) el.style.setProperty("--ar", w + " / " + h); };   // the two-feed landscape view sizes each picture from this
     o.img.addEventListener("load", () => { if (!c.live) ar(o.img); }); o.vid.addEventListener("loadedmetadata", () => ar(o.vid)); o.vid.addEventListener("resize", () => ar(o.vid)); }
   const cp = $(".cpanel", el); cp.onclick = tapH; cp.onchange = chgH;
-  if (host.id === "vw") { el.classList.add("vf"); setTimeout(() => pbPre(c), 600); const ctl = camCtl(c.id); if (ctl) { cp.innerHTML = '<div class="tg3">' + ctl.map(tileHtml).join("") + '</div>'; cp.dataset.b = 1; } el.onclick = e => { if (e.target.closest(".fsb")) camLand(el); }; return host.appendChild(el); }
+  if (host.id === "vw") { el.classList.add("vf"); setTimeout(() => pbPre(c), 600); const ctl = camCtl(c.id); if (ctl) { cp.innerHTML = '<div class="tg3">' + ctl.map(tileHtml).join("") + '</div>'; cp.dataset.b = 1; } el.onclick = e => { if (e.target.closest(".fsb")) camLand(el); else if (e.target.closest(".cx")) vwClose(); }; return host.appendChild(el); }   // phones: the card has the same X as a Security camera (the tablet keeps the round X above the pictures)
   el.onclick = e => {
     if (e.target.closest(".cpanel, .pbk, .px")) return;
     if (e.target.closest(".fsb")) { camLand(el); return; }
@@ -146,7 +146,8 @@ const VW = { mode: "", hold: { driveway: 0, garage: 0 }, seen: false, back: "#ho
 ["driveway", "garage"].forEach(k => { const c = Object.assign({ k: k }, CONFIG.view[k]); VWC.push(c); mkCam(c, $("#vw")); });
 const slug = n => n.toLowerCase().replace(/[^a-z0-9]+/g, "-");   // "Right walkway" -> right-walkway
 CONFIG.security.forEach(s => { const c = { k: "cam:" + slug(s.name), id: s.id, name: s.name }; VWC.push(c); mkCam(c, $("#vw")); });
-(() => { const b = document.createElement("button"); b.className = "vwx"; b.setAttribute("aria-label", "Close"); b.innerHTML = mdi("close"); b.onclick = () => { location.hash = VW.back && VW.back.indexOf("#view") !== 0 ? VW.back : "#home"; }; $("#vw").appendChild(b); })();
+function vwClose() { location.hash = VW.back && VW.back.indexOf("#view") !== 0 ? VW.back : "#home"; }
+(() => { const b = document.createElement("button"); b.className = "vwx"; b.setAttribute("aria-label", "Close"); b.innerHTML = mdi("close"); b.onclick = vwClose; $("#vw").appendChild(b); })();
 const viewTrig = k => [].concat(CONFIG.view[k].trig || []).some(isOn);
 // seconds a feed stays on screen after its trigger turns off: view.garage.hold / view.driveway.hold, else view.hold, else 20
 const holdOf = k => { const V = CONFIG.view, x = V[k] && V[k].hold != null ? V[k].hold : V.hold; return (x != null ? x : 20) * 1000; };

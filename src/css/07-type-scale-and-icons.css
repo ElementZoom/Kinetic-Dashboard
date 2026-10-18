@@ -66,9 +66,9 @@ button,input,select,textarea{font-family:inherit}
 @media(orientation:portrait){#vw.two{grid-template-columns:minmax(0,1fr);grid-template-rows:repeat(2,minmax(0,1fr))}}
 #vw .cam{height:100%;min-height:0;cursor:default;border-radius:22px}
 #vw .cam img,#vw .cam video{position:absolute;inset:0;width:100%;height:100%;aspect-ratio:auto;object-fit:cover}
-#vw .cam .cpanel{display:block;position:absolute;left:0;right:0;bottom:0;z-index:2;padding:44px 14px 14px;background:linear-gradient(transparent,rgba(0,0,0,.88))}#vw .cpanel .tg3{grid-auto-flow:column;grid-template-columns:none;grid-auto-columns:minmax(150px,1fr);overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;touch-action:pan-x}#vw .cpanel .tg3::-webkit-scrollbar{display:none}#vw .cpanel .tl{flex:none}#vw .cam .cpanel:empty{display:none}#vw .cam .lv{right:70px}#vw .cam .lbl{font-size:15px}
+#vw .cam .cpanel{display:block;position:absolute;left:0;right:0;bottom:0;z-index:2;padding:44px 14px 14px;background:linear-gradient(transparent,rgba(0,0,0,.88))}#vw .cpanel .tg3{grid-auto-flow:column;grid-template-columns:none;grid-auto-columns:minmax(170px,1fr);overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;touch-action:pan-x}#vw .cpanel .tg3::-webkit-scrollbar{display:none}#vw .cpanel .tl{flex:none}#vw .cam .cpanel:empty{display:none}@media(min-width:761px){#vw .cam .lv{right:70px}#vw .cam .lbl{font-size:15px}}
 .vwx{position:absolute;right:24px;top:56px;z-index:70;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:rgba(0,0,0,.55);color:#fff;cursor:pointer}.vwx svg{width:22px;height:22px;fill:currentColor}
-#vw.one .cam img,#vw.one .cam video{object-fit:contain}#vw .cam .px{display:block;top:56px}
+#vw.one .cam img,#vw.one .cam video{object-fit:contain}#vw .cam .px{display:block}@media(min-width:761px){#vw .cam .px{top:56px}}
 /* both feeds in landscape: side by side, each picture shown whole at its own aspect ratio (--ar, read from the stream) with its controls underneath.
    (Zooming a 16:9 feed to fill a tall half-screen column cut away more than half of it.) Portrait keeps the stacked, filled layout. */
 @media(orientation:landscape){

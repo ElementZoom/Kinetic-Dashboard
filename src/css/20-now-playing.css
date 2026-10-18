@@ -38,11 +38,9 @@ header{flex-wrap:wrap;row-gap:6px}html[data-style=material] header{border-radius
 #vw.on .cam{animation:fsin .4s cubic-bezier(.2,.8,.2,1) both}
 @media(prefers-reduced-motion:reduce){#vw.on .cam{animation:none}}
 @media(max-width:760px){
-#vw .cam .fsb{display:block;right:68px;top:56px}#vw .cam .px{right:120px}
+#vw .cam .fsb{display:block}
 #vw .cam.ls{position:fixed;inset:auto;top:0;left:0;width:100dvh;height:100dvw;transform:translateX(100vw) rotate(90deg);transform-origin:top left;border-radius:0;clip-path:none;z-index:65;animation:none}
-#vw .cam.ls img,#vw .cam.ls video{object-fit:contain}
-#vw .cam.ls .cpanel{padding:30px 20px 12px}#vw .cam.ls .cpanel .tl{padding-top:9px;padding-bottom:9px;gap:3px;border-radius:14px}
-#vw .cam.ls .fsb{right:20px;top:20px}#vw .cam.ls .px{right:76px;top:20px}#vw .cam.ls .lv{right:128px;top:28px}#vw .cam.ls .lbl{left:20px;top:20px}#vw .cam.ls .dl{left:20px;top:42px}
+#vw .cam.ls img,#vw .cam.ls video{object-fit:contain;width:100%;height:100%}
 html.camls .vwx{display:none}
 }
 .lyh{display:flex;align-items:center;gap:8px;cursor:pointer}.lyh svg{width:16px;height:16px;fill:currentColor}.lyh .npch{margin-left:auto}

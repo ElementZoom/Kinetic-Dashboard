@@ -1,9 +1,9 @@
 /* landscape button + rotated fallback */
 .fsb{display:none;position:absolute;right:68px;top:46px;z-index:3;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:rgba(0,0,0,.55);cursor:pointer;padding:0}.fsb svg{width:20px;height:20px;fill:#fff;margin:auto;display:block}
-@media(max-width:760px){.cam.fs .fsb{display:block}.cam.fs .px{right:120px}}
-.cam.fs.ls{inset:auto;top:0;left:0;width:100vh;height:100vw;width:100dvh;height:100dvw;transform:translateX(100vw) rotate(90deg);transform-origin:top left;border-radius:0;clip-path:none;animation:none}
-.cam.fs.ls img,.cam.fs.ls video{height:100%;width:100%;object-fit:contain}
-.cam.fs.ls .cpanel{padding:30px 20px 12px}.cam.fs.ls .cpanel .tl{padding-top:9px;padding-bottom:9px;gap:3px;border-radius:14px}.cam.fs.ls .px{right:120px}.cam.fs.ls .fsb{display:block}
+@media(max-width:760px){.cam.fs .fsb{display:block}.cam.fs .px{right:120px}.cam.vf .cx{display:block}.vwx{display:none}}
+.cam.fs.ls,#vw .cam.vf.ls{inset:auto;top:0;left:0;width:100vh;height:100vw;width:100dvh;height:100dvw;transform:translateX(100vw) rotate(90deg);transform-origin:top left;border-radius:0;clip-path:none;animation:none}
+.cam.fs.ls img,.cam.fs.ls video,.cam.vf.ls img,.cam.vf.ls video{height:100%;width:100%;object-fit:contain}
+.cam.fs.ls .cpanel,.cam.vf.ls .cpanel{padding:30px 20px 12px}.cam.fs.ls .cpanel .tl,.cam.vf.ls .cpanel .tl{padding-top:9px;padding-bottom:9px;gap:3px;border-radius:14px}.cam.fs.ls .px,.cam.vf.ls .px{right:120px}.cam.fs.ls .fsb,.cam.vf.ls .fsb{display:block}
 /* performance: while any camera is streaming, stop decorative loops and soften glass blur so the video decoder gets the GPU */
 html.camlive .card.aur::before,html.camlive .card.aur::after,html.camlive .rc>.rg::after,html.camlive .rc>.rg::before,html.camlive .bq::before,html.camlive .mpc.pl::before,html.camlive .tl.cl.hv::before,html.camlive .fcc .wb{animation:none!important}
 html.camlive[data-style=glass]{--gb:blur(10px) saturate(140%)}

@@ -461,9 +461,9 @@ button,input,select,textarea{font-family:inherit}
 @media(orientation:portrait){#vw.two{grid-template-columns:minmax(0,1fr);grid-template-rows:repeat(2,minmax(0,1fr))}}
 #vw .cam{height:100%;min-height:0;cursor:default;border-radius:22px}
 #vw .cam img,#vw .cam video{position:absolute;inset:0;width:100%;height:100%;aspect-ratio:auto;object-fit:cover}
-#vw .cam .cpanel{display:block;position:absolute;left:0;right:0;bottom:0;z-index:2;padding:44px 14px 14px;background:linear-gradient(transparent,rgba(0,0,0,.88))}#vw .cpanel .tg3{grid-auto-flow:column;grid-template-columns:none;grid-auto-columns:minmax(150px,1fr);overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;touch-action:pan-x}#vw .cpanel .tg3::-webkit-scrollbar{display:none}#vw .cpanel .tl{flex:none}#vw .cam .cpanel:empty{display:none}#vw .cam .lv{right:70px}#vw .cam .lbl{font-size:15px}
+#vw .cam .cpanel{display:block;position:absolute;left:0;right:0;bottom:0;z-index:2;padding:44px 14px 14px;background:linear-gradient(transparent,rgba(0,0,0,.88))}#vw .cpanel .tg3{grid-auto-flow:column;grid-template-columns:none;grid-auto-columns:minmax(170px,1fr);overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;touch-action:pan-x}#vw .cpanel .tg3::-webkit-scrollbar{display:none}#vw .cpanel .tl{flex:none}#vw .cam .cpanel:empty{display:none}@media(min-width:761px){#vw .cam .lv{right:70px}#vw .cam .lbl{font-size:15px}}
 .vwx{position:absolute;right:24px;top:56px;z-index:70;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:rgba(0,0,0,.55);color:#fff;cursor:pointer}.vwx svg{width:22px;height:22px;fill:currentColor}
-#vw.one .cam img,#vw.one .cam video{object-fit:contain}#vw .cam .px{display:block;top:56px}
+#vw.one .cam img,#vw.one .cam video{object-fit:contain}#vw .cam .px{display:block}@media(min-width:761px){#vw .cam .px{top:56px}}
 /* both feeds in landscape: side by side, each picture shown whole at its own aspect ratio (--ar, read from the stream) with its controls underneath.
    (Zooming a 16:9 feed to fill a tall half-screen column cut away more than half of it.) Portrait keeps the stacked, filled layout. */
 @media(orientation:landscape){
@@ -780,10 +780,10 @@ html:not(#x)[data-mode=light] .tl.wt,html:not(#x)[data-mode=light] .tl.wt.on{bac
 .tl .tmr{margin-top:2px}.tl .zb{margin-top:4px;height:8px}
 /* landscape button + rotated fallback */
 .fsb{display:none;position:absolute;right:68px;top:46px;z-index:3;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:rgba(0,0,0,.55);cursor:pointer;padding:0}.fsb svg{width:20px;height:20px;fill:#fff;margin:auto;display:block}
-@media(max-width:760px){.cam.fs .fsb{display:block}.cam.fs .px{right:120px}}
-.cam.fs.ls{inset:auto;top:0;left:0;width:100vh;height:100vw;width:100dvh;height:100dvw;transform:translateX(100vw) rotate(90deg);transform-origin:top left;border-radius:0;clip-path:none;animation:none}
-.cam.fs.ls img,.cam.fs.ls video{height:100%;width:100%;object-fit:contain}
-.cam.fs.ls .cpanel{padding:30px 20px 12px}.cam.fs.ls .cpanel .tl{padding-top:9px;padding-bottom:9px;gap:3px;border-radius:14px}.cam.fs.ls .px{right:120px}.cam.fs.ls .fsb{display:block}
+@media(max-width:760px){.cam.fs .fsb{display:block}.cam.fs .px{right:120px}.cam.vf .cx{display:block}.vwx{display:none}}
+.cam.fs.ls,#vw .cam.vf.ls{inset:auto;top:0;left:0;width:100vh;height:100vw;width:100dvh;height:100dvw;transform:translateX(100vw) rotate(90deg);transform-origin:top left;border-radius:0;clip-path:none;animation:none}
+.cam.fs.ls img,.cam.fs.ls video,.cam.vf.ls img,.cam.vf.ls video{height:100%;width:100%;object-fit:contain}
+.cam.fs.ls .cpanel,.cam.vf.ls .cpanel{padding:30px 20px 12px}.cam.fs.ls .cpanel .tl,.cam.vf.ls .cpanel .tl{padding-top:9px;padding-bottom:9px;gap:3px;border-radius:14px}.cam.fs.ls .px,.cam.vf.ls .px{right:120px}.cam.fs.ls .fsb,.cam.vf.ls .fsb{display:block}
 /* performance: while any camera is streaming, stop decorative loops and soften glass blur so the video decoder gets the GPU */
 html.camlive .card.aur::before,html.camlive .card.aur::after,html.camlive .rc>.rg::after,html.camlive .rc>.rg::before,html.camlive .bq::before,html.camlive .mpc.pl::before,html.camlive .tl.cl.hv::before,html.camlive .fcc .wb{animation:none!important}
 html.camlive[data-style=glass]{--gb:blur(10px) saturate(140%)}
@@ -1237,11 +1237,9 @@ header{flex-wrap:wrap;row-gap:6px}html[data-style=material] header{border-radius
 #vw.on .cam{animation:fsin .4s cubic-bezier(.2,.8,.2,1) both}
 @media(prefers-reduced-motion:reduce){#vw.on .cam{animation:none}}
 @media(max-width:760px){
-#vw .cam .fsb{display:block;right:68px;top:56px}#vw .cam .px{right:120px}
+#vw .cam .fsb{display:block}
 #vw .cam.ls{position:fixed;inset:auto;top:0;left:0;width:100dvh;height:100dvw;transform:translateX(100vw) rotate(90deg);transform-origin:top left;border-radius:0;clip-path:none;z-index:65;animation:none}
-#vw .cam.ls img,#vw .cam.ls video{object-fit:contain}
-#vw .cam.ls .cpanel{padding:30px 20px 12px}#vw .cam.ls .cpanel .tl{padding-top:9px;padding-bottom:9px;gap:3px;border-radius:14px}
-#vw .cam.ls .fsb{right:20px;top:20px}#vw .cam.ls .px{right:76px;top:20px}#vw .cam.ls .lv{right:128px;top:28px}#vw .cam.ls .lbl{left:20px;top:20px}#vw .cam.ls .dl{left:20px;top:42px}
+#vw .cam.ls img,#vw .cam.ls video{object-fit:contain;width:100%;height:100%}
 html.camls .vwx{display:none}
 }
 .lyh{display:flex;align-items:center;gap:8px;cursor:pointer}.lyh svg{width:16px;height:16px;fill:currentColor}.lyh .npch{margin-left:auto}
@@ -1385,16 +1383,16 @@ html[data-style] #npmini{background-color:var(--bg)}
 /* camera viewer / full screen: the close, PLAYBACK and landscape buttons share one row (same centre line), one height and one glass look */
 .cam .px,.cam .cx,.cam .fsb,.vwx{box-sizing:border-box;height:44px;border:1px solid rgba(255,255,255,.2);background:rgba(18,18,24,.55);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:0 2px 10px rgba(0,0,0,.35);color:#fff}
 .cam .px{padding:0 18px;line-height:42px;white-space:nowrap;text-align:center;font:600 12px/42px var(--mono);letter-spacing:.1em}.cam .px svg{width:14px;height:14px;margin-right:6px;vertical-align:-2px}
-#vw .cam .px,#vw .cam .fsb{top:41px}
+@media(min-width:761px){#vw .cam .px,#vw .cam .fsb{top:41px}}
 /* sound + talk-back sit on the PLAYBACK row (same top, same 44px height), side by side at the left */
 .cam.fs .aud,.cam.vf .aud{flex-direction:row;gap:8px;top:46px}
-.cam.fs.ls .aud{top:46px}
-#vw .cam .aud{top:41px}
+.cam.fs.ls .aud,.cam.vf.ls .aud{top:46px}
+@media(min-width:761px){#vw .cam .aud{top:41px}}
 @media(min-width:761px){.cam.fs .aud{top:60px}}
 @media(orientation:landscape) and (min-height:600px){#vw.two .cam:not(.ls) .aud{top:44px;left:12px}}
-@media(max-width:760px){.cam.fs:not(.ls) .px,#vw .cam:not(.ls) .px{padding:0 12px;letter-spacing:.06em;left:50%;right:auto;transform:translateX(-50%)}.cam.fs:not(.ls) .aud,#vw .cam:not(.ls) .aud{left:10px;gap:6px}#vw .cam .px{right:127px}.cam.fs .px{right:127px}.cam.fs.ls .px{right:127px}}
-@media(max-width:380px){.cam.fs:not(.ls) .px svg,#vw .cam:not(.ls) .px svg{display:none}}
-@media(max-width:400px){.cam.fs:not(.ls) .px,#vw .cam:not(.ls) .px{padding:0 9px;font-size:11px;letter-spacing:.04em}.cam.fs:not(.ls) .px svg,#vw .cam:not(.ls) .px svg{width:12px;height:12px;margin-right:4px}}
+@media(max-width:760px){.cam.fs:not(.ls) .px,.cam.vf:not(.ls) .px{padding:0 12px;letter-spacing:.06em;left:50%;right:auto;transform:translateX(-50%)}.cam.fs:not(.ls) .aud,.cam.vf:not(.ls) .aud{left:10px;gap:6px}.cam.vf .px{right:127px}.cam.fs .px{right:127px}.cam.fs.ls .px,.cam.vf.ls .px{right:127px}}
+@media(max-width:380px){.cam.fs:not(.ls) .px svg,.cam.vf:not(.ls) .px svg{display:none}}
+@media(max-width:400px){.cam.fs:not(.ls) .px,.cam.vf:not(.ls) .px{padding:0 9px;font-size:11px;letter-spacing:.04em}.cam.fs:not(.ls) .px svg,.cam.vf:not(.ls) .px svg{width:12px;height:12px;margin-right:4px}}
 /* both cameras side by side (tablet / PC landscape): the close button is above the pictures, so LIVE and PLAYBACK go to each picture's top-right corner (mirroring the name on the left) */
 @media(orientation:landscape) and (min-height:600px){
   #vw.two .cam:not(.ls) .lv{right:12px;top:10px}
@@ -1527,7 +1525,7 @@ body.vwm #vw.two{padding:8px;gap:8px}
 // (notification tap such as #view/driveway, #security ...), not the return from the login, and the device has not asked for reduced motion.
 window.brandLogo = function () { var L = window.DASH_LOGO, B = (window.DASH_CONFIG || {}).brand; return L && L.svg ? { svg: L.svg, lockup: !!L.lockup } : B && B.mark ? { svg: B.mark, lockup: false } : null; };   // brand-logo.js wins over brand.mark in config.js
 window.brandMark = function (s) { var g = window.brandLogo(); if (!g) return ""; return g.svg.replace(/\bid="([\w-]+)"/g, 'id="$1' + s + '"').replace(/url\(#([\w-]+)\)/g, 'url(#$1' + s + ')'); };
-window.DASH_VER = "1.0.0";   // the one place to change the version
+window.DASH_VER = "1.0.1";   // the one place to change the version
 (function () { try {
   var B = (window.DASH_CONFIG || {}).brand, el = document.getElementById("bootld"), r = document.documentElement, lp = "on";
   try { lp = localStorage.getItem("dashLogo") || "on"; } catch (e) {}   // Theme page -> "Start-up logo": on | load (no intro) | off (plain spinner, as before)
@@ -2454,7 +2452,7 @@ function mkCam(c, host) {
   { const ar = m => { const w = m.videoWidth || m.naturalWidth, h = m.videoHeight || m.naturalHeight; if (w > 0 && h > 0) el.style.setProperty("--ar", w + " / " + h); };   // the two-feed landscape view sizes each picture from this
     o.img.addEventListener("load", () => { if (!c.live) ar(o.img); }); o.vid.addEventListener("loadedmetadata", () => ar(o.vid)); o.vid.addEventListener("resize", () => ar(o.vid)); }
   const cp = $(".cpanel", el); cp.onclick = tapH; cp.onchange = chgH;
-  if (host.id === "vw") { el.classList.add("vf"); setTimeout(() => pbPre(c), 600); const ctl = camCtl(c.id); if (ctl) { cp.innerHTML = '<div class="tg3">' + ctl.map(tileHtml).join("") + '</div>'; cp.dataset.b = 1; } el.onclick = e => { if (e.target.closest(".fsb")) camLand(el); }; return host.appendChild(el); }
+  if (host.id === "vw") { el.classList.add("vf"); setTimeout(() => pbPre(c), 600); const ctl = camCtl(c.id); if (ctl) { cp.innerHTML = '<div class="tg3">' + ctl.map(tileHtml).join("") + '</div>'; cp.dataset.b = 1; } el.onclick = e => { if (e.target.closest(".fsb")) camLand(el); else if (e.target.closest(".cx")) vwClose(); }; return host.appendChild(el); }   // phones: the card has the same X as a Security camera (the tablet keeps the round X above the pictures)
   el.onclick = e => {
     if (e.target.closest(".cpanel, .pbk, .px")) return;
     if (e.target.closest(".fsb")) { camLand(el); return; }
@@ -2477,7 +2475,8 @@ const VW = { mode: "", hold: { driveway: 0, garage: 0 }, seen: false, back: "#ho
 ["driveway", "garage"].forEach(k => { const c = Object.assign({ k: k }, CONFIG.view[k]); VWC.push(c); mkCam(c, $("#vw")); });
 const slug = n => n.toLowerCase().replace(/[^a-z0-9]+/g, "-");   // "Right walkway" -> right-walkway
 CONFIG.security.forEach(s => { const c = { k: "cam:" + slug(s.name), id: s.id, name: s.name }; VWC.push(c); mkCam(c, $("#vw")); });
-(() => { const b = document.createElement("button"); b.className = "vwx"; b.setAttribute("aria-label", "Close"); b.innerHTML = mdi("close"); b.onclick = () => { location.hash = VW.back && VW.back.indexOf("#view") !== 0 ? VW.back : "#home"; }; $("#vw").appendChild(b); })();
+function vwClose() { location.hash = VW.back && VW.back.indexOf("#view") !== 0 ? VW.back : "#home"; }
+(() => { const b = document.createElement("button"); b.className = "vwx"; b.setAttribute("aria-label", "Close"); b.innerHTML = mdi("close"); b.onclick = vwClose; $("#vw").appendChild(b); })();
 const viewTrig = k => [].concat(CONFIG.view[k].trig || []).some(isOn);
 // seconds a feed stays on screen after its trigger turns off: view.garage.hold / view.driveway.hold, else view.hold, else 20
 const holdOf = k => { const V = CONFIG.view, x = V[k] && V[k].hold != null ? V[k].hold : V.hold; return (x != null ? x : 20) * 1000; };

@@ -114,6 +114,13 @@ html[data-mode=light] .rooms2 .rc{background:rgba(255,255,255,.72)}
 }
 
 #hc{display:flex;align-items:center;gap:10px;cursor:pointer}#nacc{width:5px;height:30px;border-radius:4px;background:rgba(var(--ink-rgb),.28);box-shadow:none;transition:background .3s,box-shadow .3s}#nacc.on{background:var(--mint);animation:nglow 2.2s ease-in-out infinite}@keyframes nglow{0%,100%{opacity:.45;box-shadow:0 0 3px rgba(var(--mint-rgb),.2)}50%{opacity:1;box-shadow:0 0 14px 2px rgba(var(--mint-rgb),.8)}}@media(prefers-reduced-motion:reduce){#nacc.on{animation:none;box-shadow:0 0 10px rgba(var(--mint-rgb),.6)}}
+/* the strip as an icon: weather warning (amber), garage door open (coral), water on (blue); "+n" when more than one is true */
+#nacc[data-k]{position:relative;width:26px;height:26px;border-radius:0;background:none;box-shadow:none;color:var(--nk);display:flex;align-items:center;justify-content:center;animation:nkglow 2.2s ease-in-out infinite}
+#nacc[data-k] svg{width:26px;height:26px;fill:currentColor}
+#nacc[data-k=leak]{--nk:#ff4d5e}#nacc[data-k=warn]{--nk:#ffb04a}#nacc[data-k=garage]{--nk:#ff7a6b}#nacc[data-k=water]{--nk:#5cc8ff}
+#nacc[data-more]:not([data-more=""])::after{content:attr(data-more);position:absolute;top:-8px;right:-11px;min-width:16px;height:16px;box-sizing:border-box;padding:0 4px;border-radius:8px;background:var(--nk);color:#10161c;font:700 10px/16px var(--mono);text-align:center}
+@keyframes nkglow{0%,100%{opacity:.6;filter:drop-shadow(0 0 2px var(--nk))}50%{opacity:1;filter:drop-shadow(0 0 8px var(--nk))}}
+@media(prefers-reduced-motion:reduce){#nacc[data-k]{animation:none;filter:drop-shadow(0 0 6px var(--nk))}}
 #gsum{display:none}
 @media(max-width:760px){
 #nacc{height:22px;width:4px}

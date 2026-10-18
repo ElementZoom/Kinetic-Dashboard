@@ -35,7 +35,7 @@ await page.evaluate(() => {
   st("sensor.backyard_water_tap_flow", "0.4"); st("sensor.driveway_water_tap_flow", "0.5");
   const fin = new Date(Date.now() + 13 * 60000).toISOString();
   for (const n of ["driveway", "backyard"]) st(`timer.${n}_sprinkler_timer`, "active", { finishes_at: fin, duration: "0:30:00", friendly_name: `${n} sprinkler timer` });
-  st("timer.rice_cooker", "active", { finishes_at: fin, duration: "0:30:00", friendly_name: "Rice cooker" });
+  CONFIG.notifTimers = ["timer.rice_cooker"]; st("timer.rice_cooker", "active", { finishes_at: fin, duration: "0:30:00", friendly_name: "Rice cooker" });
   document.getElementById("hc").click();
 });
 await page.waitForTimeout(500);
@@ -47,7 +47,7 @@ const np = await page.evaluate(() => ({
   doorWt: !!document.querySelector('#np [data-e="binary_sensor.door_test"].wt'),
 }));
 eq("no sprinkler timer in the pop-up", /sprinkler/i.test(np.text), false);
-eq("other timers still listed", /rice cooker/i.test(np.text), true);
+eq("timers named in notifTimers still listed", /rice cooker/i.test(np.text), true);
 eq("two tap warnings carry the water effect", [np.wt, np.waves, np.svgs], [2, 2, 4]);
 eq("waves are positioned inside the tile", np.pos, ["absolute", "absolute"]);
 eq("non-tap warning has no water", np.doorWt, false);

@@ -155,7 +155,7 @@ const fcStats = r => '<div class="wg" style="margin:10px 0 14px">' + r.map(x => 
 const hr = x => new Date(x.datetime).toLocaleTimeString([], { hour: "numeric" }).replace(" ", "").toLowerCase();
 function fcPanel(a, wu) {
   const sl = [tempInner(a), windInner(a, wu), rainInner(a), uvInner(a)];
-  return '<div class="pn pg fcp"><div class="chips tabs fct">' + FCT.map((t, i) => '<button class="chip' + (i === fcTab ? " on" : "") + '" data-ft="' + i + '">' + mdi(t[1]) + '<span>' + t[0] + '</span></button>').join("") + '</div><div class="fcs">' + sl.map(x => '<div class="fcl">' + x + '</div>').join("") + '</div></div>';
+  return '<div class="pn pg fcp">' + hsw('<div class="chips tabs fct">' + FCT.map((t, i) => '<button class="chip' + (i === fcTab ? " on" : "") + '" data-ft="' + i + '">' + mdi(t[1]) + '<span>' + t[0] + '</span></button>').join("") + '</div>') + '<div class="fcs">' + sl.map(x => '<div class="fcl">' + x + '</div>').join("") + '</div></div>';
 }
 function fcFit() { const s = $("#wx .fcs"); if (!s) return; let m = 0; Array.prototype.forEach.call(s.children, c => { m = Math.max(m, c.offsetHeight); }); if (m) s.style.height = m + "px"; }   // every tab gets the tallest height so the card never resizes or scrolls vertically
 function fcSync() { const s = $("#wx .fcs"); if (s) s.scrollLeft = fcTab * s.clientWidth; fcFit(); setTimeout(fcFit, 350); }

@@ -94,7 +94,8 @@ function setState(s) {
   if (id === CONFIG.alarm) drawAlarm();
   if (onView()) applyView(); else if (CONFIG.view.popup && s.state === "on" && (CONFIG.view.driveway.trig.concat(CONFIG.view.garage.trig)).indexOf(id) > -1 && VW) { VW.back = location.hash || "#home"; location.hash = "#view/auto"; }
   const rx = REL[curPg()]; if (rx && rx.test(id)) queuePg();
-  if (NREL.test(id)) queueNotif();
+  if (NREL.test(id) || nskRel(id)) queueNotif();
+  if (curRoom && id.indexOf("timer.") === 0) queueRoom();   // a tile's countdown starts or ends
   if (onRooms && !curRoom && CONFIG.roomsByPresence !== false && /^(binary_sensor|input_boolean)\./.test(id) && CONFIG.house.some(r => occOf(r).indexOf(id) > -1)) queueRl();
   if (id.indexOf("media_player.") === 0 && CONFIG.media && CONFIG.media.indexOf(id) > -1) queueNp();
   if ({ light: 1, switch: 1, binary_sensor: 1, group: 1, cover: 1 }[id.split(".")[0]]) queueHome();

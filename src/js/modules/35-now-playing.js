@@ -37,7 +37,7 @@ function npPlay(g, big) {
   const spk = g.mem.map(fname).join(" · "), title = mpTitle(a, "playing") || "Playing";
   const bt = (m, i, on) => '<button class="rnd' + (on ? " on" : "") + '" data-mp="' + m + '" data-e="' + g.ctl + '">' + i + '</button>';
   const prog = '<div class="mpb" ' + mpData(g.ctl) + '><i></i></div>';
-  if (!big) return { art: art, title: title, sub: (a.media_artist ? esc(a.media_artist) + " · " : "") + esc(spk), pp: bt("pp", mdi(play ? "pause" : "play")), prog: prog };
+  if (!big) return { art: art, title: title, sub: (a.media_artist ? esc(a.media_artist) + " · " : "") + esc(spk), pp: bt("pp", mdi(play ? "pause" : "play")), prog: mpPos(g.ctl).dur > 0 ? prog : "" };   // no bar (and no empty strip under the row) for a stream without a length, so the row sits in the middle of the card
   const vols = g.mem.map(x => { const v = states[x] ? states[x].attributes : {}; return '<div class="mv"><span>' + esc(fname(x)) + '</span><input type="range" min="0" max="100" data-vol="' + x + '" value="' + Math.round((v.volume_level || 0) * 100) + '"><button class="rnd s" data-mp="mute" data-e="' + x + '">' + mdi(v.is_volume_muted ? "volume-off" : "volume-high") + '</button></div>'; }).join("");
   return '<div class="npx"><div class="npa">' + art + '<div><b>' + esc(title) + '</b><div>' + esc(a.media_artist || "") + '</div><small>' + esc(a.media_album_name || "") + '</small></div></div>' +
     '<div class="npp">' + prog + '<div class="npts"><span>0:00</span><span>0:00</span></div></div>' +

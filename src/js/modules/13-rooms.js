@@ -83,9 +83,18 @@ function tileHtml(x) {
   const it = typeof x === "string" ? { entity: x } : x, e = it.entity, d = e.split(".")[0], nm = '<span class="nm">' + (it.name ? esc(it.name) : "") + '</span>';
   if (d === "binary_sensor" && !it.script) return '<div class="bd" data-e="' + e + '"' + (it.kind ? ' data-k="' + it.kind + '"' : "") + (it.name ? ' data-n="1"' : "") + '><i></i>' + nm + '<span class="st"></span></div>';
   let ctrl = "";
+  const fx0 = it.fx || (CONFIG.tileFx || {})[e], fx = fx0 === "none" ? "" : fx0 || (/^fan\./.test(e) ? "air" : ""), fxm = fx === "heat" ? '<div class="hz"><i></i><i></i><i></i></div>' : fx === "charge" ? '<div class="bt"><b></b><b></b><b></b><b></b></div>' : fx === "air" ? '<div class="ar"><i></i><i></i><i></i><i></i></div>' : "";   // tileFx: { "switch.towel": "heat", "switch.charger": "charge", "fan.x": "air" }: a heated / charging / airflow look while the tile is on
   const pre = d === "light" ? '<i class="fill"></i>' : it.water ? irrWave(e, isOn(e), typeof it.water === "string" ? parseFloat(sv(it.water)) || 0 : 0) : "";   // water: rolling water in the tile while a tap runs (same effect as the Irrigation flow tile)
   if (d === "cover") ctrl = '<div class="cb"><button data-a="open_cover">' + mdi("chevron-up") + '</button><button data-a="stop_cover">' + mdi("stop") + '</button><button data-a="close_cover">' + mdi("chevron-down") + '</button></div><input type="range" min="0" max="100">';
-  return '<div class="tl' + (it.water ? " wt" : "") + (it.sensor ? " dr" : "") + (it.siren ? " sir" : "") + '" data-e="' + e + '"' + (it.siren ? ' data-sir="' + it.siren + '"' : "") + (it.script ? ' data-sc="' + it.script + '"' : "") + (it.sensor ? ' data-s="' + it.sensor + '"' : "") + (it.confirm ? ' data-cf="1"' : "") + (it.name ? ' data-n="1"' : "") + (it.nameFrom ? ' data-nf="' + it.nameFrom + '"' : "") + (it.stateIcons ? ' data-si="' + esc(JSON.stringify(it.stateIcons)) + '"' : "") + (it.sub ? ' data-sub="' + esc(it.sub) + '"' : "") + '>' + pre + '<div class="tn">' + (it.sensor ? mdi("garage-variant") : entIcon(e, it.icon)) + " " + nm + '</div><div class="ts2">--</div>' + (it.timer && states[it.timer] && states[it.timer].state === "active" ? tmrHtml(it.timer) : "") + ctrl + '</div>';   // timer: countdown + bar while the entity's timer runs
+  return '<div class="tl' + (fx ? " fx fx-" + fx : "") + (it.water ? " wt" : "") + (it.sensor ? " dr" : "") + (it.siren ? " sir" : "") + '" data-e="' + e + '"' + (it.siren ? ' data-sir="' + it.siren + '"' : "") + (it.script ? ' data-sc="' + it.script + '"' : "") + (it.sensor ? ' data-s="' + it.sensor + '"' : "") + (it.confirm ? ' data-cf="1"' : "") + (it.name ? ' data-n="1"' : "") + (it.nameFrom ? ' data-nf="' + it.nameFrom + '"' : "") + (it.stateIcons ? ' data-si="' + esc(JSON.stringify(it.stateIcons)) + '"' : "") + (it.sub ? ' data-sub="' + esc(it.sub) + '"' : "") + (it.timer ? ' data-tm="' + it.timer + '"' : "") + '>' + pre + '<div class="tn">' + (it.sensor ? mdi("garage-variant") : entIcon(e, it.icon)) + " " + nm + '</div><div class="ts2">--</div>' + fxm + (it.timer && states[it.timer] && states[it.timer].state === "active" ? tmrHtml(it.timer) : "") + ctrl + '</div>';   // timer: countdown + bar while the entity's timer runs
+}
+// a tile shows its timer's countdown while the entity is on and the timer runs (config tileTimers: { "fan.x": "timer.y" }); it is added and removed as the timer starts and ends
+function tmrSync(el, e, on) {
+  const tid = el.dataset.tm || tileTimer(e); if (!tid) return;
+  const t = states[tid], act = !!t && t.state === "active" && on, cur = $(".tmr", el);
+  if (act && !cur) { el.dataset.tm = tid; el.insertAdjacentHTML("beforeend", tmrHtml(tid)); }
+  else if (!act && cur) { cur.remove(); const z = $(".zb", el); if (z) z.remove(); }
+  else if (act) { const fin = Date.parse(t.attributes.finishes_at || "") || 0; if (+cur.dataset.fin !== fin) cur.dataset.fin = fin; }
 }
 function tmrHtml(id) { const t = states[id].attributes, fin = Date.parse(t.finishes_at || "") || 0, dur = (t.duration || "0:00:00").split(":").reduce((p, q) => p * 60 + +q, 0) * 1000; return '<div class="lbl tmr" data-fin="' + fin + '">--</div><div class="zb"><i data-dur="' + dur + '"></i></div>'; }
 const climHtml = id => '<div class="tl cl" data-c="' + id + '"><div class="tn">' + mdi("thermometer") + ' <span class="nm"></span></div><div class="ts2">--</div><div class="row"><button class="rnd s" data-d="-1">−</button><b data-tgt="' + id + '">--</b><button class="rnd s" data-d="1">+</button><button class="rnd s" data-p="1">' + mdi("power") + '</button></div></div>';
@@ -96,7 +105,8 @@ function cpTabs(rid) {
   const L = $("#cpp .cpl"); if (!L) return; const T = [...L.children]; T.forEach(t => { t.dataset.ct = cpCat(t); });
   const used = [0, 1, 2].filter(c => T.some(t => +t.dataset.ct === c)); if (used.length < 2) return;
   if (used.indexOf(CPT[rid]) < 0) CPT[rid] = used[0];
-  L.insertAdjacentHTML("beforebegin", '<div class="chips tabs cpts">' + used.map(c => '<button class="chip' + (c === CPT[rid] ? " on" : "") + '" data-cpt="' + c + '">' + CPN[c].toUpperCase() + '</button>').join("") + '</div>');
+  L.insertAdjacentHTML("beforebegin", hsw('<div class="chips tabs cpts">' + used.map(c => '<button class="chip' + (c === CPT[rid] ? " on" : "") + '" data-cpt="' + c + '">' + CPN[c].toUpperCase() + '</button>').join("") + '</div>'));
+  requestAnimationFrame(hsAll);
   L.dataset.rid = rid; cpShow(rid);
 }
 function cpShow(rid) { const c = CPT[rid]; $$("#cpp .cpl > *").forEach(t => { t.style.display = +t.dataset.ct === c ? "" : "none"; }); $$("#cpp [data-cpt]").forEach(b => b.classList.toggle("on", +b.dataset.cpt === c)); }
@@ -132,6 +142,7 @@ function updTiles() {
     const e = el.dataset.e || el.dataset.c, d = e.split(".")[0], s = states[e] || (VIRT[e] ? { state: String(sv(e) == null ? "unavailable" : sv(e)), attributes: {} } : undefined), n = $(".nm", el);   // a value the dashboard works out itself stands in when HA has no such entity
     if (!s) { el.classList.add("na"); return; }
     const a = s.attributes, st = s.state, on = (st === "on" || st === "open" || st === "opening") && !npGone(e);
+    if (!el.dataset.c && !el.classList.contains("bd")) tmrSync(el, e, on);   // the countdown of the entity's timer, shown in its tile while it is on
     if (n && !el.dataset.n) n.textContent = a.friendly_name || e.split(".")[1].replace(/_/g, " ");
     if (n && el.dataset.nf) n.textContent = sv(el.dataset.nf) || "Curtains";
     if (el.dataset.si) { const si = JSON.parse(el.dataset.si), ic = on ? si.open : si.closed, sv0 = $(".tn svg", el); if (ic && sv0 && el.dataset.ic !== ic) { el.dataset.ic = ic; sv0.outerHTML = mdi(ic); } }

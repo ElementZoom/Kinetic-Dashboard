@@ -234,8 +234,14 @@ window.DASH_CONFIG = {
   // Notification pop-up rows: [entity, title, text, optional tag]. tag "driveway" also shows the driveway camera
   // Extra pairings for the countdown on notification tiles: entity -> timer. Taps use their zone's timer, and
   // anything with a timer.<name> or timer.<name>_timer is found on its own, so this is only for the odd ones out.
-  tileTimers: { "switch.demo_towel_rail": "timer.demo_towel_rails" },
+  tileTimers: { "switch.demo_towel_rail": "timer.demo_towel_rails" },   // a tile shows its timer's countdown and bar while the entity is on (rooms, Active list, Alerts)
+  tileFx: { "switch.demo_towel_rail": "heat", "switch.demo_vacuum_charger": "charge", "fan.demo_extractor": "air" },   // look while on: "heat" = red with warm haze, "charge" = green with a charging battery, "air" = blue with a turning fan and air streaks (fans get it automatically; "none" turns it off)
+  activeAppliances: ["switch.demo_rice_cooker"],   // appliances that get their own "Appliances" group in the Active tab while on
+  // notifTimers: ["timer.demo_oven"],   // optional "Timers" card in Alerts for timers that belong to no tile. Leave it out when every timer is in tileTimers.
   alerts: [["binary_sensor.demo_front_door_contact", "Front door", "Open"], ["input_boolean.demo_rubbish_day", "Rubbish day", "Bring the bins out", "driveway"], ["switch.demo_backyard_tap", "Backyard tap", "Water is running"]],
+  // Water leak sensors: while one is on it shows first under Warnings in the notifications pop-up and the strip by the clock turns into a leak icon (top priority).
+  // An id on its own, or [id, name, text]. Example: [["binary_sensor.demo_washing_machine_leak", "Washing machine", "Water under the machine"]]
+  leakSensors: [["binary_sensor.demo_washing_machine_leak", "Washing machine", "Water under the machine"]],
   // Notification pop-up "all on" shortcuts: [label, group entity, icon, optional "close" | 1]
   quickAll: [["Lights", "light.all_lights", "lightbulb-on"], ["Fans", "group.all_fans", "fan"], ["Light switches", "group.all_light_switches", "m3-switch"], ["Water taps", "group.all_water_taps", "m3-water-drop"], ["Curtains", "group.all_curtains", "m3-curtains", "close"], ["Windows", "group.all_windows", "m3-window-open", 1], ["Doors", "group.external_doors", "m3-door-open", 1]],
   adminToggles: [   // [label, counter id, word, [[entity, name], ...]]

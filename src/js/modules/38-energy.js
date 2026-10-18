@@ -216,7 +216,7 @@ function tick() {
 window.addEventListener("hashchange", route);
 tick(); setInterval(tick, 10000); setInterval(batTick, 1500);
 setInterval(() => { try { localStorage.setItem("dashSeen", Date.now()); } catch (_) {} }, 60000);   // "page is open" marker: the brand intro only plays after the page was closed for a while
-setInterval(cams, 8000); setInterval(loadFc, 30 * 60000); setInterval(loadFcH, 30 * 60000); setInterval(() => { if (curPg() === "irrigation" || document.body.classList.contains("np-open")) tickIrr(); if (curPg() === "media" || document.body.classList.contains("np-on")) tickMedia(); }, 1000); setInterval(queueNp, 30000); setInterval(() => { if (location.hash === "#events") loadEvents(); }, 15 * 60000);
+setInterval(cams, 8000); setInterval(loadFc, 30 * 60000); setInterval(loadFcH, 30 * 60000); setInterval(() => { if (curPg() === "irrigation" || curRoom || document.body.classList.contains("np-open")) tickIrr(); if (curPg() === "media" || document.body.classList.contains("np-on")) tickMedia(); }, 1000); setInterval(queueNp, 30000); setInterval(() => { if (location.hash === "#events") loadEvents(); }, 15 * 60000);
 document.body.classList.add("m-" + (CONFIG.mobileNav === "tabs" ? "tabs" : "drawer"));
 const setPath = () => CONFIG.settingsPath || "/config/dashboard";
 $("#navset").href = CONFIG.url + setPath();

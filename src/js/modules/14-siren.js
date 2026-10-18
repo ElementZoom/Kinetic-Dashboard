@@ -21,7 +21,7 @@ function sirenTap(k) {
 setInterval(() => { if (document.hidden) return; $$("#alp [data-sir]").forEach(sirenUpd); }, 1000);
 function tapH(e) {
   const t = e.target; if (t.tagName === "INPUT") return;
-  if (t.closest("[data-cpo]")) { $("#cpp").classList.add("on"); return; }
+  if (t.closest("[data-cpo]")) { $("#cpp").classList.add("on"); hsAll(); return; }
   const rc = t.closest("[data-rcv]");
   if (rc && curRoom) { const m = curPanels[+rc.closest("[data-pi]").dataset.pi]; if (m && m.ids.length) { call("cover", rc.dataset.rcv + "_cover", m.ids); covMark(m.ids, rc.dataset.rcv === "open" ? "opening" : "closing"); updTiles(); } return; }
   const ro = t.closest("[data-roff]");

@@ -70,3 +70,12 @@ const onSec = () => location.hash === "#security";
 const camPage = () => onHome() || onSec() || onView();
 const VWC = [];
 const camList = () => onView() ? VWC : onSec() ? CONFIG.security : CONFIG.cameras;
+
+// A sideways-scrolling row (tabs, scene pictures) wrapped with hsw(): while more of it is hidden past an edge, that edge fades and a chevron nudges toward it.
+const hsw = h => '<div class="hsw">' + h + '<span class="hsm l" aria-hidden="true">' + mdi("chevron-left") + '</span><span class="hsm r" aria-hidden="true">' + mdi("chevron-right") + '</span></div>';
+function hsUpd(w) { const s = w.firstElementChild; if (!s) return; const o = s.scrollWidth > s.clientWidth + 4; w.classList.toggle("more", o && s.scrollLeft + s.clientWidth < s.scrollWidth - 4); w.classList.toggle("moreL", o && s.scrollLeft > 4); }
+const hsAll = () => $$(".hsw").forEach(hsUpd);
+{ let t = 0; const q = () => { clearTimeout(t); t = setTimeout(hsAll, 120); };
+  document.addEventListener("scroll", e => { const w = e.target.parentNode; if (w && w.classList && w.classList.contains("hsw")) hsUpd(w); }, true);
+  new MutationObserver(q).observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ["class"] });
+  addEventListener("resize", q); }

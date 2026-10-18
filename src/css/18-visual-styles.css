@@ -54,7 +54,7 @@ html[data-style=material]{--m1:rgba(var(--w),.075);--m2:rgba(var(--w),.12);--mp:
 html[data-style=material][data-mode=light]{--m1:rgba(255,255,255,.8);--m2:rgba(0,0,0,.06)}
 @supports(color:color-mix(in srgb,red,blue)){html[data-style=material][data-mode]{--m1:color-mix(in srgb,var(--mint) 9%,var(--bg));--m2:color-mix(in srgb,var(--mint) 16%,var(--bg));--mp:color-mix(in srgb,var(--mint) 32%,var(--bg))}}
 html[data-style=material] body{background:var(--bg)}
-html[data-style=material] :where(.pn,.card,.rc,header,.kpb,.spb,#mshe,#btab,.cd,.ws,.zf){background:var(--m1);border:0;box-shadow:none;border-radius:28px}
+html[data-style=material] :where(.pn,.card,.rc,header,.kpb,.spb,#cpp .cpsh,#mshe,#btab,.cd,.ws,.zf){background:var(--m1);border:0;box-shadow:none;border-radius:28px}
 html[data-style=material] :where(.rc,.kpb,.spb){border-radius:24px}
 html[data-style=material] header{border-radius:999px}
 html[data-style=material] nav{background:var(--m1);color:var(--ink);border-radius:28px}
@@ -88,9 +88,9 @@ html[data-style=material] :is(.tl,.bd,.chip,.eb,.rnd,.pk,.vch,nav a):active{back
 
 /* --- Minimal --- */
 html[data-style=minimal] body{background:var(--bg)}
-html[data-style=minimal] :where(.pn,.card,.rc,header,.kpb,.spb,#mshe,#btab,.cd,.ws,.zf,nav){background:transparent;border:1px solid var(--line);box-shadow:none;border-radius:10px}
-html[data-style] :is(.spb,.kpb){background:var(--bg2);-webkit-backdrop-filter:none;backdrop-filter:none;border:1px solid rgba(var(--w),.18);box-shadow:0 18px 60px rgba(0,0,0,.55)}
-html[data-style=minimal] :is(.spb,.kpb){background:var(--bg)}
+html[data-style=minimal] :where(.pn,.card,.rc,header,.kpb,.spb,#cpp .cpsh,#mshe,#btab,.cd,.ws,.zf,nav){background:transparent;border:1px solid var(--line);box-shadow:none;border-radius:10px}
+html[data-style] :is(.spb,.kpb,#cpp .cpsh){background:var(--bg2);-webkit-backdrop-filter:none;backdrop-filter:none;border:1px solid rgba(var(--w),.18);box-shadow:0 18px 60px rgba(0,0,0,.55)}
+html[data-style=minimal] :is(.spb,.kpb,#cpp .cpsh){background:var(--bg)}
 html[data-style] .spb button{background:rgba(var(--w),.1);border-color:rgba(var(--w),.2)}
 html[data-style] .spb button.on{background:rgba(var(--mint-rgb),.28);border-color:rgba(var(--mint-rgb),.8)}
 #sp{background:rgba(0,0,0,.62);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}

@@ -4,6 +4,27 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
+## 1.1.0 - 2026-10-19
+
+### New
+- **The notification strip shows what needs attention.** Next to the clock, the glowing bar turns into an icon: a drop with an exclamation mark for a water leak, a cloud with an alert for a weather warning (shown while the warnings sensor is not `unknown`), an open garage door for a garage door that is open (from the `garageAlert` sensors), and a water drop while any water tap or irrigation zone is on. When more than one is true the most urgent shows (leak, then weather warning, then garage, then water) with a small "+1", "+2" or "+3" for the rest; the tooltip lists them all. With none of them, the bar behaves as before.
+- **Water leak sensors.** New `leakSensors` option in `config.js`. While one is on, it shows first under Warnings in the notifications pop-up as a red card, and it is the top priority for the strip.
+- **Timers inside the tiles.** With `tileTimers` in `config.js`, any tile (rooms, the Active list, Alerts) shows its timer's countdown and bar while the entity is on and the timer runs, and drops it when the timer ends. A device switched on by hand, without its timer, simply shows ON. Room pages update the moment the timer starts or stops.
+
+- **Heated and charging looks for tiles.** New `tileFx` option: a tile set to `"heat"` turns red while it is on, with warm haze rising and an orange countdown bar (heated towel rails, rice cooker); `"charge"` turns it green with a battery whose cells light up one after another (Dyson charger); `"air"` turns it blue with a turning fan icon and air streaks (extractor fans).
+- **Appliances in the Active tab.** New `activeAppliances` option: appliances listed there get their own "Appliances" group in the Active tab while they are on (rice cooker, Dyson charger), with their countdown.
+
+### Changed
+- **Automations toggles are round checks.** The switches in the Automations card became a round check button on the left that glows when ticked.
+- **Room Automations button (phone)** is a pill instead of a circle, with the count beside the icon.
+- **Room Automations card** floats in the middle of the screen, in the same style as the option pop-ups (for example the rangehood level), instead of rising from the bottom. The Occupancy / Adaptive lighting / Others tabs are kept, and the tabs row fades at an edge with a nudging chevron (right or left) while more tabs are hidden past it.
+- **Sideways rows show there is more.** The Automations tabs, the Irrigation zone tabs, the Scenes pictures and room tabs, and the Weather tabs fade at an edge with a nudging chevron (right or left) while more is hidden past it.
+- **The Timers card in Alerts is now optional.** It only lists the timers named in the new `notifTimers` option (none by default). Before, it always listed four fixed timers (exhaust fans, rice cooker, Dyson charger, heated towel rails). If you want the old card back, put those timers in `notifTimers`.
+
+### Fixes
+- **Now Playing is centred.** The home card and the floating mini player no longer leave an empty strip under the row when the stream has no length; the content sits in the middle.
+- **Fan tiles always get the airflow look.** A fan missing from `tileFx` showed as a plain tile; every `fan.*` tile now turns blue with a spinning icon while on (set it to `"none"` to turn that off).
+
 ## 1.0.1 - 2026-10-18
 
 ### Fixes

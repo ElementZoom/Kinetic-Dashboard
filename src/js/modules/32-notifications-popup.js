@@ -14,8 +14,8 @@ function notif(full) {
   const al = volcHtml().concat(quakeHtml() || []); n += al.length; sec("Alerts", al.join(""));
   const dr = members(E("doorsGroup")).filter(x => x !== E("doorsGroup") && isOn(x));
   if (dr.length || isOn(E("doorsGroup"))) { n++; sec("Doors", '<div class="alert q"><b>' + (dr.length || 1) + ' open</b><div>' + dr.map(x => esc(fname(x))).join(" · ") + '</div></div>'); }
-  const W2 = (CONFIG.alerts || []).filter(x => isOn(x[0]));
-  n += W2.length; sec("Warnings", grid(W2.map(x => npItem(x[0], { name: x[1], sub: x[2], confirm: /rubbish|recycle/.test(x[0]) }))));
+  const LK = LEAKS().filter(x => isOn(x[0])), W2 = (CONFIG.alerts || []).filter(x => isOn(x[0]));   // leak sensors first, as red cards
+  n += LK.length + W2.length; sec("Warnings", LK.map(x => '<div class="alert q"><div class="lbl">' + mdi("water-alert") + ' WATER LEAK</div><b>' + esc(x[1]) + '</b><div>' + esc(x[2]) + '</div></div>').join("") + grid(W2.map(x => npItem(x[0], { name: x[1], sub: x[2], confirm: /rubbish|recycle/.test(x[0]) }))));
   const wr = states[E("weatherWarnings")];
   if (wr && sv(E("weatherWarnings")) && wr.attributes.warnings) { n++; sec("Weather warning", '<div class="alert w">' + esc(wr.attributes.warnings) + '</div>'); }
   const snap = (id, t, k) => { const c = states[id], p = c && c.attributes.entity_picture; return p ? '<div class="snap" data-vw="' + k + '" data-cam="' + id + '"><span class="dl"></span><div class="lbl">' + t + '</div><img alt="" src="' + CONFIG.url + p + (p.indexOf("?") > -1 ? "&" : "?") + 't=' + Math.floor(Date.now() / 60000) + '"></div>' : ""; };
@@ -27,7 +27,7 @@ function notif(full) {
   const lm = sv(E("laundryState"));
   if (lm === "Run" || lm === "Delay Run") ch.push('<div class="ws"><span class="lbl">Laundry</span><b>' + (lm === "Run" ? "Running" : "Delayed") + '</b>' + esc(sv(lm === "Run" ? "sensor.laundry_time_remaining_friendly" : E("laundryDelay")) || "") + '</div>');
   n += ch.length; sec("Chores", ch.length ? '<div class="wg">' + ch.join("") + '</div>' : "");
-  const tm = ["exhaust_fans", "rice_cooker", "dyson_charger", "heated_towel_rails"].map(x => "timer." + x).filter(x => states[x] && states[x].state === "active");
+  const tm = (CONFIG.notifTimers || []).filter(x => states[x] && states[x].state === "active");   // optional Timers card: config notifTimers ["timer.x", ...] (none by default; tiles show their own countdown, see tileTimers)
   n += tm.length;
   sec("Timers", tm.map(x => { const t = states[x].attributes, fin = Date.parse(t.finishes_at || "") || 0, dur = (t.duration || "0:00:00").split(":").reduce((p, q) => p * 60 + +q, 0) * 1000; return '<div class="ws" style="margin-bottom:8px"><span class="lbl">' + esc(fname(x)) + '</span><div class="lbl tmr" data-fin="' + fin + '">--</div><div class="zb"><i data-dur="' + dur + '"></i></div></div>'; }).join(""));
   const bl = Object.keys(states).filter(k => /^sensor\..*battery_plus$/.test(k) && parseFloat(states[k].state) < 61).sort((x, y) => states[x].state - states[y].state);
@@ -35,12 +35,28 @@ function notif(full) {
   sec("Controls", TOG.map(g => { const c = parseInt(sv(g[1])) || 0, sub = c === 0 ? "All " + g[2] + "s active" : c + " " + g[2] + (c > 1 ? "s" : "") + " disabled"; return '<div class="ws" style="margin-bottom:10px"><span class="lbl">' + g[0] + '</span><div style="margin:6px 0 10px;color:var(--mut)">' + sub + '</div><div class="chips cscr">' + g[3].map(x => '<button class="chip' + (isOn(x[0]) ? " on" : "") + '" data-nt="' + x[0] + '"' + (x[2] ? ' data-sc="' + x[2] + '"' : "") + '>' + x[1] + '</button>').join("") + '</div></div>'; }).join(""));
   return { n: n, html: h };
 }
+// header strip: normally a glowing bar while something is waiting; it turns into an icon for the conditions below. Priority when several are true:
+// water leak, then weather warning, then garage door open, then water on. The top one shows and a small "+n" says how many more there are.
+const LEAKS = () => (CONFIG.leakSensors || []).map(x => { x = [].concat(x); return [x[0], x[1] || fname(x[0]), x[2] || "Water detected"]; });   // config leakSensors: ["binary_sensor.x"] or [["binary_sensor.x", "Washing machine", "Water under the machine"]]
+const NSK = [
+  ["leak", "water-alert", "Water leak", () => LEAKS().some(x => isOn(x[0]))],
+  ["warn", "weather-cloudy-alert", "Weather warning", () => { const s = states[E("weatherWarnings")]; return !!s && s.state !== "unknown" && s.state !== "unavailable"; }],
+  ["garage", "garage-open-variant", "Garage door open", () => Object.keys(galCfg()).some(k => { const c = galCfg()[k], s = c && c.sensor && states[c.sensor]; return !!s && (s.state === "on") !== !!c.invert; })],
+  ["water", "m3-water-drop", "Water on", () => Object.keys(states).some(k => /^switch\..*water_tap$/.test(k) && states[k].state === "on") || (CONFIG.irrigation || []).some(z => z.switch && states[z.switch] && states[z.switch].state === "on")]
+];
+const nskRel = id => LEAKS().some(x => x[0] === id) || id === E("weatherWarnings") || /^switch\..*water_tap$/.test(id) || Object.keys(galCfg()).some(k => (galCfg()[k] || {}).sensor === id) || (CONFIG.irrigation || []).some(z => z.switch === id);
 let npTab = "alerts";
 const ACTC = CONFIG.quickAll || [];
 
 const NPOFF = {}; let npHold = 0, npht = 0;   // tiles switched off from the Active list vanish at once (a slow light transition would keep them "on" for seconds)
 const npGone = x => { const t = NPOFF[x]; if (!t) return false; if (!isOn(x) || Date.now() - t > 12000) { delete NPOFF[x]; return false; } return true; };
-const actList = () => ACTC.map(c => ({ c: c, ids: members(c[1]).filter(x => x !== c[1] && !/^group\./.test(x) && isOn(x) && !npGone(x)) }));
+const actList = () => {
+  const A = ACTC.map(c => ({ c: c, ids: members(c[1]).filter(x => x !== c[1] && !/^group\./.test(x) && isOn(x) && !npGone(x)) })), seen = {};
+  A.forEach(x => x.ids.forEach(e => { seen[e] = 1; }));
+  const ap = (CONFIG.activeAppliances || []).filter(e => isOn(e) && !npGone(e) && !seen[e]);   // config activeAppliances: ["switch.rice_cooker", ...] get their own "Appliances" group here
+  if ((CONFIG.activeAppliances || []).length) A.push({ c: ["Appliances", "", "m3-plug-connect", "app"], ids: ap });
+  return A;
+};
 function npDismiss(ids) {
   ids = [].concat(ids); const now = Date.now(); let any = false;
   ids.forEach(x => { NPOFF[x] = now; $$('#np [data-e="' + x + '"]').forEach(t => { t.classList.add("gone"); any = true; }); });
@@ -57,7 +73,11 @@ function drawNotif() {
   if (open && Date.now() < npHold) { clearTimeout(npht); npht = setTimeout(drawNotif, npHold - Date.now() + 10); return; }
   if (open && $$("#np input[type=range], #np .tl").some(r => r._d && r._d > Date.now())) { clearTimeout(npht); npht = setTimeout(drawNotif, 400); return; }
   const r = notif(open);
-  $("#nacc").classList.toggle("on", !!r.n); $("#hc").title = r.n ? r.n + " notification" + (r.n > 1 ? "s" : "") : "Notifications";
+  const ks = NSK.filter(k => k[3]()), top = ks[0], nacc = $("#nacc");   // the strip turns into the icon of the most urgent condition
+  if ((nacc.dataset.k || "") !== (top ? top[0] : "")) { nacc.dataset.k = top ? top[0] : ""; nacc.innerHTML = top ? mdi(top[1]) : ""; }
+  nacc.dataset.more = ks.length > 1 ? "+" + (ks.length - 1) : "";
+  nacc.classList.toggle("on", !!r.n || !!top);
+  $("#hc").title = ks.length ? ks.map(k => k[2]).join(" · ") + (r.n ? " · " : "") + (r.n ? r.n + " notification" + (r.n > 1 ? "s" : "") : "") : r.n ? r.n + " notification" + (r.n > 1 ? "s" : "") : "Notifications";
   if (!open) return;
   const A = actList(), tot = A.reduce((s, x) => s + x.ids.length, 0);
   $("#np").innerHTML = '<div class="nh"><b>Notifications</b><button class="eb" data-close="1">' + mdi("close") + '</button></div>' +

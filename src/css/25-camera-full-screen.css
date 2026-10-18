@@ -23,3 +23,51 @@ body.vwm #vw.one .cam .gal,body.vwm #vw.one .cam .gal b{border-radius:0}
 body.vwm #vw.two{padding:8px;gap:8px}
 /* two feeds side by side (landscape): the garage frame hugs the picture, not the picture plus its control row */
 @media(orientation:landscape){#vw.two .cam:not(.ls) .gal{position:relative;inset:auto;grid-area:1/1;contain:layout paint;border-radius:22px}#vw.two .cam:not(.ls) .gal b{border-radius:0 0 17px 17px}}
+
+/* sideways rows (tabs, scene pictures): fade + nudging chevron while more tabs are off to the right */
+.hsw{position:relative}.hsm{display:none}
+.hsw.more,.hsw.moreL{--fl:0%;--fr:100%}.hsw.more{--fr:76%}.hsw.moreL{--fl:24%}
+.hsw.more>:first-child,.hsw.moreL>:first-child{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 var(--fl),#000 var(--fr),transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 var(--fl),#000 var(--fr),transparent 100%)}
+.hsw.more .hsm.r,.hsw.moreL .hsm.l{position:absolute;top:50%;margin-top:-14px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;color:var(--ink);pointer-events:none}
+.hsw.more .hsm.r{right:2px;animation:cpnudge 1.4s ease-in-out infinite}.hsw.moreL .hsm.l{left:2px;animation:cpnudgel 1.4s ease-in-out infinite}
+.hsm svg{width:26px;height:26px;fill:currentColor}
+@keyframes cpnudge{0%,100%{transform:translateX(-3px);opacity:.6}50%{transform:translateX(4px);opacity:1}}
+@keyframes cpnudgel{0%,100%{transform:translateX(3px);opacity:.6}50%{transform:translateX(-4px);opacity:1}}
+@media(prefers-reduced-motion:reduce){.hsw.more .hsm,.hsw.moreL .hsm{animation:none}}
+/* heated tile (tileFx "heat"): red while on, warm haze rising, orange countdown bar */
+.tl.fx-heat{position:relative;overflow:hidden;isolation:isolate}
+.tl.fx-heat>*{position:relative;z-index:2}.tl.fx-heat>.hz{display:none}
+.tl.fx-heat.on{border-color:rgba(255,95,60,.7);background:linear-gradient(160deg,rgba(255,86,48,.34),rgba(120,20,12,.30));color:#fff3ea;animation:fxglow 3.2s ease-in-out infinite}
+.tl.fx-heat.on .tn{color:#fff3ea}.tl.fx-heat.on .tn svg{fill:#ffb27a;filter:drop-shadow(0 0 5px rgba(255,120,50,.9))}.tl.fx-heat.on .ts2,.tl.fx-heat.on .tmr{color:#ffd9c2}
+.tl.fx-heat.on .zb{background:rgba(0,0,0,.35)}.tl.fx-heat.on .zb>i{background:linear-gradient(90deg,#ff5a36,#ffb347)}
+.tl.fx-heat.on>.hz{display:block;position:absolute;left:0;right:0;bottom:-10px;height:100%;z-index:1;pointer-events:none;overflow:hidden}
+.tl.fx-heat .hz i{position:absolute;bottom:-20px;width:60px;height:90px;border-radius:50%;background:radial-gradient(ellipse at 50% 100%,rgba(255,160,90,.85),transparent 70%);filter:blur(7px);opacity:0;animation:fxrise 3.4s ease-in infinite}
+.tl.fx-heat .hz i:nth-child(1){left:8%}.tl.fx-heat .hz i:nth-child(2){left:38%;animation-delay:1.1s;width:70px}.tl.fx-heat .hz i:nth-child(3){left:68%;animation-delay:2.1s}
+@keyframes fxglow{0%,100%{box-shadow:0 0 0 rgba(255,90,50,0),inset 0 0 12px rgba(255,90,50,.10)}50%{box-shadow:0 0 18px rgba(255,90,50,.55),inset 0 0 22px rgba(255,120,60,.22)}}
+@keyframes fxrise{0%{transform:translateY(0) scale(.7);opacity:0}25%{opacity:.9}100%{transform:translateY(-120px) scale(1.25);opacity:0}}
+@media(prefers-reduced-motion:reduce){.tl.fx-heat.on,.tl.fx-heat .hz i{animation:none}}
+/* charging tile (tileFx "charge"): green while on, a battery whose cells light up one after another, green countdown bar */
+.tl.fx-charge{position:relative;overflow:hidden;isolation:isolate}
+.tl.fx-charge>*{position:relative;z-index:2}.tl.fx-charge>.bt{display:none}
+.tl.fx-charge.on{border-color:rgba(60,230,150,.65);background:linear-gradient(160deg,rgba(40,200,130,.26),rgba(10,70,60,.30));color:#e9fff5}
+.tl.fx-charge.on .tn{color:#e9fff5}.tl.fx-charge.on .tn svg{fill:#8dffc8;filter:drop-shadow(0 0 5px rgba(60,230,150,.9))}.tl.fx-charge.on .ts2,.tl.fx-charge.on .tmr{color:#c9ffe6}
+.tl.fx-charge.on .zb{background:rgba(0,0,0,.35)}.tl.fx-charge.on .zb>i{background:linear-gradient(90deg,#1fd08a,#7dffc3)}
+.tl.fx-charge.on>.bt{display:flex;position:absolute;right:16px;top:40px;z-index:2;gap:3px;align-items:center;padding:4px;border:2px solid rgba(141,255,200,.8);border-radius:6px;transform:scale(.8);transform-origin:right center}
+.tl.fx-charge>.bt::after{content:"";position:absolute;right:-6px;top:7px;width:3px;height:8px;border-radius:0 2px 2px 0;background:rgba(141,255,200,.8)}
+.tl.fx-charge>.bt b{display:block;width:7px;height:16px;border-radius:2px;background:#6dffb8;opacity:.15;animation:fxcell 2.4s steps(1) infinite}
+.tl.fx-charge>.bt b:nth-child(2){animation-delay:.6s}.tl.fx-charge>.bt b:nth-child(3){animation-delay:1.2s}.tl.fx-charge>.bt b:nth-child(4){animation-delay:1.8s}
+@keyframes fxcell{0%{opacity:.15}8%,70%{opacity:1}100%{opacity:.15}}
+@media(prefers-reduced-motion:reduce){.tl.fx-charge>.bt b{animation:none;opacity:1}}
+/* airflow tile (tileFx "air"): cool blue while on, the fan icon turns, air streaks blow across, blue countdown bar */
+.tl.fx-air{position:relative;overflow:hidden;isolation:isolate}
+.tl.fx-air>*{position:relative;z-index:2}.tl.fx-air>.ar{display:none}
+.tl.fx-air.on{border-color:rgba(92,200,255,.6);background:linear-gradient(160deg,rgba(60,170,230,.24),rgba(15,50,80,.30));color:#eaf8ff}
+.tl.fx-air.on .tn{color:#eaf8ff}.tl.fx-air.on .tn svg{fill:#9fdcff;filter:drop-shadow(0 0 5px rgba(92,200,255,.8));animation:fxspin 1.6s linear infinite}
+.tl.fx-air.on .ts2,.tl.fx-air.on .tmr{color:#cfeeff}
+.tl.fx-air.on .zb{background:rgba(0,0,0,.35)}.tl.fx-air.on .zb>i{background:linear-gradient(90deg,#36a9e2,#8fe0ff)}
+.tl.fx-air.on>.ar{display:block;position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+.tl.fx-air .ar i{position:absolute;left:-40%;height:2px;width:40%;border-radius:2px;background:linear-gradient(90deg,transparent,rgba(190,235,255,.85),transparent);animation:fxblow 2.2s linear infinite;opacity:0}
+.tl.fx-air .ar i:nth-child(1){top:28%}.tl.fx-air .ar i:nth-child(2){top:48%;animation-delay:.7s;width:55%}.tl.fx-air .ar i:nth-child(3){top:66%;animation-delay:1.3s}.tl.fx-air .ar i:nth-child(4){top:82%;animation-delay:1.8s;width:35%}
+@keyframes fxspin{to{transform:rotate(360deg)}}
+@keyframes fxblow{0%{transform:translateX(0);opacity:0}15%{opacity:.9}100%{transform:translateX(420%);opacity:0}}
+@media(prefers-reduced-motion:reduce){.tl.fx-air.on .tn svg,.tl.fx-air .ar i{animation:none}}

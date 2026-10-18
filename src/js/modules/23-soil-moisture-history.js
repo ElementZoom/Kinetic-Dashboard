@@ -63,7 +63,7 @@ function irrBar() {
     act = st.filter(x => x.on), col = !zSheet;
   const title = act.length ? act.map(x => x.z.name).join(" + ") : "All zones off", sum = act.length ? act.map(x => x.z.name + (x.left ? " · " + x.left + " min left" : " · " + f1(x.fl) + " m³/h")).join("  |  ") : Z.length + " zones · tap to water";
   return '<div class="zbk" data-zsh="1"></div><div class="pn zsx' + (col ? " col" : "") + '"><div class="sch" data-zsh="1"><i class="schi' + (act.length ? " on" : "") + '">' + mdi("sprinkler-variant") + '</i><div class="sck"><span class="lbl">Irrigation</span><b class="h3">' + esc(title) + '</b><div class="sm">Pick a zone, then start it or set a timer</div><div class="sm scsm">' + esc(sum) + '</div></div><span class="schc">' + mdi("chevron-down") + '<i class="schx">' + mdi("close") + '</i></span></div>' +
-    '<div class="scb"><div class="chips tabs sctb">' + Z.map((z, i) => '<button class="chip' + (i === zTab ? " on" : "") + '" data-zt="' + i + '">' + mdi("sprinkler-variant") + '<span>' + esc(z.name) + '</span></button>').join("") + '</div><div class="zsb">' + irrZone(Z[zTab]) + '</div></div></div>';
+    '<div class="scb">' + hsw('<div class="chips tabs sctb">' + Z.map((z, i) => '<button class="chip' + (i === zTab ? " on" : "") + '" data-zt="' + i + '">' + mdi("sprinkler-variant") + '<span>' + esc(z.name) + '</span></button>').join("") + '</div>') + '<div class="zsb">' + irrZone(Z[zTab]) + '</div></div></div>';
 }
 function drawIrr() {
   loadIrrH();

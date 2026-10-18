@@ -26,3 +26,5 @@ function entIcon(e, over) {
   return mdi({ automation: "motion-sensor", cover: "curtains", fan: "fan", select: "tune-variant", input_boolean: "movie-open" }[d] || "toggle-switch");
 }
 
+
+Object.assign(MDI, {"water-alert": {"v": "3 1.5 18 21", "p": "M12,3.77L11.25,4.61C11.25,4.61 9.97,6.06 8.68,7.94C7.39,9.82 6,12.07 6,14.23A6,6 0 0,0 12,20.23A6,6 0 0,0 18,14.23C18,12.07 16.61,9.82 15.32,7.94C14.03,6.06 12.75,4.61 12.75,4.61L12,3.77ZM11,9H13V14H11ZM11,15.5H13V17.5H11Z"}});

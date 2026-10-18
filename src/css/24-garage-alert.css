@@ -1,0 +1,17 @@
+/* garage door alert (config.js -> garageAlert): while the door is open the garage camera gets a red frame and a hazard band along the bottom; while it moves, the same in amber. Works on Home, Security, the full-screen view and the playback preview.
+   Cheap on purpose (it sits on top of a live video): a plain ring (no blur), no clipping mask, painting isolated with contain, and nothing animates (amber + the word OPENING / CLOSING carry the moving state). */
+.cam[data-gal]{--galh:34px;--gc:#ff5a52;--g1:#c62828;--g2:#8f1d1d}
+.cam[data-gal=opening],.cam[data-gal=closing]{--gc:#ffb02e;--g1:#b45f06;--g2:#7a3f00}
+.cam .gal{display:none;position:absolute;inset:0;z-index:6;border-radius:inherit;pointer-events:none;contain:strict;box-shadow:inset 0 0 0 4px var(--gc)}
+.cam[data-gal] .gal{display:block}
+.cam .gal b{position:absolute;left:0;right:0;bottom:0;height:var(--galh);overflow:hidden;display:flex;align-items:center;justify-content:center;gap:8px;color:#fff;font:700 12px var(--mono);letter-spacing:.14em;white-space:nowrap;border-radius:0 0 17px 17px;background:var(--g2)}
+.cam .gal b::before{content:"";position:absolute;top:0;bottom:0;left:0;right:0;background:linear-gradient(-45deg,var(--g1) 25%,var(--g2) 25% 50%,var(--g1) 50% 75%,var(--g2) 75%) 0 0/40px 40px;z-index:-1}
+.cam .gal b>*{position:relative}
+.cam .gal b{isolation:isolate}
+.cam .gal svg{width:16px;height:16px;fill:currentColor;margin:0}
+@media(max-width:760px){.cam[data-gal]{--galh:26px}.cam .gal b{font-size:10px;gap:6px;letter-spacing:.1em}.cam .gal svg{width:13px;height:13px}}
+.cam.fs .gal,.cam.fs .gal b{border-radius:0}
+/* keep the controls clear of the band */
+.cam.fs[data-gal] .cpanel{bottom:var(--galh)}
+.cam.pb[data-gal] .pbk{bottom:var(--galh)}
+#vw .cam.vf[data-gal] .cpanel{bottom:var(--galh)}

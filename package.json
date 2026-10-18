@@ -1,0 +1,14 @@
+{
+  "name": "kinetic-dashboard",
+  "private": true,
+  "type": "module",
+  "description": "Kinetic: Home Assistant dashboard. Source in src/, built into one dash.html.",
+  "scripts": {
+    "build": "node build.mjs",
+    "check": "node build.mjs --check",
+    "test": "node tests/smoke.mjs && node tests/garage-alert.mjs && node tests/landscape.mjs && node tests/irrigation.mjs && node tests/view-fullscreen.mjs"
+  },
+  "devDependencies": {
+    "playwright": "1.56.0"
+  }
+}

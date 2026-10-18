@@ -1,0 +1,4 @@
+config.js
+*.bak
+.DS_Store
+node_modules/

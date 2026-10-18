@@ -1,0 +1,18 @@
+/* camera viewer / full screen: the close, PLAYBACK and landscape buttons share one row (same centre line), one height and one glass look */
+.cam .px,.cam .cx,.cam .fsb,.vwx{box-sizing:border-box;height:44px;border:1px solid rgba(255,255,255,.2);background:rgba(18,18,24,.55);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:0 2px 10px rgba(0,0,0,.35);color:#fff}
+.cam .px{padding:0 18px;line-height:42px;white-space:nowrap;text-align:center;font:600 12px/42px var(--mono);letter-spacing:.1em}.cam .px svg{width:14px;height:14px;margin-right:6px;vertical-align:-2px}
+#vw .cam .px,#vw .cam .fsb{top:41px}
+/* sound + talk-back sit on the PLAYBACK row (same top, same 44px height), side by side at the left */
+.cam.fs .aud,.cam.vf .aud{flex-direction:row;gap:8px;top:46px}
+.cam.fs.ls .aud{top:46px}
+#vw .cam .aud{top:41px}
+@media(min-width:761px){.cam.fs .aud{top:60px}}
+@media(orientation:landscape) and (min-height:600px){#vw.two .cam:not(.ls) .aud{top:44px;left:12px}}
+@media(max-width:760px){.cam.fs:not(.ls) .px,#vw .cam:not(.ls) .px{padding:0 12px;letter-spacing:.06em;left:50%;right:auto;transform:translateX(-50%)}.cam.fs:not(.ls) .aud,#vw .cam:not(.ls) .aud{left:10px;gap:6px}#vw .cam .px{right:127px}.cam.fs .px{right:127px}.cam.fs.ls .px{right:127px}}
+@media(max-width:380px){.cam.fs:not(.ls) .px svg,#vw .cam:not(.ls) .px svg{display:none}}
+@media(max-width:400px){.cam.fs:not(.ls) .px,#vw .cam:not(.ls) .px{padding:0 9px;font-size:11px;letter-spacing:.04em}.cam.fs:not(.ls) .px svg,#vw .cam:not(.ls) .px svg{width:12px;height:12px;margin-right:4px}}
+/* both cameras side by side (tablet / PC landscape): the close button is above the pictures, so LIVE and PLAYBACK go to each picture's top-right corner (mirroring the name on the left) */
+@media(orientation:landscape) and (min-height:600px){
+  #vw.two .cam:not(.ls) .lv{right:12px;top:10px}
+  #vw.two .cam:not(.ls) .px{right:12px;top:44px}
+}

@@ -1,0 +1,44 @@
+/* irrigation: rolling water in the flow tile while the tap runs */
+.zf{position:relative;overflow:hidden}.zf>*{position:relative;z-index:1}
+.zf>.zwv{position:absolute;left:0;right:0;bottom:0;top:auto;height:100%;z-index:0;pointer-events:none;transform:translateY(var(--lv,60%));animation:zwlv 1.5s cubic-bezier(.45,.05,.35,1) both}
+@keyframes zwlv{from{transform:translateY(var(--l0,100%))}to{transform:translateY(var(--lv,60%))}}
+.zwv svg{position:absolute;left:0;bottom:0;width:200%;height:100%;animation:zwv var(--sp,4s) linear infinite}
+.zwv svg:first-child path{fill:rgba(54,169,226,.3)}.zwv svg:last-child{animation-duration:calc(var(--sp,4s)*1.4);animation-direction:reverse}.zwv svg:last-child path{fill:rgba(120,210,235,.22)}
+@keyframes zwv{to{transform:translateX(-50%)}}
+@media(prefers-reduced-motion:reduce){.zwv svg{animation:none}}
+.cam,.snap{background:transparent;isolation:isolate;transform:translateZ(0);clip-path:inset(0 round 20px)}.snap{clip-path:inset(0 round 16px)}#vw .cam{clip-path:inset(0 round 22px)}.cam img,.cam video,.snap img{border-radius:inherit;background:transparent}.cam.fs,.cam.vf,#vw .cam{background:#000}
+/* soil moisture history card */
+.imw{display:flex;margin-top:14px}.imy{width:30px;flex:none;display:flex;flex-direction:column;justify-content:space-between;height:150px;font:10px var(--mono);color:var(--mut)}
+.ims{flex:1;min-width:0;overflow-x:auto;scrollbar-width:none;color:var(--ink);-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;touch-action:pan-x pan-y}.ims::-webkit-scrollbar{display:none}.ims svg{display:block}
+.iml{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:6px;font-size:12px;color:var(--mut)}.iml .imh{margin-left:auto}
+.irc{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:stretch}.irc>.pn{margin-bottom:14px;min-width:0}
+@media(max-width:760px){.irc{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;gap:12px;align-items:flex-start}.irc::-webkit-scrollbar{display:none}.irc>.pn{flex:0 0 100%;scroll-snap-align:start;margin-bottom:0}.irdots{margin-bottom:6px}}
+@media(min-width:761px){.irdots{display:none}}
+.imc .wg{display:flex;overflow-x:auto;gap:8px;scrollbar-width:none;overscroll-behavior-x:contain}.imc .wg::-webkit-scrollbar{display:none}.imc .ws{flex:1 0 132px;white-space:nowrap}
+@media(max-width:760px){.rn12 .ws{padding:10px}.rn12 .ws b{font-size:17px}}
+.wrs .h3{margin:6px 0}
+@media(max-width:760px){.wrs{padding:10px 14px;margin-bottom:10px}.wrs>.lbl{margin-bottom:2px}.wrs .h3{margin:0;font-size:16px}.wrs .sm{font-size:12px;margin-top:1px}
+.irc{align-items:stretch}.irc>.rn12{display:flex;flex-direction:column}.irc>.rn12 .r12{flex:1;align-content:space-evenly}}
+@media(max-width:760px){.hs::after{top:18px;transform:rotate(45deg)}}
+.fcs{overflow-y:hidden}
+.wdots{display:none}
+@media(max-width:760px){.wcols{display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;gap:12px;align-items:stretch;margin-bottom:6px}.wcols::-webkit-scrollbar{display:none}.wcols>.pn{flex:0 0 100%;min-width:0;scroll-snap-align:start}.wdots{display:flex;padding:6px 0 10px}}
+@media(max-width:760px){
+.wcols>.pn{padding:12px 14px}
+.wcols .big2{font-size:42px}.wcols .wbig{font-size:38px}.wcols>.pn>.row{margin:4px 0 10px!important;gap:14px!important}
+.wcols .wg{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.wcols .ws{padding:8px 10px;border-radius:12px}.wcols .ws .lbl{font-size:9.5px;letter-spacing:.08em}.wcols .ws b{font-size:15px;margin:2px 0 0;white-space:nowrap}
+.bnt{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:8px}.bq{padding:9px 10px 10px;border-radius:14px}.bq .wi{font-size:17px}.bq .lbl{font-size:10px}
+.bq b{font-size:22px;margin:6px 0 3px}.bq small{font-size:10.5px}.bq .tr{height:4px;margin-top:7px}.bq.td{grid-column:span 3}.bq.td b{font-size:32px}
+.wdots{padding:2px 0 8px}.wdots i{width:9px;height:9px}.wdots i.on{width:26px}
+.wcols{margin-bottom:2px}}
+@keyframes fsin{from{opacity:0;transform:scale(.9) translateY(18px)}to{opacity:1;transform:none}}
+.cam.fs{animation:fsin .4s cubic-bezier(.2,.8,.2,1) both}
+@media(prefers-reduced-motion:reduce){.cam.fs{animation:none}}
+/* tap warnings in the notifications pop-up: the same rolling water, inside the tile */
+.tl.wt{border-color:rgba(54,169,226,.55);background:rgba(54,169,226,.1)}
+.tl.wt>.zwv{position:absolute;left:0;right:0;bottom:0;top:auto;height:100%;z-index:0;pointer-events:none;transform:translateY(var(--lv,60%));animation:zwlv 1.5s cubic-bezier(.45,.05,.35,1) both}
+.tl.wt>*:not(.zwv){position:relative;z-index:1}
+/* tap tiles in the pop-up: white (neutral on dark) card so the blue water reads clearly, whatever the style */
+html:not(#x) .tl.wt,html:not(#x) .tl.wt.on{background:rgba(var(--w),.07);border-color:rgba(54,169,226,.6);box-shadow:none}
+html:not(#x)[data-mode=light] .tl.wt,html:not(#x)[data-mode=light] .tl.wt.on{background:#fff}
+.tl .tmr{margin-top:2px}.tl .zb{margin-top:4px;height:8px}

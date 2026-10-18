@@ -1,0 +1,142 @@
+/* tablet / desktop Home: cameras + climate column on top, the six rooms spread underneath */
+@media(min-width:761px){
+.hm .left{display:contents}
+.hm .cams{grid-column:1;grid-row:1}
+.hm .side{grid-column:2;grid-row:1}
+.hm #rooms.rooms{grid-column:1/-1;grid-row:2;grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:12px}
+#mini{display:grid;grid-template-columns:auto 1fr;gap:4px 22px;align-items:center}
+#mini>.lbl,#mini .chips{grid-column:1/-1}
+#mini .mrow{margin:0;gap:20px}#mini>.row{margin:0!important}#mini .big{font-size:30px}#mini .rnd{width:44px;height:44px;font-size:22px}
+#mini .chip{padding:9px 6px}
+#fcp{flex:1;display:flex;flex-direction:column}#fcp #fc{flex:1;display:flex}#fcp .fcc{flex:1}.fcc>div{justify-content:space-around}
+#rooms .rc{padding:14px 14px;gap:4px;min-width:0}
+#rooms .rc .lbl:first-child{display:flex;align-items:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#rooms .rc .lbl svg{width:20px;height:20px;margin-right:6px;vertical-align:-4px;flex:none}
+#rooms .rc .temp{font-size:34px}#rooms .rc .ts{min-height:0}
+}
+
+/* portrait tablet (761-1100px): one column - cameras, then heat pump + forecast side by side, then rooms 3 across */
+@media(min-width:761px) and (max-width:1100px){
+.hm .cams{grid-column:1;grid-row:1}
+.hm .side{grid-column:1;grid-row:2;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:14px;align-items:stretch}
+.hm .side>*{margin:0;min-width:0}
+.hm #rooms.rooms{grid-column:1;grid-row:3;grid-auto-flow:row;grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+/* heat pump card: compact, never overflows (all sizes) */
+#mini{grid-template-columns:minmax(0,1fr) auto;gap:8px 10px;overflow:hidden}
+#mini .mrow{gap:10px;min-width:0}#mini .mrow>div{min-width:0}#mini .mrow .lbl{font-size:10px;letter-spacing:.06em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}#mini .mrow b{font-size:18px;white-space:nowrap}
+#mini>.row{gap:4px;min-width:0}#mini .big{font-size:20px;min-width:52px;text-align:center}#mini .rnd{width:34px;height:34px;font-size:18px;flex:none}
+#mini .chips{min-width:0}#mini .chip{min-width:0;padding:9px 2px}
+/* room temperature glow: the accent edge breathes and a soft tint leans in from the left (warmer = faster) */
+.rooms .rc{position:relative;isolation:isolate}
+.rc>.rg{position:absolute;inset:0;border-radius:inherit;overflow:hidden;pointer-events:none;z-index:-1;opacity:0}
+.rc[data-tt]>.rg{opacity:1}
+.rc>.rg::after{content:"";position:absolute;inset:0;background:radial-gradient(120% 170% at 0 55%,var(--tg,var(--tc)),transparent 72%);opacity:.3;animation:rgb var(--ts,4s) ease-in-out infinite}
+.rc>.rg::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--tc);box-shadow:0 0 18px 2px var(--tc);display:none;animation:rga var(--ts,4s) ease-in-out infinite}
+.rooms.s-line .rc[data-tt]::before{display:none}
+.rooms.s-edge .rc[data-tt]{box-shadow:none}
+.rooms2 .rc[data-tt]{border-left:1px solid var(--line)}
+@keyframes rga{50%{box-shadow:0 0 34px 8px var(--tc);opacity:.85}}
+@keyframes rgb{50%{opacity:.55}}
+html[data-style=minimal] .rc>.rg{display:none}
+@media(prefers-reduced-motion:reduce){.rc>.rg::after{animation:none}}
+/* climate aurora: only while the heat pump is on AND this room is on (heat_cool / on) */
+.card.aur{position:relative;overflow:hidden;isolation:isolate;--a1:var(--mint-rgb);--a2:var(--cool-rgb)}
+.card.aur.heat{--a1:var(--heat-rgb);--a2:var(--heat-rgb)}
+.card.aur.cool{--a1:74,163,255;--a2:91,91,255}
+.card.aur[data-hm=dry]{--a1:232,176,74;--a2:240,138,93}
+.card.aur.fan{--a1:126,224,224;--a2:255,255,255}
+.card.aur::before,.card.aur::after{content:"";position:absolute;border-radius:50%;pointer-events:none;z-index:-1}
+.card.aur::before{width:190px;height:190px;background:rgb(var(--a1));filter:blur(46px);opacity:.34;left:-60px;top:-40px;animation:cau 9s ease-in-out infinite alternate}
+.card.aur::after{width:140px;height:140px;background:rgb(var(--a2));filter:blur(42px);opacity:.24;right:-40px;bottom:-60px;animation:cau2 9s ease-in-out infinite alternate}
+.card.aur.main2::before{width:280px;height:240px;left:-40px}.card.aur.main2::after{width:240px;height:200px}
+@keyframes cau{to{transform:translate(70px,60px) scale(1.2)}}@keyframes cau2{to{transform:translate(-60px,-40px) scale(1.15)}}
+html[data-style=minimal] .card.aur::before,html[data-style=minimal] .card.aur::after{display:none}
+@media(prefers-reduced-motion:reduce){.card.aur::before,.card.aur::after{animation:none}}
+/* weather bento + speakers: light breathes in from the top right */
+.bq::before{animation:bqg 7s ease-in-out infinite}
+.bq:nth-child(2n)::before{animation-delay:-2.3s}.bq:nth-child(3n)::before{animation-delay:-4.6s}
+@keyframes bqg{50%{opacity:.52}}
+.mpc.pl,.mpc.ac{position:relative;isolation:isolate}
+.mpc.pl::before,.mpc.ac::before{content:"";position:absolute;inset:0;border-radius:inherit;z-index:-1;pointer-events:none;background:radial-gradient(110% 100% at 100% 0,rgb(var(--mg,var(--mint-rgb))),transparent 75%);opacity:.2;transition:opacity .6s}
+.mpc.pl::before{opacity:.38;animation:mpg 6s ease-in-out infinite}
+@keyframes mpg{50%{opacity:.62}}
+html[data-style=minimal] .bq::before,html[data-style=minimal] .mpc.pl::before{animation:none}
+@media(prefers-reduced-motion:reduce){.bq::before,.mpc.pl::before{animation:none}}
+.ph.gen{display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.88);background:linear-gradient(145deg,rgba(var(--mint-rgb),.75),rgba(var(--cool-rgb),.5) 60%,rgba(var(--w),.08))}.ph.gen svg{width:62%;height:62%;opacity:.9}
+/* tab switch transitions: content slides/fades in from the direction of the tab you picked */
+.page{overflow-x:hidden}
+@keyframes txin{from{opacity:0;transform:translate(var(--tx,0px),var(--ty,12px)) scale(.985)}}
+.tx{animation:txin .42s cubic-bezier(.2,.8,.2,1) backwards}
+.txc>*{animation:txin .46s cubic-bezier(.2,.8,.2,1) backwards;animation-delay:calc(var(--i,0)*32ms)}
+.chip,.eb,.seg button{transition:background-color .28s,color .28s,border-color .28s,box-shadow .28s,transform .15s}
+.chip:active,.eb:active,.seg button:active{transform:scale(.96)}
+@media(prefers-reduced-motion:reduce){.tx,.txc>*{animation:none}}
+/* siren tiles go red while sounding; the two siren tiles share one row on phones */
+@keyframes sirp{50%{box-shadow:0 0 26px rgba(255,77,94,.5)}}
+html:not(#x) .tl.sir.on{background:rgba(255,77,94,.22);border:1px solid rgba(255,77,94,.8);box-shadow:0 0 16px rgba(255,77,94,.28);animation:sirp 1.3s ease-in-out infinite}
+html:not(#x) .tl.sir.on .tn svg{fill:#ff4d5e}html:not(#x) .tl.sir.on .ts2{color:#ff5a6a;font-weight:600}
+@media(prefers-reduced-motion:reduce){html:not(#x) .tl.sir.on{animation:none}}
+@media(max-width:760px){#alp .tg3{grid-template-columns:1fr 1fr;gap:8px}#alp .tg3 .tl{min-width:0;padding:12px}#alp .tg3 .tn{font-size:14px;white-space:nowrap}}
+/* heat pump follows the room: footer bar on room cards, aurora wash on the room's climate tile */
+.rc{--ha:var(--mint-rgb);--hb:var(--cool-rgb)}
+.rc[data-hm=cool],.tl[data-hm=cool]{--ha:74,163,255;--hb:91,91,255}
+.rc[data-hm=heat],.tl[data-hm=heat]{--ha:var(--heat-rgb);--hb:var(--heat-rgb)}
+.rc[data-hm=dry],.tl[data-hm=dry]{--ha:232,176,74;--hb:240,138,93}
+.rc[data-hm=fan],.tl[data-hm=fan]{--ha:126,224,224;--hb:255,255,255}
+.rc[data-hm=auto],.tl[data-hm=auto]{--ha:var(--mint-rgb);--hb:var(--cool-rgb)}
+.rc{min-width:0}.rc .hvb{display:none}
+.cb2.hvc{height:30px;padding:0 12px;border-radius:999px;gap:6px;font-weight:700;font-size:11px;letter-spacing:.1em;color:color-mix(in srgb,rgb(var(--ha)) 70%,var(--ink));background:rgba(var(--ha),.16);border:1px solid rgba(var(--ha),.5)}
+.cb2.hvc svg{width:15px;height:15px;fill:currentColor;margin:0!important;vertical-align:middle}
+.rooms2 .rc .cb2.hvc{height:32px;font-size:12px;padding:0 14px}
+#rooms .rc .cb2.hvc{height:26px;padding:0 9px;font-size:10px}
+.tl.cl{position:relative;isolation:isolate}
+.tl.cl.hv{overflow:hidden;border-color:rgba(var(--ha),.4)}
+.tl.cl.hv::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(180deg,rgba(var(--ha),.5),transparent 72%);opacity:.55;animation:hvb 3s ease-in-out infinite}
+@keyframes hvb{50%{opacity:1}}
+.tl.cl.hv .ts2{color:color-mix(in srgb,rgb(var(--ha)) 62%,var(--ink));font-weight:600}
+html[data-style=minimal] .tl.cl.hv::before{animation:none}
+@media(prefers-reduced-motion:reduce){.tl.cl.hv::before{animation:none}}
+/* flat forecast tiles: neutral numbers, no colour wash or glow */
+.fcc>div::before{background:linear-gradient(180deg,var(--hc),var(--lc));opacity:.16}
+.fcc b,html[data-mode=light] .fcc b{color:var(--ink)}
+.fcc small,html[data-mode=light] .fcc small,.fcc em,html[data-mode=light] .fcc em{color:var(--mut)}
+.fcc .th{background:rgba(var(--w),.1)}html[data-mode=light] .fcc .th{background:rgba(0,0,0,.08)}
+.fcc .th u{background:linear-gradient(180deg,var(--hc),var(--lc));box-shadow:none;opacity:1}
+.fcc>div.td{box-shadow:inset 0 0 0 1.5px var(--hc)}
+/* garage door: wide tile in camera panels */
+.cpanel .tl.dr{grid-column:span 2;display:block;padding:14px 16px 14px 64px;position:relative;border-radius:16px;white-space:nowrap}
+.cpanel .tl.dr .tn{display:block;position:static;font:500 15px var(--sans,inherit);letter-spacing:0;text-transform:none;color:var(--ink)}
+.cpanel .tl.dr .tn svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:34px;height:34px;fill:#b6ddb8}
+.cpanel .tl.dr .ts2{display:block;font:600 12px var(--mono);letter-spacing:.08em;color:#b6ddb8;margin:5px 0 0}
+.cpanel .tl.dr .ts2::after{content:"  \00b7  TAP TO OPEN"}
+.cpanel .tl.dr.on{background:rgba(255,184,140,.2);border-color:#ffb88c;box-shadow:inset 0 0 0 1px #ffb88c}
+.cpanel .tl.dr.on .tn svg,.cpanel .tl.dr.on .ts2{color:#ffb88c;fill:#ffb88c}
+.cpanel .tl.dr.on .ts2::after{content:"  \00b7  TAP TO CLOSE"}
+/* room page garage door: same wide tile as in the camera panels */
+html:not(#x) #rv .tl.dr{grid-column:1/-1;display:block;padding:14px 16px 14px 64px;position:relative;border-radius:16px;white-space:nowrap;background:rgba(var(--w),.06);border:1px solid var(--line);box-shadow:none;min-height:0}
+html:not(#x) #rv .tl.dr .tn{display:block;position:static;font:500 15px var(--sans,inherit);letter-spacing:0;text-transform:none;color:var(--ink)}
+html:not(#x) #rv .tl.dr .tn svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:34px;height:34px;fill:var(--mut)}
+html:not(#x) #rv .tl.dr .ts2{display:block;font:600 12px var(--mono);letter-spacing:.08em;color:var(--mut);margin:5px 0 0}
+html:not(#x) #rv .tl.dr .ts2::after{content:"  \00b7  TAP TO OPEN"}
+html:not(#x) #rv .tl.dr.on{background:rgba(255,184,140,.2);border-color:#ffb88c;box-shadow:inset 0 0 0 1px #ffb88c}
+html:not(#x) #rv .tl.dr.on .tn svg,html:not(#x) #rv .tl.dr.on .ts2{color:#ffb88c;fill:#ffb88c}
+html:not(#x) #rv .tl.dr.on .ts2::after{content:"  \00b7  TAP TO CLOSE"}
+html[data-mode=light]:not(#x) #rv .tl.dr .tn svg,html[data-mode=light]:not(#x) #rv .tl.dr .ts2{color:var(--mut);fill:var(--mut)}
+html[data-mode=light]:not(#x) #rv .tl.dr.on{background:rgba(240,140,80,.16);border-color:#e8935a;box-shadow:inset 0 0 0 1px #e8935a}
+html[data-mode=light]:not(#x) #rv .tl.dr.on .tn svg,html[data-mode=light]:not(#x) #rv .tl.dr.on .ts2{color:#d9803f;fill:#d9803f}
+/* room page doors & windows: wide-tile look (matches garage door tile); also vehicle page */
+html:not(#x) :is(#rv,.vbl,#np) .bd[data-k]{display:block;position:relative;padding:12px 14px 12px 58px;border-radius:16px;border:1px solid var(--line);box-shadow:none;opacity:1;background:rgba(var(--w),.06);min-height:58px}
+html:not(#x) :is(#rv,.vbl,#np) .bd[data-k] i{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:32px;height:32px;color:var(--mut)}
+html:not(#x) :is(#rv,.vbl,#np) .bd[data-k] i svg{width:32px;height:32px;fill:currentColor}
+html:not(#x) :is(#rv,.vbl,#np) .bd[data-k] .nm{display:block;font:500 15px var(--sans,inherit);color:var(--ink)}
+html:not(#x) :is(#rv,.vbl,#np) .bd[data-k] span.st{display:block;margin:4px 0 0;font:600 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
+html:not(#x) :is(#rv,.vbl,#np) .bd[data-k].on{background:rgba(255,184,140,.18);border-color:#ffb88c;box-shadow:inset 0 0 0 1px #ffb88c}
+html:not(#x) :is(#rv,.vbl,#np) .bd[data-k].on i,html:not(#x) :is(#rv,.vbl,#np) .bd[data-k].on span.st{color:#ffb88c}
+html[data-mode=light]:not(#x) :is(#rv,.vbl,#np) .bd[data-k] i,html[data-mode=light]:not(#x) :is(#rv,.vbl,#np) .bd[data-k] span.st{color:var(--mut)}
+html[data-mode=light]:not(#x) :is(#rv,.vbl,#np) .bd[data-k].on{background:rgba(240,140,80,.16);border-color:#e8935a;box-shadow:inset 0 0 0 1px #e8935a}
+html[data-mode=light]:not(#x) :is(#rv,.vbl,#np) .bd[data-k].on i,html[data-mode=light]:not(#x) :is(#rv,.vbl,#np) .bd[data-k].on span.st{color:#d9803f}
+html:not(#x) :is(#rv,.vbl,#np) .bd[data-k=door].on{background:rgba(255,107,94,.18);border-color:#ff6b5e;box-shadow:inset 0 0 0 1px #ff6b5e}html:not(#x) :is(#rv,.vbl,#np) .bd[data-k=door].on i,html:not(#x) :is(#rv,.vbl,#np) .bd[data-k=door].on span.st{color:#ff6b5e}
+html[data-mode=light]:not(#x) :is(#rv,.vbl,#np) .bd[data-k=door].on{background:rgba(224,68,58,.14);border-color:#e0443a;box-shadow:inset 0 0 0 1px #e0443a}html[data-mode=light]:not(#x) :is(#rv,.vbl,#np) .bd[data-k=door].on i,html[data-mode=light]:not(#x) :is(#rv,.vbl,#np) .bd[data-k=door].on span.st{color:#e0443a}
+html:not(#x) :is(#rv,.vbl,#np) .bd[data-k=window].on{background:rgba(255,179,71,.18);border-color:#ffb347;box-shadow:inset 0 0 0 1px #ffb347}html:not(#x) :is(#rv,.vbl,#np) .bd[data-k=window].on i,html:not(#x) :is(#rv,.vbl,#np) .bd[data-k=window].on span.st{color:#ffb347}
+html[data-mode=light]:not(#x) :is(#rv,.vbl,#np) .bd[data-k=window].on{background:rgba(240,160,40,.14);border-color:#e08a1e;box-shadow:inset 0 0 0 1px #e08a1e}html[data-mode=light]:not(#x) :is(#rv,.vbl,#np) .bd[data-k=window].on i,html[data-mode=light]:not(#x) :is(#rv,.vbl,#np) .bd[data-k=window].on span.st{color:#e08a1e}

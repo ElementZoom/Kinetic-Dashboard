@@ -1,0 +1,29 @@
+:root{--w:255,255,255;--bg:#06141b;--bg2:#0e3a42;--ink:#eaf1fb;--ink-rgb:234,241,251;--mut:rgba(var(--ink-rgb),.6);--line:rgba(var(--w),.1);--mint:#8ff0c4;--mint-rgb:143,240,196;--heat:#ff7a6b;--heat-rgb:255,122,107;--cool:#6bb8ff;--cool-rgb:107,184,255;--lit-rgb:255,224,130;--nav1:#8fb4d3;--nav2:#6f93b4;--navink:#06182b;
+--mono:ui-monospace,"SF Mono","Roboto Mono",Menlo,Consolas,monospace;--sans:"Inter","Segoe UI",Roboto,system-ui,sans-serif}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{background:radial-gradient(120% 100% at 0 0,var(--bg2),var(--bg) 60%);color:var(--ink);font-family:var(--sans);display:flex;gap:14px;padding:14px;overflow:hidden}
+a{color:inherit;text-decoration:none}
+nav{width:170px;flex:none;border-radius:24px;padding:18px 14px;background:linear-gradient(180deg,var(--nav1),var(--nav2));color:var(--navink);display:flex;flex-direction:column;gap:8px}
+nav .t{font-size:32px;font-weight:300;text-align:center;padding:6px 0 12px}
+nav a{padding:11px 14px;border-radius:12px;font:600 13px var(--mono);letter-spacing:.06em;background:rgba(var(--w),.18);opacity:.6}
+nav a.on{background:var(--bg);color:var(--mint);opacity:1}
+.main{flex:1;min-width:0;display:flex;flex-direction:column;gap:14px;height:100%}
+header{display:flex;align-items:center;justify-content:space-between;padding:12px 22px;border:1px solid var(--line);border-radius:20px;background:rgba(var(--w),.03)}
+header h1{font-size:26px;font-weight:400}
+.hr{display:flex;align-items:center;gap:16px}
+#st{font:600 11px var(--mono);letter-spacing:.1em;padding:7px 14px;border-radius:99px;background:rgba(var(--mint-rgb),.12);color:var(--mint);max-width:360px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+#st.bad{background:rgba(var(--heat-rgb),.15);color:var(--heat)}
+#lg{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;padding:20px;background:var(--bg);color:var(--ink)}
+#lg[hidden]{display:none}
+#lg .lgc{width:min(420px,100%);box-sizing:border-box;padding:28px 26px 26px;border-radius:22px;background:rgba(var(--w),.07);border:1px solid rgba(var(--w),.14);text-align:left}
+#lg h2{margin:0 0 8px;font-size:24px}
+#lg p{margin:0 0 18px;font-size:15px;line-height:1.5;color:var(--mut)}
+#lg p.lge{color:var(--heat)}
+html.boot body>*:not(#bootld):not(#lg){visibility:hidden;animation:bootFail 0s 6s forwards}
+@keyframes bootFail{to{visibility:visible}}
+#bootld{position:fixed;inset:0;z-index:99998;display:none;place-items:center;pointer-events:none}
+html.boot #bootld{display:grid;animation:bldIn .3s ease .45s backwards}
+#bootld i{width:32px;height:32px;border-radius:50%;border:3px solid rgba(var(--w),.14);border-top-color:var(--mint);animation:bldSpin .8s linear infinite}
+@keyframes bldSpin{to{transform:rotate(360deg)}}
+@keyframes bldIn{from{opacity:0}}

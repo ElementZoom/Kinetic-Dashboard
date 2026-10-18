@@ -1,0 +1,30 @@
+/* room cards breathe like the Next 7 days cards: soft glow from the top-right corner, slow, staggered */
+.rc>.rg::after{background:radial-gradient(110% 95% at 100% 0,var(--tg,var(--tc)),transparent 72%)!important;opacity:.45;animation:bqg2 7s ease-in-out infinite}
+.rc:nth-child(2n)>.rg::after{animation-delay:-2.3s}.rc:nth-child(3n)>.rg::after{animation-delay:-4.6s}
+@keyframes bqg2{50%{opacity:.34}}
+@media(prefers-reduced-motion:reduce){.rc>.rg::after{animation:none}}
+/* phone weather: the Now card fills the same height as Next 7 days */
+@media(max-width:760px){.wcols>.pn:first-child{display:flex;flex-direction:column}.wcols>.pn:first-child .wg{flex:1;grid-auto-rows:1fr;align-content:stretch}.wcols>.pn:first-child .ws{display:flex;flex-direction:column;justify-content:center}}
+/* everything that floats above the phone's tab bar slides up the same way */
+@keyframes flUp{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+@media(max-width:760px){
+  body.np-on:not(.np-home):not(.np-media) #npmini{animation:flUp .38s cubic-bezier(.2,.8,.2,1) both}
+  #theme.enter .thr,#scenes.enter .sct{animation:flUp .38s cubic-bezier(.2,.8,.2,1) .12s both}#irrigation.enter .zsx{animation:flUp .38s cubic-bezier(.2,.8,.2,1) .12s both}
+}
+/* phone, Theme + Scenes: the Now Playing bar becomes a round album-art button (progress ring + pause) beside the pill */
+#npfab{display:none}
+@media(max-width:760px){
+  #npfab{display:block;position:fixed;right:12px;bottom:calc(98px + env(safe-area-inset-bottom,0px));z-index:43;width:56px;height:56px;opacity:0;transform:scale(.6) translateY(14px);pointer-events:none;transition:opacity .3s ease,transform .38s cubic-bezier(.2,.8,.2,1)}
+  body.np-fab:not(.pill-open):not(.nps-open) #npfab{opacity:1;transform:none;pointer-events:auto}
+  body.np-fab #npmini{display:none!important}
+  .nfa{position:relative;width:56px;height:56px;border-radius:50%;cursor:pointer;box-shadow:0 10px 26px rgba(0,0,0,.4)}
+  .nfart{position:absolute;inset:5px;border-radius:50%;overflow:hidden;background:rgba(var(--w),.1)}.nfart>*{width:100%!important;height:100%!important;margin:0!important;border-radius:0!important;object-fit:cover}
+  .nfr{position:absolute;inset:0;width:56px;height:56px;transform:rotate(-90deg);pointer-events:none}.nfr circle{fill:none;stroke:rgba(var(--w),.16);stroke-width:3}.nfr .mpr{stroke:var(--mint);stroke-linecap:round;transition:stroke-dashoffset 1s linear}
+  .nfpp{pointer-events:none;position:absolute;left:50%;top:50%;width:28px;height:28px;margin:-14px 0 0 -14px;border-radius:50%;border:0;padding:0;background:rgba(0,0,0,.45);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer}.nfpp svg{position:static!important;width:18px;height:18px;fill:#fff;margin:0!important}
+  /* closed pills are exactly the button's height, and make room for it smoothly */
+  .thr:not(.open),#scenes .sct.col{height:56px;box-sizing:border-box;display:flex;align-items:center;transition:right .38s cubic-bezier(.2,.8,.2,1)}#irrigation .zsx.col{height:56px;box-sizing:border-box;display:flex;align-items:center;transition:right .38s cubic-bezier(.2,.8,.2,1)}
+  #scenes .sct.col>.sch{flex:1;min-width:0}#irrigation .zsx.col>.sch{flex:1;min-width:0}
+  
+  body.np-fab:not(.pill-open) .thr:not(.open),body.np-fab:not(.pill-open) #scenes .sct.col{right:78px}body.np-fab:not(.pill-open) #irrigation .zsx.col{right:78px}
+  
+}

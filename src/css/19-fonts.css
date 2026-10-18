@@ -1,0 +1,13 @@
+/* ===== fonts (self-hosted in ./fonts, falls back to the system font if a file is missing) ===== */
+@font-face{font-family:"Roboto Flex";src:url("fonts/roboto-flex.woff2") format("woff2");font-weight:100 1000;font-display:swap}
+@font-face{font-family:"Roboto Mono";src:url("fonts/roboto-mono.woff2") format("woff2");font-weight:100 700;font-display:swap}
+@font-face{font-family:"Plus Jakarta Sans";src:url("fonts/plus-jakarta-sans.woff2") format("woff2");font-weight:200 800;font-display:swap}
+@font-face{font-family:"Outfit";src:url("fonts/outfit.woff2") format("woff2");font-weight:100 900;font-display:swap}
+@font-face{font-family:"Manrope";src:url("fonts/manrope.woff2") format("woff2");font-weight:200 800;font-display:swap}
+html[data-font=jakarta]{--sans:"Plus Jakarta Sans",Inter,"Segoe UI",Roboto,system-ui,sans-serif;--mono:"Plus Jakarta Sans",Inter,"Segoe UI",Roboto,system-ui,sans-serif}
+html[data-font=google]{--sans:"Roboto Flex",Roboto,system-ui,sans-serif;--mono:"Roboto Flex",Roboto,system-ui,sans-serif}
+html[data-font=googlemono]{--sans:"Roboto Flex",Roboto,system-ui,sans-serif;--mono:"Roboto Mono",ui-monospace,Menlo,monospace}
+html[data-font=outfit]{--sans:"Outfit",Inter,system-ui,sans-serif;--mono:"Outfit",Inter,system-ui,sans-serif}
+html[data-font=manrope]{--sans:"Manrope",Inter,system-ui,sans-serif;--mono:"Manrope",Inter,system-ui,sans-serif}
+.fnb{border-radius:20px!important;display:flex!important;flex-direction:column;align-items:flex-start;gap:4px;flex:1 1 170px;min-width:150px;padding:14px 16px!important;text-transform:none!important;letter-spacing:0!important;font-weight:400!important}.fnb b{font-size:26px;font-weight:300}.fnb span{font-size:13px;font-weight:600}.fnb small{font-size:12px;color:var(--mut)}
+

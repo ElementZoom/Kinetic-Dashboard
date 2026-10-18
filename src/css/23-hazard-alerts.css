@@ -1,0 +1,15 @@
+/* volcano + earthquake alert cards: colour-coded from the map legend (--qc), with the same top-right chevron as the other cards */
+.alert[data-go]{position:relative;overflow:hidden;cursor:pointer;padding-right:46px;background:color-mix(in srgb,var(--qc,#cf3a34) 40%,#15100e)!important;--qt:color-mix(in srgb,var(--qc,#cf3a34) 38%,#fff)}
+.alert[data-go]::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--qc,#cf3a34)}
+.alert[data-go]::after{content:"";position:absolute;top:18px;right:18px;width:8px;height:8px;border:solid var(--qt);border-width:2px 2px 0 0;transform:rotate(45deg);pointer-events:none}
+.alert[data-go] .lbl{color:var(--qt)!important}.alert[data-go] .lbl svg{fill:var(--qt)}
+.alert[data-go]:active{filter:brightness(1.12)}
+
+@media(max-width:760px){
+  #irrigation{padding-bottom:96px}
+  .zsx .schi.on{background:var(--mint)!important;color:var(--onmint,#04201a)}
+  .zsx .zsb{display:block}.zsx .zsb .zn{background:none!important;border:0!important;box-shadow:none!important;padding:0!important;margin:0}.zsx .zsb .zn::before,.zsx .zsb .zn::after{display:none}.zsx .zsb .zt{display:none}
+  .zsx .sch{cursor:pointer}.zsx .schc{display:grid;margin-left:auto;transition:transform .25s}.zsx.col .scb{display:none}.zsx.col .sch{margin-bottom:0}.zsx:not(.col) .schc{transform:rotate(180deg)}
+}
+@media(prefers-reduced-motion:reduce){html:not(#x) :is(.zsx,.zbk):is(.sin,.shut,.pin){animation:none!important}}
+.zbk{display:none}

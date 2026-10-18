@@ -1,0 +1,25 @@
+/* camera full screen on phones: real full screen is full-bleed (no floating card), and closing fades + shrinks out */
+.cam.fs.nfs{border:0;border-radius:0}
+.cam.fs.nfs:not(.ls){inset:0}
+.cam.fs.nfs:not(.ls) img{height:100vh;height:100dvh}
+.cam.fs.nfs:not(.ls):not(.fclose){animation:camFin .22s ease-out}
+@keyframes camFin{from{opacity:.0;transform:scale(.97)}}
+.cam.fclose:not(.ls){animation:camFout .24s cubic-bezier(.4,0,.2,1) both}
+.cam.fclose.ls{animation:camFoutLs .24s ease both}
+@keyframes camFout{to{opacity:0;transform:scale(.93)}}
+@keyframes camFoutLs{from{transform:translateX(100vw) rotate(90deg)}to{transform:translateX(100vw) rotate(90deg);opacity:0}}
+.cam.fopen{animation:camFopen .3s cubic-bezier(.2,.8,.2,1)}
+@keyframes camFopen{from{opacity:0;transform:scale(.96)}}
+@media(prefers-reduced-motion:reduce){.cam.fs.nfs,.cam.fclose,.cam.fopen{animation:none!important}}
+/* turning to landscape / back: like a native app, fade out over black, switch with no animation, fade in (only opacity moves, so nothing is re-laid-out every frame) */
+html.camsw::before{content:"";position:fixed;inset:0;background:#000;z-index:49}
+html.camsw .cam{transition:opacity .18s ease}
+html.camsw .cam.lf{opacity:0;transition:opacity .13s linear}
+@media(prefers-reduced-motion:reduce){html.camsw .cam{transition:none}}
+/* the #view page on a phone: edge to edge like a full-screen Security camera (the garage frame follows the square corners) */
+body.vwm #vw.one{padding:0;gap:0}
+body.vwm #vw.one .cam{border:0;border-radius:0;clip-path:none}
+body.vwm #vw.one .cam .gal,body.vwm #vw.one .cam .gal b{border-radius:0}
+body.vwm #vw.two{padding:8px;gap:8px}
+/* two feeds side by side (landscape): the garage frame hugs the picture, not the picture plus its control row */
+@media(orientation:landscape){#vw.two .cam:not(.ls) .gal{position:relative;inset:auto;grid-area:1/1;contain:layout paint;border-radius:22px}#vw.two .cam:not(.ls) .gal b{border-radius:0 0 17px 17px}}

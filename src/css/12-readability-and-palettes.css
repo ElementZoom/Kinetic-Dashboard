@@ -1,0 +1,83 @@
+/* readability pass: secondary text, lit tiles, status icons across palettes / styles / modes */
+html[data-mode=light]{--mut:rgba(var(--ink-rgb),.76)}
+html[data-mode=dark]{--mut:rgba(var(--ink-rgb),.68)}
+html[data-style=material][data-mode=dark]{--mut:rgba(var(--ink-rgb),.74)}
+html[data-style=glass]{--mut:rgba(var(--ink-rgb),.82)}
+html[data-style=glass][data-mode=dark]{--g1:rgba(12,14,22,.64);--g2:rgba(12,14,22,.46)}
+html:not(#x) .tl.on .ts2,html:not(#x) .tl.on .st{color:var(--ink)}
+html[data-mode=light] .tl.on.lc .tn svg{fill:color-mix(in srgb,rgb(var(--lc)) 55%,#1a1a1a)}
+html[data-mode=dark][data-style=glass] .tl.on.lc .tn svg,html[data-mode=dark][data-style=material] .tl.on.lc .tn svg{fill:color-mix(in srgb,rgb(var(--lc)) 60%,#fff)}
+
+html[data-mode=dark][data-style=glass]:not(#x) .bd[data-k].on i{color:var(--ink)}
+/* tinted climate / room cards: the tint is the accent itself, so secondary text and mode labels use the ink colour */
+html:not(#x) :is(.rc,.card):is(.heat,.cool,.auto){--mut:rgba(var(--ink-rgb),.88)}
+html:not(#x) :is(.rc,.card):is(.heat,.cool,.auto) .md{color:var(--ink)}
+/* lit tiles in dark glass / material: a lighter fill so light text keeps its contrast */
+html[data-mode=dark]:not(#x) .tl.dim.on .fill{background:linear-gradient(90deg,rgba(var(--lc,var(--lit-rgb)),.08),rgba(var(--lc,var(--lit-rgb)),.2))}
+html[data-mode=dark][data-style=glass]:not(#x) .tl.on,html[data-mode=dark][data-style=material]:not(#x) .tl.on{background:rgba(var(--lit-rgb),.18)}
+html[data-mode=dark][data-style=glass]:not(#x) .tl.on.lc{background:rgba(var(--lc),.2)}
+html[data-mode=dark][data-style=material]:not(#x) .tl.on.lc{background:rgba(var(--lc),.2)}
+/* light mode: accent label on the active tab pill and the red siren text */
+html[data-mode=light]:not(#x) #btab :is(a,button).on span{color:var(--ink)}
+html[data-mode=light]:not(#x) .tl.sir.on .ts2{color:#b3122a}
+
+html[data-mode=light]:not(#x) :is(#rv,.vbl,#np) .bd[data-k].on i,html[data-mode=light]:not(#x) :is(#rv,.vbl,#np) .bd[data-k].on span.st{color:#a85a00}
+html[data-mode=light]:not(#x) :is(#rv,.vbl,#np) .bd[data-k][data-k=door].on i,html[data-mode=light]:not(#x) :is(#rv,.vbl,#np) .bd[data-k][data-k=door].on span.st{color:#c42a1f}
+html[data-mode=light]:not(#x) :is(#rv,.vbl,#np) .bd[data-k][data-k=window].on i,html[data-mode=light]:not(#x) :is(#rv,.vbl,#np) .bd[data-k][data-k=window].on span.st{color:#9a5300}
+html[data-mode=dark]:not(#x) .tl.sir.on .ts2{color:#ffd0d6}
+html[data-mode=light] .sr .sbd{color:color-mix(in srgb,var(--rc) 60%,#000)}
+/* room cards carry a temperature glow behind their text: keep secondary text and status pills strong on it */
+html:not(#x) .rooms2 .rc{--mut:rgba(var(--ink-rgb),.86)}
+html:not(#x) .rooms2 .rc .md{color:var(--ink)}
+html[data-mode=dark]:not(#x) .rc .cb2.cA.al{background:color-mix(in srgb,var(--k) 14%,rgba(0,0,0,.42))}
+html[data-mode=dark]:not(#x) :is(#rv,.vbl,#np) .bd[data-k=door].on i,html[data-mode=dark]:not(#x) :is(#rv,.vbl,#np) .bd[data-k=door].on span.st{color:#ff948a}
+html[data-style=glass][data-mode=dark] body{background:radial-gradient(55% 45% at 12% 8%,rgba(var(--mint-rgb),.3),transparent 62%),radial-gradient(50% 45% at 92% 18%,rgba(var(--cool-rgb),.3),transparent 62%),radial-gradient(55% 50% at 72% 100%,rgba(var(--heat-rgb),.24),transparent 62%),linear-gradient(160deg,var(--bg2),var(--bg))}
+html[data-style=glass][data-mode=dark]:not(#x) .rooms2 .rc{background:linear-gradient(150deg,rgba(255,255,255,.12),rgba(255,255,255,.02)),var(--g1)}
+html[data-mode=dark] .sr.on .sbd{color:color-mix(in srgb,var(--rc) 65%,#fff)}
+html[data-mode=light]:not(#x) .tl.sir.on .tn svg{fill:#c4162a}
+html[data-mode=dark]:not(#x) .tl.sir.on .tn svg{fill:#ff8a98}
+html[data-mode=dark][data-style=glass]:not(#x) :is(.eb.on,.chip.on,.seg .on),html[data-mode=dark][data-style=material]:not(#x) :is(.eb.on,.chip.on,.seg .on){background:rgba(var(--mint-rgb),.22)}
+html[data-mode=dark][data-style=glass]:not(#x) :is(.eb.on,.chip.on,.seg .on),html[data-mode=dark][data-style=material]:not(#x) :is(.eb.on,.chip.on,.seg .on){color:var(--ink)}
+html:not(#x) :is(.card,#mm) .chip.on[data-m]:not([data-m=heat],[data-m=heat_cool],[data-m=cool],[data-m=fan_only],[data-m=fan],[data-m=dry],[data-m=off]){color:var(--onmint,#14180f)}
+/* tablet battery pill (Fully Kiosk): shown only when entities.tabletBattery is set and the page runs on the kiosk tablet */
+#bat{display:inline-flex;align-items:center;gap:6px;font:600 12px var(--mono);letter-spacing:.06em;padding:5px 11px 5px 8px;border-radius:99px;background:rgba(var(--w),.08);color:var(--ink);white-space:nowrap}
+#bat[hidden]{display:none}#bat svg{width:24px;height:24px;flex:none}#bat .bz{width:16px;height:16px;margin:0 -2px 0 -3px}
+#bat.chg{background:rgba(var(--mint-rgb),.16);color:var(--mint)}
+#bat.low{background:rgba(var(--heat-rgb),.18);color:var(--heat)}
+html[data-style=glass] #bat{background:var(--g2);border:1px solid var(--gline)}
+html[data-style=minimal] #bat{background:transparent;border:1px solid var(--line);border-radius:6px}
+html:not(#x) nav a{opacity:.82}
+html[data-mode=dark][data-style=glass]:not(#x) nav a.on,html[data-mode=dark][data-style=material]:not(#x) nav a.on{background:rgba(var(--mint-rgb),.22)}
+
+html[data-style=glass]:not(#x) nav a,html[data-style=material]:not(#x) nav a,html[data-style=minimal]:not(#x) nav a{opacity:1}
+html[data-mode=light] .ws b[style]{filter:brightness(.72) saturate(1.15)}
+/* weather hero: its date / wind line sits over the sun and cloud artwork, so give it a halo in the page colour */
+html:not(#x) #home .hs .lbl{color:var(--ink);text-shadow:0 0 6px var(--bg),0 0 2px var(--bg)}
+/* dark glass: calmer accent tint on the climate and room cards */
+html[data-mode=dark][data-style=glass]:not(#x) :is(.card.heat,.rc.heat){background:linear-gradient(150deg,rgba(255,255,255,.14),transparent 45%),linear-gradient(160deg,rgba(var(--heat-rgb),.26),rgba(var(--heat-rgb),.05)),var(--g1)}
+html[data-mode=dark][data-style=glass]:not(#x) :is(.card.cool,.rc.cool){background:linear-gradient(150deg,rgba(255,255,255,.14),transparent 45%),linear-gradient(160deg,rgba(var(--cool-rgb),.26),rgba(var(--cool-rgb),.05)),var(--g1)}
+html[data-mode=dark][data-style=glass]:not(#x) :is(.card.auto,.rc.auto){background:linear-gradient(150deg,rgba(255,255,255,.14),transparent 45%),linear-gradient(160deg,rgba(var(--mint-rgb),.24),rgba(var(--mint-rgb),.05)),var(--g1)}
+#cpp{position:fixed;inset:0;z-index:72;visibility:hidden;pointer-events:none}#cpp.on{visibility:visible;pointer-events:auto;background:rgba(0,0,0,.6)}
+#cpp .cpsh{position:absolute;left:0;right:0;bottom:0;max-height:86vh;overflow:auto;box-sizing:border-box;padding:16px 16px calc(24px + env(safe-area-inset-bottom));border-radius:30px 30px 0 0;background:var(--bg);border-top:1px solid var(--line);display:flex;flex-direction:column;gap:12px;box-shadow:0 -10px 40px rgba(0,0,0,.4)}
+#cpp .cph{display:flex;align-items:center;gap:12px;padding:0 4px}#cpp .cph>div{flex:1;min-width:0}#cpp .cph h3{font-size:22px;font-weight:400;margin:4px 0 0}
+#cpp .cpl{display:flex;flex-direction:column;gap:10px}#cpp .cpts{margin:14px 0 12px}
+#cpp .cpl .tl{display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:12px;min-height:64px;padding:12px 16px;border-radius:20px;border:1px solid var(--line);background:rgba(var(--w),.05);cursor:pointer}
+#cpp .cpl .tl .tn{display:flex;align-items:center;gap:10px;font:600 15px var(--sans,inherit);color:var(--mut);text-transform:none;letter-spacing:0;min-width:0}#cpp .cpl .tl .tn svg{width:22px;height:22px;fill:currentColor;flex:none}
+#cpp .cpl .tl .ts2{display:none}#cpp .cpl .tl[data-e^="select."] .ts2{display:inline;margin-left:auto;font:600 12px var(--mono);color:var(--ink);text-transform:uppercase}
+#cpp .cpl .tl::after{content:"";width:52px;height:32px;border-radius:16px;flex:none;background:radial-gradient(circle at 16px 50%,rgba(255,255,255,.85) 12.5px,transparent 13.5px),rgba(var(--w),.18)}
+#cpp .cpl .tl.on{background:rgba(var(--lit-rgb),.14);border-color:rgba(var(--lit-rgb),.55)}#cpp .cpl .tl.on .tn{color:var(--ink)}
+#cpp .cpl .tl.on::after{background:radial-gradient(circle at calc(100% - 16px) 50%,#fff 12.5px,transparent 13.5px),var(--mint)}#cpp .cpl .tl.na{opacity:.45}
+@media(min-width:761px){.cpb{width:auto;height:46px;padding:0 18px;border-radius:999px}.cpb .cpt{display:inline;font:600 12px var(--mono);letter-spacing:.1em}.cpb .cpn,.cpb .cpn.z{position:static;display:flex;border-radius:10px}.cpb .cpn.z{display:none}
+#cpp .cpsh{left:50%;right:auto;bottom:auto;top:50%;transform:translate(-50%,-50%);width:min(520px,90vw);border-radius:28px;border:1px solid var(--line);box-shadow:0 20px 60px rgba(0,0,0,.5)}}
+@keyframes tbhint{0%,52%,100%{transform:translateX(0)}8%{transform:translateX(-6px)}16%{transform:translateX(0)}24%{transform:translateX(-6px)}32%{transform:translateX(0)}}
+@media(max-width:760px){header h1{display:flex;align-items:center;gap:4px;font-size:22px}#ttl.bk{cursor:pointer;margin-left:-4px;padding:8px 14px 8px 2px;-webkit-tap-highlight-color:transparent}#ttl.bk:active{opacity:.6}#ttl .tbc{flex:none;color:var(--mint);animation:tbhint 4s ease-in-out infinite}.rh>.eb[href="#rooms"]{display:none}.rh h2{flex:1}}
+@media(min-width:761px){#ttl .tbc{display:none}}
+@media(prefers-reduced-motion:reduce){#ttl .tbc{animation:none}}
+.cps{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}.cps>:first-child{margin-left:auto}.cps::-webkit-scrollbar{display:none}
+.cps .tl{flex:none;display:flex;flex-direction:row;white-space:nowrap;align-items:center;gap:8px;padding:9px 14px;border-radius:999px;border:1px solid var(--line);background:rgba(var(--w),.06);min-height:0;cursor:pointer}
+.cps .tl .tn{display:flex;align-items:center;gap:7px;font:600 12px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--mut)}.cps .tl .tn svg{width:18px;height:18px;fill:currentColor}
+.cps .tl .ts2{display:none}.cps .tl[data-e^="select."] .ts2{display:inline;font:600 12px var(--mono);color:var(--ink);text-transform:uppercase}
+.cps .tl::after{content:"";width:8px;height:8px;border-radius:50%;background:rgba(var(--w),.25);flex:none}
+.cps .tl.on{background:rgba(var(--lit-rgb),.16);border-color:rgba(var(--lit-rgb),.5)}.cps .tl.on .tn{color:var(--ink)}.cps .tl.on::after{background:var(--mint)}.cps .tl.na{opacity:.45}
+@media(max-width:760px){.rh{flex-wrap:wrap}.cps{flex:1 0 100%;order:3}.cps>:first-child{margin-left:0}}
+

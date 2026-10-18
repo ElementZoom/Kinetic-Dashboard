@@ -1,0 +1,11 @@
+const isMobile = () => window.matchMedia("(max-width:760px)").matches;
+const MAIN = CONFIG.rooms.filter(r => r.main)[0].id, W = CONFIG.weather;
+const MODE = { heat_cool: "AUTO", fan_only: "FAN", off: "OFF", heat: "HEAT", cool: "COOL", dry: "DRY", auto: "AUTO" };
+const cls = { heat: "heat", cool: "cool", dry: "cool", heat_cool: "auto", auto: "auto", fan_only: "fan" };
+const WI = { sunny: "weather-sunny", "clear-night": "weather-night", cloudy: "weather-cloudy", partlycloudy: "weather-partly-cloudy", rainy: "weather-rainy", pouring: "weather-pouring", lightning: "weather-lightning", "lightning-rainy": "weather-lightning-rainy", snowy: "weather-snowy", "snowy-rainy": "weather-snowy-rainy", fog: "weather-fog", windy: "weather-windy", "windy-variant": "weather-windy", hail: "weather-hail", exceptional: "weather-sunny-alert" };
+const wic = c => '<i class="wi">' + mdi(WI[c] || "weather-cloudy") + '</i>';
+const COND = { sunny: ["", "Sunny"], "clear-night": ["", "Clear"], cloudy: ["", "Cloudy"], partlycloudy: ["", "Partly cloudy"], rainy: ["", "Rainy"], pouring: ["", "Pouring"], lightning: ["", "Storm"], "lightning-rainy": ["", "Storm"], snowy: ["", "Snowy"], fog: ["", "Fog"], windy: ["", "Windy"] };
+const REAL = {}, VGM = {}; let vBusy = 0, vTm = 0;
+const states = {}, cards = {}, pending = {}, T = {}, sensorIds = {}, camEls = {}, tileEls = [], subs = {};
+let ws, msgId = 1, fc = [];
+

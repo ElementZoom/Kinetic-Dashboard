@@ -1,0 +1,49 @@
+/* brand (config.js -> brand): logo in the first-load screen instead of the spinner; a short intro on a cold start; logo on the sign-in screen and Theme page */
+#bootld .bl{display:none}
+.bl .bv{font-size:13px;color:var(--mut,#8b93a5);margin-top:-4px}
+html.brand #bootld i{display:none}
+html.brand #bootld .bl{display:flex;flex-direction:column;align-items:center;gap:18px;animation:blPulse 2.4s ease-in-out infinite}
+.bl svg,.lgb svg{height:auto;overflow:visible}
+.bl svg{width:min(300px,58vw)}
+.bl b{font:500 clamp(22px,4.4vw,40px) var(--sans);letter-spacing:.2em;padding-left:.2em;color:var(--ink)}
+.bl small{font:400 clamp(10px,1.8vw,14px) var(--sans);letter-spacing:.38em;padding-left:.38em;color:var(--mut)}
+.sw{opacity:0}
+.bt{fill:#3c3c3c}html[data-mode=dark] .bt{fill:#fff}
+html.lockup .bl svg{width:min(340px,54vw)}
+html.lockup #lg .lgb svg{width:250px}
+
+@keyframes blRs{from{opacity:0;transform:translateY(70px)}}
+@keyframes blTs{from{opacity:0;transform:translateY(34px)}}
+@keyframes blWp{from{transform:scaleX(0)}}
+.cw{transform-box:fill-box;transform-origin:0 50%}
+html.intro .bl .mk{animation:blRs 1.1s cubic-bezier(.2,.7,.2,1) backwards}
+html.intro .bl .cw{animation:blWp 1.1s cubic-bezier(.3,.7,.2,1) backwards}
+html.intro .bl .nm{animation:blTs .6s ease .55s backwards}
+html.intro .bl .tg{animation:blTs .6s ease .75s backwards}
+html.intro .bl .bv{animation:blTs .6s ease .95s backwards}
+@keyframes blPulse{50%{opacity:.8}}
+@keyframes blR{from{opacity:0;transform:translateY(16px)}}
+@keyframes blT{from{opacity:0;transform:translateY(8px)}}
+@keyframes blS{from{transform:translateX(-120px)}to{transform:translateX(560px)}}
+html.intro #bootld{animation:none}
+html.intro .bl{animation:none!important}
+
+html.intro .bl .r2{animation:blR 1.1s cubic-bezier(.2,.7,.2,1) .12s backwards}
+html.intro .bl b{animation:blT .5s ease .5s backwards}
+html.intro .bl small{animation:blT .5s ease .65s backwards}
+html.intro .bl .sw{opacity:1;animation:blS .9s ease-in-out .35s both}
+#lg .lgb{display:flex;flex-direction:column;align-items:center;gap:8px;margin:0 0 22px}
+#lg .lgb svg{width:170px}
+#lg .lgb b{display:block;font:500 17px var(--sans);letter-spacing:.2em}
+#lg .lgb b{padding-left:.2em}
+#lg .lgb div{text-align:center}
+#lg .lgb small{display:block;font:400 10px var(--sans);letter-spacing:.38em;color:var(--mut)}
+#lg .lgb small{padding-left:.38em}
+
+
+
+#lg button{width:100%;padding:14px 16px;border:0;border-radius:99px;background:var(--mint);color:var(--onmint,#07241a);font:700 12px var(--mono);letter-spacing:.1em;cursor:pointer}
+#clk{font-size:26px;font-weight:300}
+.page{display:none;flex:1;min-height:0;overflow:auto}.page.on{display:block}
+.pn,.card{border:1px solid var(--line);border-radius:22px;padding:18px;background:linear-gradient(160deg,rgba(var(--w),.05),rgba(var(--w),.015))}
+.lbl{font:500 12px var(--mono);letter-spacing:.14em;color:var(--mut);text-transform:uppercase}

@@ -14,7 +14,7 @@
 .irc{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:stretch}.irc>.pn{margin-bottom:14px;min-width:0}
 @media(max-width:760px){.irc{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;gap:12px;align-items:flex-start}.irc::-webkit-scrollbar{display:none}.irc>.pn{flex:0 0 100%;scroll-snap-align:start;margin-bottom:0}.irdots{margin-bottom:6px}}
 @media(min-width:761px){.irdots{display:none}}
-.imc .wg{display:flex;overflow-x:auto;gap:8px;scrollbar-width:none;overscroll-behavior-x:contain}.imc .wg::-webkit-scrollbar{display:none}.imc .ws{flex:1 0 132px;white-space:nowrap}
+.imc .wg{display:flex;overflow-x:auto;gap:8px;padding:10px 10px 16px;margin:-10px -10px -12px;scrollbar-width:none;overscroll-behavior-x:contain}.imc .wg::-webkit-scrollbar{display:none}.imc .ws{flex:1 0 132px;white-space:nowrap}
 @media(max-width:760px){.rn12 .ws{padding:10px}.rn12 .ws b{font-size:17px}}
 .wrs .h3{margin:6px 0}
 @media(max-width:760px){.wrs{padding:10px 14px;margin-bottom:10px}.wrs>.lbl{margin-bottom:2px}.wrs .h3{margin:0;font-size:16px}.wrs .sm{font-size:12px;margin-top:1px}

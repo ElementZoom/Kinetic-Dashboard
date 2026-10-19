@@ -76,3 +76,6 @@ html:not(#x) #cpp .cpl .tl.on{background:rgba(var(--w),.05);border-color:var(--l
 /* Notifications pop-up: info cards (Controls, Chores, Timers) use the same soft row as the Automations pop-up */
 html:not(#x) #np .ws{background:rgba(var(--w),.05);border:1px solid var(--line);box-shadow:none;border-radius:20px}
 html:not(#x) #np .wg .ws{border-radius:16px}
+
+/* 1.5.1: room between the Scenes / zone pop-up tabs and the list on every width (the phone-only rule left it flush on desktop) */
+.chips.tabs.sctb{margin-bottom:calc(10px - var(--tb))}

@@ -4,6 +4,13 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
+## 1.5.1 - 2026-10-19
+
+### Fixes
+- **Soil moisture card: the three tiles no longer lose their shadow** at the edges and have clear room above the chart.
+- **Scenes and zone pop-ups: the tab row and the list below it are spaced correctly on desktop widths**, as they already were on phones.
+- **Active navigation buttons look the same everywhere.** On the light glass theme the selected capsule is now near-solid white (the DAY look) instead of showing the page colour through it, so LIVE and the other tabs no longer look peach.
+
 ## 1.5.0 - 2026-10-19
 
 ### New

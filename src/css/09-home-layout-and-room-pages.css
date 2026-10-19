@@ -57,8 +57,10 @@ html[data-style=minimal] .card.aur::before,html[data-style=minimal] .card.aur::a
 .bq::before{animation:bqg 7s ease-in-out infinite}
 .bq:nth-child(2n)::before{animation-delay:-2.3s}.bq:nth-child(3n)::before{animation-delay:-4.6s}
 @keyframes bqg{50%{opacity:.52}}
+@property --mgc{syntax:'<color>';inherits:true;initial-value:rgb(143,240,196)}
+.mpc{--mgc:rgb(var(--mint-rgb));transition:--mgc 1.2s ease}
 .mpc.pl,.mpc.ac{position:relative;isolation:isolate}
-.mpc.pl::before,.mpc.ac::before{content:"";position:absolute;inset:0;border-radius:inherit;z-index:-1;pointer-events:none;background:radial-gradient(110% 100% at 100% 0,rgb(var(--mg,var(--mint-rgb))),transparent 75%);opacity:.2;transition:opacity .6s}
+.mpc.pl::before,.mpc.ac::before{content:"";position:absolute;inset:0;border-radius:inherit;z-index:-1;pointer-events:none;background:radial-gradient(110% 100% at 100% 0,var(--mgc),transparent 75%);opacity:.2;transition:opacity .6s}
 .mpc.pl::before{opacity:.38;animation:mpg 6s ease-in-out infinite}
 @keyframes mpg{50%{opacity:.62}}
 html[data-style=minimal] .bq::before,html[data-style=minimal] .mpc.pl::before{animation:none}

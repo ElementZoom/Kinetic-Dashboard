@@ -4,6 +4,11 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
+## 1.5.8 - 2026-10-20
+
+### Fixes
+- **Media page: the album-colour glow no longer glitches.** Changing the volume (or anything else small) now only moves the slider; before, the whole card was rebuilt, which restarted the glow. A new song keeps the same card, waits for its artwork to load (up to 1.5 s) so there is no blank cover, then swaps the text and fades the glow smoothly from the old album's colour to the new one.
+
 ## 1.5.7 - 2026-10-19
 
 ### New

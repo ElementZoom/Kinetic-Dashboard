@@ -4,6 +4,11 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
+## 1.2.1 - 2026-10-19
+
+### Fixes
+- **Automations pop-up: no yellow tint on ticked rows.** A switched-on row (for example Presence sensor) keeps the normal row colour and border; the green check and its glow are the only on-signal.
+
 ## 1.2.0 - 2026-10-19
 
 ### New

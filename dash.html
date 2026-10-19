@@ -1525,6 +1525,8 @@ body.vwm #vw.two{padding:8px;gap:8px}
 @keyframes fxspin{to{transform:rotate(360deg)}}
 @keyframes fxblow{0%{transform:translateX(0);opacity:0}15%{opacity:.9}100%{transform:translateX(420%);opacity:0}}
 @media(prefers-reduced-motion:reduce){.tl.fx-air.on .tn svg,.tl.fx-air .ar i{animation:none}}
+/* Automations pop-up: a ticked row keeps the plain row look; the green check and its glow are the only "on" cue (no warm tint) */
+html:not(#x) #cpp .cpl .tl.on{background:rgba(var(--w),.05);border-color:var(--line);box-shadow:none}
 </style>
 </head>
 <body>
@@ -1595,7 +1597,7 @@ body.vwm #vw.two{padding:8px;gap:8px}
 // (notification tap such as #view/driveway, #security ...), not the return from the login, and the device has not asked for reduced motion.
 window.brandLogo = function () { var L = window.DASH_LOGO, B = (window.DASH_CONFIG || {}).brand; return L && L.svg ? { svg: L.svg, lockup: !!L.lockup } : B && B.mark ? { svg: B.mark, lockup: false } : null; };   // brand-logo.js wins over brand.mark in config.js
 window.brandMark = function (s) { var g = window.brandLogo(); if (!g) return ""; return g.svg.replace(/\bid="([\w-]+)"/g, 'id="$1' + s + '"').replace(/url\(#([\w-]+)\)/g, 'url(#$1' + s + ')'); };
-window.DASH_VER = "1.2.0";   // the one place to change the version
+window.DASH_VER = "1.2.1";   // the one place to change the version
 (function () { try {
   var B = (window.DASH_CONFIG || {}).brand, el = document.getElementById("bootld"), r = document.documentElement, lp = "on";
   try { lp = localStorage.getItem("dashLogo") || "on"; } catch (e) {}   // Theme page -> "Start-up logo": on | load (no intro) | off (plain spinner, as before)

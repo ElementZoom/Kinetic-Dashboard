@@ -70,6 +70,8 @@ const warn = await page.evaluate(() => { const r = notif(true); return /Washing 
 await page.evaluate(() => __st("binary_sensor.demo_leak", "off"));
 await page.evaluate(() => __st("sensor.demo_weather_warnings", "unknown")); eq("unknown warning is ignored", await kind(), ["garage", "+1"]);
 await page.evaluate(() => { __st("binary_sensor.demo_garage_contact", "off"); __st("switch.zone_water_tap", "off"); }); eq("back to the plain strip", await kind(), ["", ""]);
+const chipCol = mode => page.evaluate(m => { document.documentElement.dataset.mode = m; const h = document.createElement("div"); h.className = "rc"; h.innerHTML = '<div class="ts">' + ["lights", "doors", "windows", "covers", "fans", "gopen", "gshut"].map(k => '<span class="cb2 cA al k-' + k + '"></span>').join("") + '</div>'; document.body.appendChild(h); const r = [...h.querySelectorAll(".cb2")].map(e => getComputedStyle(e).getPropertyValue("--k").trim()); h.remove(); return r; }, mode);
+for (const m of ["light", "dark"]) { const c = await chipCol(m); eq("room card chips are coloured (" + m + ")", [c.slice(0, 6).every(x => /^#/.test(x)), new Set(c.slice(0, 5)).size, /mut|rgba/.test(c[6])], [true, 5, true]); }
 await browser.close(); server.close();
 if (errors.length) problems.push("JavaScript errors: " + errors.join(" | "));
 if (problems.length) { console.error(problems.join("\n")); process.exit(1); }

@@ -25,17 +25,17 @@ function irrMoist() {
   const dl = Z.map((z, i) => now[i] - IH.d[z.moist][IH.d[z.moist].length - 49]).filter(x => !isNaN(x)), tr = dl.length ? dl.reduce((p, q) => p + q, 0) / dl.length : 0;
   const dry = Z.filter((z, i) => now[i] < 25), wet = now.every(v => v >= 45);
   const head = dry.length ? esc(dry.map(z => z.name).join(" and ")) + (dry.length > 1 ? " are" : " is") + " getting dry" : wet ? "Soil is still wet, no need to water yet" : "Soil moisture is comfortable";
-  const path = a => a.map((v, i) => (i ? "L" : "M") + (i / (a.length - 1) * W).toFixed(1) + " " + y(v).toFixed(1)).join("");
-  const t0 = Date.now() - 72 * 3600000, ticks = [];
+  const PD = 14, path = a => a.map((v, i) => (i ? "L" : "M") + (PD + i / (a.length - 1) * (W - 2 * PD)).toFixed(1) + " " + y(v).toFixed(1)).join("");   // PD: a gap before the first and after the last point
+  const t0 = Math.floor(Date.now() / 600000) * 600000 - 72 * 3600000, ticks = [];   // 10-minute steps, so a redraw with nothing new gives identical markup
   for (let t = Math.ceil(t0 / 86400000 / 1) * 86400000 - 13 * 3600000; t < Date.now(); t += 86400000) if (t > t0 + 3600000) ticks.push(t);
-  const lx = t => ((t - t0) / (72 * 3600000) * W);
+  const lx = t => (PD + (t - t0) / (72 * 3600000) * (W - 2 * PD));
   const svg = '<svg width="' + W + '" height="' + (H + 24) + '"><rect y="0" width="' + W + '" height="' + y(45) + '" fill="#2b8fd6" opacity=".07"/><rect y="' + y(45) + '" width="' + W + '" height="' + (y(25) - y(45)) + '" fill="#3fb6b8" opacity=".12"/><rect y="' + y(25) + '" width="' + W + '" height="' + (H - y(25)) + '" fill="#e0a21f" opacity=".1"/>' +
     [25, 45].map(v => '<line x1="0" x2="' + W + '" y1="' + y(v) + '" y2="' + y(v) + '" stroke="currentColor" stroke-opacity=".14" stroke-dasharray="3 4"/>').join("") +
     ticks.map(t => '<line x1="' + lx(t) + '" x2="' + lx(t) + '" y1="0" y2="' + H + '" stroke="currentColor" stroke-opacity=".08"/><text x="' + (lx(t) + 4) + '" y="' + (H + 17) + '" fill="currentColor" opacity=".55" font-size="11" font-family="monospace">' + new Date(t).toLocaleDateString([], { weekday: "short" }).toUpperCase() + '</text>').join("") +
-    Z.map((z, i) => '<path d="' + path(IH.d[z.moist]) + '" fill="none" stroke="' + PC[i % 4] + '" stroke-width="2.4" stroke-linejoin="round"/><circle cx="' + W + '" cy="' + y(now[i]) + '" r="4" fill="' + PC[i % 4] + '"/>').join("") + '</svg>';
+    Z.map((z, i) => '<path d="' + path(IH.d[z.moist]) + '" fill="none" stroke="' + PC[i % 4] + '" stroke-width="2.4" stroke-linejoin="round"/><circle cx="' + (W - PD) + '" cy="' + y(now[i]) + '" r="4" fill="' + PC[i % 4] + '"/>').join("") + '</svg>';
   return '<div class="pn pg imc"><div class="lbl">' + mdi("water-percent") + ' Soil moisture · last 72 hours</div><div class="h3" style="margin:6px 0 10px">' + head + '</div>' +
     '<div class="wg">' + Z.map((z, i) => '<div class="ws"><span class="lbl">' + esc(z.name) + ' now</span><b style="color:' + mc(now[i]) + '">' + Math.round(now[i]) + '%</b></div>').join("") + '<div class="ws"><span class="lbl">Trend (24 h)</span><b>' + (Math.abs(tr) < 1 ? "steady" : (tr < 0 ? "▼ " : "▲ ") + Math.abs(Math.round(tr)) + "%") + '</b></div></div>' +
-    '<div class="imw"><div class="imy"><span>100</span><span>50</span><span>0</span></div><div class="ims">' + svg + '</div></div>' +
+    '<div class="imw"><div class="imy"><span>100</span><span>50</span><span>0</span></div>' + hsw('<div class="ims">' + svg + '</div>') + '</div>' +
     '<div class="iml">' + Z.map((z, i) => '<span><b style="color:' + PC[i % 4] + '">━</b> ' + esc(z.name) + '</span>').join("") + '<span>shaded: wet · moist · dry</span><span class="imh">swipe to look back →</span></div></div>';
 }
 let irrCi = 0;
@@ -72,11 +72,25 @@ function drawIrr() {
   const bar = isMobile(), pg = $("#irrigation"), keep = bar ? $("#irrigation .zsx") : null, kst = keep ? keep.scrollTop : 0;
   if (bar) { h += irrBar(); pg.classList.toggle("zop", zSheet); document.body.classList.toggle("pill-open", zSheet); }
   else { h += '<div class="zg">' + CONFIG.irrigation.map(irrZone).join("") + '</div><div class="dots">' + CONFIG.irrigation.map((z, i) => '<i data-zi="' + i + '" title="' + esc(z.name) + '"' + (i === irrI ? ' class="on"' : "") + '></i>').join("") + '</div>'; pg.classList.remove("zop"); }
-  pg.innerHTML = h; tickIrr();
+  const tmp = document.createElement("div"); tmp.innerHTML = h; for (const c of tmp.children) irrStamp(c); irrSync(pg, tmp); tickIrr();   // only the parts that changed are replaced
   { const z = $("#irrigation .zsx"); if (z && kst) z.scrollTop = kst; }
-  const irc = $("#irrigation .irc"); if (irc && irrCi && irc.clientWidth) irc.scrollLeft = irrCi * (irc.clientWidth + 12);
-  const ims = $("#irrigation .ims"); if (ims) { ims.scrollLeft = IH.sc == null ? ims.scrollWidth : IH.sc; ims.onscroll = () => { IH.sc = ims.scrollLeft >= ims.scrollWidth - ims.clientWidth - 4 ? null : ims.scrollLeft; }; }
-  const zg = $("#irrigation .zg"); if (zg && irrI && zg.clientWidth) zg.scrollLeft = irrI * (zg.clientWidth + 14);
+  const irc = $("#irrigation .irc"); if (irc && !irc._r) { irc._r = 1; if (irrCi && irc.clientWidth) irc.scrollLeft = irrCi * (irc.clientWidth + 12); }
+  const ims = $("#irrigation .ims"); if (ims) { if (!ims._r) { ims._r = 1; ims.scrollLeft = IH.sc == null ? ims.scrollWidth : IH.sc; requestAnimationFrame(hsAll); } ims.onscroll = () => { IH.sc = ims.scrollLeft >= ims.scrollWidth - ims.clientWidth - 4 ? null : ims.scrollLeft; }; }
+  const zg = $("#irrigation .zg"); if (zg && !zg._r) { zg._r = 1; if (irrI && zg.clientWidth) zg.scrollLeft = irrI * (zg.clientWidth + 14); }
+}
+// Redraws used to rebuild the whole page on every sensor change (the tap's own sensors update constantly), which made the pop-up, tabs, chart and
+// wave flash and replay their animations. Now each piece is kept while its markup is unchanged; the wave's animation-delay is ignored when comparing.
+const IRR_BOX = /(^|\s)(zsx|scb|zg)(\s|$)/;
+function irrStamp(el) { el._k = el.outerHTML.replace(/animation-delay:-?[\d.]+m?s/g, ""); if (IRR_BOX.test(el.className)) for (const c of el.children) irrStamp(c); }
+function irrSync(o, n) {
+  const oc = [...o.children], nc = [...n.children];
+  nc.forEach((c, i) => {
+    const x = oc[i]; if (!x) { o.appendChild(c); return; }
+    if (x._k === c._k) return;
+    const box = IRR_BOX.exec(c.className), same = box && x.classList.contains(box[2]) && x.classList.contains("col") === c.classList.contains("col");
+    if (same) { x._k = c._k; irrSync(x, c); } else x.replaceWith(c);
+  });
+  oc.slice(nc.length).forEach(x => x.remove());
 }
 function tickIrr() {
   $$(".tmr").forEach(el => {

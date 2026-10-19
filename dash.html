@@ -147,7 +147,7 @@ html.camlive .cam[data-det]::after,html.camlive .snap[data-det]::after{animation
 .tl{border:1px solid var(--line);border-radius:18px;padding:14px;background:rgba(var(--w),.04);cursor:pointer;display:flex;flex-direction:column;gap:7px;transition:background .2s,border-color .2s;min-width:0}
 .tl.on{background:rgba(var(--lit-rgb),.15);border-color:rgba(var(--lit-rgb),.4)}
 .acc-l{display:flex;align-items:center;gap:2px;min-width:0;flex:1}.acc-l .acf{width:44px;height:44px;flex:none;border:0;background:transparent;color:var(--mut);display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer;border-radius:50%}.acc-l .acct{display:flex}.acc-l .acf svg{width:22px;height:22px;fill:currentColor}
-.acc-u .accb{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows .38s cubic-bezier(.2,.8,.2,1),opacity .28s}.acc-u.open .accb{grid-template-rows:1fr;opacity:1}.acc-u .acci{overflow:hidden;min-height:0}.acc-u:not(.open) .acci{visibility:hidden;transition:visibility 0s .38s}
+.acc-u .accb{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows .38s cubic-bezier(.2,.8,.2,1),opacity .28s}.acc-u.open .accb{grid-template-rows:1fr;opacity:1}.acc-u .acci{overflow:hidden;min-height:0;padding:10px 10px 16px;margin:-10px -10px -16px}.acc-u:not(.open) .acci{visibility:hidden;transition:visibility 0s .38s}
 @media(prefers-reduced-motion:reduce){.acc-u .accb{transition:none}}
 .tl[data-cf][data-arm]{border-color:#ffb74d!important;animation:armGlow 1s ease-in-out infinite}
 .tl[data-cf][data-arm]::after{content:"";position:absolute;left:0;bottom:0;width:100%;height:4px;background:#ffb74d;transform-origin:left;animation:armDrain 3s linear forwards;z-index:3;pointer-events:none}
@@ -182,7 +182,7 @@ html.camlive .cam[data-det]::after,html.camlive .snap[data-det]::after{animation
 .tl .cb{display:flex;gap:6px}.tl .cb button{flex:1;padding:9px;border-radius:10px;border:1px solid var(--line);background:rgba(var(--w),.06);color:var(--ink);cursor:pointer}
 .tl.cl.on{background:rgba(var(--mint-rgb),.1);border-color:rgba(var(--mint-rgb),.35)}
 .tl.cl .row b{font-size:22px;font-weight:400}
-.chips.cscr{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.cscr::-webkit-scrollbar{display:none}.chips.cscr .chip{flex:none;min-width:72px;padding:12px 16px}
+.chips.cscr{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding:10px 10px 16px;margin:-10px -10px -16px}.cscr::-webkit-scrollbar{display:none}.chips.cscr .chip{flex:none;min-width:72px;padding:12px 16px}
 .tl.cl .row{display:flex;align-items:center;justify-content:space-between;gap:6px;min-width:0}.tl.cl .row b{flex:1;text-align:center;min-width:0}
 @media(max-width:760px){.tl.cl .rnd.s{width:34px;height:34px;flex:none;font-size:18px}.tl.cl .tn{flex-wrap:wrap}#rv .tl.cl{grid-column:1/-1}.tl.cl .row b{font-size:20px;white-space:nowrap}.tl.cl{min-width:0;overflow:hidden}}
 .rnd.s{width:40px;height:40px;font-size:20px;border-radius:12px}
@@ -210,7 +210,7 @@ html.camlive .cam[data-det]::after,html.camlive .snap[data-det]::after{animation
 .bq.td{grid-column:span 2}.bq.td b{font-size:46px}
 @media(max-width:760px){.bnt{grid-template-columns:repeat(2,minmax(0,1fr))}.bq b{font-size:28px}}
 .fcl .wg{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.fcl .ws{padding:10px 12px}.fcl .ws b{font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hsc{overflow-x:auto;margin-top:8px;scrollbar-width:thin;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}.hic{font-size:22px;line-height:26px;text-align:center;color:var(--ink)}.hic svg{width:1em;height:1em;fill:currentColor}
+.hsc{overflow-x:auto;margin-top:8px;scrollbar-width:thin;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}@media(pointer:coarse){.hsc{scrollbar-width:none}.hsc::-webkit-scrollbar{display:none}}   /* touch screens: the animated arrows replace the scrollbar */.hic{font-size:22px;line-height:26px;text-align:center;color:var(--ink)}.hic svg{width:1em;height:1em;fill:currentColor}
 
 .fcs{transition:height .25s ease;display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;margin-top:12px;align-items:flex-start}.fcs::-webkit-scrollbar{display:none}.fcl{flex:0 0 100%;min-width:0;scroll-snap-align:start;padding-right:2px}.fct{display:flex;gap:8px;flex-wrap:wrap;margin:0}.fct .chip{flex:none;display:inline-flex;align-items:center;gap:7px;padding:8px 14px}.fct .chip span{display:inline;white-space:nowrap}@media(max-width:760px){.fct{flex-wrap:nowrap;gap:6px}.fct .chip{padding:8px 9px;gap:4px;font-size:11px;letter-spacing:.04em}.fct .chip svg{width:16px;height:16px}}
 .alert{border-radius:16px;padding:14px 18px;margin-bottom:14px;line-height:1.5}.alert.v{background:#7a3d0a}.alc{margin-bottom:14px}.alr{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}.alr::-webkit-scrollbar{display:none}.alr>.alert{flex:0 0 100%;box-sizing:border-box;margin:0;scroll-snap-align:start}.aldots{display:flex!important;padding:8px 0 0}.alert.q{background:#84220a}.alert.w{background:rgba(255,229,153,.14)}
@@ -253,7 +253,7 @@ html.camlive .cam[data-det]::after,html.camlive .snap[data-det]::after{animation
 .pbt2{font:600 10px var(--mono);font-style:normal;letter-spacing:.06em;text-transform:uppercase;padding:3px 7px;border-radius:99px;background:rgba(var(--w),.1);color:var(--mut)}.pbt2.person{background:rgba(111,168,255,.2);color:#8db8ff}.pbt2.vehicle{background:rgba(255,170,90,.2);color:#ffb878}.pbt2.animal{background:rgba(120,220,160,.2);color:#8be0ae}
 .pbl:not(.pbg) .pbi.pbc2{flex-direction:row;align-items:center}.pbl:not(.pbg) .pbc2 .pbth{width:96px;flex:none}.pbl:not(.pbg) .pbc2 .pbx{flex:1}
 
-#dtp .dthd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}#dtp .dthd .eb svg{width:18px;height:18px;fill:currentColor}.dtf{margin-bottom:8px;padding-bottom:2px}
+#dtp .dthd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}#dtp .dthd .eb svg{width:18px;height:18px;fill:currentColor}.pbc.dtf{padding:10px 10px 16px;margin:-10px -10px -6px}
 .dtg{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-top:6px}@media(max-width:520px){.dtg{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.dti{padding:6px}}.dti{display:flex;flex-direction:column;gap:8px;padding:8px;border-radius:14px;border:1px solid var(--line);background:rgba(var(--w),.05);cursor:pointer}.dti .pbth img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .dti .pbx{padding:0 4px 4px}.dti strong{display:block;font-weight:500;font-size:14px}.dti span{display:block;color:var(--mut);font-size:12px;margin:2px 0 6px}.dti .pbx div{display:flex;gap:4px;flex-wrap:wrap}.dtmore{display:block;margin:14px auto 0}
 #dtm{position:fixed;inset:0;z-index:95;display:none;align-items:center;justify-content:center;padding:14px;background:rgba(0,0,0,.55);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}#dtm.on{display:flex}.dtc{width:min(900px,100%);border-radius:22px;overflow:hidden;background:linear-gradient(160deg,var(--bg2),var(--bg));border:1px solid var(--line);box-shadow:0 24px 70px rgba(0,0,0,.6)}.dth{display:flex;align-items:center;gap:10px;padding:12px 14px}.dth b{flex:1;font-weight:500;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -378,10 +378,12 @@ html[data-mode=light] :where(.pn,.card,.cd,.ws,.pk,.zf,.rc,.tl,.bd,header){backg
 #np{opacity:0;transform:translateY(22px) scale(.97);transition:transform .32s cubic-bezier(.2,.85,.3,1),opacity .25s ease}body.np-open #np{opacity:1;transform:none}
 #np .gone{opacity:0!important;transform:scale(.8)!important;transition:opacity .22s ease,transform .3s cubic-bezier(.4,0,.2,1)!important;pointer-events:none}
 #np{position:absolute;top:10px;right:10px;bottom:10px;width:min(500px,calc(100vw - 20px));overflow:auto;padding:18px 18px 28px;border-radius:24px;background:linear-gradient(160deg,var(--bg2),var(--bg));border:1px solid var(--line);box-shadow:0 10px 40px rgba(0,0,0,.45)}
-#np .nh{display:flex;align-items:center;justify-content:space-between}#np .nh b{font-size:24px;font-weight:300}
+#np .nh{display:flex;align-items:center;gap:12px;padding:0 4px}#np .nh>div{flex:1;min-width:0}#np .nh h3{font-size:22px;font-weight:400;margin:4px 0 0}   /* same header as the Automations pop-up: small label, title, DONE */
 .np2{margin:20px 0 10px}
 .snap{cursor:pointer;border-radius:16px;overflow:hidden;position:relative;margin-bottom:10px}.snap img{width:100%;display:block;aspect-ratio:16/9;object-fit:cover}.snap .lbl{position:absolute;left:12px;top:10px;color:#fff;text-shadow:0 1px 4px #000}
-.nrow{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
+.nrow{display:flex;align-items:center;gap:12px;min-height:60px;padding:12px 14px;margin-bottom:8px;border-radius:20px;border:1px solid var(--line);background:rgba(var(--w),.05);font-size:15px;font-weight:500;--bc:#7fd6a0}.nrow.warn{--bc:#ffc266}.nrow.bad{--bc:#ff8a80}
+html[data-mode=light] .nrow{--bc:#2f7d4f}html[data-mode=light] .nrow.warn{--bc:#b86a00}html[data-mode=light] .nrow.bad{--bc:#c42a1f}
+.nrow .nbi{width:30px;height:30px;flex:none;color:var(--bc)}.nrow .nbn{flex:1;min-width:0;line-height:1.25}.nrow .nbp{flex:none;font:700 15px var(--mono);padding:6px 12px;border-radius:999px;border:1px solid var(--bc);color:var(--bc)}
 .mpg{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px}
 .mpc{display:flex;flex-direction:column;gap:14px}
 .mpa{display:flex;gap:16px;align-items:center}.mpa img,.mpa .ph{width:120px;height:120px;border-radius:14px;object-fit:cover;background:rgba(var(--w),.08);flex:none}
@@ -409,7 +411,7 @@ button,input,select,textarea{font-family:inherit}
 .acc-u{padding:14px 0;border-top:1px solid var(--line)}.acc-h + .acc-u{margin-top:10px}.acc-r{display:flex;align-items:center;justify-content:space-between;gap:14px}.acc-r span{display:flex;flex-direction:column;gap:3px;min-width:0}.acc-r b{font-weight:500;font-size:16px}.acc-r small{font-size:12px;color:var(--mut)}
 .acc-c{margin-top:12px;gap:8px}.acc-c .chip{flex:0 0 auto;width:auto;min-width:0;height:auto;padding:11px 14px;white-space:nowrap;overflow:visible}.acc-s{margin-top:14px;margin-bottom:-2px}.acc-c .chip.acc-no{animation:accNo .5s}@keyframes accNo{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
 .accsw{width:52px;height:32px;border-radius:32px;border:0;background:rgba(var(--w),.18);position:relative;cursor:pointer;flex:none;padding:0}.accsw::after{content:"";position:absolute;left:3px;top:3px;width:26px;height:26px;border-radius:50%;background:#fff;opacity:.85;transition:left .2s}.accsw[disabled]{opacity:.4;cursor:not-allowed}.acc-w{margin:8px 0 2px}.accsw.on{background:var(--mint)}.accsw.on::after{left:23px;opacity:1}
-#stabs{margin-bottom:14px}#security[data-tab=det] #alp,#security[data-tab=det] #scams{display:none}#security:not([data-tab=det]) #dtp{display:none!important}#rtabs,.nptabs{margin-bottom:14px}.nptabs{margin-top:14px}
+#stabs{margin-bottom:calc(14px - var(--tb))}#security[data-tab=det] #alp,#security[data-tab=det] #scams{display:none}#security:not([data-tab=det]) #dtp{display:none!important}#rtabs{margin-bottom:calc(14px - var(--tb))}.chips.tabs.nptabs{margin-bottom:calc(0px - var(--tb))}.chips.tabs.nptabs{margin-top:calc(14px - var(--ty))}
 .np2.il{display:flex;align-items:center}.np2.il svg{width:22px;height:22px;margin-right:8px;vertical-align:0}.np2 .eb{margin-left:auto;padding:6px 12px;font-size:11px}
 .sch{display:flex;align-items:center;gap:14px;margin-bottom:14px}
 .schi{width:52px;height:52px;border-radius:16px;flex:none;display:grid;place-items:center;overflow:hidden;color:var(--mut);background:rgba(var(--w),.07);border:1px solid var(--line)}.schi svg{width:26px;height:26px;fill:currentColor}.schi img{width:100%;height:100%;object-fit:cover;display:block}.schi.has{border-color:rgba(var(--mint-rgb),.55);box-shadow:0 0 16px rgba(var(--mint-rgb),.25)}
@@ -527,6 +529,9 @@ html[data-mode=light] .rooms2 .rc{background:rgba(255,255,255,.72)}
 /* phones: glass pills with a tinted icon (A) */
 .cb2.cA{height:30px;padding:0 12px 0 9px;border-radius:999px;background:rgba(var(--w),.07);border:1px solid var(--line);font-weight:500;font-size:14px;color:var(--ink)}.cb2.cA svg{width:17px;height:17px;fill:var(--k);margin:0!important;vertical-align:middle}
 .cb2.cA.al{background:color-mix(in srgb,var(--k) 15%,transparent);border-color:color-mix(in srgb,var(--k) 42%,transparent)}
+/* room card chips: the colour of what is open / on, the same hues as the tiles inside the room */
+.cb2.k-lights{--k:#c9a227}.cb2.k-doors,.cb2.k-gopen{--k:#bc000a}.cb2.k-windows{--k:#e69500}.cb2.k-covers{--k:#702963}.cb2.k-fans{--k:#2f8fc7}
+html[data-mode=dark] .cb2.k-lights{--k:#fcf2d4}html[data-mode=dark] .cb2.k-doors,html[data-mode=dark] .cb2.k-gopen{--k:#ff5a5f}html[data-mode=dark] .cb2.k-windows{--k:#ffaa00}html[data-mode=dark] .cb2.k-covers{--k:#c46bb5}html[data-mode=dark] .cb2.k-fans{--k:#89cff0}
 /* tablet and up: status dot + mono label (B) */
 .cb2.cB{display:none;height:28px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:rgba(var(--w),.04);font-weight:600;font-size:11px;letter-spacing:.08em;color:var(--ink);white-space:nowrap}.cb2.cB i{width:8px;height:8px;border-radius:50%;background:var(--k);box-shadow:0 0 8px var(--k);flex:none}
 @media(min-width:761px){.cb2.cA{display:none}.cb2.cB{display:inline-flex}}
@@ -752,12 +757,12 @@ html[data-mode=light]:not(#x) :is(#rv,.vbl,#np) .bd[data-k=window].on{background
 .cam,.snap{background:transparent;isolation:isolate;transform:translateZ(0);clip-path:inset(0 round 20px)}.snap{clip-path:inset(0 round 16px)}#vw .cam{clip-path:inset(0 round 22px)}.cam img,.cam video,.snap img{border-radius:inherit;background:transparent}.cam.fs,.cam.vf,#vw .cam{background:#000}
 /* soil moisture history card */
 .imw{display:flex;margin-top:14px}.imy{width:30px;flex:none;display:flex;flex-direction:column;justify-content:space-between;height:150px;font:10px var(--mono);color:var(--mut)}
-.ims{flex:1;min-width:0;overflow-x:auto;scrollbar-width:none;color:var(--ink);-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;touch-action:pan-x pan-y}.ims::-webkit-scrollbar{display:none}.ims svg{display:block}
+.imw>.hsw{flex:1;min-width:0}.ims{flex:1;min-width:0;overflow-x:auto;scrollbar-width:none;color:var(--ink);-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;touch-action:pan-x pan-y}.ims::-webkit-scrollbar{display:none}.ims svg{display:block}
 .iml{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:6px;font-size:12px;color:var(--mut)}.iml .imh{margin-left:auto}
 .irc{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:stretch}.irc>.pn{margin-bottom:14px;min-width:0}
 @media(max-width:760px){.irc{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;gap:12px;align-items:flex-start}.irc::-webkit-scrollbar{display:none}.irc>.pn{flex:0 0 100%;scroll-snap-align:start;margin-bottom:0}.irdots{margin-bottom:6px}}
 @media(min-width:761px){.irdots{display:none}}
-.imc .wg{display:flex;overflow-x:auto;gap:8px;scrollbar-width:none;overscroll-behavior-x:contain}.imc .wg::-webkit-scrollbar{display:none}.imc .ws{flex:1 0 132px;white-space:nowrap}
+.imc .wg{display:flex;overflow-x:auto;gap:8px;padding:10px 10px 16px;margin:-10px -10px -12px;scrollbar-width:none;overscroll-behavior-x:contain}.imc .wg::-webkit-scrollbar{display:none}.imc .ws{flex:1 0 132px;white-space:nowrap}
 @media(max-width:760px){.rn12 .ws{padding:10px}.rn12 .ws b{font-size:17px}}
 .wrs .h3{margin:6px 0}
 @media(max-width:760px){.wrs{padding:10px 14px;margin-bottom:10px}.wrs>.lbl{margin-bottom:2px}.wrs .h3{margin:0;font-size:16px}.wrs .sm{font-size:12px;margin-top:1px}
@@ -884,7 +889,7 @@ html[data-mode=dark][data-style=glass]:not(#x) :is(.card.auto,.rc.auto){backgrou
 #cpp{position:fixed;inset:0;z-index:72;visibility:hidden;pointer-events:none;display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box}#cpp.on{visibility:visible;pointer-events:auto;background:rgba(0,0,0,.62);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);animation:pbgi .2s ease both}#cpp.on .cpsh{animation:ppi .3s cubic-bezier(.2,.85,.3,1) both}
 #cpp .cpsh{width:min(420px,100%);max-height:80vh;overflow:auto;box-sizing:border-box;padding:18px;border-radius:26px;background:linear-gradient(160deg,var(--bg2),var(--bg));border:1px solid var(--line);display:flex;flex-direction:column;gap:12px;box-shadow:0 10px 40px rgba(0,0,0,.5)}
 #cpp .cph{display:flex;align-items:center;gap:12px;padding:0 4px}#cpp .cph>div{flex:1;min-width:0}#cpp .cph h3{font-size:22px;font-weight:400;margin:4px 0 0}
-#cpp .cpl{display:flex;flex-direction:column;gap:10px}#cpp .cpts{margin:14px 0 12px}
+#cpp .cpl{display:flex;flex-direction:column;gap:10px}#cpp .cpts{margin:calc(14px - var(--ty)) calc(0px - var(--tx)) calc(12px - var(--tb))}
 #cpp .cpl .tl{display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:12px;min-height:64px;padding:12px 16px;border-radius:20px;border:1px solid var(--line);background:rgba(var(--w),.05);cursor:pointer}
 #cpp .cpl .tl .tn{display:flex;align-items:center;gap:10px;font:600 15px var(--sans,inherit);color:var(--mut);text-transform:none;letter-spacing:0;min-width:0}#cpp .cpl .tl .tn svg{width:22px;height:22px;fill:currentColor;flex:none}
 #cpp .cpl .tl .ts2{display:none}#cpp .cpl .tl[data-e^="select."] .ts2{display:inline;margin-left:auto;font:600 12px var(--mono);color:var(--ink);text-transform:uppercase}
@@ -1027,7 +1032,7 @@ body.vwb #btab,body.vwb #mshe{display:none}
   .scsm{font:10px var(--mono)!important;letter-spacing:.05em;text-transform:uppercase;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   #scenes .sct .schc{transform:none}#irrigation .zsx .schc{transform:none}#scenes .sct.col .schc{transform:rotate(180deg)}#irrigation .zsx.col .schc{transform:rotate(180deg)}
   #scenes .sct:not(.col) .scb{animation:thIn .25s ease}#irrigation .zsx:not(.col) .scb{animation:thIn .25s ease}
-  #scenes .sct .sctb{margin-bottom:10px}#irrigation .zsx .sctb{margin-bottom:10px}
+  #scenes .sct .sctb{margin-bottom:calc(10px - var(--tb))}#irrigation .zsx .sctb{margin-bottom:calc(10px - var(--tb))}
   #scenes .sct .srl{display:grid;grid-template-columns:1fr 1fr;gap:6px}#irrigation .zsx .srl{display:grid;grid-template-columns:1fr 1fr;gap:6px}#scenes .sct .sr{margin:0;padding:6px 8px;min-height:0;gap:8px}#irrigation .zsx .sr{margin:0;padding:6px 8px;min-height:0;gap:8px}#scenes .sct .sr .sbd{width:28px;height:28px;border-radius:9px}#irrigation .zsx .sr .sbd{width:28px;height:28px;border-radius:9px}#scenes .sct .sr .sbd svg{width:16px;height:16px}#irrigation .zsx .sr .sbd svg{width:16px;height:16px}#scenes .sct .sr b{font-size:13px}#irrigation .zsx .sr b{font-size:13px}#scenes .sct .sr .ts2{font-size:9px;padding:2px 6px}#irrigation .zsx .sr .ts2{font-size:9px;padding:2px 6px}
   #scenes .sct .sr.stp{margin-top:8px}#irrigation .zsx .sr.stp{margin-top:8px}#scenes .sct .mv{margin:4px 0}#irrigation .zsx .mv{margin:4px 0}
 }
@@ -1115,6 +1120,7 @@ html[data-style=glass] :where(.tl,.bd){border-radius:22px}
 html[data-style=glass] :where(.chip,.eb,.vch){border-radius:999px}
 html[data-style=glass] :where(.rnd){border-radius:50%}
 html[data-style=glass] :is(.eb.on,.chip.on,.seg .on){background:var(--gsel);color:var(--ink);border-color:var(--gfl);box-shadow:var(--gss),inset 0 1px 0 rgba(255,255,255,.45)}
+html[data-style=glass][data-mode=light]:not(#x) :is(.eb.on,.chip.on,.seg .on){background:linear-gradient(rgba(255,255,255,.96),rgba(255,255,255,.88));border-color:rgba(255,255,255,.95);color:var(--mint);-webkit-backdrop-filter:blur(10px) saturate(180%);backdrop-filter:blur(10px) saturate(180%);box-shadow:0 4px 14px rgba(60,70,120,.12),0 1px 3px rgba(60,70,120,.08),inset 0 0 0 1px rgba(255,255,255,.9)}   /* light glass, like iOS: a brighter translucent capsule with a bright rim; only the label carries the accent */
 html[data-style=glass] #btab{border-radius:999px;padding:7px}
 html[data-style=glass] #btab a,html[data-style=glass] #btab button{border-radius:999px}
 html[data-style=glass] :is(#btab a.on,#btab button.on,#mshe a.on){background:var(--gsel);color:var(--mint);box-shadow:var(--gss),inset 0 1px 0 rgba(255,255,255,.5)}
@@ -1172,8 +1178,8 @@ html[data-style=material] :is(.tl,.bd,.chip,.eb,.rnd,.pk,.vch,nav a):active{back
 /* --- Minimal --- */
 html[data-style=minimal] body{background:var(--bg)}
 html[data-style=minimal] :where(.pn,.card,.rc,header,.kpb,.spb,#cpp .cpsh,#mshe,#btab,.cd,.ws,.zf,nav){background:transparent;border:1px solid var(--line);box-shadow:none;border-radius:10px}
-html[data-style] :is(.spb,.kpb,#cpp .cpsh){background:var(--bg2);-webkit-backdrop-filter:none;backdrop-filter:none;border:1px solid rgba(var(--w),.18);box-shadow:0 18px 60px rgba(0,0,0,.55)}
-html[data-style=minimal] :is(.spb,.kpb,#cpp .cpsh){background:var(--bg)}
+html[data-style] :is(.spb,.kpb,#cpp .cpsh,#np){background:var(--bg2);-webkit-backdrop-filter:none;backdrop-filter:none;border:1px solid rgba(var(--w),.18);box-shadow:0 18px 60px rgba(0,0,0,.55)}
+html[data-style=minimal] :is(.spb,.kpb,#cpp .cpsh,#np){background:var(--bg)}
 html[data-style] .spb button{background:rgba(var(--w),.1);border-color:rgba(var(--w),.2)}
 html[data-style] .spb button.on{background:rgba(var(--mint-rgb),.28);border-color:rgba(var(--mint-rgb),.8)}
 #sp{background:rgba(0,0,0,.62);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
@@ -1262,21 +1268,24 @@ html.camls .vwx{display:none}
 .r12 .bar{display:block;position:relative;width:100%;max-width:26px;height:64px;border-radius:7px;background:rgba(var(--w),.08);overflow:hidden}.r12 .bar i{position:absolute;left:0;right:0;bottom:0;border-radius:5px}.r12 .wi{font-size:16px;color:var(--ink)}.r12 .wi svg{width:16px;height:16px}
 .mvt{display:none}.mvs{display:contents}
 @media(max-width:760px){
-/* phone: swipe sideways between the player (page 1) and full-height lyrics (page 2) */
+/* phone: a compact player card; the lyrics open from an icon on the card as a sheet that slides up (no sideways pager, no scroll area inside the page) */
 .mvt{display:none!important}.mvs{display:contents}
-.mlay.hasly{display:flex;flex-direction:row;gap:12px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;height:calc(100dvh - 256px);min-height:380px;overscroll-behavior-x:contain}
-.mlay.hasly::-webkit-scrollbar{display:none}
-.mlay.hasly>#mp,.mlay.hasly>#lyr{flex:0 0 100%;min-width:0;height:100%;margin:0;scroll-snap-align:start;scroll-snap-stop:always}
-.mlay.hasly>#mp{overflow-y:auto;scrollbar-width:none}.mlay.hasly>#mp::-webkit-scrollbar{display:none}
-.mlay.hasly #mp .mpg{display:flex;flex-direction:column;gap:12px;min-height:100%}.mlay.hasly #mp .mpc:not(.idle){flex:1;justify-content:space-between}
-.mlay.hasly .mpc:not(.idle) .mpa{flex-direction:column;text-align:center;gap:12px}
-.mlay.hasly .mpc:not(.idle) .mpa img,.mlay.hasly .mpc:not(.idle) .mpa .ph{width:min(60vw,250px);height:auto;aspect-ratio:1;border-radius:18px}
-.mlay.hasly .mpc:not(.idle) .mpa b{font-size:20px}
-.mlay.hasly #lyr{display:flex;flex-direction:column;padding-bottom:12px}
-.mlay.hasly .lyb{flex:1;max-height:none;min-height:0;margin-top:6px}
-.mlay.hasly .ly{font-size:20px;padding:8px 10px}.mlay.hasly .ly.on{font-size:26px}
-.mdt{display:none}.mlay.hasly+.mdt{display:flex;margin-top:8px;padding:0}
+.mpc{position:relative}.mpc:not(.idle) .lbl{padding-right:48px}
+.mly{display:flex!important;position:absolute;top:10px;right:12px;width:40px;height:40px;z-index:1}
+.mpc:not(.idle) .mpa{flex-direction:row;text-align:left;gap:12px}
+.mpc:not(.idle) .mpa img,.mpc:not(.idle) .mpa .ph{width:76px;height:76px;aspect-ratio:auto;border-radius:14px}
+.mpc:not(.idle) .mpa b{font-size:17px}
+.mpc:not(.idle){gap:10px}.mpc .mpt .rnd{width:46px;height:46px}
+.mlay #lyr{display:none}.mlay.hasly #lyr{margin:0}
+body.ly-open::after{content:"";position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.45)}
+body.ly-open .mlay #lyr{display:flex;flex-direction:column;position:fixed;left:0;right:0;bottom:0;top:110px;z-index:81;margin:0;box-sizing:border-box;padding:12px 18px calc(12px + env(safe-area-inset-bottom,0px));border-radius:26px 26px 0 0;background:var(--bg);border:1px solid var(--line);border-bottom:0;box-shadow:0 -10px 40px rgba(0,0,0,.4);animation:shUp .36s cubic-bezier(.2,.85,.3,1) both}
+body.ly-open .mlay.hasly .lyb{flex:1;max-height:none;min-height:0;margin-top:6px}
+body.ly-open .mlay.hasly .ly{font-size:20px;padding:8px 10px}body.ly-open .mlay.hasly .ly.on{font-size:26px}
+.lyf{display:flex;align-items:center;gap:12px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}.lyf .npi{flex:1;min-width:0}.lyf .npi b,.lyf .npi small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lyf .npi small{color:var(--mut)}
+.mdt,.mlay.hasly+.mdt{display:none}
 }
+.mly,.lyx,.lyf{display:none}
+@media(max-width:760px){.lyx{display:inline-flex;align-items:center;justify-content:center;margin-left:8px;width:36px;height:36px;padding:0;min-width:0}.lyx svg{width:18px;height:18px;fill:currentColor}.lyh .npch{display:none}.lyf{display:flex}}
 .mdt{justify-content:center;gap:8px}.mdt i{width:8px;height:8px;border-radius:8px;background:rgba(var(--ink-rgb),.25);cursor:pointer;transition:width .2s,background .2s}.mdt i.on{width:22px;background:var(--mint)}
 .lyb{position:relative}
 .lyo{display:inline-flex;align-items:center;gap:6px;margin-left:auto;font:12px var(--mono);color:var(--ink);text-transform:none}.lyo .chip{padding:2px 10px;min-width:0;font-size:14px}.lyo+.npch{margin-left:8px}.lyh .lyo~.npch{margin-left:8px}
@@ -1285,20 +1294,20 @@ html.camls .vwx{display:none}
 .npw .lbl{display:flex;align-items:center;gap:10px}.npmore,.npw .npmore{margin-left:auto;color:var(--mut);font:600 11px var(--mono);text-decoration:none}
 .npw .nph{display:flex;align-items:center;min-height:36px}.npw .npl{display:flex;align-items:center;gap:6px;border:0;background:transparent;color:var(--mut);font:700 11px var(--mono);letter-spacing:.16em;text-transform:uppercase;padding:8px 8px 8px 0;margin:0;cursor:pointer}.npw .npl svg{width:16px;height:16px;fill:currentColor;margin-left:-2px}.npw .npn{font-weight:600}
 .npw .npt2{margin:-4px -8px -4px auto;width:44px;height:44px;border:0;background:transparent;color:var(--mut);display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer}.npw .npt2 svg{width:22px;height:22px;fill:currentColor}
-.npw .nps{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}.npw .nps::-webkit-scrollbar{display:none}.npw .npg{flex:0 0 100%;min-width:0;scroll-snap-align:start;scroll-snap-stop:always;box-sizing:border-box}
+.npw .nps{padding:0 10px 16px;margin:0 -10px -16px;scroll-padding-inline:10px;display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}.npw .nps::-webkit-scrollbar{display:none}.npw .npg{flex:0 0 100%;min-width:0;scroll-snap-align:start;scroll-snap-stop:always;box-sizing:border-box}
 .npw .npr{margin-top:2px;cursor:default}.npw .npart{cursor:pointer}.npw .nps .npart{width:56px;height:56px;border-radius:12px}.npw .npi b{font-size:17px;font-weight:600}.npw .npi small{font-size:13px}
 .npw .npg>.mpb{margin-top:10px;height:3px}.npw>.mpb,.npw>.npr+.mpb{margin-top:8px;height:3px}
 .npw .nply{display:flex;flex-direction:column;justify-content:center;gap:4px;min-height:74px;padding:0 4px;box-sizing:border-box}.npw .nply div{font-size:14px;color:var(--mut);opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:18px}.npw .nply div.on{font-size:22px;font-weight:600;line-height:1.2;color:var(--mint);opacity:1;white-space:normal;max-height:2.4em;overflow:hidden}
 .npw .nps .npg>.npr .npart{width:84px;height:84px;border-radius:16px}.npw .nps .npg>.npr .npi b{font-size:19px;white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .npw .npc{margin-top:12px;gap:8px}.npw .npc .rnd{width:48px;height:48px;flex:none}.npw .nply{height:100%;min-height:150px}
-@media(max-width:760px){.mlay.hasly #mp .mpg{min-height:0}.mlay.hasly #mp .mpc:not(.idle){flex:none;gap:10px}.mlay.hasly .mpc:not(.idle) .mpa{gap:8px}.mlay.hasly .mpc:not(.idle) .mpa img,.mlay.hasly .mpc:not(.idle) .mpa .ph{width:min(40vw,160px)}.mlay.hasly .mpc:not(.idle) .mpa b{font-size:18px}.mlay.hasly #mp .mpc .mpt .rnd{width:46px;height:46px}}
+
 .npw .npdt{display:flex;justify-content:center;gap:8px;padding-top:8px}.npw .npdt i{width:8px;height:8px;border-radius:8px;background:rgba(var(--ink-rgb),.25);cursor:pointer}.npw .npdt i.on{width:22px;background:var(--mint)}
 .npr{display:flex;align-items:center;gap:12px;cursor:pointer;margin-top:10px}
 .npart{width:48px;height:48px;border-radius:10px;overflow:hidden;flex:none;background:rgba(var(--w),.08)}.npart img{width:100%;height:100%;object-fit:cover;display:block}.npart .ph,.npa .ph{display:flex;align-items:center;justify-content:center;color:var(--mut)}.ph svg{width:24px;height:24px;fill:currentColor}
 .npi{flex:1;min-width:0}.npi b{display:block;font-weight:500;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.npi small{display:block;color:var(--mut);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .npr .rnd,html[data-style] .npr .rnd{flex:none;box-sizing:border-box;width:44px;height:44px;min-width:44px;max-width:44px;padding:0;margin:0;display:inline-flex;align-items:center;justify-content:center;line-height:0;border-radius:50%}.npr .rnd svg{width:20px;height:20px;display:block;margin:0}.npch svg{width:20px;height:20px;fill:var(--mut)}
 .npw>.mpb{margin-top:10px;height:4px}.npr+.mpb{margin-top:10px}
-#npbody .nps{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}#npbody .nps::-webkit-scrollbar{display:none}#npbody .npg{flex:0 0 100%;min-width:0;scroll-snap-align:start;scroll-snap-stop:always;box-sizing:border-box}
+#npbody .nps{padding:0 10px 16px;margin:0 -10px -16px;scroll-padding-inline:10px;display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}#npbody .nps::-webkit-scrollbar{display:none}#npbody .npg{flex:0 0 100%;min-width:0;scroll-snap-align:start;scroll-snap-stop:always;box-sizing:border-box}
 #npbody .shly{height:100%;min-height:380px;display:flex;flex-direction:column;justify-content:center;gap:14px;text-align:center;padding:14px 6px;box-sizing:border-box}#npbody .shly div{font-size:19px;line-height:1.3;color:var(--mut)}#npbody .shly div.on{font-size:26px;font-weight:600;color:var(--ink)}
 #npbody .npdt{display:flex;justify-content:center;gap:8px;padding-top:12px}#npbody .npdt i{width:8px;height:8px;border-radius:8px;background:rgba(var(--ink-rgb),.25);cursor:pointer}#npbody .npdt i.on{width:22px;background:var(--mint)}
 .npx{display:flex;flex-direction:column;gap:12px;margin-top:14px}
@@ -1322,16 +1331,22 @@ body.nps-open .npb{transform:none}
 @media(min-width:761px){#npmini,#npsheet{display:none!important}}
 html[data-style] #npmini{background-color:var(--bg)}
 /* one look for every tab row (Rooms, Scenes, Security, Hazards, Energy, forecast, lyrics, room automations): same chip, same size, scrolls sideways when it doesn't fit */
-.chips.tabs{display:flex;flex-wrap:nowrap;gap:8px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;overscroll-behavior-x:contain;padding:0;border:0;border-radius:0;background:none;box-shadow:none}
+.chips.tabs{--tx:10px;--ty:10px;--tb:16px;display:flex;flex-wrap:nowrap;gap:8px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;overscroll-behavior-x:contain;padding:var(--ty) var(--tx) var(--tb);margin:calc(-1*var(--ty)) calc(-1*var(--tx)) calc(-1*var(--tb));border:0;border-radius:0;background:none;box-shadow:none}   /* the extra padding gives the selected capsule's soft shadow room (a scrolling row clips it); the negative margin cancels it so nothing moves */
+.chips.tabs.lyt{margin-top:calc(10px - var(--ty))}
 .chips.tabs::-webkit-scrollbar{display:none}
 .chips.tabs>.chip{flex:none;min-width:0;width:auto;min-height:42px;box-sizing:border-box;display:inline-flex;flex-direction:row;align-items:center;justify-content:center;gap:6px;padding:0 22px;border-radius:12px;font:600 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
 .chips.tabs>.chip svg{width:16px;height:16px;fill:currentColor;flex:none;margin:0}.chips.tabs>.chip span{display:inline;max-width:none;overflow:visible;white-space:nowrap}
-.ehc .chips.tabs{justify-content:safe center;max-width:100%}
+.ehc .chips.tabs{justify-content:safe center;max-width:calc(100% + 2*var(--tx))}
 @media(max-width:760px){.chips.tabs>.chip{padding:0 16px}}
 /* one look for every swipe indicator */
 .dots,.npw .npdt,#npbody .npdt{gap:8px}
 :is(.dots,.npdt) i,html:not(#x) .wdots i{width:8px;height:8px;border-radius:8px;background:rgba(var(--ink-rgb),.25);cursor:pointer;transition:width .2s,background .2s}
 :is(.dots,.npdt) i.on,html:not(#x) .wdots i.on{width:22px;background:var(--mint)}
+
+#mpgrp[hidden]{display:none}
+.mph{display:flex;gap:10px;align-items:center;margin-left:auto}
+.eb.ic{display:inline-flex;align-items:center;gap:8px;text-decoration:none}
+@media(max-width:760px){.eb.ic span{display:none}.eb.ic{width:44px;height:44px;padding:0;justify-content:center;border-radius:50%}.eb.ic svg{width:22px;height:22px}}
 /* phone, Theme + Scenes: closed = the same card as the floating Now Playing bar; open = the same bottom sheet as the Now Playing player */
 .schx{display:none}
 @keyframes shUp{from{transform:translateY(102%)}to{transform:none}}@keyframes shDn{from{transform:none}to{transform:translateY(102%)}}
@@ -1511,6 +1526,36 @@ body.vwm #vw.two{padding:8px;gap:8px}
 @keyframes fxspin{to{transform:rotate(360deg)}}
 @keyframes fxblow{0%{transform:translateX(0);opacity:0}15%{opacity:.9}100%{transform:translateX(420%);opacity:0}}
 @media(prefers-reduced-motion:reduce){.tl.fx-air.on .tn svg,.tl.fx-air .ar i{animation:none}}
+/* Automations pop-up: a ticked row keeps the plain row look; the green check and its glow are the only "on" cue (no warm tint) */
+html:not(#x) #cpp .cpl .tl.on{background:rgba(var(--w),.05);border-color:var(--line);box-shadow:none}
+/* Notifications pop-up: info cards (Controls, Chores, Timers) use the same soft row as the Automations pop-up */
+html:not(#x) #np .ws{background:rgba(var(--w),.05);border:1px solid var(--line);box-shadow:none;border-radius:20px}
+html:not(#x) #np .wg .ws{border-radius:16px}
+
+/* 1.5.1: room between the Scenes / zone pop-up tabs and the list on every width (the phone-only rule left it flush on desktop) */
+.chips.tabs.sctb{margin-bottom:calc(10px - var(--tb))}
+
+/* 1.5.4 camera view (#view) top controls: name + Person tag, LIVE, Playback and Close. Two rows on phones, one row on tablets and wide views;
+   the Person tag never sits on the sound / mic buttons and LIVE is in the corner. In the dual view the Close button is on one card only. */
+html:not(#x) #vw .cam.vf .vh{display:contents}
+html:not(#x) #vw .cam.vf:not(.ls) .vh{display:flex;flex-wrap:wrap;align-items:center;gap:8px;position:absolute;left:14px;right:14px;top:12px;z-index:4;pointer-events:none}
+html:not(#x) #vw .cam.vf:not(.ls) .vh::after{content:"";flex:0 0 100%;height:0;order:4;margin-top:-8px}
+html:not(#x) #vw .cam.vf:not(.ls) .vh>*{position:static!important;inset:auto!important;transform:none!important;margin:0!important;flex:none;pointer-events:auto}
+html:not(#x) #vw .cam.vf:not(.ls) .vh>.lbl{order:1}
+html:not(#x) #vw .cam.vf:not(.ls) .vh>.dl{order:2}
+html:not(#x) #vw .cam.vf:not(.ls) .vh>.lv{order:3;margin-left:auto!important}
+html:not(#x) #vw .cam.vf:not(.ls) .vh>.aud{order:5;margin-right:auto!important}
+html:not(#x) #vw .cam.vf:not(.ls) .vh>.px{order:6}
+html:not(#x) #vw .cam.vf:not(.ls) .vh>.fsb{order:7}
+html:not(#x) #vw .cam.vf:not(.ls):not(.pb) .vh>.cx{order:8;display:block}
+html:not(#x) #vw .vwx{display:none!important}
+@media(orientation:landscape){html:not(#x) #vw.two .cam.vf[data-k=driveway]:not(.ls):not(.pb) .vh>.cx{display:none}}
+@media(orientation:portrait){html:not(#x) #vw.two .cam.vf[data-k=garage]:not(.ls):not(.pb) .vh>.cx{display:none}}
+/* one row: wide single view, tablet in the dual view */
+@media(min-width:700px){html:not(#x) #vw.one .cam.vf:not(.ls) .vh>.px{order:4;margin-left:0!important}html:not(#x) #vw.one .cam.vf:not(.ls) .vh>.cx{order:5}html:not(#x) #vw.one .cam.vf:not(.ls) .vh::after{order:6}html:not(#x) #vw.one .cam.vf:not(.ls) .vh>.aud{order:7}html:not(#x) #vw.one .cam.vf:not(.ls) .vh>.fsb{display:none!important}}
+@media(orientation:portrait) and (min-width:700px){html:not(#x) #vw.two .cam.vf:not(.ls) .vh>.px{order:4;margin-left:0!important}html:not(#x) #vw.two .cam.vf:not(.ls):not(.pb) .vh>.cx{order:5}html:not(#x) #vw.two .cam.vf:not(.ls) .vh::after{order:6}html:not(#x) #vw.two .cam.vf:not(.ls) .vh>.aud{order:7}html:not(#x) #vw.two .cam.vf:not(.ls) .vh>.fsb{display:none!important}}
+@media(orientation:landscape) and (min-width:1000px){html:not(#x) #vw.two .cam.vf:not(.ls) .vh>.px{order:4;margin-left:0!important}html:not(#x) #vw.two .cam.vf:not(.ls):not(.pb) .vh>.cx{order:5}html:not(#x) #vw.two .cam.vf:not(.ls) .vh::after{order:6}html:not(#x) #vw.two .cam.vf:not(.ls) .vh>.aud{order:7}html:not(#x) #vw.two .cam.vf:not(.ls) .vh>.fsb{display:none!important}}
+html:not(#x) #vw.two .cam.vf:not(.ls) .vh::before{content:"";position:absolute;left:-14px;right:-14px;top:-12px;height:calc(100% + 28px);background:linear-gradient(rgba(0,0,0,.6),transparent);border-radius:22px 22px 0 0;pointer-events:none;z-index:-1}   /* the dual cards have no dark band of their own: keep the labels readable over the picture */
 </style>
 </head>
 <body>
@@ -1554,7 +1599,7 @@ body.vwm #vw.two{padding:8px;gap:8px}
 
   <div id="scenes" class="page"></div>
 
-  <div id="media" class="page"><div class="eh" style="margin-bottom:14px"><b class="pt">Speakers</b><a class="eb" href="spotify://home">OPEN SPOTIFY</a></div><div class="mlay"><div id="mp"></div><div id="lyr" class="pn" style="display:none"></div></div><div class="mdt"><i class="on" data-pg="0"></i><i data-pg="1"></i></div></div>
+  <div id="media" class="page"><div class="eh" style="margin-bottom:14px"><b class="pt">Speakers</b><span class="mph"><a class="eb ic" id="mpsp" href="spotify://home" aria-label="Open Spotify" data-i2="spotify"><span>OPEN SPOTIFY</span></a><button class="eb ic" id="mpgrp" data-mp="join" aria-label="Group speakers" data-i2="speaker-multiple" hidden><span>GROUP SPEAKERS</span></button></span></div><div class="mlay"><div id="mp"></div><div id="lyr" class="pn" style="display:none"></div></div><div class="mdt"><i class="on" data-pg="0"></i><i data-pg="1"></i></div></div>
 
   <div id="theme" class="page"></div>
   <div id="vehicle" class="page"></div>
@@ -1581,7 +1626,7 @@ body.vwm #vw.two{padding:8px;gap:8px}
 // (notification tap such as #view/driveway, #security ...), not the return from the login, and the device has not asked for reduced motion.
 window.brandLogo = function () { var L = window.DASH_LOGO, B = (window.DASH_CONFIG || {}).brand; return L && L.svg ? { svg: L.svg, lockup: !!L.lockup } : B && B.mark ? { svg: B.mark, lockup: false } : null; };   // brand-logo.js wins over brand.mark in config.js
 window.brandMark = function (s) { var g = window.brandLogo(); if (!g) return ""; return g.svg.replace(/\bid="([\w-]+)"/g, 'id="$1' + s + '"').replace(/url\(#([\w-]+)\)/g, 'url(#$1' + s + ')'); };
-window.DASH_VER = "1.1.0";   // the one place to change the version
+window.DASH_VER = "1.5.4";   // the one place to change the version
 (function () { try {
   var B = (window.DASH_CONFIG || {}).brand, el = document.getElementById("bootld"), r = document.documentElement, lp = "on";
   try { lp = localStorage.getItem("dashLogo") || "on"; } catch (e) {}   // Theme page -> "Start-up logo": on | load (no intro) | off (plain spinner, as before)
@@ -1769,6 +1814,9 @@ function entIcon(e, over) {
 
 
 Object.assign(MDI, {"water-alert": {"v": "3 1.5 18 21", "p": "M12,3.77L11.25,4.61C11.25,4.61 9.97,6.06 8.68,7.94C7.39,9.82 6,12.07 6,14.23A6,6 0 0,0 12,20.23A6,6 0 0,0 18,14.23C18,12.07 16.61,9.82 15.32,7.94C14.03,6.06 12.75,4.61 12.75,4.61L12,3.77ZM11,9H13V14H11ZM11,15.5H13V17.5H11Z"}});
+Object.assign(MDI, {"plus":"M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"});
+
+Object.assign(MDI, {"lyrics":"M4,5H14V7H4V5M4,9H14V11H4V9M4,13H10V15H4V13M18,3V12.6A3,3 0 1,0 20,15.4V6H22V3H18Z"});
 const isMobile = () => window.matchMedia("(max-width:760px)").matches;
 const MAIN = CONFIG.rooms.filter(r => r.main)[0].id, W = CONFIG.weather;
 const MODE = { heat_cool: "AUTO", fan_only: "FAN", off: "OFF", heat: "HEAT", cool: "COOL", dry: "DRY", auto: "AUTO" };
@@ -2520,6 +2568,9 @@ function mkCam(c, host) {
   { const ar = m => { const w = m.videoWidth || m.naturalWidth, h = m.videoHeight || m.naturalHeight; if (w > 0 && h > 0) el.style.setProperty("--ar", w + " / " + h); };   // the two-feed landscape view sizes each picture from this
     o.img.addEventListener("load", () => { if (!c.live) ar(o.img); }); o.vid.addEventListener("loadedmetadata", () => ar(o.vid)); o.vid.addEventListener("resize", () => ar(o.vid)); }
   const cp = $(".cpanel", el); cp.onclick = tapH; cp.onchange = chgH;
+  if (host.id === "vw") {   // the camera view's top controls share one wrapper, so the layout can put them in one row (tablets) or two (phones)
+    const vh = document.createElement("div"); vh.className = "vh"; ["lbl", "dl", "lv", "aud", "px", "cx", "fsb"].forEach(k => { const n = el.querySelector("." + k); if (n) vh.appendChild(n); }); el.appendChild(vh); el.dataset.k = c.k;
+  }
   if (host.id === "vw") { el.classList.add("vf"); setTimeout(() => pbPre(c), 600); const ctl = camCtl(c.id); if (ctl) { cp.innerHTML = '<div class="tg3">' + ctl.map(tileHtml).join("") + '</div>'; cp.dataset.b = 1; } el.onclick = e => { if (e.target.closest(".fsb")) camLand(el); else if (e.target.closest(".cx")) vwClose(); }; return host.appendChild(el); }   // phones: the card has the same X as a Security camera (the tablet keeps the round X above the pictures)
   el.onclick = e => {
     if (e.target.closest(".cpanel, .pbk, .px")) return;
@@ -2603,9 +2654,12 @@ $("#rtabs").onclick = e => { const b = e.target.closest("[data-rt]"); if (!b) re
 function drawRooms() {
   curRoom = null; $("#cpp").classList.remove("on"); $("#rl").style.display = ""; $("#rv").style.display = "none"; $("#rtabs").style.display = "";
   const tabs = roomTabs(); if (rtab >= tabs.length) rtab = 0;
-  $("#rtabs").innerHTML = tabs.map((t, i) => '<button class="chip' + (i === rtab ? " on" : "") + '" data-rt="' + i + '">' + esc(t[0]) + '</button>').join("");
+  const th = tabs.map((t, i) => '<button class="chip' + (i === rtab ? " on" : "") + '" data-rt="' + i + '">' + esc(t[0]) + '</button>').join(""), rs = tabs[rtab][1].map(ROOM).filter(Boolean);
+  const key = th + "|" + rs.map(r => r.id + "," + r.name + "," + r.icon).join(";") + "|" + (tabs[rtab][1].length ? "" : tabs[rtab][2] || "No rooms");
+  if ($("#rl")._k === key && $("#rl").firstChild) { updRooms(); return; }   // same tabs and cards (a motion sensor changed): keep them, only refresh the live values
+  $("#rl")._k = key; $("#rtabs").innerHTML = th;
   $("#rl").innerHTML = tabs[rtab][1].length ? "" : '<div class="lbl" style="grid-column:1/-1;margin:18px 4px">' + esc(tabs[rtab][2] || "No rooms") + '</div>';
-  tabs[rtab][1].map(ROOM).filter(Boolean).forEach(r => {
+  rs.forEach(r => {
     const a = document.createElement("a"); a.className = "rc"; a.href = "#rooms/" + r.id; a.dataset.r = r.id;
     a.innerHTML = cardHtml(r.name, r.icon);
     $("#rl").appendChild(a);
@@ -3056,7 +3110,7 @@ function hcAxis(d, X, step, bot, icons) {
   });
   return g;
 }
-function hcWrap(head, d, W, H, g, foot) { return head + '<div class="hsc"><svg viewBox="0 0 ' + W + " " + H + '" style="display:block;width:' + W + 'px;height:' + H + 'px;color:var(--ink)">' + g + '</svg></div><div class="sm" style="margin-top:4px">' + foot + '</div>'; }
+function hcWrap(head, d, W, H, g, foot) { return head + hsw('<div class="hsc"><svg viewBox="0 0 ' + W + " " + H + '" style="display:block;width:' + W + 'px;height:' + H + 'px;color:var(--ink)">' + g + '</svg></div>') + '<div class="sm" style="margin-top:4px">' + foot + '</div>'; }
 function windInner(a, wu) {
   const d = hcNow().filter(x => x.wind_speed != null), L1 = '<div class="lbl">' + mdi("weather-windy") + ' Hourly wind · ' + wu + '</div>';
   const cur = fcStats([["Now", a.wind_speed != null ? Math.round(a.wind_speed) + " " + wu + (a.wind_gust_speed != null ? " · gusts " + Math.round(a.wind_gust_speed) : "") : "--"]].concat((() => { const w24 = d.slice(0, 24); if (!w24.length) return []; const hiW = w24.reduce((p, x) => x.wind_speed > p.wind_speed ? x : p, w24[0]), loW = w24.reduce((p, x) => x.wind_speed < p.wind_speed ? x : p, w24[0]); return [["High", Math.round(hiW.wind_speed) + " " + wu + " · " + hr(hiW)], ["Low", Math.round(loW.wind_speed) + " " + wu + " · " + hr(loW)]]; })()));
@@ -3155,7 +3209,7 @@ function tempInner(a) {
   });
   const d24 = d.slice(0, 24), hiX = d24.reduce((p, x) => +x.temperature > +p.temperature ? x : p, d24[0]), loX = d24.reduce((p, x) => +x.temperature < +p.temperature ? x : p, d24[0]), otS = sv(E("outdoorTemp")), nowT = otS != null && !isNaN(parseFloat(otS)) ? parseFloat(otS) : (a.temperature != null ? +a.temperature : +d[0].temperature);
   const st = fcStats([["Temp now", f1(nowT) + "°"], ["High", Math.round(hiX.temperature) + "° · " + hr(hiX)], ["Low", Math.round(loX.temperature) + "° · " + hr(loX)]]);
-  return L1 + st + '<div class="hsc"><svg viewBox="0 0 ' + W + " " + (H + 16) + '" style="display:block;width:' + W + 'px;height:' + (H + 16) + 'px;color:var(--ink)">' + g + '</svg></div><div class="sm" style="margin-top:4px">Next ' + d.length + ' hours · scroll sideways · blue = rain</div>';
+  return L1 + st + hsw('<div class="hsc"><svg viewBox="0 0 ' + W + " " + (H + 16) + '" style="display:block;width:' + W + 'px;height:' + (H + 16) + 'px;color:var(--ink)">' + g + '</svg></div>') + '<div class="sm" style="margin-top:4px">Next ' + d.length + ' hours · scroll sideways · blue = rain</div>';
 }
 const fcStats = r => '<div class="wg" style="margin:10px 0 14px">' + r.map(x => '<div class="ws"><span class="lbl">' + x[0] + '</span><b>' + x[1] + '</b></div>').join("") + '</div>';
 const hr = x => new Date(x.datetime).toLocaleTimeString([], { hour: "numeric" }).replace(" ", "").toLowerCase();
@@ -3298,17 +3352,17 @@ function irrMoist() {
   const dl = Z.map((z, i) => now[i] - IH.d[z.moist][IH.d[z.moist].length - 49]).filter(x => !isNaN(x)), tr = dl.length ? dl.reduce((p, q) => p + q, 0) / dl.length : 0;
   const dry = Z.filter((z, i) => now[i] < 25), wet = now.every(v => v >= 45);
   const head = dry.length ? esc(dry.map(z => z.name).join(" and ")) + (dry.length > 1 ? " are" : " is") + " getting dry" : wet ? "Soil is still wet, no need to water yet" : "Soil moisture is comfortable";
-  const path = a => a.map((v, i) => (i ? "L" : "M") + (i / (a.length - 1) * W).toFixed(1) + " " + y(v).toFixed(1)).join("");
-  const t0 = Date.now() - 72 * 3600000, ticks = [];
+  const PD = 14, path = a => a.map((v, i) => (i ? "L" : "M") + (PD + i / (a.length - 1) * (W - 2 * PD)).toFixed(1) + " " + y(v).toFixed(1)).join("");   // PD: a gap before the first and after the last point
+  const t0 = Math.floor(Date.now() / 600000) * 600000 - 72 * 3600000, ticks = [];   // 10-minute steps, so a redraw with nothing new gives identical markup
   for (let t = Math.ceil(t0 / 86400000 / 1) * 86400000 - 13 * 3600000; t < Date.now(); t += 86400000) if (t > t0 + 3600000) ticks.push(t);
-  const lx = t => ((t - t0) / (72 * 3600000) * W);
+  const lx = t => (PD + (t - t0) / (72 * 3600000) * (W - 2 * PD));
   const svg = '<svg width="' + W + '" height="' + (H + 24) + '"><rect y="0" width="' + W + '" height="' + y(45) + '" fill="#2b8fd6" opacity=".07"/><rect y="' + y(45) + '" width="' + W + '" height="' + (y(25) - y(45)) + '" fill="#3fb6b8" opacity=".12"/><rect y="' + y(25) + '" width="' + W + '" height="' + (H - y(25)) + '" fill="#e0a21f" opacity=".1"/>' +
     [25, 45].map(v => '<line x1="0" x2="' + W + '" y1="' + y(v) + '" y2="' + y(v) + '" stroke="currentColor" stroke-opacity=".14" stroke-dasharray="3 4"/>').join("") +
     ticks.map(t => '<line x1="' + lx(t) + '" x2="' + lx(t) + '" y1="0" y2="' + H + '" stroke="currentColor" stroke-opacity=".08"/><text x="' + (lx(t) + 4) + '" y="' + (H + 17) + '" fill="currentColor" opacity=".55" font-size="11" font-family="monospace">' + new Date(t).toLocaleDateString([], { weekday: "short" }).toUpperCase() + '</text>').join("") +
-    Z.map((z, i) => '<path d="' + path(IH.d[z.moist]) + '" fill="none" stroke="' + PC[i % 4] + '" stroke-width="2.4" stroke-linejoin="round"/><circle cx="' + W + '" cy="' + y(now[i]) + '" r="4" fill="' + PC[i % 4] + '"/>').join("") + '</svg>';
+    Z.map((z, i) => '<path d="' + path(IH.d[z.moist]) + '" fill="none" stroke="' + PC[i % 4] + '" stroke-width="2.4" stroke-linejoin="round"/><circle cx="' + (W - PD) + '" cy="' + y(now[i]) + '" r="4" fill="' + PC[i % 4] + '"/>').join("") + '</svg>';
   return '<div class="pn pg imc"><div class="lbl">' + mdi("water-percent") + ' Soil moisture · last 72 hours</div><div class="h3" style="margin:6px 0 10px">' + head + '</div>' +
     '<div class="wg">' + Z.map((z, i) => '<div class="ws"><span class="lbl">' + esc(z.name) + ' now</span><b style="color:' + mc(now[i]) + '">' + Math.round(now[i]) + '%</b></div>').join("") + '<div class="ws"><span class="lbl">Trend (24 h)</span><b>' + (Math.abs(tr) < 1 ? "steady" : (tr < 0 ? "▼ " : "▲ ") + Math.abs(Math.round(tr)) + "%") + '</b></div></div>' +
-    '<div class="imw"><div class="imy"><span>100</span><span>50</span><span>0</span></div><div class="ims">' + svg + '</div></div>' +
+    '<div class="imw"><div class="imy"><span>100</span><span>50</span><span>0</span></div>' + hsw('<div class="ims">' + svg + '</div>') + '</div>' +
     '<div class="iml">' + Z.map((z, i) => '<span><b style="color:' + PC[i % 4] + '">━</b> ' + esc(z.name) + '</span>').join("") + '<span>shaded: wet · moist · dry</span><span class="imh">swipe to look back →</span></div></div>';
 }
 let irrCi = 0;
@@ -3345,11 +3399,25 @@ function drawIrr() {
   const bar = isMobile(), pg = $("#irrigation"), keep = bar ? $("#irrigation .zsx") : null, kst = keep ? keep.scrollTop : 0;
   if (bar) { h += irrBar(); pg.classList.toggle("zop", zSheet); document.body.classList.toggle("pill-open", zSheet); }
   else { h += '<div class="zg">' + CONFIG.irrigation.map(irrZone).join("") + '</div><div class="dots">' + CONFIG.irrigation.map((z, i) => '<i data-zi="' + i + '" title="' + esc(z.name) + '"' + (i === irrI ? ' class="on"' : "") + '></i>').join("") + '</div>'; pg.classList.remove("zop"); }
-  pg.innerHTML = h; tickIrr();
+  const tmp = document.createElement("div"); tmp.innerHTML = h; for (const c of tmp.children) irrStamp(c); irrSync(pg, tmp); tickIrr();   // only the parts that changed are replaced
   { const z = $("#irrigation .zsx"); if (z && kst) z.scrollTop = kst; }
-  const irc = $("#irrigation .irc"); if (irc && irrCi && irc.clientWidth) irc.scrollLeft = irrCi * (irc.clientWidth + 12);
-  const ims = $("#irrigation .ims"); if (ims) { ims.scrollLeft = IH.sc == null ? ims.scrollWidth : IH.sc; ims.onscroll = () => { IH.sc = ims.scrollLeft >= ims.scrollWidth - ims.clientWidth - 4 ? null : ims.scrollLeft; }; }
-  const zg = $("#irrigation .zg"); if (zg && irrI && zg.clientWidth) zg.scrollLeft = irrI * (zg.clientWidth + 14);
+  const irc = $("#irrigation .irc"); if (irc && !irc._r) { irc._r = 1; if (irrCi && irc.clientWidth) irc.scrollLeft = irrCi * (irc.clientWidth + 12); }
+  const ims = $("#irrigation .ims"); if (ims) { if (!ims._r) { ims._r = 1; ims.scrollLeft = IH.sc == null ? ims.scrollWidth : IH.sc; requestAnimationFrame(hsAll); } ims.onscroll = () => { IH.sc = ims.scrollLeft >= ims.scrollWidth - ims.clientWidth - 4 ? null : ims.scrollLeft; }; }
+  const zg = $("#irrigation .zg"); if (zg && !zg._r) { zg._r = 1; if (irrI && zg.clientWidth) zg.scrollLeft = irrI * (zg.clientWidth + 14); }
+}
+// Redraws used to rebuild the whole page on every sensor change (the tap's own sensors update constantly), which made the pop-up, tabs, chart and
+// wave flash and replay their animations. Now each piece is kept while its markup is unchanged; the wave's animation-delay is ignored when comparing.
+const IRR_BOX = /(^|\s)(zsx|scb|zg)(\s|$)/;
+function irrStamp(el) { el._k = el.outerHTML.replace(/animation-delay:-?[\d.]+m?s/g, ""); if (IRR_BOX.test(el.className)) for (const c of el.children) irrStamp(c); }
+function irrSync(o, n) {
+  const oc = [...o.children], nc = [...n.children];
+  nc.forEach((c, i) => {
+    const x = oc[i]; if (!x) { o.appendChild(c); return; }
+    if (x._k === c._k) return;
+    const box = IRR_BOX.exec(c.className), same = box && x.classList.contains(box[2]) && x.classList.contains("col") === c.classList.contains("col");
+    if (same) { x._k = c._k; irrSync(x, c); } else x.replaceWith(c);
+  });
+  oc.slice(nc.length).forEach(x => x.remove());
 }
 function tickIrr() {
   $$(".tmr").forEach(el => {
@@ -3441,6 +3509,27 @@ const REL = {
 let pq = 0;
 function queuePg() { if (!pq) pq = requestAnimationFrame(() => { pq = 0; const p = curPg(); if (p === "weather") drawWeather(); else if (p === "irrigation") drawIrr(); else if (p === "scenes") updScenes(); else if (p === "media") drawMedia(); else if (p === "vehicle") drawVehicle(); else if (p === "hazards") drawHaz(); }); }
 
+
+// Skip re-writing a container when its markup has not changed. The pages below are redrawn on every related sensor update; rebuilding them
+// when nothing changed made them flash and replayed their animations (Now Playing, Weather, GeoNet, Energy).
+function keepH(el) {
+  if (!el || el._kh) return el; el._kh = 1;
+  const d = Object.getOwnPropertyDescriptor(Element.prototype, "innerHTML");
+  Object.defineProperty(el, "innerHTML", { configurable: true, get() { return d.get.call(this); }, set(v) {
+    v = String(v); const k = v.replace(/ data-(pos|upd)="[^"]*"/g, "");   // the progress timing changes on every call; it does not count as a change
+    if (this._k === k && (v === "" ? !this.firstChild : this.firstChild)) {
+      if (this._h !== v) {   // only the progress timing differs: refresh it in place so the bar and ring carry on smoothly
+        this._h = v; const t = document.createElement("template"); t.innerHTML = v;
+        const nb = t.content.querySelectorAll("[data-pos]"), ob = this.querySelectorAll("[data-pos]");
+        if (nb.length === ob.length) nb.forEach((e, i) => Object.assign(ob[i].dataset, e.dataset));
+      }
+      return;
+    }
+    this._k = k; this._h = v; d.set.call(this, v);
+  } });
+  return el;
+}
+["#gsum", "#npw", "#npmini", "#npfab", "#npbody", "#hnp", "#wx", "#energy", "#hazards"].forEach(q => keepH($(q)));
 // ---------- camera playback (Reolink recordings through HA's media browser) ----------
 function openPb(c) {
   const el = c.o.el, k = $(".pbk", el);
@@ -3684,7 +3773,10 @@ function secTab(t) {   // Security page: LIVE (alarm + cameras) or DETECTIONS (l
   const pg = $("#security"), tb = $("#stabs"), has = dtCams().length && CONFIG.detections !== false && ruSec("detections"); pg.dataset.tab = has ? t : "live";
   tb.style.display = has ? "" : "none"; tb.innerHTML = has ? [["live", "LIVE", "#security"], ["det", "DETECTIONS", "#security/detections"]].map(x => '<button class="chip' + (pg.dataset.tab === x[0] ? " on" : "") + '" data-st="' + x[2] + '">' + x[1] + '</button>').join("") : "";
   if (pg.dataset.tab === "det") { stopCams(); dtInit(); } else drawAlarm();
+  if (secPrev && secPrev !== pg.dataset.tab) { const d = pg.dataset.tab === "det" ? 1 : -1; ["#alp", "#scams", "#dtp"].forEach(q => txGo($(q), d, true)); }   // same slide as the Rooms tabs
+  secPrev = pg.dataset.tab;
 }
+let secPrev = "";
 $("#stabs").onclick = e => { const b = e.target.closest("[data-st]"); if (b && location.hash !== b.dataset.st) location.hash = b.dataset.st; };
 function dtInit() { if (!dtCams().length || CONFIG.detections === false || !ruSec("detections")) return; if (!DT.stored) { DT.stored = 1; THDB.load().then(n => { if (n && location.hash === "#security/detections") dtDraw(true); }); } dtDraw(); if (!DT.t0 || Date.now() - DT.t0 > 5 * 60000) dtLoad(); }
 function dtClose() { const m = $("#dtm"), v = $("#dtm video"); m.classList.remove("on"); v.pause(); v.removeAttribute("src"); try { v.load(); } catch (e) {} }
@@ -3802,7 +3894,7 @@ function hzSel(id, fly) {
   HZ.sel = HZ.sel === id && !fly ? "" : id; const d = HZ.d || hzData();
   $$("#hzsvg [data-hk]").forEach(g => g.classList.toggle("sel", g.dataset.hk === HZ.sel));
   $$("#hazards .hzrow").forEach(b => b.classList.toggle("on", b.dataset.v === HZ.sel));
-  const p = $("#hzd"); if (p) { p.innerHTML = hzDetail(d); p.classList.toggle("on", !!HZ.sel); p.scrollTop = 0; }
+  const p = $("#hzd"); if (p) { const hh = hzDetail(d); if (hh !== p._hd) { p._hd = hh; p.innerHTML = hh; p.scrollTop = 0; } p.classList.toggle("on", !!HZ.sel); }   // keep the scroll position while nothing changed
   const hm = $("#hazards .hzm"); if (hm) hm.classList.toggle("dop", !!HZ.sel);
   const it = d.q.concat(d.v).find(x => x.id === HZ.sel);
   if (fly && it && HZ.slide) hzPage(0);
@@ -3951,12 +4043,13 @@ const tapZone = e => (CONFIG.irrigation || []).find(z => z.switch === e);
 const tileTimer = e => { const m = (CONFIG.tileTimers || {})[e]; if (m) return m; const z = tapZone(e); if (z && z.timer) return z.timer; const o = e.split(".")[1]; return ["timer." + o, "timer." + o + "_timer"].find(t => states[t]) || ""; };
 const npItem = (e, o) => { const z = tapZone(e), tap = /^switch\..*water_tap$/.test(e); return Object.assign({ entity: e, timer: tileTimer(e) }, tap ? { water: (z && z.flow) || true } : {}, o || {}); };
 function notif(full) {
-  let n = 0, h = "";
+  let n = 0, h = "", bh = "", nb = 0, hasB = false;
   const sec = (t, b) => { if (full && b) h += '<div class="lbl np2">' + t + '</div>' + b; };
   const grid = a => a.length ? '<div class="tg3">' + a.map(tileHtml).join("") + '</div>' : "";
   const al = volcHtml().concat(quakeHtml() || []); n += al.length; sec("Alerts", al.join(""));
-  const dr = members(E("doorsGroup")).filter(x => x !== E("doorsGroup") && isOn(x));
-  if (dr.length || isOn(E("doorsGroup"))) { n++; sec("Doors", '<div class="alert q"><b>' + (dr.length || 1) + ' open</b><div>' + dr.map(x => esc(fname(x))).join(" · ") + '</div></div>'); }
+  const gar = x => /garage/i.test(x + " " + fname(x)) || Object.keys(galCfg()).some(k => (galCfg()[k] || {}).sensor === x);   // the garage door has its own alert, so it is not listed here
+  const dr0 = members(E("doorsGroup")).filter(x => x !== E("doorsGroup") && isOn(x)), dr = dr0.filter(x => !gar(x));
+  if (dr.length || (isOn(E("doorsGroup")) && !dr0.length)) { n++; sec("Doors", '<div class="alert q"><b>' + (dr.length || 1) + ' open</b><div>' + dr.map(x => esc(fname(x))).join(" · ") + '</div></div>'); }
   const LK = LEAKS().filter(x => isOn(x[0])), W2 = (CONFIG.alerts || []).filter(x => isOn(x[0]));   // leak sensors first, as red cards
   n += LK.length + W2.length; sec("Warnings", LK.map(x => '<div class="alert q"><div class="lbl">' + mdi("water-alert") + ' WATER LEAK</div><b>' + esc(x[1]) + '</b><div>' + esc(x[2]) + '</div></div>').join("") + grid(W2.map(x => npItem(x[0], { name: x[1], sub: x[2], confirm: /rubbish|recycle/.test(x[0]) }))));
   const wr = states[E("weatherWarnings")];
@@ -3974,9 +4067,9 @@ function notif(full) {
   n += tm.length;
   sec("Timers", tm.map(x => { const t = states[x].attributes, fin = Date.parse(t.finishes_at || "") || 0, dur = (t.duration || "0:00:00").split(":").reduce((p, q) => p * 60 + +q, 0) * 1000; return '<div class="ws" style="margin-bottom:8px"><span class="lbl">' + esc(fname(x)) + '</span><div class="lbl tmr" data-fin="' + fin + '">--</div><div class="zb"><i data-dur="' + dur + '"></i></div></div>'; }).join(""));
   const bl = Object.keys(states).filter(k => /^sensor\..*battery_plus$/.test(k) && parseFloat(states[k].state) < 61).sort((x, y) => states[x].state - states[y].state);
-  if (bl.length || parseFloat(sv(E("lowBatteryCount"))) > 0) { n++; sec("Low batteries", bl.map(x => '<div class="nrow"><span>' + esc(fname(x).replace(/ battery plus$/i, "")) + '</span><b>' + Math.round(states[x].state) + '%</b></div>').join("")); }
+  if (bl.length || parseFloat(sv(E("lowBatteryCount"))) > 0) { n++; hasB = true; nb = bl.length; if (full) bh = bl.map(x => { const v = Math.round(states[x].state), hh = Math.max(1.5, 13 * Math.min(v, 100) / 100); return '<div class="nrow ' + (v <= 15 ? "bad" : v < 40 ? "warn" : "ok") + '"><svg class="nbi" viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="4" width="10" height="17" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="10" y="2" width="4" height="2" rx=".5" fill="currentColor"/><rect x="9" y="' + (19 - hh) + '" width="6" height="' + hh + '" rx="1" fill="currentColor"/></svg><span class="nbn">' + esc(fname(x).replace(/\s+battery(\s+plus|\+)$/i, "")) + '</span><b class="nbp">' + v + '%</b></div>'; }).join(""); }
   sec("Controls", TOG.map(g => { const c = parseInt(sv(g[1])) || 0, sub = c === 0 ? "All " + g[2] + "s active" : c + " " + g[2] + (c > 1 ? "s" : "") + " disabled"; return '<div class="ws" style="margin-bottom:10px"><span class="lbl">' + g[0] + '</span><div style="margin:6px 0 10px;color:var(--mut)">' + sub + '</div><div class="chips cscr">' + g[3].map(x => '<button class="chip' + (isOn(x[0]) ? " on" : "") + '" data-nt="' + x[0] + '"' + (x[2] ? ' data-sc="' + x[2] + '"' : "") + '>' + x[1] + '</button>').join("") + '</div></div>'; }).join(""));
-  return { n: n, html: h };
+  return { n: n - (hasB ? 1 : 0), all: n, nb: nb, html: h, bh: bh };
 }
 // header strip: normally a glowing bar while something is waiting; it turns into an icon for the conditions below. Priority when several are true:
 // water leak, then weather warning, then garage door open, then water on. The top one shows and a small "+n" says how many more there are.
@@ -4019,25 +4112,29 @@ function drawNotif() {
   const ks = NSK.filter(k => k[3]()), top = ks[0], nacc = $("#nacc");   // the strip turns into the icon of the most urgent condition
   if ((nacc.dataset.k || "") !== (top ? top[0] : "")) { nacc.dataset.k = top ? top[0] : ""; nacc.innerHTML = top ? mdi(top[1]) : ""; }
   nacc.dataset.more = ks.length > 1 ? "+" + (ks.length - 1) : "";
-  nacc.classList.toggle("on", !!r.n || !!top);
-  $("#hc").title = ks.length ? ks.map(k => k[2]).join(" · ") + (r.n ? " · " : "") + (r.n ? r.n + " notification" + (r.n > 1 ? "s" : "") : "") : r.n ? r.n + " notification" + (r.n > 1 ? "s" : "") : "Notifications";
+  nacc.classList.toggle("on", !!r.all || !!top);
+  $("#hc").title = ks.length ? ks.map(k => k[2]).join(" · ") + (r.all ? " · " : "") + (r.all ? r.all + " notification" + (r.all > 1 ? "s" : "") : "") : r.all ? r.all + " notification" + (r.all > 1 ? "s" : "") : "Notifications";
   if (!open) return;
   const A = actList(), tot = A.reduce((s, x) => s + x.ids.length, 0);
-  $("#np").innerHTML = '<div class="nh"><b>Notifications</b><button class="eb" data-close="1">' + mdi("close") + '</button></div>' +
-    '<div class="chips tabs nptabs"><button class="chip' + (npTab === "alerts" ? " on" : "") + '" data-npt="alerts">ALERTS' + (r.n ? " · " + r.n : "") + '</button><button class="chip' + (npTab === "active" ? " on" : "") + '" data-npt="active">ACTIVE' + (tot ? " · " + tot : "") + '</button></div>' +
-    (npTab === "active" ? actHtml(A) : (r.n ? "" : '<div class="lbl" style="margin:14px 0">All clear</div>') + r.html);
+  // the header and tabs are built once and only updated in place; the list below is only replaced when its HTML really changes, so nothing blinks on a state update
+  const np = $("#np"), tb = [["alerts", "ALERTS", r.n], ["active", "ACTIVE", tot], ["batteries", "BATTERIES", r.nb]]; let tc = false;
+  if (!np.querySelector(".nptabs")) { tc = true; np.innerHTML = '<div class="nh"><div><div class="lbl">Home</div><h3>Notifications</h3></div><button class="eb" data-close="1">DONE</button></div>' + hsw('<div class="chips tabs nptabs">' + tb.map(t => '<button class="chip" data-npt="' + t[0] + '"></button>').join("") + '</div>') + '<div id="npc"></div>'; }
+  np.querySelectorAll(".nptabs .chip").forEach((c, k) => { const tx = tb[k][1] + (tb[k][2] ? " · " + tb[k][2] : ""); if (c.textContent !== tx) { c.textContent = tx; tc = true; } c.classList.toggle("on", c.dataset.npt === npTab); });
+  const body = npTab === "active" ? actHtml(A) : npTab === "batteries" ? (r.bh || '<div class="lbl" style="margin:14px 0">All batteries are fine</div>') : (r.n ? "" : '<div class="lbl" style="margin:14px 0">All clear</div>') + r.html, nc = $("#npc"), key = npTab + "|" + body;
+  if (nc._k !== key) { nc._k = key; nc.innerHTML = body; }
+  if (tc) requestAnimationFrame(hsAll);
   updTiles(); tickIrr();
 }
 let nq = 0;
 function queueNotif() { if (!nq) nq = requestAnimationFrame(() => { nq = 0; drawNotif(); }); }
 $("#hc").onclick = () => { document.body.classList.toggle("np-open"); drawNotif(); };
-const npClose = () => { document.body.classList.remove("np-open"); if (/^#(notifications|active)/.test(location.hash)) location.hash = "#home"; };
+const npClose = () => { document.body.classList.remove("np-open"); if (/^#(notifications|active|batteries)/.test(location.hash)) location.hash = "#home"; };
 $("#nbd").onclick = npClose;
 $("#np").onclick = e => {
   if (e.target.closest("[data-close]")) { npClose(); return; }
   const tb = e.target.closest("[data-npt]"); if (tb) { npTab = tb.dataset.npt; drawNotif(); return; }
   const of = e.target.closest("[data-off]"); if (of) { const ids = actList()[+of.dataset.off].ids; const cl = actList()[+of.dataset.off].c[3] === "close"; if (ids.length) { if (!cl) npDismiss(ids); call(cl ? "cover" : "homeassistant", cl ? "close_cover" : "turn_off", ids); } return; }
-  const vw = e.target.closest("[data-vw]"); if (vw) { VW.back = /^#(view|camera|notifications|active)/.test(location.hash) ? "#home" : (location.hash || "#home"); location.hash = "#view/" + vw.dataset.vw; return; }
+  const vw = e.target.closest("[data-vw]"); if (vw) { VW.back = /^#(view|camera|notifications|active|batteries)/.test(location.hash) ? "#home" : (location.hash || "#home"); location.hash = "#view/" + vw.dataset.vw; return; }
   const c = e.target.closest("[data-nt]");
   if (c) { if (c.dataset.sc) send({ type: "call_service", domain: "script", service: c.dataset.sc }); else call(c.dataset.nt.split(".")[0], "toggle", c.dataset.nt); return; }
   tapH(e);
@@ -4090,7 +4187,7 @@ function mpCard(mem, ctl) {
   const bt = (m, i, on) => '<button class="rnd' + (on ? " on" : "") + '" data-mp="' + m + '" data-e="' + ctl + '">' + i + '</button>';
   const vols = mem.map(x => { const v = states[x] ? states[x].attributes : {}; return '<div class="mv"><span>' + esc(fname(x)) + '</span><input type="range" min="0" max="100" data-vol="' + x + '" value="' + Math.round((v.volume_level || 0) * 100) + '"><button class="rnd s" data-mp="mute" data-e="' + x + '">' + mdi(v.is_volume_muted ? "volume-off" : "volume-high") + '</button></div>'; }).join("");
   const mg = artColor(pic);
-  return '<div class="pn mpc' + (/^(playing|paused)$/.test(s.state) ? "" : " idle") + (play ? " pl" : "") + (mpVo ? " vo" : "") + '"' + (mg ? ' style="--mg:' + mg + '"' : "") + '><div class="lbl">' + esc(title) + ' · ' + esc(s.state) + (a.source ? " · " + esc(a.source) : "") + '</div><div class="mpa">' + art + '<div>' + info + '</div></div>' +
+  return '<div class="pn mpc' + (/^(playing|paused)$/.test(s.state) ? "" : " idle") + (play ? " pl" : "") + (mpVo ? " vo" : "") + '"' + (mg ? ' style="--mg:' + mg + '"' : "") + '>' + (/^(playing|paused)$/.test(s.state) && mt ? '<button class="rnd on mly" data-ly="open" data-e="' + ctl + '" aria-label="Lyrics">' + mdi("lyrics") + '</button>' : "") + '<div class="lbl">' + esc(title) + ' · ' + esc(s.state) + (a.source ? " · " + esc(a.source) : "") + '</div><div class="mpa">' + art + '<div>' + info + '</div></div>' +
     '<div class="mpb" ' + mpData(ctl) + '><i></i></div>' +
     '<div class="mpt">' + bt("shuffle", mdi("shuffle-variant"), a.shuffle) + bt("prev", mdi("skip-previous")) + bt("pp", mdi(play ? "pause" : "play")) + bt("next", mdi("skip-next")) + bt("repeat", mdi(a.repeat === "one" ? "repeat-once" : a.repeat === "all" ? "repeat" : "repeat-off"), a.repeat && a.repeat !== "off") + '<button class="rnd mvt' + (mpVo ? " on" : "") + '" data-mp="voltog">' + mdi("volume-high") + '</button></div>' +
     '<div class="mvs">' + vols + '</div></div>';
@@ -4109,7 +4206,13 @@ function mpGroups() {   // Sonos lists the group coordinator first
 function drawMedia() {
   const ae = document.activeElement; if (ae && ae.type === "range" && $("#media").contains(ae)) return;
   const ids = CONFIG.media, rk = g => ({ playing: 0, paused: 1 }[(states[g.ctl] || {}).state] ?? 2), cards = mpGroups().map((g, i) => [rk(g), i, mpCard(g.mem, g.ctl)]).sort((a, b) => a[0] - b[0] || a[1] - b[1]).map(x => x[2]);
-  $("#mp").innerHTML = '<div class="mpg">' + cards.join("") + '</div>' + (ids.length > 1 ? '<div style="margin-top:14px"><button class="eb" data-mp="' + (cards.length > 1 ? "join" : "unjoin") + '">' + (cards.length > 1 ? "GROUP SPEAKERS" : "UNGROUP") + '</button></div>' : "");
+  const html = '<div class="mpg">' + cards.join("") + '</div>', mp = $("#mp"), key = html.replace(/ data-(pos|upd)="[^"]*"/g, "");
+  if (mp._k === key && mp.firstChild) {   // nothing visible changed (some other entity updated): keep the cards as they are, so the glow does not restart and a tap is never lost; only the progress timing is refreshed
+    const t = document.createElement("template"); t.innerHTML = html;
+    const nb = t.content.querySelectorAll(".mpb"), ob = mp.querySelectorAll(".mpb");
+    nb.forEach((b, i) => { if (ob[i]) Object.assign(ob[i].dataset, b.dataset); });
+  } else { mp.innerHTML = html; mp._k = key; }
+  const gb = $("#mpgrp"); if (gb) { gb.hidden = ids.length < 2; gb.dataset.mp = cards.length > 1 ? "join" : "unjoin"; const t = cards.length > 1 ? "GROUP SPEAKERS" : "UNGROUP"; gb.setAttribute("aria-label", t.toLowerCase()); gb.querySelector("span").textContent = t; if (gb._t !== t) { gb._t = t; gb.querySelector("svg").outerHTML = mdi(cards.length > 1 ? "speaker-multiple" : "link-variant"); } }
   tickMedia(); lyrUpdate();
 }
 function tickMedia() {
@@ -4125,6 +4228,7 @@ function tickMedia() {
 }
 
 // ---------- Now Playing (Home card · mobile mini player · bottom sheet) ----------
+const npPw = s => { const c = s.firstElementChild; return (c && c.offsetWidth) || s.clientWidth; };   // one page of the sideways pager (the scroller itself is 20 px wider, to leave room for the chips' shadow)
 const fmtT = t => { t = Math.round(t); return Math.floor(t / 60) + ":" + ("0" + (t % 60)).slice(-2); };
 let npAnim = 0, npOpen = true, npSheet = false, npSeen = {}, npPage = 0, npHoldT = 0;   // npOpen = the Home card shows the player + lyrics pages (false = one slim row)
 try { npOpen = localStorage.getItem("dashNp") !== "0"; } catch (_) {}
@@ -4192,7 +4296,7 @@ function npRender() {
   const aH = npAnim; npAnim = 0;
   w.innerHTML = '<div class="nph"><button class="npl" data-np="media"><span class="nptx">' + (npPage ? "Lyrics" : "Now playing") + '</span>' + (act.length > 1 ? '<span class="npn">+' + (act.length - 1) + '</span>' : "") + mdi("chevron-right") + '</button><button class="npt2" data-np="tog" aria-label="' + (npOpen ? "Collapse" : "Expand") + '">' + mdi(npOpen ? "chevron-up" : "chevron-down") + '</button></div>' +
     (npOpen ? '<div class="nps"><div class="npg">' + rowX + c.prog + ctl + '</div>' + (hasLy ? '<div class="npg"><div class="nply">' + hlLn(HL.lines, hlIdx()) + '</div></div>' : "") + '</div>' + (hasLy ? '<div class="npdt"><i data-npg="0"' + (npPage ? "" : ' class="on"') + '></i><i data-npg="1"' + (npPage ? ' class="on"' : "") + '></i></div>' : "") : rowH + c.prog);
-  { const sl = $(".nps", w); if (sl && npPage) sl.scrollLeft = npPage * sl.clientWidth; }
+  { const sl = $(".nps", w); if (sl && npPage) sl.scrollLeft = npPage * npPw(sl); }
   if (aH && w.animate && !matchMedia("(prefers-reduced-motion:reduce)").matches) {   // smooth expand / collapse
     const nh = w.offsetHeight, ease = "cubic-bezier(.2,.8,.2,1)";
     if (Math.abs(nh - aH) > 4) {
@@ -4214,7 +4318,7 @@ function npRender() {
     SL.lines = sh ? ss.lines : null; SL.ctl = g.ctl; SL.cur = -2; if (!sh) npsPage = 0;
     $("#npbody").innerHTML = '<div class="lbl"><span class="nptx">' + (npsPage ? "Lyrics" : "Now playing") + '</span><button class="rnd s" data-np="close">' + mdi("close") + '</button></div>' +
       (sh ? '<div class="nps"><div class="npg">' + npPlay(g, true) + '</div><div class="npg"><div class="shly">' + slLn(SL.lines, hlIdx(SL.lines, SL.ctl)) + '</div></div></div><div class="npdt"><i data-npg="0"' + (npsPage ? "" : ' class="on"') + '></i><i data-npg="1"' + (npsPage ? ' class="on"' : "") + '></i></div>' : npPlay(g, true));
-    { const sl = $("#npbody .nps"); if (sl && npsPage) sl.scrollLeft = npsPage * sl.clientWidth; }
+    { const sl = $("#npbody .nps"); if (sl && npsPage) sl.scrollLeft = npsPage * npPw(sl); }
   } else { clearTimeout(npbT); npbT = setTimeout(() => { if (!npSheet) $("#npbody").innerHTML = ""; }, 420); }
   const hn = $("#hnp");
   if (isMobile() || onMed) hn.innerHTML = "";
@@ -4234,7 +4338,7 @@ let npbT = 0, npq = 0; const queueNp = () => { if (!npq) npq = requestAnimationF
 function npClick(e) {
   const n = e.target.closest("[data-np]"), b = e.target.closest("[data-mp]");
   if (b) { e.stopPropagation(); mpDo(b.dataset.mp, b.dataset.e); return; }
-  const dg = e.target.closest("[data-npg]"); if (dg) { const sl = $(dg.closest("#npbody") ? "#npbody .nps" : "#npw .nps"); if (sl) sl.scrollTo({ left: +dg.dataset.npg * sl.clientWidth, behavior: "smooth" }); return; }
+  const dg = e.target.closest("[data-npg]"); if (dg) { const sl = $(dg.closest("#npbody") ? "#npbody .nps" : "#npw .nps"); if (sl) sl.scrollTo({ left: +dg.dataset.npg * npPw(sl), behavior: "smooth" }); return; }
   if (!n) return;
   const k = n.dataset.np;
   if (k === "tog") { npAnim = $("#npw").offsetHeight; npOpen = !npOpen; try { localStorage.setItem("dashNp", npOpen ? "1" : "0"); } catch (_) {} }
@@ -4243,8 +4347,8 @@ function npClick(e) {
   else if (k === "close") npSheet = false;
   npRender();
 }
-$("#npw").addEventListener("scroll", e => { const g = e.target; if (!g.classList || !g.classList.contains("nps") || !g.clientWidth) return; npHoldT = Date.now() + 700; const i = Math.round(g.scrollLeft / g.clientWidth); npPage = i; $$("#npw .npdt i").forEach((d, k) => d.classList.toggle("on", k === i)); const t = $("#npw .nptx"); if (t) t.textContent = i ? "Lyrics" : "Now playing"; }, true);
-$("#npbody").addEventListener("scroll", e => { const g = e.target; if (!g.classList || !g.classList.contains("nps") || !g.clientWidth) return; npHoldT = Date.now() + 700; const i = Math.round(g.scrollLeft / g.clientWidth); npsPage = i; $$("#npbody .npdt i").forEach((d, k) => d.classList.toggle("on", k === i)); const t = $("#npbody .nptx"); if (t) t.textContent = i ? "Lyrics" : "Now playing"; }, true);
+$("#npw").addEventListener("scroll", e => { const g = e.target; if (!g.classList || !g.classList.contains("nps") || !g.clientWidth) return; npHoldT = Date.now() + 700; const i = Math.round(g.scrollLeft / npPw(g)); npPage = i; $$("#npw .npdt i").forEach((d, k) => d.classList.toggle("on", k === i)); const t = $("#npw .nptx"); if (t) t.textContent = i ? "Lyrics" : "Now playing"; }, true);
+$("#npbody").addEventListener("scroll", e => { const g = e.target; if (!g.classList || !g.classList.contains("nps") || !g.clientWidth) return; npHoldT = Date.now() + 700; const i = Math.round(g.scrollLeft / npPw(g)); npsPage = i; $$("#npbody .npdt i").forEach((d, k) => d.classList.toggle("on", k === i)); const t = $("#npbody .nptx"); if (t) t.textContent = i ? "Lyrics" : "Now playing"; }, true);
 setInterval(() => { if (!SL.lines || !npSheet) return; const i = hlIdx(SL.lines, SL.ctl); if (i === SL.cur) return; SL.cur = i; const el = $("#npbody .shly"); if (el) el.innerHTML = slLn(SL.lines, i); }, 500);
 setInterval(() => { if (!HL.lines || !npOpen || curPg() !== "home") return; const i = hlIdx(); if (i === HL.cur) return; HL.cur = i; const el = $("#npw .nply"); if (el) el.innerHTML = hlLn(HL.lines, i); }, 500);
 $("#npw").onclick = $("#npmini").onclick = $("#npsheet").onclick = $("#hnp").onclick = $("#npfab").onclick = npClick;
@@ -4310,13 +4414,22 @@ function lyrLoad(tr, key) {
     LY.busy = ""; LY.cache[key] = r; if (LY.key === key) { Object.assign(LY, r); lyrDraw(); }
   }).catch(e => { LY.busy = ""; LY.cache[key] = { st: "err", lines: null, plain: "", t: Date.now(), dbg: dbg.join(" · ") + " · " + String(e && e.message || e) }; if (LY.key === key) { Object.assign(LY, LY.cache[key]); lyrDraw(); } });
 }
+// phone: the lyrics are a sheet, so it carries a close button and a small player row at the bottom
+function lyFoot() {
+  const s = states[LY.ctl] || { state: "", attributes: {} }, a = s.attributes, pl = s.state === "playing";
+  return '<div class="lyf"><span class="npart">' + mpArt(a, s.state, a.entity_picture) + '</span><div class="npi"><b>' + esc(a.media_title || "") + '</b><small>' + esc(a.media_artist || "") + '</small></div><button class="rnd on" data-mp="pp" data-e="' + LY.ctl + '">' + mdi(pl ? "pause" : "play") + '</button></div>';
+}
+const lyClose = () => document.body.classList.remove("ly-open");
+function lyOpen(ctl) { if (ctl) LY.sel = ctl; LY.open = true; try { localStorage.setItem("dashLyr", "1"); } catch (_) {} document.body.classList.add("ly-open"); LY.drawn = ""; lyrUpdate(); }
+document.addEventListener("click", e => { if (e.target === document.body && document.body.classList.contains("ly-open")) lyClose(); });
+addEventListener("hashchange", lyClose);
 function lyrDraw(tr) {
-  const el = $("#lyr"), k = [LY.key, LY.st, LY.open, LY.sel, LY.tabs.join(), LY.off].join("|"); if (k === LY.drawn) return; LY.drawn = k;
+  const el = $("#lyr"), k = [LY.key, LY.st, LY.open, LY.sel, LY.tabs.join(), LY.off, (states[LY.ctl] || {}).state].join("|"); if (k === LY.drawn) return; LY.drawn = k;
   const msg = { load: "Looking for lyrics…", none: "No lyrics found for this song.", inst: "Instrumental.", err: "Couldn’t reach the lyrics service (the device needs internet).", "": "" }[LY.st] || "";
   const body = !LY.open ? "" : LY.st === "sync" ? '<div class="lyb">' + LY.lines.map((l, i) => '<div class="ly" data-t="' + l.t + '" data-i="' + i + '">' + (esc(l.s) || "♪") + '</div>').join("") + '</div>'
     : LY.st === "plain" ? '<div class="lyb plain">' + esc(LY.plain) + '</div>' : '<div class="sm" style="margin-top:12px">' + msg + '</div><div class="sm lyd">' + esc((LY.key || "").replace(/\|/g, " · ") + (LY.dbg ? "  →  " + LY.dbg : "")) + '</div><button class="eb" style="margin-top:10px" data-ly="retry">TRY AGAIN</button>';
-  el.innerHTML = '<div class="lbl lyh" data-ly="tog">' + mdi("music-note") + ' Lyrics' + (LY.st === "sync" ? ' · synced' : "") + (LY.st === "sync" && LY.open ? '<span class="lyo" title="Lyrics running late? press +. Too early? press −"><button class="chip" data-ly="off-">−</button><b>' + (LY.off > 0 ? "+" : "") + LY.off.toFixed(1) + 's</b><button class="chip" data-ly="off+">+</button></span>' : "") + '<span class="npch">' + mdi(LY.open ? "chevron-up" : "chevron-down") + '</span></div>' +
-    (LY.open && LY.tabs.length ? '<div class="chips tabs lyt">' + LY.tabs.map(t => '<button class="chip' + (t[0] === LY.sel ? " on" : "") + '" data-ly="sel" data-c="' + t[0] + '">' + mdi("speaker") + esc(t[1]) + '</button>').join("") + '</div>' : "") + body;
+  el.innerHTML = '<div class="lbl lyh" data-ly="tog">' + mdi("music-note") + ' Lyrics' + (LY.st === "sync" ? ' · synced' : "") + (LY.st === "sync" && LY.open ? '<span class="lyo" title="Lyrics running late? press +. Too early? press −"><button class="chip" data-ly="off-">−</button><b>' + (LY.off > 0 ? "+" : "") + LY.off.toFixed(1) + 's</b><button class="chip" data-ly="off+">+</button></span>' : "") + '<span class="npch">' + mdi(LY.open ? "chevron-up" : "chevron-down") + '</span><button class="chip lyx" data-ly="close" aria-label="Close">' + mdi("close") + '</button></div>' +
+    (LY.open && LY.tabs.length ? '<div class="chips tabs lyt">' + LY.tabs.map(t => '<button class="chip' + (t[0] === LY.sel ? " on" : "") + '" data-ly="sel" data-c="' + t[0] + '">' + mdi("speaker") + esc(t[1]) + '</button>').join("") + '</div>' : "") + body + lyFoot();
   LY.cur = -1; lyrTick(true);
 }
 function lyrTick(jump) {
@@ -4335,6 +4448,7 @@ $("#lyr").onclick = e => {
   if (of) { LY.off = Math.max(-10, Math.min(10, Math.round((LY.off + (of.dataset.ly === "off+" ? 0.5 : -0.5)) * 10) / 10)); try { localStorage.setItem("dashLyOff", LY.off); } catch (_) {} LY.drawn = ""; lyrDraw(); return; }
   const sb = e.target.closest("[data-ly=sel]"); if (sb) { LY.sel = sb.dataset.c; LY.drawn = ""; lyrUpdate(); return; }
   if (e.target.closest("[data-ly=retry]")) { delete LY.cache[LY.key]; LY.busy = ""; LY.drawn = ""; LY.st = ""; lyrUpdate(); return; }
+  if (e.target.closest("[data-ly]") && innerWidth <= 760) { lyClose(); return; }
   if (e.target.closest("[data-ly]")) { LY.open = !LY.open; try { localStorage.setItem("dashLyr", LY.open ? "1" : "0"); } catch (_) {} LY.drawn = ""; lyrUpdate(); return; }
   const l = e.target.closest(".ly"); if (l && LY.ctl) { mpSeek(LY.ctl); call("media_player", "media_seek", LY.ctl, { seek_position: +l.dataset.t }); }
 };
@@ -4371,14 +4485,15 @@ function mpPos(id) {
 }
 const mpData = id => { const q = mpPos(id); return 'data-pos="' + q.pos.toFixed(2) + '" data-upd="' + new Date(srvNow()).toISOString() + '" data-dur="' + q.dur + '" data-play="' + (q.play ? 1 : 0) + '"'; };
 const mpSeek = id => { (MPK[id] = MPK[id] || {}).seek = srvNow(); };
+const MPT = {};   // last play / pause tap per speaker: a second tap within 350 ms is ignored (a double fire would pause then resume at once)
 function mpDo(m, id) {
   if (m === "prev" || m === "next") mpSeek(id);
-  const a = (states[id] || {}).attributes || {}, ids = CONFIG.media;
-  if (m === "pp") call("media_player", "media_play_pause", id);
-  else if (m === "prev") call("media_player", "media_previous_track", id);
-  else if (m === "next") call("media_player", "media_next_track", id);
-  else if (m === "shuffle") call("media_player", "shuffle_set", id, { shuffle: !a.shuffle });
-  else if (m === "repeat") call("media_player", "repeat_set", id, { repeat: !a.repeat || a.repeat === "off" ? "all" : a.repeat === "all" ? "one" : "off" });
+  const a = (states[id] || {}).attributes || {}, ids = CONFIG.media, tg = id, ta = (states[tg] || {}).attributes || a;
+  if (m === "pp") { const n = Date.now(); if (n - (MPT[id] || 0) < 350) return true; MPT[id] = n; call("media_player", "media_play_pause", tg); }
+  else if (m === "prev") call("media_player", "media_previous_track", tg);
+  else if (m === "next") call("media_player", "media_next_track", tg);
+  else if (m === "shuffle") call("media_player", "shuffle_set", tg, { shuffle: !ta.shuffle });
+  else if (m === "repeat") call("media_player", "repeat_set", tg, { repeat: !ta.repeat || ta.repeat === "off" ? "all" : ta.repeat === "all" ? "one" : "off" });
   else if (m === "mute") call("media_player", "volume_mute", id, { is_volume_muted: !a.is_volume_muted });
   else if (m === "join") { const c = ids.filter(x => states[x] && states[x].state === "playing")[0] || ids[0]; call("media_player", "join", c, { group_members: ids.filter(x => x !== c) }); }
   else if (m === "unjoin") ids.forEach(x => call("media_player", "unjoin", x));
@@ -4386,7 +4501,7 @@ function mpDo(m, id) {
   else return false;
   return true;
 }
-$("#media").onclick = e => { const b = e.target.closest("[data-mp]"); if (b) mpDo(b.dataset.mp, b.dataset.e); };
+$("#media").onclick = e => { const lo = e.target.closest('[data-ly="open"]'); if (lo) { lyOpen(lo.dataset.e); return; } const b = e.target.closest("[data-mp]"); if (b) mpDo(b.dataset.mp, b.dataset.e); };
 $("#media").onchange = e => { const t = e.target; if (t.dataset.vol) call("media_player", "volume_set", t.dataset.vol, { volume_level: +t.value / 100 }); };
 
 // ---------- weather animation (greeting card) ----------
@@ -4617,6 +4732,7 @@ function route() {
       if (h[2] === "doors") [120, 700, 1800].forEach(ms => setTimeout(() => { if (curRoom && curRoom.id === h[1] && location.hash.split("/")[2] === "doors") { const t = $('#rv [data-sec="doors"]'); if (t) { t.scrollIntoView({ block: "center", behavior: ms > 120 ? "auto" : "smooth" }); if (ms === 120) { t.classList.add("flash"); setTimeout(() => t.classList.remove("flash"), 1800); } } } }, ms)); }   // #rooms/<room>/doors scrolls to that room's Doors & windows panel   // list -> room slides in from the right
     else { const was = !!curRoom; drawRooms(); if (was) txGo($("#rl"), -1, true); }   // room -> list slides back from the left
   }
+  if (p !== "security") secPrev = "";
   if (p === "security") secTab(h[1] === "detections" && dtCams().length && CONFIG.detections !== false && ruSec("detections") ? "det" : "live");
   if (p === "weather") {   // #weather/wind | rain | uv opens that forecast tab and scrolls to it
     const ti = { temp: 0, wind: 1, rain: 2, uv: 3, cloud: 3 }[h[1]];
@@ -4635,7 +4751,7 @@ function route() {
   if (p === "vehicle") drawVehicle();
   if (p === "hazards") { HZ.vb = null; HZ.slide = 0; HZ.view = HZ.view || (states["zone.home"] ? "home" : "ni"); requestAnimationFrame(drawHaz); }
   if (h[0] === "disarm") alarmLink("disarm"); else if (h[0] === "arm") alarmLink("arm_" + (h[1] || "away"));
-  if (h[0] === "notifications" || h[0] === "active") { npTab = h[0] === "active" ? "active" : "alerts"; document.body.classList.add("np-open"); drawNotif();
+  if (h[0] === "notifications" || h[0] === "active" || h[0] === "batteries") { npTab = h[0] === "active" ? "active" : h[0] === "batteries" ? "batteries" : "alerts"; document.body.classList.add("np-open"); drawNotif();
     if (h[0] === "active" && h[1]) [80, 1500].forEach(ms => setTimeout(() => { if (document.body.classList.contains("np-open")) { const t = $('#np [data-sec="' + h[1] + '"]'); if (t) t.scrollIntoView({ block: "start" }); } }, ms)); }
 }
 // tablet battery pill: shown on the Fully Kiosk tablet only ("kiosk" = the Fully JS interface, a FullyKiosk user agent, or ?tablet=1 once; "always" / "never" override)

@@ -8,12 +8,13 @@ const tapZone = e => (CONFIG.irrigation || []).find(z => z.switch === e);
 const tileTimer = e => { const m = (CONFIG.tileTimers || {})[e]; if (m) return m; const z = tapZone(e); if (z && z.timer) return z.timer; const o = e.split(".")[1]; return ["timer." + o, "timer." + o + "_timer"].find(t => states[t]) || ""; };
 const npItem = (e, o) => { const z = tapZone(e), tap = /^switch\..*water_tap$/.test(e); return Object.assign({ entity: e, timer: tileTimer(e) }, tap ? { water: (z && z.flow) || true } : {}, o || {}); };
 function notif(full) {
-  let n = 0, h = "";
+  let n = 0, h = "", bh = "", nb = 0, hasB = false;
   const sec = (t, b) => { if (full && b) h += '<div class="lbl np2">' + t + '</div>' + b; };
   const grid = a => a.length ? '<div class="tg3">' + a.map(tileHtml).join("") + '</div>' : "";
   const al = volcHtml().concat(quakeHtml() || []); n += al.length; sec("Alerts", al.join(""));
-  const dr = members(E("doorsGroup")).filter(x => x !== E("doorsGroup") && isOn(x));
-  if (dr.length || isOn(E("doorsGroup"))) { n++; sec("Doors", '<div class="alert q"><b>' + (dr.length || 1) + ' open</b><div>' + dr.map(x => esc(fname(x))).join(" · ") + '</div></div>'); }
+  const gar = x => /garage/i.test(x + " " + fname(x)) || Object.keys(galCfg()).some(k => (galCfg()[k] || {}).sensor === x);   // the garage door has its own alert, so it is not listed here
+  const dr0 = members(E("doorsGroup")).filter(x => x !== E("doorsGroup") && isOn(x)), dr = dr0.filter(x => !gar(x));
+  if (dr.length || (isOn(E("doorsGroup")) && !dr0.length)) { n++; sec("Doors", '<div class="alert q"><b>' + (dr.length || 1) + ' open</b><div>' + dr.map(x => esc(fname(x))).join(" · ") + '</div></div>'); }
   const LK = LEAKS().filter(x => isOn(x[0])), W2 = (CONFIG.alerts || []).filter(x => isOn(x[0]));   // leak sensors first, as red cards
   n += LK.length + W2.length; sec("Warnings", LK.map(x => '<div class="alert q"><div class="lbl">' + mdi("water-alert") + ' WATER LEAK</div><b>' + esc(x[1]) + '</b><div>' + esc(x[2]) + '</div></div>').join("") + grid(W2.map(x => npItem(x[0], { name: x[1], sub: x[2], confirm: /rubbish|recycle/.test(x[0]) }))));
   const wr = states[E("weatherWarnings")];
@@ -31,9 +32,9 @@ function notif(full) {
   n += tm.length;
   sec("Timers", tm.map(x => { const t = states[x].attributes, fin = Date.parse(t.finishes_at || "") || 0, dur = (t.duration || "0:00:00").split(":").reduce((p, q) => p * 60 + +q, 0) * 1000; return '<div class="ws" style="margin-bottom:8px"><span class="lbl">' + esc(fname(x)) + '</span><div class="lbl tmr" data-fin="' + fin + '">--</div><div class="zb"><i data-dur="' + dur + '"></i></div></div>'; }).join(""));
   const bl = Object.keys(states).filter(k => /^sensor\..*battery_plus$/.test(k) && parseFloat(states[k].state) < 61).sort((x, y) => states[x].state - states[y].state);
-  if (bl.length || parseFloat(sv(E("lowBatteryCount"))) > 0) { n++; sec("Low batteries", bl.map(x => '<div class="nrow"><span>' + esc(fname(x).replace(/ battery plus$/i, "")) + '</span><b>' + Math.round(states[x].state) + '%</b></div>').join("")); }
+  if (bl.length || parseFloat(sv(E("lowBatteryCount"))) > 0) { n++; hasB = true; nb = bl.length; if (full) bh = bl.map(x => { const v = Math.round(states[x].state), hh = Math.max(1.5, 13 * Math.min(v, 100) / 100); return '<div class="nrow ' + (v <= 15 ? "bad" : v < 40 ? "warn" : "ok") + '"><svg class="nbi" viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="4" width="10" height="17" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="10" y="2" width="4" height="2" rx=".5" fill="currentColor"/><rect x="9" y="' + (19 - hh) + '" width="6" height="' + hh + '" rx="1" fill="currentColor"/></svg><span class="nbn">' + esc(fname(x).replace(/\s+battery(\s+plus|\+)$/i, "")) + '</span><b class="nbp">' + v + '%</b></div>'; }).join(""); }
   sec("Controls", TOG.map(g => { const c = parseInt(sv(g[1])) || 0, sub = c === 0 ? "All " + g[2] + "s active" : c + " " + g[2] + (c > 1 ? "s" : "") + " disabled"; return '<div class="ws" style="margin-bottom:10px"><span class="lbl">' + g[0] + '</span><div style="margin:6px 0 10px;color:var(--mut)">' + sub + '</div><div class="chips cscr">' + g[3].map(x => '<button class="chip' + (isOn(x[0]) ? " on" : "") + '" data-nt="' + x[0] + '"' + (x[2] ? ' data-sc="' + x[2] + '"' : "") + '>' + x[1] + '</button>').join("") + '</div></div>'; }).join(""));
-  return { n: n, html: h };
+  return { n: n - (hasB ? 1 : 0), all: n, nb: nb, html: h, bh: bh };
 }
 // header strip: normally a glowing bar while something is waiting; it turns into an icon for the conditions below. Priority when several are true:
 // water leak, then weather warning, then garage door open, then water on. The top one shows and a small "+n" says how many more there are.
@@ -76,25 +77,29 @@ function drawNotif() {
   const ks = NSK.filter(k => k[3]()), top = ks[0], nacc = $("#nacc");   // the strip turns into the icon of the most urgent condition
   if ((nacc.dataset.k || "") !== (top ? top[0] : "")) { nacc.dataset.k = top ? top[0] : ""; nacc.innerHTML = top ? mdi(top[1]) : ""; }
   nacc.dataset.more = ks.length > 1 ? "+" + (ks.length - 1) : "";
-  nacc.classList.toggle("on", !!r.n || !!top);
-  $("#hc").title = ks.length ? ks.map(k => k[2]).join(" · ") + (r.n ? " · " : "") + (r.n ? r.n + " notification" + (r.n > 1 ? "s" : "") : "") : r.n ? r.n + " notification" + (r.n > 1 ? "s" : "") : "Notifications";
+  nacc.classList.toggle("on", !!r.all || !!top);
+  $("#hc").title = ks.length ? ks.map(k => k[2]).join(" · ") + (r.all ? " · " : "") + (r.all ? r.all + " notification" + (r.all > 1 ? "s" : "") : "") : r.all ? r.all + " notification" + (r.all > 1 ? "s" : "") : "Notifications";
   if (!open) return;
   const A = actList(), tot = A.reduce((s, x) => s + x.ids.length, 0);
-  $("#np").innerHTML = '<div class="nh"><b>Notifications</b><button class="eb" data-close="1">' + mdi("close") + '</button></div>' +
-    '<div class="chips tabs nptabs"><button class="chip' + (npTab === "alerts" ? " on" : "") + '" data-npt="alerts">ALERTS' + (r.n ? " · " + r.n : "") + '</button><button class="chip' + (npTab === "active" ? " on" : "") + '" data-npt="active">ACTIVE' + (tot ? " · " + tot : "") + '</button></div>' +
-    (npTab === "active" ? actHtml(A) : (r.n ? "" : '<div class="lbl" style="margin:14px 0">All clear</div>') + r.html);
+  // the header and tabs are built once and only updated in place; the list below is only replaced when its HTML really changes, so nothing blinks on a state update
+  const np = $("#np"), tb = [["alerts", "ALERTS", r.n], ["active", "ACTIVE", tot], ["batteries", "BATTERIES", r.nb]]; let tc = false;
+  if (!np.querySelector(".nptabs")) { tc = true; np.innerHTML = '<div class="nh"><div><div class="lbl">Home</div><h3>Notifications</h3></div><button class="eb" data-close="1">DONE</button></div>' + hsw('<div class="chips tabs nptabs">' + tb.map(t => '<button class="chip" data-npt="' + t[0] + '"></button>').join("") + '</div>') + '<div id="npc"></div>'; }
+  np.querySelectorAll(".nptabs .chip").forEach((c, k) => { const tx = tb[k][1] + (tb[k][2] ? " · " + tb[k][2] : ""); if (c.textContent !== tx) { c.textContent = tx; tc = true; } c.classList.toggle("on", c.dataset.npt === npTab); });
+  const body = npTab === "active" ? actHtml(A) : npTab === "batteries" ? (r.bh || '<div class="lbl" style="margin:14px 0">All batteries are fine</div>') : (r.n ? "" : '<div class="lbl" style="margin:14px 0">All clear</div>') + r.html, nc = $("#npc"), key = npTab + "|" + body;
+  if (nc._k !== key) { nc._k = key; nc.innerHTML = body; }
+  if (tc) requestAnimationFrame(hsAll);
   updTiles(); tickIrr();
 }
 let nq = 0;
 function queueNotif() { if (!nq) nq = requestAnimationFrame(() => { nq = 0; drawNotif(); }); }
 $("#hc").onclick = () => { document.body.classList.toggle("np-open"); drawNotif(); };
-const npClose = () => { document.body.classList.remove("np-open"); if (/^#(notifications|active)/.test(location.hash)) location.hash = "#home"; };
+const npClose = () => { document.body.classList.remove("np-open"); if (/^#(notifications|active|batteries)/.test(location.hash)) location.hash = "#home"; };
 $("#nbd").onclick = npClose;
 $("#np").onclick = e => {
   if (e.target.closest("[data-close]")) { npClose(); return; }
   const tb = e.target.closest("[data-npt]"); if (tb) { npTab = tb.dataset.npt; drawNotif(); return; }
   const of = e.target.closest("[data-off]"); if (of) { const ids = actList()[+of.dataset.off].ids; const cl = actList()[+of.dataset.off].c[3] === "close"; if (ids.length) { if (!cl) npDismiss(ids); call(cl ? "cover" : "homeassistant", cl ? "close_cover" : "turn_off", ids); } return; }
-  const vw = e.target.closest("[data-vw]"); if (vw) { VW.back = /^#(view|camera|notifications|active)/.test(location.hash) ? "#home" : (location.hash || "#home"); location.hash = "#view/" + vw.dataset.vw; return; }
+  const vw = e.target.closest("[data-vw]"); if (vw) { VW.back = /^#(view|camera|notifications|active|batteries)/.test(location.hash) ? "#home" : (location.hash || "#home"); location.hash = "#view/" + vw.dataset.vw; return; }
   const c = e.target.closest("[data-nt]");
   if (c) { if (c.dataset.sc) send({ type: "call_service", domain: "script", service: c.dataset.sc }); else call(c.dataset.nt.split(".")[0], "toggle", c.dataset.nt); return; }
   tapH(e);

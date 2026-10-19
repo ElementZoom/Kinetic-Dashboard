@@ -14,7 +14,7 @@ button,input,select,textarea{font-family:inherit}
 .acc-u{padding:14px 0;border-top:1px solid var(--line)}.acc-h + .acc-u{margin-top:10px}.acc-r{display:flex;align-items:center;justify-content:space-between;gap:14px}.acc-r span{display:flex;flex-direction:column;gap:3px;min-width:0}.acc-r b{font-weight:500;font-size:16px}.acc-r small{font-size:12px;color:var(--mut)}
 .acc-c{margin-top:12px;gap:8px}.acc-c .chip{flex:0 0 auto;width:auto;min-width:0;height:auto;padding:11px 14px;white-space:nowrap;overflow:visible}.acc-s{margin-top:14px;margin-bottom:-2px}.acc-c .chip.acc-no{animation:accNo .5s}@keyframes accNo{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
 .accsw{width:52px;height:32px;border-radius:32px;border:0;background:rgba(var(--w),.18);position:relative;cursor:pointer;flex:none;padding:0}.accsw::after{content:"";position:absolute;left:3px;top:3px;width:26px;height:26px;border-radius:50%;background:#fff;opacity:.85;transition:left .2s}.accsw[disabled]{opacity:.4;cursor:not-allowed}.acc-w{margin:8px 0 2px}.accsw.on{background:var(--mint)}.accsw.on::after{left:23px;opacity:1}
-#stabs{margin-bottom:14px}#security[data-tab=det] #alp,#security[data-tab=det] #scams{display:none}#security:not([data-tab=det]) #dtp{display:none!important}#rtabs,.nptabs{margin-bottom:14px}.nptabs{margin-top:14px}
+#stabs{margin-bottom:calc(14px - var(--tb))}#security[data-tab=det] #alp,#security[data-tab=det] #scams{display:none}#security:not([data-tab=det]) #dtp{display:none!important}#rtabs{margin-bottom:calc(14px - var(--tb))}.chips.tabs.nptabs{margin-bottom:calc(0px - var(--tb))}.chips.tabs.nptabs{margin-top:calc(14px - var(--ty))}
 .np2.il{display:flex;align-items:center}.np2.il svg{width:22px;height:22px;margin-right:8px;vertical-align:0}.np2 .eb{margin-left:auto;padding:6px 12px;font-size:11px}
 .sch{display:flex;align-items:center;gap:14px;margin-bottom:14px}
 .schi{width:52px;height:52px;border-radius:16px;flex:none;display:grid;place-items:center;overflow:hidden;color:var(--mut);background:rgba(var(--w),.07);border:1px solid var(--line)}.schi svg{width:26px;height:26px;fill:currentColor}.schi img{width:100%;height:100%;object-fit:cover;display:block}.schi.has{border-color:rgba(var(--mint-rgb),.55);box-shadow:0 0 16px rgba(var(--mint-rgb),.25)}
@@ -132,6 +132,9 @@ html[data-mode=light] .rooms2 .rc{background:rgba(255,255,255,.72)}
 /* phones: glass pills with a tinted icon (A) */
 .cb2.cA{height:30px;padding:0 12px 0 9px;border-radius:999px;background:rgba(var(--w),.07);border:1px solid var(--line);font-weight:500;font-size:14px;color:var(--ink)}.cb2.cA svg{width:17px;height:17px;fill:var(--k);margin:0!important;vertical-align:middle}
 .cb2.cA.al{background:color-mix(in srgb,var(--k) 15%,transparent);border-color:color-mix(in srgb,var(--k) 42%,transparent)}
+/* room card chips: the colour of what is open / on, the same hues as the tiles inside the room */
+.cb2.k-lights{--k:#c9a227}.cb2.k-doors,.cb2.k-gopen{--k:#bc000a}.cb2.k-windows{--k:#e69500}.cb2.k-covers{--k:#702963}.cb2.k-fans{--k:#2f8fc7}
+html[data-mode=dark] .cb2.k-lights{--k:#fcf2d4}html[data-mode=dark] .cb2.k-doors,html[data-mode=dark] .cb2.k-gopen{--k:#ff5a5f}html[data-mode=dark] .cb2.k-windows{--k:#ffaa00}html[data-mode=dark] .cb2.k-covers{--k:#c46bb5}html[data-mode=dark] .cb2.k-fans{--k:#89cff0}
 /* tablet and up: status dot + mono label (B) */
 .cb2.cB{display:none;height:28px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:rgba(var(--w),.04);font-weight:600;font-size:11px;letter-spacing:.08em;color:var(--ink);white-space:nowrap}.cb2.cB i{width:8px;height:8px;border-radius:50%;background:var(--k);box-shadow:0 0 8px var(--k);flex:none}
 @media(min-width:761px){.cb2.cA{display:none}.cb2.cB{display:inline-flex}}

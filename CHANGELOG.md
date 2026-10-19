@@ -4,6 +4,86 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
+## 1.5.4 - 2026-10-19
+
+### Fixes
+- **Camera view (#view) header, all sizes.** The Person tag no longer sits on top of the sound and mic buttons, LIVE is in the corner where it belongs, and the controls no longer overlap in the dual driveway + garage view.
+  - Phones (upright, and the narrow dual cards in landscape): two rows. Row 1 is the name, Person tag and LIVE; row 2 is sound, mic, Playback, full screen and Close.
+  - Tablets and wide views: one row. The name and Person tag are on the left; LIVE, Playback and Close on the right; sound and mic sit under it.
+  - Dual view: each card has its own header, and the Close button is on one card only (the top card upright, the right-hand card in landscape). The separate round Close that floated above the cards is gone.
+- A new test (`tests/view-header.mjs`) checks every combination (phone and tablet, both orientations, driveway, garage, both, other cameras) for overlaps.
+- The Security page's full-screen camera is unchanged. On phones its buttons are within a few pixels of the #view ones, as before.
+
+## 1.5.3 - 2026-10-19
+
+### Fixes
+- **No more flashing on Now Playing, Weather, GeoNet, Energy and the Rooms list.** These pages were redrawn on every related sensor update, even when nothing visible had changed, which made them flash and replayed their animations. They now keep what is on screen when the content is the same. On Now Playing the progress bar and ring keep running smoothly, and the GeoNet detail panel keeps its scroll position. The Media page's group button no longer redraws its icon each time.
+- A new test (`tests/no-flicker.mjs`) re-runs each page's redraw and fails if anything is rebuilt without a change.
+
+## 1.5.2 - 2026-10-19
+
+### Fixes
+- **Irrigation page no longer flickers while a tap is running.** Every sensor update (the taps send many) rebuilt the whole page, which replayed the pop-up animation and restarted the water wave and the soil chart, so it looked like the page was reloading. Now only the part that actually changed is redrawn; the pop-up, its tabs and the chart stay put, and the wave keeps flowing.
+
+## 1.5.1 - 2026-10-19
+
+### Fixes
+- **Soil moisture card: the three tiles no longer lose their shadow** at the edges and have clear room above the chart.
+- **Scenes and zone pop-ups: the tab row and the list below it are spaced correctly on desktop widths**, as they already were on phones.
+- **Active navigation buttons look the same everywhere.** On the light glass theme the selected capsule is now near-solid white (the DAY look) instead of showing the page colour through it, so LIVE and the other tabs no longer look peach.
+
+## 1.5.0 - 2026-10-19
+
+### New
+- **Animated scroll arrows on the forecast charts and the soil moisture chart.** The hourly chart on Temp, Wind, Rain and UV, and the 72-hour soil chart, fade at the edge that has more and show the same animated arrow as the tab rows. On touch screens the thin scrollbar is hidden, since the arrows replace it; with a mouse it stays.
+
+### Fixes
+- **The selected tab button no longer looks cut off.** Scrolling tab rows clipped the soft shadow of the selected capsule on its left and bottom. The rows now leave room for it, and the capsule has one even bright rim and a soft shadow like the other cards. This covers every tab row (weather, rooms, energy, zones, scenes, security, lyrics, notifications, room Automations, GeoNet), the Detections filters, the Controls chips in Notifications, the Access page chips and the speaker chips on Now Playing.
+- **Soil moisture chart has a gap before the first point and after the last one,** so the lines no longer touch the axis and the latest dot is no longer cut off at the edge.
+
+## 1.4.1 - 2026-10-19
+
+### Fixes
+- **Notifications pop-up no longer blinks.** The header and tabs stay in place and the lists are only redrawn when what they show really changes, so the tab buttons and the Active tiles (water taps, lights) no longer flash while timers, batteries or lights update, and the tab row keeps its scroll position.
+
+## 1.4.0 - 2026-10-19
+
+### Changed
+- **Notifications, Batteries tab restyled.** Each battery is a soft row like the Automations rows, with a battery icon that shows the level and a coloured percentage pill (red at 15% or less, amber under 40%, green above). The "Battery+" ending is dropped from the names.
+
+## 1.3.1 - 2026-10-19
+
+### Fixes
+- **Notifications pop-up has the same card background as the other pop-ups** (solid, no see-through glass), in every visual style, so it matches Automations.
+
+## 1.3.0 - 2026-10-19
+
+### Changed
+- **Notifications pop-up matches the other pop-up cards.** Same header as the Automations pop-up (small label, title, DONE pill instead of the round close button), the same chip tabs (Alerts, Active, Batteries), and soft rows for Controls, Chores and Timers instead of white cards. It is still the side panel on tablets and computers and full screen on phones.
+- **The Notifications tabs show the animated scroll arrow** when they do not fit (narrow phones, long counts), the same as the other scrollable tab rows.
+
+## 1.2.1 - 2026-10-19
+
+### Fixes
+- **Automations pop-up: no yellow tint on ticked rows.** A switched-on row (for example Presence sensor) keeps the normal row colour and border; the green check and its glow are the only on-signal.
+
+## 1.2.0 - 2026-10-19
+
+### New
+- **Phone Media page: lyrics icon and a compact player.** The player card is about half the height, so the next speaker stays in view, and the lyrics open from an icon on the card as a sheet that slides up (with a small play/pause row). The sideways pager is gone on phones, which also makes the page scroll in one normal swipe. Tablets and computers keep the lyrics beside the player.
+- **Security tabs slide like the Rooms tabs.** Switching between Live and Detections slides and staggers the content the same way.
+- **Notifications has a Batteries tab.** Low batteries moved out of Alerts into their own tab (Alerts, Active, Batteries), with a count; the header glow still counts them.
+
+### Changed
+- **The garage door is no longer listed under Doors** in Notifications (it has its own alert).
+- **Media page header: Open Spotify and Group Speakers buttons have icons**, and show icons only on phones. Group Speakers turns into Ungroup while speakers are grouped.
+
+### Fixes
+- **Now Playing glow no longer flickers.** The Media page only redraws a player card when something you can see changes, so the album-art glow keeps running smoothly instead of restarting on every update from Home Assistant.
+- **Play/pause ignores an accidental double tap.** A second tap within about a third of a second is ignored, so a double fire can no longer pause and resume at once.
+- **Selected buttons in the light Liquid Glass theme** (tabs, chips, toggles) are a brighter translucent glass capsule with a bright rim and a soft shadow, and the label takes the accent colour, instead of a plain white blob.
+- **Room card chips are coloured again.** Open doors are red, windows amber, curtains purple, fans blue, lights warm and the garage red when open, in light and dark mode.
+
 ## 1.1.0 - 2026-10-19
 
 ### New

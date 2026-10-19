@@ -96,7 +96,10 @@ function secTab(t) {   // Security page: LIVE (alarm + cameras) or DETECTIONS (l
   const pg = $("#security"), tb = $("#stabs"), has = dtCams().length && CONFIG.detections !== false && ruSec("detections"); pg.dataset.tab = has ? t : "live";
   tb.style.display = has ? "" : "none"; tb.innerHTML = has ? [["live", "LIVE", "#security"], ["det", "DETECTIONS", "#security/detections"]].map(x => '<button class="chip' + (pg.dataset.tab === x[0] ? " on" : "") + '" data-st="' + x[2] + '">' + x[1] + '</button>').join("") : "";
   if (pg.dataset.tab === "det") { stopCams(); dtInit(); } else drawAlarm();
+  if (secPrev && secPrev !== pg.dataset.tab) { const d = pg.dataset.tab === "det" ? 1 : -1; ["#alp", "#scams", "#dtp"].forEach(q => txGo($(q), d, true)); }   // same slide as the Rooms tabs
+  secPrev = pg.dataset.tab;
 }
+let secPrev = "";
 $("#stabs").onclick = e => { const b = e.target.closest("[data-st]"); if (b && location.hash !== b.dataset.st) location.hash = b.dataset.st; };
 function dtInit() { if (!dtCams().length || CONFIG.detections === false || !ruSec("detections")) return; if (!DT.stored) { DT.stored = 1; THDB.load().then(n => { if (n && location.hash === "#security/detections") dtDraw(true); }); } dtDraw(); if (!DT.t0 || Date.now() - DT.t0 > 5 * 60000) dtLoad(); }
 function dtClose() { const m = $("#dtm"), v = $("#dtm video"); m.classList.remove("on"); v.pause(); v.removeAttribute("src"); try { v.load(); } catch (e) {} }

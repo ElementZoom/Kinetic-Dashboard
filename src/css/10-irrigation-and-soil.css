@@ -9,12 +9,12 @@
 .cam,.snap{background:transparent;isolation:isolate;transform:translateZ(0);clip-path:inset(0 round 20px)}.snap{clip-path:inset(0 round 16px)}#vw .cam{clip-path:inset(0 round 22px)}.cam img,.cam video,.snap img{border-radius:inherit;background:transparent}.cam.fs,.cam.vf,#vw .cam{background:#000}
 /* soil moisture history card */
 .imw{display:flex;margin-top:14px}.imy{width:30px;flex:none;display:flex;flex-direction:column;justify-content:space-between;height:150px;font:10px var(--mono);color:var(--mut)}
-.ims{flex:1;min-width:0;overflow-x:auto;scrollbar-width:none;color:var(--ink);-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;touch-action:pan-x pan-y}.ims::-webkit-scrollbar{display:none}.ims svg{display:block}
+.imw>.hsw{flex:1;min-width:0}.ims{flex:1;min-width:0;overflow-x:auto;scrollbar-width:none;color:var(--ink);-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;touch-action:pan-x pan-y}.ims::-webkit-scrollbar{display:none}.ims svg{display:block}
 .iml{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:6px;font-size:12px;color:var(--mut)}.iml .imh{margin-left:auto}
 .irc{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:stretch}.irc>.pn{margin-bottom:14px;min-width:0}
 @media(max-width:760px){.irc{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;gap:12px;align-items:flex-start}.irc::-webkit-scrollbar{display:none}.irc>.pn{flex:0 0 100%;scroll-snap-align:start;margin-bottom:0}.irdots{margin-bottom:6px}}
 @media(min-width:761px){.irdots{display:none}}
-.imc .wg{display:flex;overflow-x:auto;gap:8px;scrollbar-width:none;overscroll-behavior-x:contain}.imc .wg::-webkit-scrollbar{display:none}.imc .ws{flex:1 0 132px;white-space:nowrap}
+.imc .wg{display:flex;overflow-x:auto;gap:8px;padding:10px 10px 16px;margin:-10px -10px -12px;scrollbar-width:none;overscroll-behavior-x:contain}.imc .wg::-webkit-scrollbar{display:none}.imc .ws{flex:1 0 132px;white-space:nowrap}
 @media(max-width:760px){.rn12 .ws{padding:10px}.rn12 .ws b{font-size:17px}}
 .wrs .h3{margin:6px 0}
 @media(max-width:760px){.wrs{padding:10px 14px;margin-bottom:10px}.wrs>.lbl{margin-bottom:2px}.wrs .h3{margin:0;font-size:16px}.wrs .sm{font-size:12px;margin-top:1px}

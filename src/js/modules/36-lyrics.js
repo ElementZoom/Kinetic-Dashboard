@@ -53,13 +53,22 @@ function lyrLoad(tr, key) {
     LY.busy = ""; LY.cache[key] = r; if (LY.key === key) { Object.assign(LY, r); lyrDraw(); }
   }).catch(e => { LY.busy = ""; LY.cache[key] = { st: "err", lines: null, plain: "", t: Date.now(), dbg: dbg.join(" · ") + " · " + String(e && e.message || e) }; if (LY.key === key) { Object.assign(LY, LY.cache[key]); lyrDraw(); } });
 }
+// phone: the lyrics are a sheet, so it carries a close button and a small player row at the bottom
+function lyFoot() {
+  const s = states[LY.ctl] || { state: "", attributes: {} }, a = s.attributes, pl = s.state === "playing";
+  return '<div class="lyf"><span class="npart">' + mpArt(a, s.state, a.entity_picture) + '</span><div class="npi"><b>' + esc(a.media_title || "") + '</b><small>' + esc(a.media_artist || "") + '</small></div><button class="rnd on" data-mp="pp" data-e="' + LY.ctl + '">' + mdi(pl ? "pause" : "play") + '</button></div>';
+}
+const lyClose = () => document.body.classList.remove("ly-open");
+function lyOpen(ctl) { if (ctl) LY.sel = ctl; LY.open = true; try { localStorage.setItem("dashLyr", "1"); } catch (_) {} document.body.classList.add("ly-open"); LY.drawn = ""; lyrUpdate(); }
+document.addEventListener("click", e => { if (e.target === document.body && document.body.classList.contains("ly-open")) lyClose(); });
+addEventListener("hashchange", lyClose);
 function lyrDraw(tr) {
-  const el = $("#lyr"), k = [LY.key, LY.st, LY.open, LY.sel, LY.tabs.join(), LY.off].join("|"); if (k === LY.drawn) return; LY.drawn = k;
+  const el = $("#lyr"), k = [LY.key, LY.st, LY.open, LY.sel, LY.tabs.join(), LY.off, (states[LY.ctl] || {}).state].join("|"); if (k === LY.drawn) return; LY.drawn = k;
   const msg = { load: "Looking for lyrics…", none: "No lyrics found for this song.", inst: "Instrumental.", err: "Couldn’t reach the lyrics service (the device needs internet).", "": "" }[LY.st] || "";
   const body = !LY.open ? "" : LY.st === "sync" ? '<div class="lyb">' + LY.lines.map((l, i) => '<div class="ly" data-t="' + l.t + '" data-i="' + i + '">' + (esc(l.s) || "♪") + '</div>').join("") + '</div>'
     : LY.st === "plain" ? '<div class="lyb plain">' + esc(LY.plain) + '</div>' : '<div class="sm" style="margin-top:12px">' + msg + '</div><div class="sm lyd">' + esc((LY.key || "").replace(/\|/g, " · ") + (LY.dbg ? "  →  " + LY.dbg : "")) + '</div><button class="eb" style="margin-top:10px" data-ly="retry">TRY AGAIN</button>';
-  el.innerHTML = '<div class="lbl lyh" data-ly="tog">' + mdi("music-note") + ' Lyrics' + (LY.st === "sync" ? ' · synced' : "") + (LY.st === "sync" && LY.open ? '<span class="lyo" title="Lyrics running late? press +. Too early? press −"><button class="chip" data-ly="off-">−</button><b>' + (LY.off > 0 ? "+" : "") + LY.off.toFixed(1) + 's</b><button class="chip" data-ly="off+">+</button></span>' : "") + '<span class="npch">' + mdi(LY.open ? "chevron-up" : "chevron-down") + '</span></div>' +
-    (LY.open && LY.tabs.length ? '<div class="chips tabs lyt">' + LY.tabs.map(t => '<button class="chip' + (t[0] === LY.sel ? " on" : "") + '" data-ly="sel" data-c="' + t[0] + '">' + mdi("speaker") + esc(t[1]) + '</button>').join("") + '</div>' : "") + body;
+  el.innerHTML = '<div class="lbl lyh" data-ly="tog">' + mdi("music-note") + ' Lyrics' + (LY.st === "sync" ? ' · synced' : "") + (LY.st === "sync" && LY.open ? '<span class="lyo" title="Lyrics running late? press +. Too early? press −"><button class="chip" data-ly="off-">−</button><b>' + (LY.off > 0 ? "+" : "") + LY.off.toFixed(1) + 's</b><button class="chip" data-ly="off+">+</button></span>' : "") + '<span class="npch">' + mdi(LY.open ? "chevron-up" : "chevron-down") + '</span><button class="chip lyx" data-ly="close" aria-label="Close">' + mdi("close") + '</button></div>' +
+    (LY.open && LY.tabs.length ? '<div class="chips tabs lyt">' + LY.tabs.map(t => '<button class="chip' + (t[0] === LY.sel ? " on" : "") + '" data-ly="sel" data-c="' + t[0] + '">' + mdi("speaker") + esc(t[1]) + '</button>').join("") + '</div>' : "") + body + lyFoot();
   LY.cur = -1; lyrTick(true);
 }
 function lyrTick(jump) {
@@ -78,6 +87,7 @@ $("#lyr").onclick = e => {
   if (of) { LY.off = Math.max(-10, Math.min(10, Math.round((LY.off + (of.dataset.ly === "off+" ? 0.5 : -0.5)) * 10) / 10)); try { localStorage.setItem("dashLyOff", LY.off); } catch (_) {} LY.drawn = ""; lyrDraw(); return; }
   const sb = e.target.closest("[data-ly=sel]"); if (sb) { LY.sel = sb.dataset.c; LY.drawn = ""; lyrUpdate(); return; }
   if (e.target.closest("[data-ly=retry]")) { delete LY.cache[LY.key]; LY.busy = ""; LY.drawn = ""; LY.st = ""; lyrUpdate(); return; }
+  if (e.target.closest("[data-ly]") && innerWidth <= 760) { lyClose(); return; }
   if (e.target.closest("[data-ly]")) { LY.open = !LY.open; try { localStorage.setItem("dashLyr", LY.open ? "1" : "0"); } catch (_) {} LY.drawn = ""; lyrUpdate(); return; }
   const l = e.target.closest(".ly"); if (l && LY.ctl) { mpSeek(LY.ctl); call("media_player", "media_seek", LY.ctl, { seek_position: +l.dataset.t }); }
 };
@@ -114,14 +124,15 @@ function mpPos(id) {
 }
 const mpData = id => { const q = mpPos(id); return 'data-pos="' + q.pos.toFixed(2) + '" data-upd="' + new Date(srvNow()).toISOString() + '" data-dur="' + q.dur + '" data-play="' + (q.play ? 1 : 0) + '"'; };
 const mpSeek = id => { (MPK[id] = MPK[id] || {}).seek = srvNow(); };
+const MPT = {};   // last play / pause tap per speaker: a second tap within 350 ms is ignored (a double fire would pause then resume at once)
 function mpDo(m, id) {
   if (m === "prev" || m === "next") mpSeek(id);
-  const a = (states[id] || {}).attributes || {}, ids = CONFIG.media;
-  if (m === "pp") call("media_player", "media_play_pause", id);
-  else if (m === "prev") call("media_player", "media_previous_track", id);
-  else if (m === "next") call("media_player", "media_next_track", id);
-  else if (m === "shuffle") call("media_player", "shuffle_set", id, { shuffle: !a.shuffle });
-  else if (m === "repeat") call("media_player", "repeat_set", id, { repeat: !a.repeat || a.repeat === "off" ? "all" : a.repeat === "all" ? "one" : "off" });
+  const a = (states[id] || {}).attributes || {}, ids = CONFIG.media, tg = id, ta = (states[tg] || {}).attributes || a;
+  if (m === "pp") { const n = Date.now(); if (n - (MPT[id] || 0) < 350) return true; MPT[id] = n; call("media_player", "media_play_pause", tg); }
+  else if (m === "prev") call("media_player", "media_previous_track", tg);
+  else if (m === "next") call("media_player", "media_next_track", tg);
+  else if (m === "shuffle") call("media_player", "shuffle_set", tg, { shuffle: !ta.shuffle });
+  else if (m === "repeat") call("media_player", "repeat_set", tg, { repeat: !ta.repeat || ta.repeat === "off" ? "all" : ta.repeat === "all" ? "one" : "off" });
   else if (m === "mute") call("media_player", "volume_mute", id, { is_volume_muted: !a.is_volume_muted });
   else if (m === "join") { const c = ids.filter(x => states[x] && states[x].state === "playing")[0] || ids[0]; call("media_player", "join", c, { group_members: ids.filter(x => x !== c) }); }
   else if (m === "unjoin") ids.forEach(x => call("media_player", "unjoin", x));
@@ -129,6 +140,6 @@ function mpDo(m, id) {
   else return false;
   return true;
 }
-$("#media").onclick = e => { const b = e.target.closest("[data-mp]"); if (b) mpDo(b.dataset.mp, b.dataset.e); };
+$("#media").onclick = e => { const lo = e.target.closest('[data-ly="open"]'); if (lo) { lyOpen(lo.dataset.e); return; } const b = e.target.closest("[data-mp]"); if (b) mpDo(b.dataset.mp, b.dataset.e); };
 $("#media").onchange = e => { const t = e.target; if (t.dataset.vol) call("media_player", "volume_set", t.dataset.vol, { volume_level: +t.value / 100 }); };
 

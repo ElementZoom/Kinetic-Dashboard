@@ -96,7 +96,7 @@ function hzSel(id, fly) {
   HZ.sel = HZ.sel === id && !fly ? "" : id; const d = HZ.d || hzData();
   $$("#hzsvg [data-hk]").forEach(g => g.classList.toggle("sel", g.dataset.hk === HZ.sel));
   $$("#hazards .hzrow").forEach(b => b.classList.toggle("on", b.dataset.v === HZ.sel));
-  const p = $("#hzd"); if (p) { p.innerHTML = hzDetail(d); p.classList.toggle("on", !!HZ.sel); p.scrollTop = 0; }
+  const p = $("#hzd"); if (p) { const hh = hzDetail(d); if (hh !== p._hd) { p._hd = hh; p.innerHTML = hh; p.scrollTop = 0; } p.classList.toggle("on", !!HZ.sel); }   // keep the scroll position while nothing changed
   const hm = $("#hazards .hzm"); if (hm) hm.classList.toggle("dop", !!HZ.sel);
   const it = d.q.concat(d.v).find(x => x.id === HZ.sel);
   if (fly && it && HZ.slide) hzPage(0);

@@ -378,7 +378,7 @@ html[data-mode=light] :where(.pn,.card,.cd,.ws,.pk,.zf,.rc,.tl,.bd,header){backg
 #np{opacity:0;transform:translateY(22px) scale(.97);transition:transform .32s cubic-bezier(.2,.85,.3,1),opacity .25s ease}body.np-open #np{opacity:1;transform:none}
 #np .gone{opacity:0!important;transform:scale(.8)!important;transition:opacity .22s ease,transform .3s cubic-bezier(.4,0,.2,1)!important;pointer-events:none}
 #np{position:absolute;top:10px;right:10px;bottom:10px;width:min(500px,calc(100vw - 20px));overflow:auto;padding:18px 18px 28px;border-radius:24px;background:linear-gradient(160deg,var(--bg2),var(--bg));border:1px solid var(--line);box-shadow:0 10px 40px rgba(0,0,0,.45)}
-#np .nh{display:flex;align-items:center;justify-content:space-between}#np .nh b{font-size:24px;font-weight:300}
+#np .nh{display:flex;align-items:center;gap:12px;padding:0 4px}#np .nh>div{flex:1;min-width:0}#np .nh h3{font-size:22px;font-weight:400;margin:4px 0 0}   /* same header as the Automations pop-up: small label, title, DONE */
 .np2{margin:20px 0 10px}
 .snap{cursor:pointer;border-radius:16px;overflow:hidden;position:relative;margin-bottom:10px}.snap img{width:100%;display:block;aspect-ratio:16/9;object-fit:cover}.snap .lbl{position:absolute;left:12px;top:10px;color:#fff;text-shadow:0 1px 4px #000}
 .nrow{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
@@ -1341,8 +1341,6 @@ html[data-style] #npmini{background-color:var(--bg)}
 :is(.dots,.npdt) i.on,html:not(#x) .wdots i.on{width:22px;background:var(--mint)}
 
 #mpgrp[hidden]{display:none}
-.chips.nptabs{gap:6px}
-.chips.nptabs>.chip{flex:1 1 auto;padding:0 8px!important;font-size:11px;letter-spacing:.02em}
 .mph{display:flex;gap:10px;align-items:center;margin-left:auto}
 .eb.ic{display:inline-flex;align-items:center;gap:8px;text-decoration:none}
 @media(max-width:760px){.eb.ic span{display:none}.eb.ic{width:44px;height:44px;padding:0;justify-content:center;border-radius:50%}.eb.ic svg{width:22px;height:22px}}
@@ -1527,6 +1525,9 @@ body.vwm #vw.two{padding:8px;gap:8px}
 @media(prefers-reduced-motion:reduce){.tl.fx-air.on .tn svg,.tl.fx-air .ar i{animation:none}}
 /* Automations pop-up: a ticked row keeps the plain row look; the green check and its glow are the only "on" cue (no warm tint) */
 html:not(#x) #cpp .cpl .tl.on{background:rgba(var(--w),.05);border-color:var(--line);box-shadow:none}
+/* Notifications pop-up: info cards (Controls, Chores, Timers) use the same soft row as the Automations pop-up */
+html:not(#x) #np .ws{background:rgba(var(--w),.05);border:1px solid var(--line);box-shadow:none;border-radius:20px}
+html:not(#x) #np .wg .ws{border-radius:16px}
 </style>
 </head>
 <body>
@@ -1597,7 +1598,7 @@ html:not(#x) #cpp .cpl .tl.on{background:rgba(var(--w),.05);border-color:var(--l
 // (notification tap such as #view/driveway, #security ...), not the return from the login, and the device has not asked for reduced motion.
 window.brandLogo = function () { var L = window.DASH_LOGO, B = (window.DASH_CONFIG || {}).brand; return L && L.svg ? { svg: L.svg, lockup: !!L.lockup } : B && B.mark ? { svg: B.mark, lockup: false } : null; };   // brand-logo.js wins over brand.mark in config.js
 window.brandMark = function (s) { var g = window.brandLogo(); if (!g) return ""; return g.svg.replace(/\bid="([\w-]+)"/g, 'id="$1' + s + '"').replace(/url\(#([\w-]+)\)/g, 'url(#$1' + s + ')'); };
-window.DASH_VER = "1.2.1";   // the one place to change the version
+window.DASH_VER = "1.3.0";   // the one place to change the version
 (function () { try {
   var B = (window.DASH_CONFIG || {}).brand, el = document.getElementById("bootld"), r = document.documentElement, lp = "on";
   try { lp = localStorage.getItem("dashLogo") || "on"; } catch (e) {}   // Theme page -> "Start-up logo": on | load (no intro) | off (plain spinner, as before)
@@ -4046,10 +4047,10 @@ function drawNotif() {
   $("#hc").title = ks.length ? ks.map(k => k[2]).join(" · ") + (r.all ? " · " : "") + (r.all ? r.all + " notification" + (r.all > 1 ? "s" : "") : "") : r.all ? r.all + " notification" + (r.all > 1 ? "s" : "") : "Notifications";
   if (!open) return;
   const A = actList(), tot = A.reduce((s, x) => s + x.ids.length, 0);
-  $("#np").innerHTML = '<div class="nh"><b>Notifications</b><button class="eb" data-close="1">' + mdi("close") + '</button></div>' +
-    '<div class="chips tabs nptabs"><button class="chip' + (npTab === "alerts" ? " on" : "") + '" data-npt="alerts">ALERTS' + (r.n ? " · " + r.n : "") + '</button><button class="chip' + (npTab === "active" ? " on" : "") + '" data-npt="active">ACTIVE' + (tot ? " · " + tot : "") + '</button><button class="chip' + (npTab === "batteries" ? " on" : "") + '" data-npt="batteries">BATTERIES' + (r.nb ? " · " + r.nb : "") + '</button></div>' +
+  $("#np").innerHTML = '<div class="nh"><div><div class="lbl">Home</div><h3>Notifications</h3></div><button class="eb" data-close="1">DONE</button></div>' +
+    hsw('<div class="chips tabs nptabs"><button class="chip' + (npTab === "alerts" ? " on" : "") + '" data-npt="alerts">ALERTS' + (r.n ? " · " + r.n : "") + '</button><button class="chip' + (npTab === "active" ? " on" : "") + '" data-npt="active">ACTIVE' + (tot ? " · " + tot : "") + '</button><button class="chip' + (npTab === "batteries" ? " on" : "") + '" data-npt="batteries">BATTERIES' + (r.nb ? " · " + r.nb : "") + '</button></div>') +
     (npTab === "active" ? actHtml(A) : npTab === "batteries" ? (r.bh || '<div class="lbl" style="margin:14px 0">All batteries are fine</div>') : (r.n ? "" : '<div class="lbl" style="margin:14px 0">All clear</div>') + r.html);
-  updTiles(); tickIrr();
+  requestAnimationFrame(hsAll); updTiles(); tickIrr();
 }
 let nq = 0;
 function queueNotif() { if (!nq) nq = requestAnimationFrame(() => { nq = 0; drawNotif(); }); }

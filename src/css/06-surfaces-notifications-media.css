@@ -9,7 +9,7 @@ html[data-mode=light] :where(.pn,.card,.cd,.ws,.pk,.zf,.rc,.tl,.bd,header){backg
 #np{opacity:0;transform:translateY(22px) scale(.97);transition:transform .32s cubic-bezier(.2,.85,.3,1),opacity .25s ease}body.np-open #np{opacity:1;transform:none}
 #np .gone{opacity:0!important;transform:scale(.8)!important;transition:opacity .22s ease,transform .3s cubic-bezier(.4,0,.2,1)!important;pointer-events:none}
 #np{position:absolute;top:10px;right:10px;bottom:10px;width:min(500px,calc(100vw - 20px));overflow:auto;padding:18px 18px 28px;border-radius:24px;background:linear-gradient(160deg,var(--bg2),var(--bg));border:1px solid var(--line);box-shadow:0 10px 40px rgba(0,0,0,.45)}
-#np .nh{display:flex;align-items:center;justify-content:space-between}#np .nh b{font-size:24px;font-weight:300}
+#np .nh{display:flex;align-items:center;gap:12px;padding:0 4px}#np .nh>div{flex:1;min-width:0}#np .nh h3{font-size:22px;font-weight:400;margin:4px 0 0}   /* same header as the Automations pop-up: small label, title, DONE */
 .np2{margin:20px 0 10px}
 .snap{cursor:pointer;border-radius:16px;overflow:hidden;position:relative;margin-bottom:10px}.snap img{width:100%;display:block;aspect-ratio:16/9;object-fit:cover}.snap .lbl{position:absolute;left:12px;top:10px;color:#fff;text-shadow:0 1px 4px #000}
 .nrow{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}

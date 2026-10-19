@@ -73,3 +73,6 @@ body.vwm #vw.two{padding:8px;gap:8px}
 @media(prefers-reduced-motion:reduce){.tl.fx-air.on .tn svg,.tl.fx-air .ar i{animation:none}}
 /* Automations pop-up: a ticked row keeps the plain row look; the green check and its glow are the only "on" cue (no warm tint) */
 html:not(#x) #cpp .cpl .tl.on{background:rgba(var(--w),.05);border-color:var(--line);box-shadow:none}
+/* Notifications pop-up: info cards (Controls, Chores, Timers) use the same soft row as the Automations pop-up */
+html:not(#x) #np .ws{background:rgba(var(--w),.05);border:1px solid var(--line);box-shadow:none;border-radius:20px}
+html:not(#x) #np .wg .ws{border-radius:16px}

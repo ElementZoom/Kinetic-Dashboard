@@ -4,6 +4,12 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
+## 1.3.0 - 2026-10-19
+
+### Changed
+- **Notifications pop-up matches the other pop-up cards.** Same header as the Automations pop-up (small label, title, DONE pill instead of the round close button), the same chip tabs (Alerts, Active, Batteries), and soft rows for Controls, Chores and Timers instead of white cards. It is still the side panel on tablets and computers and full screen on phones.
+- **The Notifications tabs show the animated scroll arrow** when they do not fit (narrow phones, long counts), the same as the other scrollable tab rows.
+
 ## 1.2.1 - 2026-10-19
 
 ### Fixes

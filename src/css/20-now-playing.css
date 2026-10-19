@@ -130,8 +130,6 @@ html[data-style] #npmini{background-color:var(--bg)}
 :is(.dots,.npdt) i.on,html:not(#x) .wdots i.on{width:22px;background:var(--mint)}
 
 #mpgrp[hidden]{display:none}
-.chips.nptabs{gap:6px}
-.chips.nptabs>.chip{flex:1 1 auto;padding:0 8px!important;font-size:11px;letter-spacing:.02em}
 .mph{display:flex;gap:10px;align-items:center;margin-left:auto}
 .eb.ic{display:inline-flex;align-items:center;gap:8px;text-decoration:none}
 @media(max-width:760px){.eb.ic span{display:none}.eb.ic{width:44px;height:44px;padding:0;justify-content:center;border-radius:50%}.eb.ic svg{width:22px;height:22px}}

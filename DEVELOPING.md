@@ -33,6 +33,26 @@ npm install && npx playwright install chromium && npm test
 - Each JS file must be valid on its own (`node --check src/js/modules/x.js`). Split only at top level, never inside a function.
 - A line that is exactly `<!-- @include path -->` is replaced by that file. `{{VERSION}}` is replaced by the contents of `VERSION`.
 
+## Links (the `#` routes)
+
+Every page and pop-up has a link, so a Home Assistant notification, button or automation can open it. Add the link after the dashboard's address, for example `…/dash.html#camera/driveway`. Names in `<angle brackets>` come from your own `config.js`; the examples use the sample config.
+
+| Link | Opens |
+|---|---|
+| `#home` `#rooms` `#climate` `#security` `#weather` `#energy` `#irrigation` `#scenes` `#media` `#events` `#vehicle` `#hazards` `#theme` | That page. Only pages in `pages` (and allowed for that user) open; others go to Home. |
+| `#view/auto` | A camera full screen, picked the same way the motion pop-up picks it |
+| `#view/driveway` `#view/garage` `#view/both` | The driveway camera, the garage camera, or both side by side, full screen |
+| `#camera/<name>` or `#view/<name>` | Any camera in `security`, full screen. `<name>` is the camera name in lowercase with dashes: `#camera/side-gate`, `#camera/patio`, `#camera/backyard` |
+| `#security/detections` | The Detections tab of Security |
+| `#rooms/<room id>` | One room, using the `id` from `house:` (`living`, `master`, `kids`, `office`, `laundry`, `garage`, `driveway`, `patio`) |
+| `#rooms/<room id>/doors` | That room, scrolled to its doors and windows |
+| `#weather/temp` `#weather/wind` `#weather/rain` `#weather/uv` | Weather page on that forecast tab, scrolled to it (`#weather/cloud` is the same tab as `uv`) |
+| `#notifications` `#active` `#batteries` | The Notifications pop-up on its Alerts, Active or Batteries tab |
+| `#active/<section>` | Notifications on Active, scrolled to a section: `lights`, `fans`, `light-switches`, `water-taps`, `curtains`, `windows`, `doors`, `appliances`, `laundry`, `towel-heating` |
+| `#arm/home` `#arm/away` `#arm/night` `#disarm` | Sends that command to the alarm panel, then returns to Home |
+
+In the code: `route()` in `src/js/modules/38-energy.js` reads the hash (pages, rooms, weather tabs, notification tabs, alarm links); `viewMode()` in `src/js/modules/12-init.js` handles `#view` and `#camera`, and `slug()` there makes the camera names. Add a new link in `route()` and add it to this table and the one in the README.
+
 ## The pipeline (`.github/workflows/build.yml`)
 
 On every push and pull request: check `dash.html` is up to date, syntax-check every script, boot the page in Chromium.

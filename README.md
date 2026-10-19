@@ -101,6 +101,24 @@ All four styles for Home, Rooms and Theme are in [`docs/screenshots/styles`](doc
 - One engine, one config. Averages and groups are calculated for you, so no template sensors are needed.
 - Everything is optional: leave an entity out and its feature stays hidden. `pages` trims the menu.
 
+## Links for automations
+
+Every page and pop-up has a link, so a Home Assistant notification, button or automation can open it. Add the link after the dashboard's address, for example `…/dash.html#camera/driveway`. Names in `<angle brackets>` come from your own `config.js`; the examples use the sample config.
+
+| Link | Opens |
+|---|---|
+| `#home` `#rooms` `#climate` `#security` `#weather` `#energy` `#irrigation` `#scenes` `#media` `#events` `#vehicle` `#hazards` `#theme` | That page. Only pages in `pages` (and allowed for that user) open; others go to Home. |
+| `#view/auto` | A camera full screen, picked the same way the motion pop-up picks it |
+| `#view/driveway` `#view/garage` `#view/both` | The driveway camera, the garage camera, or both side by side, full screen |
+| `#camera/<name>` or `#view/<name>` | Any camera in `security`, full screen. `<name>` is the camera name in lowercase with dashes: `#camera/side-gate`, `#camera/patio`, `#camera/backyard` |
+| `#security/detections` | The Detections tab of Security |
+| `#rooms/<room id>` | One room, using the `id` from `house:` (`living`, `master`, `kids`, `office`, `laundry`, `garage`, `driveway`, `patio`) |
+| `#rooms/<room id>/doors` | That room, scrolled to its doors and windows |
+| `#weather/temp` `#weather/wind` `#weather/rain` `#weather/uv` | Weather page on that forecast tab, scrolled to it (`#weather/cloud` is the same tab as `uv`) |
+| `#notifications` `#active` `#batteries` | The Notifications pop-up on its Alerts, Active or Batteries tab |
+| `#active/<section>` | Notifications on Active, scrolled to a section: `lights`, `fans`, `light-switches`, `water-taps`, `curtains`, `windows`, `doors`, `appliances`, `laundry`, `towel-heating` |
+| `#arm/home` `#arm/away` `#arm/night` `#disarm` | Sends that command to the alarm panel, then returns to Home |
+
 ## Notes
 - Tested in a mock browser (Playwright with a fake Home Assistant) at phone and tablet sizes; always check on your own devices.
 - Credits for icons, fonts and data sources are in [CREDITS.md](CREDITS.md).

@@ -81,6 +81,9 @@ Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0
 
 ## 1.5.8 - 2026-10-20
 
+### Docs
+- New "Links for automations" table in the README and DEVELOPING.md: every `#` link (pages, cameras, rooms, weather tabs, notification tabs, alarm).
+
 ### Fixes
 - **Media page: the album-colour glow no longer glitches.** Changing the volume (or anything else small) now only moves the slider; before, the whole card was rebuilt, which restarted the glow. A new song keeps the same card, waits for its artwork to load (up to 1.5 s) so there is no blank cover, then swaps the text and fades the glow smoothly from the old album's colour to the new one.
 

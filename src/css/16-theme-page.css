@@ -26,7 +26,7 @@
   .scsm{font:10px var(--mono)!important;letter-spacing:.05em;text-transform:uppercase;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   #scenes .sct .schc{transform:none}#irrigation .zsx .schc{transform:none}#scenes .sct.col .schc{transform:rotate(180deg)}#irrigation .zsx.col .schc{transform:rotate(180deg)}
   #scenes .sct:not(.col) .scb{animation:thIn .25s ease}#irrigation .zsx:not(.col) .scb{animation:thIn .25s ease}
-  #scenes .sct .sctb{margin-bottom:10px}#irrigation .zsx .sctb{margin-bottom:10px}
+  #scenes .sct .sctb{margin-bottom:calc(10px - var(--tb))}#irrigation .zsx .sctb{margin-bottom:calc(10px - var(--tb))}
   #scenes .sct .srl{display:grid;grid-template-columns:1fr 1fr;gap:6px}#irrigation .zsx .srl{display:grid;grid-template-columns:1fr 1fr;gap:6px}#scenes .sct .sr{margin:0;padding:6px 8px;min-height:0;gap:8px}#irrigation .zsx .sr{margin:0;padding:6px 8px;min-height:0;gap:8px}#scenes .sct .sr .sbd{width:28px;height:28px;border-radius:9px}#irrigation .zsx .sr .sbd{width:28px;height:28px;border-radius:9px}#scenes .sct .sr .sbd svg{width:16px;height:16px}#irrigation .zsx .sr .sbd svg{width:16px;height:16px}#scenes .sct .sr b{font-size:13px}#irrigation .zsx .sr b{font-size:13px}#scenes .sct .sr .ts2{font-size:9px;padding:2px 6px}#irrigation .zsx .sr .ts2{font-size:9px;padding:2px 6px}
   #scenes .sct .sr.stp{margin-top:8px}#irrigation .zsx .sr.stp{margin-top:8px}#scenes .sct .mv{margin:4px 0}#irrigation .zsx .mv{margin:4px 0}
 }

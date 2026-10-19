@@ -81,7 +81,7 @@ body.ly-open .mlay.hasly .ly{font-size:20px;padding:8px 10px}body.ly-open .mlay.
 .npw .lbl{display:flex;align-items:center;gap:10px}.npmore,.npw .npmore{margin-left:auto;color:var(--mut);font:600 11px var(--mono);text-decoration:none}
 .npw .nph{display:flex;align-items:center;min-height:36px}.npw .npl{display:flex;align-items:center;gap:6px;border:0;background:transparent;color:var(--mut);font:700 11px var(--mono);letter-spacing:.16em;text-transform:uppercase;padding:8px 8px 8px 0;margin:0;cursor:pointer}.npw .npl svg{width:16px;height:16px;fill:currentColor;margin-left:-2px}.npw .npn{font-weight:600}
 .npw .npt2{margin:-4px -8px -4px auto;width:44px;height:44px;border:0;background:transparent;color:var(--mut);display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer}.npw .npt2 svg{width:22px;height:22px;fill:currentColor}
-.npw .nps{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}.npw .nps::-webkit-scrollbar{display:none}.npw .npg{flex:0 0 100%;min-width:0;scroll-snap-align:start;scroll-snap-stop:always;box-sizing:border-box}
+.npw .nps{padding:0 10px 16px;margin:0 -10px -16px;scroll-padding-inline:10px;display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}.npw .nps::-webkit-scrollbar{display:none}.npw .npg{flex:0 0 100%;min-width:0;scroll-snap-align:start;scroll-snap-stop:always;box-sizing:border-box}
 .npw .npr{margin-top:2px;cursor:default}.npw .npart{cursor:pointer}.npw .nps .npart{width:56px;height:56px;border-radius:12px}.npw .npi b{font-size:17px;font-weight:600}.npw .npi small{font-size:13px}
 .npw .npg>.mpb{margin-top:10px;height:3px}.npw>.mpb,.npw>.npr+.mpb{margin-top:8px;height:3px}
 .npw .nply{display:flex;flex-direction:column;justify-content:center;gap:4px;min-height:74px;padding:0 4px;box-sizing:border-box}.npw .nply div{font-size:14px;color:var(--mut);opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:18px}.npw .nply div.on{font-size:22px;font-weight:600;line-height:1.2;color:var(--mint);opacity:1;white-space:normal;max-height:2.4em;overflow:hidden}
@@ -94,7 +94,7 @@ body.ly-open .mlay.hasly .ly{font-size:20px;padding:8px 10px}body.ly-open .mlay.
 .npi{flex:1;min-width:0}.npi b{display:block;font-weight:500;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.npi small{display:block;color:var(--mut);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .npr .rnd,html[data-style] .npr .rnd{flex:none;box-sizing:border-box;width:44px;height:44px;min-width:44px;max-width:44px;padding:0;margin:0;display:inline-flex;align-items:center;justify-content:center;line-height:0;border-radius:50%}.npr .rnd svg{width:20px;height:20px;display:block;margin:0}.npch svg{width:20px;height:20px;fill:var(--mut)}
 .npw>.mpb{margin-top:10px;height:4px}.npr+.mpb{margin-top:10px}
-#npbody .nps{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}#npbody .nps::-webkit-scrollbar{display:none}#npbody .npg{flex:0 0 100%;min-width:0;scroll-snap-align:start;scroll-snap-stop:always;box-sizing:border-box}
+#npbody .nps{padding:0 10px 16px;margin:0 -10px -16px;scroll-padding-inline:10px;display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}#npbody .nps::-webkit-scrollbar{display:none}#npbody .npg{flex:0 0 100%;min-width:0;scroll-snap-align:start;scroll-snap-stop:always;box-sizing:border-box}
 #npbody .shly{height:100%;min-height:380px;display:flex;flex-direction:column;justify-content:center;gap:14px;text-align:center;padding:14px 6px;box-sizing:border-box}#npbody .shly div{font-size:19px;line-height:1.3;color:var(--mut)}#npbody .shly div.on{font-size:26px;font-weight:600;color:var(--ink)}
 #npbody .npdt{display:flex;justify-content:center;gap:8px;padding-top:12px}#npbody .npdt i{width:8px;height:8px;border-radius:8px;background:rgba(var(--ink-rgb),.25);cursor:pointer}#npbody .npdt i.on{width:22px;background:var(--mint)}
 .npx{display:flex;flex-direction:column;gap:12px;margin-top:14px}
@@ -118,11 +118,12 @@ body.nps-open .npb{transform:none}
 @media(min-width:761px){#npmini,#npsheet{display:none!important}}
 html[data-style] #npmini{background-color:var(--bg)}
 /* one look for every tab row (Rooms, Scenes, Security, Hazards, Energy, forecast, lyrics, room automations): same chip, same size, scrolls sideways when it doesn't fit */
-.chips.tabs{display:flex;flex-wrap:nowrap;gap:8px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;overscroll-behavior-x:contain;padding:0;border:0;border-radius:0;background:none;box-shadow:none}
+.chips.tabs{--tx:10px;--ty:10px;--tb:16px;display:flex;flex-wrap:nowrap;gap:8px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;overscroll-behavior-x:contain;padding:var(--ty) var(--tx) var(--tb);margin:calc(-1*var(--ty)) calc(-1*var(--tx)) calc(-1*var(--tb));border:0;border-radius:0;background:none;box-shadow:none}   /* the extra padding gives the selected capsule's soft shadow room (a scrolling row clips it); the negative margin cancels it so nothing moves */
+.chips.tabs.lyt{margin-top:calc(10px - var(--ty))}
 .chips.tabs::-webkit-scrollbar{display:none}
 .chips.tabs>.chip{flex:none;min-width:0;width:auto;min-height:42px;box-sizing:border-box;display:inline-flex;flex-direction:row;align-items:center;justify-content:center;gap:6px;padding:0 22px;border-radius:12px;font:600 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
 .chips.tabs>.chip svg{width:16px;height:16px;fill:currentColor;flex:none;margin:0}.chips.tabs>.chip span{display:inline;max-width:none;overflow:visible;white-space:nowrap}
-.ehc .chips.tabs{justify-content:safe center;max-width:100%}
+.ehc .chips.tabs{justify-content:safe center;max-width:calc(100% + 2*var(--tx))}
 @media(max-width:760px){.chips.tabs>.chip{padding:0 16px}}
 /* one look for every swipe indicator */
 .dots,.npw .npdt,#npbody .npdt{gap:8px}

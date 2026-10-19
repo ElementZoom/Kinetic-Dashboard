@@ -4,6 +4,15 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
+## 1.5.0 - 2026-10-19
+
+### New
+- **Animated scroll arrows on the forecast charts and the soil moisture chart.** The hourly chart on Temp, Wind, Rain and UV, and the 72-hour soil chart, fade at the edge that has more and show the same animated arrow as the tab rows. On touch screens the thin scrollbar is hidden, since the arrows replace it; with a mouse it stays.
+
+### Fixes
+- **The selected tab button no longer looks cut off.** Scrolling tab rows clipped the soft shadow of the selected capsule on its left and bottom. The rows now leave room for it, and the capsule has one even bright rim and a soft shadow like the other cards. This covers every tab row (weather, rooms, energy, zones, scenes, security, lyrics, notifications, room Automations, GeoNet), the Detections filters, the Controls chips in Notifications, the Access page chips and the speaker chips on Now Playing.
+- **Soil moisture chart has a gap before the first point and after the last one,** so the lines no longer touch the axis and the latest dot is no longer cut off at the edge.
+
 ## 1.4.1 - 2026-10-19
 
 ### Fixes

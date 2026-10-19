@@ -32,7 +32,7 @@ html[data-style=glass] :where(.tl,.bd){border-radius:22px}
 html[data-style=glass] :where(.chip,.eb,.vch){border-radius:999px}
 html[data-style=glass] :where(.rnd){border-radius:50%}
 html[data-style=glass] :is(.eb.on,.chip.on,.seg .on){background:var(--gsel);color:var(--ink);border-color:var(--gfl);box-shadow:var(--gss),inset 0 1px 0 rgba(255,255,255,.45)}
-html[data-style=glass][data-mode=light]:not(#x) :is(.eb.on,.chip.on,.seg .on){background:linear-gradient(rgba(255,255,255,.7),rgba(255,255,255,.38));border-color:rgba(255,255,255,.95);color:var(--mint);-webkit-backdrop-filter:blur(10px) saturate(180%);backdrop-filter:blur(10px) saturate(180%);box-shadow:0 3px 12px rgba(60,70,120,.16),inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(255,255,255,.4)}   /* light glass, like iOS: a brighter translucent capsule with a bright rim; only the label carries the accent */
+html[data-style=glass][data-mode=light]:not(#x) :is(.eb.on,.chip.on,.seg .on){background:linear-gradient(rgba(255,255,255,.7),rgba(255,255,255,.38));border-color:rgba(255,255,255,.95);color:var(--mint);-webkit-backdrop-filter:blur(10px) saturate(180%);backdrop-filter:blur(10px) saturate(180%);box-shadow:0 4px 14px rgba(60,70,120,.12),0 1px 3px rgba(60,70,120,.08),inset 0 0 0 1px rgba(255,255,255,.9)}   /* light glass, like iOS: a brighter translucent capsule with a bright rim; only the label carries the accent */
 html[data-style=glass] #btab{border-radius:999px;padding:7px}
 html[data-style=glass] #btab a,html[data-style=glass] #btab button{border-radius:999px}
 html[data-style=glass] :is(#btab a.on,#btab button.on,#mshe a.on){background:var(--gsel);color:var(--mint);box-shadow:var(--gss),inset 0 1px 0 rgba(255,255,255,.5)}

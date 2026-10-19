@@ -1,4 +1,5 @@
 // ---------- Now Playing (Home card · mobile mini player · bottom sheet) ----------
+const npPw = s => { const c = s.firstElementChild; return (c && c.offsetWidth) || s.clientWidth; };   // one page of the sideways pager (the scroller itself is 20 px wider, to leave room for the chips' shadow)
 const fmtT = t => { t = Math.round(t); return Math.floor(t / 60) + ":" + ("0" + (t % 60)).slice(-2); };
 let npAnim = 0, npOpen = true, npSheet = false, npSeen = {}, npPage = 0, npHoldT = 0;   // npOpen = the Home card shows the player + lyrics pages (false = one slim row)
 try { npOpen = localStorage.getItem("dashNp") !== "0"; } catch (_) {}
@@ -66,7 +67,7 @@ function npRender() {
   const aH = npAnim; npAnim = 0;
   w.innerHTML = '<div class="nph"><button class="npl" data-np="media"><span class="nptx">' + (npPage ? "Lyrics" : "Now playing") + '</span>' + (act.length > 1 ? '<span class="npn">+' + (act.length - 1) + '</span>' : "") + mdi("chevron-right") + '</button><button class="npt2" data-np="tog" aria-label="' + (npOpen ? "Collapse" : "Expand") + '">' + mdi(npOpen ? "chevron-up" : "chevron-down") + '</button></div>' +
     (npOpen ? '<div class="nps"><div class="npg">' + rowX + c.prog + ctl + '</div>' + (hasLy ? '<div class="npg"><div class="nply">' + hlLn(HL.lines, hlIdx()) + '</div></div>' : "") + '</div>' + (hasLy ? '<div class="npdt"><i data-npg="0"' + (npPage ? "" : ' class="on"') + '></i><i data-npg="1"' + (npPage ? ' class="on"' : "") + '></i></div>' : "") : rowH + c.prog);
-  { const sl = $(".nps", w); if (sl && npPage) sl.scrollLeft = npPage * sl.clientWidth; }
+  { const sl = $(".nps", w); if (sl && npPage) sl.scrollLeft = npPage * npPw(sl); }
   if (aH && w.animate && !matchMedia("(prefers-reduced-motion:reduce)").matches) {   // smooth expand / collapse
     const nh = w.offsetHeight, ease = "cubic-bezier(.2,.8,.2,1)";
     if (Math.abs(nh - aH) > 4) {
@@ -88,7 +89,7 @@ function npRender() {
     SL.lines = sh ? ss.lines : null; SL.ctl = g.ctl; SL.cur = -2; if (!sh) npsPage = 0;
     $("#npbody").innerHTML = '<div class="lbl"><span class="nptx">' + (npsPage ? "Lyrics" : "Now playing") + '</span><button class="rnd s" data-np="close">' + mdi("close") + '</button></div>' +
       (sh ? '<div class="nps"><div class="npg">' + npPlay(g, true) + '</div><div class="npg"><div class="shly">' + slLn(SL.lines, hlIdx(SL.lines, SL.ctl)) + '</div></div></div><div class="npdt"><i data-npg="0"' + (npsPage ? "" : ' class="on"') + '></i><i data-npg="1"' + (npsPage ? ' class="on"' : "") + '></i></div>' : npPlay(g, true));
-    { const sl = $("#npbody .nps"); if (sl && npsPage) sl.scrollLeft = npsPage * sl.clientWidth; }
+    { const sl = $("#npbody .nps"); if (sl && npsPage) sl.scrollLeft = npsPage * npPw(sl); }
   } else { clearTimeout(npbT); npbT = setTimeout(() => { if (!npSheet) $("#npbody").innerHTML = ""; }, 420); }
   const hn = $("#hnp");
   if (isMobile() || onMed) hn.innerHTML = "";
@@ -108,7 +109,7 @@ let npbT = 0, npq = 0; const queueNp = () => { if (!npq) npq = requestAnimationF
 function npClick(e) {
   const n = e.target.closest("[data-np]"), b = e.target.closest("[data-mp]");
   if (b) { e.stopPropagation(); mpDo(b.dataset.mp, b.dataset.e); return; }
-  const dg = e.target.closest("[data-npg]"); if (dg) { const sl = $(dg.closest("#npbody") ? "#npbody .nps" : "#npw .nps"); if (sl) sl.scrollTo({ left: +dg.dataset.npg * sl.clientWidth, behavior: "smooth" }); return; }
+  const dg = e.target.closest("[data-npg]"); if (dg) { const sl = $(dg.closest("#npbody") ? "#npbody .nps" : "#npw .nps"); if (sl) sl.scrollTo({ left: +dg.dataset.npg * npPw(sl), behavior: "smooth" }); return; }
   if (!n) return;
   const k = n.dataset.np;
   if (k === "tog") { npAnim = $("#npw").offsetHeight; npOpen = !npOpen; try { localStorage.setItem("dashNp", npOpen ? "1" : "0"); } catch (_) {} }
@@ -117,8 +118,8 @@ function npClick(e) {
   else if (k === "close") npSheet = false;
   npRender();
 }
-$("#npw").addEventListener("scroll", e => { const g = e.target; if (!g.classList || !g.classList.contains("nps") || !g.clientWidth) return; npHoldT = Date.now() + 700; const i = Math.round(g.scrollLeft / g.clientWidth); npPage = i; $$("#npw .npdt i").forEach((d, k) => d.classList.toggle("on", k === i)); const t = $("#npw .nptx"); if (t) t.textContent = i ? "Lyrics" : "Now playing"; }, true);
-$("#npbody").addEventListener("scroll", e => { const g = e.target; if (!g.classList || !g.classList.contains("nps") || !g.clientWidth) return; npHoldT = Date.now() + 700; const i = Math.round(g.scrollLeft / g.clientWidth); npsPage = i; $$("#npbody .npdt i").forEach((d, k) => d.classList.toggle("on", k === i)); const t = $("#npbody .nptx"); if (t) t.textContent = i ? "Lyrics" : "Now playing"; }, true);
+$("#npw").addEventListener("scroll", e => { const g = e.target; if (!g.classList || !g.classList.contains("nps") || !g.clientWidth) return; npHoldT = Date.now() + 700; const i = Math.round(g.scrollLeft / npPw(g)); npPage = i; $$("#npw .npdt i").forEach((d, k) => d.classList.toggle("on", k === i)); const t = $("#npw .nptx"); if (t) t.textContent = i ? "Lyrics" : "Now playing"; }, true);
+$("#npbody").addEventListener("scroll", e => { const g = e.target; if (!g.classList || !g.classList.contains("nps") || !g.clientWidth) return; npHoldT = Date.now() + 700; const i = Math.round(g.scrollLeft / npPw(g)); npsPage = i; $$("#npbody .npdt i").forEach((d, k) => d.classList.toggle("on", k === i)); const t = $("#npbody .nptx"); if (t) t.textContent = i ? "Lyrics" : "Now playing"; }, true);
 setInterval(() => { if (!SL.lines || !npSheet) return; const i = hlIdx(SL.lines, SL.ctl); if (i === SL.cur) return; SL.cur = i; const el = $("#npbody .shly"); if (el) el.innerHTML = slLn(SL.lines, i); }, 500);
 setInterval(() => { if (!HL.lines || !npOpen || curPg() !== "home") return; const i = hlIdx(); if (i === HL.cur) return; HL.cur = i; const el = $("#npw .nply"); if (el) el.innerHTML = hlLn(HL.lines, i); }, 500);
 $("#npw").onclick = $("#npmini").onclick = $("#npsheet").onclick = $("#hnp").onclick = $("#npfab").onclick = npClick;

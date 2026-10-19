@@ -50,7 +50,7 @@ function hcAxis(d, X, step, bot, icons) {
   });
   return g;
 }
-function hcWrap(head, d, W, H, g, foot) { return head + '<div class="hsc"><svg viewBox="0 0 ' + W + " " + H + '" style="display:block;width:' + W + 'px;height:' + H + 'px;color:var(--ink)">' + g + '</svg></div><div class="sm" style="margin-top:4px">' + foot + '</div>'; }
+function hcWrap(head, d, W, H, g, foot) { return head + hsw('<div class="hsc"><svg viewBox="0 0 ' + W + " " + H + '" style="display:block;width:' + W + 'px;height:' + H + 'px;color:var(--ink)">' + g + '</svg></div>') + '<div class="sm" style="margin-top:4px">' + foot + '</div>'; }
 function windInner(a, wu) {
   const d = hcNow().filter(x => x.wind_speed != null), L1 = '<div class="lbl">' + mdi("weather-windy") + ' Hourly wind · ' + wu + '</div>';
   const cur = fcStats([["Now", a.wind_speed != null ? Math.round(a.wind_speed) + " " + wu + (a.wind_gust_speed != null ? " · gusts " + Math.round(a.wind_gust_speed) : "") : "--"]].concat((() => { const w24 = d.slice(0, 24); if (!w24.length) return []; const hiW = w24.reduce((p, x) => x.wind_speed > p.wind_speed ? x : p, w24[0]), loW = w24.reduce((p, x) => x.wind_speed < p.wind_speed ? x : p, w24[0]); return [["High", Math.round(hiW.wind_speed) + " " + wu + " · " + hr(hiW)], ["Low", Math.round(loW.wind_speed) + " " + wu + " · " + hr(loW)]]; })()));
@@ -149,7 +149,7 @@ function tempInner(a) {
   });
   const d24 = d.slice(0, 24), hiX = d24.reduce((p, x) => +x.temperature > +p.temperature ? x : p, d24[0]), loX = d24.reduce((p, x) => +x.temperature < +p.temperature ? x : p, d24[0]), otS = sv(E("outdoorTemp")), nowT = otS != null && !isNaN(parseFloat(otS)) ? parseFloat(otS) : (a.temperature != null ? +a.temperature : +d[0].temperature);
   const st = fcStats([["Temp now", f1(nowT) + "°"], ["High", Math.round(hiX.temperature) + "° · " + hr(hiX)], ["Low", Math.round(loX.temperature) + "° · " + hr(loX)]]);
-  return L1 + st + '<div class="hsc"><svg viewBox="0 0 ' + W + " " + (H + 16) + '" style="display:block;width:' + W + 'px;height:' + (H + 16) + 'px;color:var(--ink)">' + g + '</svg></div><div class="sm" style="margin-top:4px">Next ' + d.length + ' hours · scroll sideways · blue = rain</div>';
+  return L1 + st + hsw('<div class="hsc"><svg viewBox="0 0 ' + W + " " + (H + 16) + '" style="display:block;width:' + W + 'px;height:' + (H + 16) + 'px;color:var(--ink)">' + g + '</svg></div>') + '<div class="sm" style="margin-top:4px">Next ' + d.length + ' hours · scroll sideways · blue = rain</div>';
 }
 const fcStats = r => '<div class="wg" style="margin:10px 0 14px">' + r.map(x => '<div class="ws"><span class="lbl">' + x[0] + '</span><b>' + x[1] + '</b></div>').join("") + '</div>';
 const hr = x => new Date(x.datetime).toLocaleTimeString([], { hour: "numeric" }).replace(" ", "").toLowerCase();

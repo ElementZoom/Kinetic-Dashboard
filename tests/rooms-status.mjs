@@ -9,7 +9,7 @@ const cfg = `window.DASH_CONFIG = { url: location.origin, token: "", rooms: [{ i
   house: [{ id: "living", name: "Living area", icon: "sofa", lights: ["light.t1"], sections: [{ name: "Living area", items: ["light.t1"] }, { name: "Fans", items: ["fan.t_fan"] }] }],
   tileTimers: { "fan.t_fan": "timer.t_fan" }, tileFx: { "switch.t_rice": "heat", "switch.t_vac": "charge" }, activeAppliances: ["switch.t_rice", "switch.t_vac"], notifTimers: [],
   roomControls: { living: [{ entity: "input_boolean.living_presence_test", name: "Living presence sensor" }, { entity: "input_boolean.adaptive_lighting_test", name: "Adaptive lighting" }] },
-  entities: { weatherWarnings: "sensor.demo_weather_warnings", doorsGroup: "group.demo_doors", towelGroup: "group.demo_towels" },
+  entities: { weatherWarnings: "sensor.demo_weather_warnings", doorsGroup: "group.demo_doors", towelGroup: "group.demo_towels", laundryState: "sensor.demo_washer_state", laundryRemaining: "sensor.demo_washer_remaining", laundryDelay: "sensor.demo_washer_delay" },
   view: { driveway: { id: "camera.d", name: "Driveway", trig: [] }, garage: { id: "camera.g", name: "Garage", trig: [] } },
   leakSensors: [["binary_sensor.demo_leak", "Washing machine", "Water under the machine"]],
   garageAlert: { "camera.g": { sensor: "binary_sensor.demo_garage_contact", opener: "switch.demo_opener", travel: 15 } },
@@ -79,6 +79,20 @@ await page.evaluate(() => { __st("binary_sensor.demo_garage_contact", "off"); __
 await page.evaluate(() => { __st("switch.demo_towel", "on"); __st("group.demo_towels", "on", { entity_id: ["switch.demo_towel"] }); });
 eq("towel rails are listed under Active", await page.evaluate(() => /Towel heating/.test(actHtml(actList()))), true);
 eq("towel rails are not in Alerts", await page.evaluate(() => !/Towel heating/.test(notif(true).html)), true);
+eq("towel heating shows in the strip", await kind(), ["towel", ""]);
+await page.evaluate(() => { __st("sensor.demo_washer_state", "Run"); __st("sensor.demo_washer_remaining", "480"); });
+eq("laundry running beats towel heating in the strip", await kind(), ["laundry", "+1"]);
+eq("laundry is a tile in Active with its time", await page.evaluate(() => { const h = actHtml(actList()); return /class="ldt run"/.test(h) && /RUNNING/.test(h) && />8m</.test(h) && /drum/.test(h); }), true);
+eq("laundry is no longer in Alerts", await page.evaluate(() => !/Laundry/.test(notif(true).html)), true);
+await page.evaluate(() => { document.body.classList.add("np-open"); npTab = "active"; drawNotif(); });
+const drum0 = await page.evaluate(() => { const e = document.querySelector("#npc .ldt"); e.dataset.keep = "1"; return !!e; });
+await page.evaluate(() => { __st("sensor.demo_washer_remaining", "420"); drawNotif(); });
+eq("the minute ticking over updates the time without redrawing the tile", await page.evaluate(() => { const e = document.querySelector("#npc .ldt"); return [!!e && e.dataset.keep === "1", document.querySelector("#npc .ldr").textContent]; }), [true, "7m"]);
+await page.evaluate(() => { document.body.classList.remove("np-open"); npTab = "alerts"; });
+await page.evaluate(() => { __st("sensor.demo_washer_state", "Delay Run"); __st("sensor.demo_washer_delay", "2h 0m"); });
+eq("a delayed start is listed but not animated and not in the strip", await page.evaluate(() => { const h = actHtml(actList()); return [/DELAYED START/.test(h), /ldt run/.test(h)]; }), [true, false]);
+eq("delayed laundry leaves the strip on towel heating", await kind(), ["towel", ""]);
+await page.evaluate(() => { __st("sensor.demo_washer_state", "Off"); });
 await page.evaluate(() => { __st("switch.demo_towel", "off"); __st("group.demo_towels", "off", { entity_id: ["switch.demo_towel"] }); });
 const chipCol = mode => page.evaluate(m => { document.documentElement.dataset.mode = m; const h = document.createElement("div"); h.className = "rc"; h.innerHTML = '<div class="ts">' + ["lights", "doors", "windows", "covers", "fans", "gopen", "gshut"].map(k => '<span class="cb2 cA al k-' + k + '"></span>').join("") + '</div>'; document.body.appendChild(h); const r = [...h.querySelectorAll(".cb2")].map(e => getComputedStyle(e).getPropertyValue("--k").trim()); h.remove(); return r; }, mode);
 for (const m of ["light", "dark"]) { const c = await chipCol(m); eq("room card chips are coloured (" + m + ")", [c.slice(0, 6).every(x => /^#/.test(x)), new Set(c.slice(0, 5)).size, /mut|rgba/.test(c[6])], [true, 5, true]); }

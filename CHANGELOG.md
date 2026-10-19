@@ -4,6 +4,12 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
+## 1.5.7 - 2026-10-19
+
+### New
+- **Laundry moved from Alerts to Active, with an animated washing-machine tile.** While the washer runs the tile is blue with a wave moving inside the drum, a soft glow and the time remaining; a delayed start shows as a plain "Delayed start" tile. The minute ticking over only changes the time, so the animation is not restarted.
+- **Laundry running and towel heating now join the clock-strip icon.** Priority is now water leak, weather warning, garage open, door open, water on, laundry running, then towel heating, and the "+n" badge counts every other condition that is active. The laundry icon is the same animated drum.
+
 ## 1.5.6 - 2026-10-19
 
 ### Fixes

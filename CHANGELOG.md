@@ -6,6 +6,9 @@ Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0
 
 ## 1.5.4 - 2026-10-19
 
+### Docs
+- README screenshots for Notifications, Rooms, Security, Weather and Irrigation (phone and tablet, dark and light) and the tablet grid were retaken with the current look. All data in them is invented.
+
 ### Fixes
 - **Camera view (#view) header, all sizes.** The Person tag no longer sits on top of the sound and mic buttons, LIVE is in the corner where it belongs, and the controls no longer overlap in the dual driveway + garage view.
   - Phones (upright, and the narrow dual cards in landscape): two rows. Row 1 is the name, Person tag and LIVE; row 2 is sound, mic, Playback, full screen and Close.

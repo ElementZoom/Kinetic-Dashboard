@@ -4,6 +4,11 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
+## 1.4.1 - 2026-10-19
+
+### Fixes
+- **Notifications pop-up no longer blinks.** The header and tabs stay in place and the lists are only redrawn when what they show really changes, so the tab buttons and the Active tiles (water taps, lights) no longer flash while timers, batteries or lights update, and the tab row keeps its scroll position.
+
 ## 1.4.0 - 2026-10-19
 
 ### Changed

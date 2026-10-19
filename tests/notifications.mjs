@@ -35,6 +35,7 @@ await page.click('#np [data-npt="batteries"]'); await page.waitForTimeout(200);
 t = await txt();
 eq("Batteries tab lists them, lowest first", [/Soil Sensor One/.test(t), /20%/.test(t), t.indexOf("Soil Sensor") < t.indexOf("Rain Sensor"), /Side Sliding/.test(t)], [true, true, true, false]);
 eq("the tab is the selected one", await page.evaluate(() => document.querySelector('#np [data-npt="batteries"]').classList.contains("on")), true);
+eq("a redraw with nothing new keeps the same tabs and list (no flicker)", await page.evaluate(() => { const c = document.querySelector("#np .nptabs .chip"), k = document.querySelector("#npc").firstElementChild; c._m = 1; k._m = 1; drawNotif(); drawNotif(); return [document.querySelector("#np .nptabs .chip")._m === 1, document.querySelector("#npc").firstElementChild._m === 1]; }), [true, true]);
 eq("tabs with bigger counts scroll and show the animated arrow on a phone", await page.evaluate(() => { const c = document.querySelector("#np .nptabs"), k = [...c.children]; k[0].textContent = "ALERTS · 12"; k[1].textContent = "ACTIVE · 11"; k[2].textContent = "BATTERIES · 14"; hsAll(); const w = c.closest(".hsw"); return [!!w, c.scrollWidth > c.clientWidth, !!w && w.classList.contains("more")]; }), [true, true, true]);
 await page.evaluate(() => { states["sensor.a_battery_plus"].state = "90"; states["sensor.b_battery_plus"].state = "90"; drawNotif(); });
 await page.waitForTimeout(200);

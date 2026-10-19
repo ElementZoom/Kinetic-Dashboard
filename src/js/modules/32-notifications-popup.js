@@ -81,10 +81,14 @@ function drawNotif() {
   $("#hc").title = ks.length ? ks.map(k => k[2]).join(" · ") + (r.all ? " · " : "") + (r.all ? r.all + " notification" + (r.all > 1 ? "s" : "") : "") : r.all ? r.all + " notification" + (r.all > 1 ? "s" : "") : "Notifications";
   if (!open) return;
   const A = actList(), tot = A.reduce((s, x) => s + x.ids.length, 0);
-  $("#np").innerHTML = '<div class="nh"><div><div class="lbl">Home</div><h3>Notifications</h3></div><button class="eb" data-close="1">DONE</button></div>' +
-    hsw('<div class="chips tabs nptabs"><button class="chip' + (npTab === "alerts" ? " on" : "") + '" data-npt="alerts">ALERTS' + (r.n ? " · " + r.n : "") + '</button><button class="chip' + (npTab === "active" ? " on" : "") + '" data-npt="active">ACTIVE' + (tot ? " · " + tot : "") + '</button><button class="chip' + (npTab === "batteries" ? " on" : "") + '" data-npt="batteries">BATTERIES' + (r.nb ? " · " + r.nb : "") + '</button></div>') +
-    (npTab === "active" ? actHtml(A) : npTab === "batteries" ? (r.bh || '<div class="lbl" style="margin:14px 0">All batteries are fine</div>') : (r.n ? "" : '<div class="lbl" style="margin:14px 0">All clear</div>') + r.html);
-  requestAnimationFrame(hsAll); updTiles(); tickIrr();
+  // the header and tabs are built once and only updated in place; the list below is only replaced when its HTML really changes, so nothing blinks on a state update
+  const np = $("#np"), tb = [["alerts", "ALERTS", r.n], ["active", "ACTIVE", tot], ["batteries", "BATTERIES", r.nb]]; let tc = false;
+  if (!np.querySelector(".nptabs")) { tc = true; np.innerHTML = '<div class="nh"><div><div class="lbl">Home</div><h3>Notifications</h3></div><button class="eb" data-close="1">DONE</button></div>' + hsw('<div class="chips tabs nptabs">' + tb.map(t => '<button class="chip" data-npt="' + t[0] + '"></button>').join("") + '</div>') + '<div id="npc"></div>'; }
+  np.querySelectorAll(".nptabs .chip").forEach((c, k) => { const tx = tb[k][1] + (tb[k][2] ? " · " + tb[k][2] : ""); if (c.textContent !== tx) { c.textContent = tx; tc = true; } c.classList.toggle("on", c.dataset.npt === npTab); });
+  const body = npTab === "active" ? actHtml(A) : npTab === "batteries" ? (r.bh || '<div class="lbl" style="margin:14px 0">All batteries are fine</div>') : (r.n ? "" : '<div class="lbl" style="margin:14px 0">All clear</div>') + r.html, nc = $("#npc"), key = npTab + "|" + body;
+  if (nc._k !== key) { nc._k = key; nc.innerHTML = body; }
+  if (tc) requestAnimationFrame(hsAll);
+  updTiles(); tickIrr();
 }
 let nq = 0;
 function queueNotif() { if (!nq) nq = requestAnimationFrame(() => { nq = 0; drawNotif(); }); }

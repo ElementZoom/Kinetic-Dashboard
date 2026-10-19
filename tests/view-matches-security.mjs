@@ -28,9 +28,11 @@ async function shape(open, land) {
 }
 const sec = async p => { await p.evaluate(() => { location.hash = "#security"; }); await p.waitForTimeout(500); await p.evaluate(() => document.querySelector("#scams .cam").click()); await p.waitForTimeout(500); };
 const vw = async p => { await p.evaluate(() => { location.hash = "#view/garage"; }); };
+// positions are in thirds of a pixel; the #view header now has its own two-row layout, so a few pixels of difference is fine, a different place is not
+const near = (x, y) => { if (x === y) return true; if (x === "hidden" || y === "hidden") return false; const p = x.split(",").map(Number), q = y.split(",").map(Number); return Math.abs(p[0] - q[0]) <= 3 && Math.abs(p[1] - q[1]) <= 3 && Math.abs(p[2] - q[2]) <= 1 && Math.abs(p[3] - q[3]) <= 1; };
 for (const land of [false, true]) {
   const a = await shape(sec, land), b = await shape(vw, land), tag = land ? "landscape" : "portrait";
-  for (const k of ["lbl", "lv", "cx", "fsb", "aud"]) { checks++; if (a[k] !== b[k]) problems.push(`${tag} ${k}: Security ${a[k]}, #view ${b[k]}`); }
+  for (const k of ["lbl", "lv", "cx", "fsb", "aud"]) { checks++; if (!near(a[k], b[k])) problems.push(`${tag} ${k}: Security ${a[k]}, #view ${b[k]}`); }
   checks++; if (b.cx === "hidden") problems.push(`${tag}: #view has no X on the card`);
   checks++; if (b.vwx !== "none") problems.push(`${tag}: the separate round X is still showing`);
 }

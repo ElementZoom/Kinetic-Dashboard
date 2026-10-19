@@ -79,3 +79,25 @@ html:not(#x) #np .wg .ws{border-radius:16px}
 
 /* 1.5.1: room between the Scenes / zone pop-up tabs and the list on every width (the phone-only rule left it flush on desktop) */
 .chips.tabs.sctb{margin-bottom:calc(10px - var(--tb))}
+
+/* 1.5.4 camera view (#view) top controls: name + Person tag, LIVE, Playback and Close. Two rows on phones, one row on tablets and wide views;
+   the Person tag never sits on the sound / mic buttons and LIVE is in the corner. In the dual view the Close button is on one card only. */
+html:not(#x) #vw .cam.vf .vh{display:contents}
+html:not(#x) #vw .cam.vf:not(.ls) .vh{display:flex;flex-wrap:wrap;align-items:center;gap:8px;position:absolute;left:14px;right:14px;top:12px;z-index:4;pointer-events:none}
+html:not(#x) #vw .cam.vf:not(.ls) .vh::after{content:"";flex:0 0 100%;height:0;order:4;margin-top:-8px}
+html:not(#x) #vw .cam.vf:not(.ls) .vh>*{position:static!important;inset:auto!important;transform:none!important;margin:0!important;flex:none;pointer-events:auto}
+html:not(#x) #vw .cam.vf:not(.ls) .vh>.lbl{order:1}
+html:not(#x) #vw .cam.vf:not(.ls) .vh>.dl{order:2}
+html:not(#x) #vw .cam.vf:not(.ls) .vh>.lv{order:3;margin-left:auto!important}
+html:not(#x) #vw .cam.vf:not(.ls) .vh>.aud{order:5;margin-right:auto!important}
+html:not(#x) #vw .cam.vf:not(.ls) .vh>.px{order:6}
+html:not(#x) #vw .cam.vf:not(.ls) .vh>.fsb{order:7}
+html:not(#x) #vw .cam.vf:not(.ls):not(.pb) .vh>.cx{order:8;display:block}
+html:not(#x) #vw .vwx{display:none!important}
+@media(orientation:landscape){html:not(#x) #vw.two .cam.vf[data-k=driveway]:not(.ls):not(.pb) .vh>.cx{display:none}}
+@media(orientation:portrait){html:not(#x) #vw.two .cam.vf[data-k=garage]:not(.ls):not(.pb) .vh>.cx{display:none}}
+/* one row: wide single view, tablet in the dual view */
+@media(min-width:700px){html:not(#x) #vw.one .cam.vf:not(.ls) .vh>.px{order:4;margin-left:0!important}html:not(#x) #vw.one .cam.vf:not(.ls) .vh>.cx{order:5}html:not(#x) #vw.one .cam.vf:not(.ls) .vh::after{order:6}html:not(#x) #vw.one .cam.vf:not(.ls) .vh>.aud{order:7}html:not(#x) #vw.one .cam.vf:not(.ls) .vh>.fsb{display:none!important}}
+@media(orientation:portrait) and (min-width:700px){html:not(#x) #vw.two .cam.vf:not(.ls) .vh>.px{order:4;margin-left:0!important}html:not(#x) #vw.two .cam.vf:not(.ls):not(.pb) .vh>.cx{order:5}html:not(#x) #vw.two .cam.vf:not(.ls) .vh::after{order:6}html:not(#x) #vw.two .cam.vf:not(.ls) .vh>.aud{order:7}html:not(#x) #vw.two .cam.vf:not(.ls) .vh>.fsb{display:none!important}}
+@media(orientation:landscape) and (min-width:1000px){html:not(#x) #vw.two .cam.vf:not(.ls) .vh>.px{order:4;margin-left:0!important}html:not(#x) #vw.two .cam.vf:not(.ls):not(.pb) .vh>.cx{order:5}html:not(#x) #vw.two .cam.vf:not(.ls) .vh::after{order:6}html:not(#x) #vw.two .cam.vf:not(.ls) .vh>.aud{order:7}html:not(#x) #vw.two .cam.vf:not(.ls) .vh>.fsb{display:none!important}}
+html:not(#x) #vw.two .cam.vf:not(.ls) .vh::before{content:"";position:absolute;left:-14px;right:-14px;top:-12px;height:calc(100% + 28px);background:linear-gradient(rgba(0,0,0,.6),transparent);border-radius:22px 22px 0 0;pointer-events:none;z-index:-1}   /* the dual cards have no dark band of their own: keep the labels readable over the picture */

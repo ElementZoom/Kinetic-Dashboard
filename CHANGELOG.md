@@ -4,6 +4,16 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
+## 1.5.4 - 2026-10-19
+
+### Fixes
+- **Camera view (#view) header, all sizes.** The Person tag no longer sits on top of the sound and mic buttons, LIVE is in the corner where it belongs, and the controls no longer overlap in the dual driveway + garage view.
+  - Phones (upright, and the narrow dual cards in landscape): two rows. Row 1 is the name, Person tag and LIVE; row 2 is sound, mic, Playback, full screen and Close.
+  - Tablets and wide views: one row. The name and Person tag are on the left; LIVE, Playback and Close on the right; sound and mic sit under it.
+  - Dual view: each card has its own header, and the Close button is on one card only (the top card upright, the right-hand card in landscape). The separate round Close that floated above the cards is gone.
+- A new test (`tests/view-header.mjs`) checks every combination (phone and tablet, both orientations, driveway, garage, both, other cameras) for overlaps.
+- The Security page's full-screen camera is unchanged. On phones its buttons are within a few pixels of the #view ones, as before.
+
 ## 1.5.3 - 2026-10-19
 
 ### Fixes

@@ -1604,7 +1604,7 @@ html:not(#x) #np .wg .ws{border-radius:16px}
 // (notification tap such as #view/driveway, #security ...), not the return from the login, and the device has not asked for reduced motion.
 window.brandLogo = function () { var L = window.DASH_LOGO, B = (window.DASH_CONFIG || {}).brand; return L && L.svg ? { svg: L.svg, lockup: !!L.lockup } : B && B.mark ? { svg: B.mark, lockup: false } : null; };   // brand-logo.js wins over brand.mark in config.js
 window.brandMark = function (s) { var g = window.brandLogo(); if (!g) return ""; return g.svg.replace(/\bid="([\w-]+)"/g, 'id="$1' + s + '"').replace(/url\(#([\w-]+)\)/g, 'url(#$1' + s + ')'); };
-window.DASH_VER = "1.5.1";   // the one place to change the version
+window.DASH_VER = "1.5.2";   // the one place to change the version
 (function () { try {
   var B = (window.DASH_CONFIG || {}).brand, el = document.getElementById("bootld"), r = document.documentElement, lp = "on";
   try { lp = localStorage.getItem("dashLogo") || "on"; } catch (e) {}   // Theme page -> "Start-up logo": on | load (no intro) | off (plain spinner, as before)
@@ -3325,7 +3325,7 @@ function irrMoist() {
   const dry = Z.filter((z, i) => now[i] < 25), wet = now.every(v => v >= 45);
   const head = dry.length ? esc(dry.map(z => z.name).join(" and ")) + (dry.length > 1 ? " are" : " is") + " getting dry" : wet ? "Soil is still wet, no need to water yet" : "Soil moisture is comfortable";
   const PD = 14, path = a => a.map((v, i) => (i ? "L" : "M") + (PD + i / (a.length - 1) * (W - 2 * PD)).toFixed(1) + " " + y(v).toFixed(1)).join("");   // PD: a gap before the first and after the last point
-  const t0 = Date.now() - 72 * 3600000, ticks = [];
+  const t0 = Math.floor(Date.now() / 600000) * 600000 - 72 * 3600000, ticks = [];   // 10-minute steps, so a redraw with nothing new gives identical markup
   for (let t = Math.ceil(t0 / 86400000 / 1) * 86400000 - 13 * 3600000; t < Date.now(); t += 86400000) if (t > t0 + 3600000) ticks.push(t);
   const lx = t => (PD + (t - t0) / (72 * 3600000) * (W - 2 * PD));
   const svg = '<svg width="' + W + '" height="' + (H + 24) + '"><rect y="0" width="' + W + '" height="' + y(45) + '" fill="#2b8fd6" opacity=".07"/><rect y="' + y(45) + '" width="' + W + '" height="' + (y(25) - y(45)) + '" fill="#3fb6b8" opacity=".12"/><rect y="' + y(25) + '" width="' + W + '" height="' + (H - y(25)) + '" fill="#e0a21f" opacity=".1"/>' +
@@ -3371,11 +3371,25 @@ function drawIrr() {
   const bar = isMobile(), pg = $("#irrigation"), keep = bar ? $("#irrigation .zsx") : null, kst = keep ? keep.scrollTop : 0;
   if (bar) { h += irrBar(); pg.classList.toggle("zop", zSheet); document.body.classList.toggle("pill-open", zSheet); }
   else { h += '<div class="zg">' + CONFIG.irrigation.map(irrZone).join("") + '</div><div class="dots">' + CONFIG.irrigation.map((z, i) => '<i data-zi="' + i + '" title="' + esc(z.name) + '"' + (i === irrI ? ' class="on"' : "") + '></i>').join("") + '</div>'; pg.classList.remove("zop"); }
-  pg.innerHTML = h; tickIrr();
+  const tmp = document.createElement("div"); tmp.innerHTML = h; for (const c of tmp.children) irrStamp(c); irrSync(pg, tmp); tickIrr();   // only the parts that changed are replaced
   { const z = $("#irrigation .zsx"); if (z && kst) z.scrollTop = kst; }
-  const irc = $("#irrigation .irc"); if (irc && irrCi && irc.clientWidth) irc.scrollLeft = irrCi * (irc.clientWidth + 12);
-  const ims = $("#irrigation .ims"); if (ims) { ims.scrollLeft = IH.sc == null ? ims.scrollWidth : IH.sc; requestAnimationFrame(hsAll); ims.onscroll = () => { IH.sc = ims.scrollLeft >= ims.scrollWidth - ims.clientWidth - 4 ? null : ims.scrollLeft; }; }
-  const zg = $("#irrigation .zg"); if (zg && irrI && zg.clientWidth) zg.scrollLeft = irrI * (zg.clientWidth + 14);
+  const irc = $("#irrigation .irc"); if (irc && !irc._r) { irc._r = 1; if (irrCi && irc.clientWidth) irc.scrollLeft = irrCi * (irc.clientWidth + 12); }
+  const ims = $("#irrigation .ims"); if (ims) { if (!ims._r) { ims._r = 1; ims.scrollLeft = IH.sc == null ? ims.scrollWidth : IH.sc; requestAnimationFrame(hsAll); } ims.onscroll = () => { IH.sc = ims.scrollLeft >= ims.scrollWidth - ims.clientWidth - 4 ? null : ims.scrollLeft; }; }
+  const zg = $("#irrigation .zg"); if (zg && !zg._r) { zg._r = 1; if (irrI && zg.clientWidth) zg.scrollLeft = irrI * (zg.clientWidth + 14); }
+}
+// Redraws used to rebuild the whole page on every sensor change (the tap's own sensors update constantly), which made the pop-up, tabs, chart and
+// wave flash and replay their animations. Now each piece is kept while its markup is unchanged; the wave's animation-delay is ignored when comparing.
+const IRR_BOX = /(^|\s)(zsx|scb|zg)(\s|$)/;
+function irrStamp(el) { el._k = el.outerHTML.replace(/animation-delay:-?[\d.]+m?s/g, ""); if (IRR_BOX.test(el.className)) for (const c of el.children) irrStamp(c); }
+function irrSync(o, n) {
+  const oc = [...o.children], nc = [...n.children];
+  nc.forEach((c, i) => {
+    const x = oc[i]; if (!x) { o.appendChild(c); return; }
+    if (x._k === c._k) return;
+    const box = IRR_BOX.exec(c.className), same = box && x.classList.contains(box[2]) && x.classList.contains("col") === c.classList.contains("col");
+    if (same) { x._k = c._k; irrSync(x, c); } else x.replaceWith(c);
+  });
+  oc.slice(nc.length).forEach(x => x.remove());
 }
 function tickIrr() {
   $$(".tmr").forEach(el => {

@@ -4,6 +4,11 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
+## 1.5.2 - 2026-10-19
+
+### Fixes
+- **Irrigation page no longer flickers while a tap is running.** Every sensor update (the taps send many) rebuilt the whole page, which replayed the pop-up animation and restarted the water wave and the soil chart, so it looked like the page was reloading. Now only the part that actually changed is redrawn; the pop-up, its tabs and the chart stay put, and the wave keeps flowing.
+
 ## 1.5.1 - 2026-10-19
 
 ### Fixes

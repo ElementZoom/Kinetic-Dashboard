@@ -90,6 +90,30 @@ if (has) {
   await page.waitForTimeout(4300);
   eq("script worked -> no fallback calls", await page.evaluate(() => window.__sent.map(m => m.domain + "." + m.service)), ["script.start_sprinkler_timer"]);
 }
+// Redraws keep what has not changed (no flicker): the phone pop-up, its tabs and the page cards stay the same elements
+{
+  const ph = await browser.newPage({ viewport: { width: 390, height: 800 }, hasTouch: true, isMobile: true });
+  const pe = []; ph.on("pageerror", e => pe.push(String(e)));
+  await ph.goto(url); await ph.waitForTimeout(800);
+  const r = await ph.evaluate(async () => {
+    document.documentElement.classList.remove("boot"); const lg = document.getElementById("lg"); if (lg) lg.hidden = true;
+    const z = (n, id) => ({ name: n, zone: id, switch: `switch.${id}_water_tap`, flow: `sensor.${id}_water_tap_flow`, timer: `timer.${id}_sprinkler_timer` });
+    CONFIG.irrigation = [z("Driveway", "driveway"), z("Backyard", "backyard")];
+    const st = (id, state, attributes = {}) => { states[id] = { entity_id: id, state, attributes }; };
+    st("switch.driveway_water_tap", "on"); st("sensor.driveway_water_tap_flow", "0.3"); st("switch.backyard_water_tap", "off"); st("sensor.backyard_water_tap_flow", "0");
+    location.hash = "#irrigation"; await new Promise(r => setTimeout(r, 800));
+    zSheet = true; drawIrr(); await new Promise(r => setTimeout(r, 400));
+    const pick = () => ({ pg: [...document.querySelectorAll("#irrigation>*")], box: document.querySelector("#irrigation .zsx"), scb: document.querySelector("#irrigation .zsx .scb"), tabs: document.querySelector("#irrigation .zsx .sctb"), body: document.querySelector("#irrigation .zsb"), wave: document.querySelector("#irrigation .zsb .zwv") });
+    const a = pick(); drawIrr(); await new Promise(r => setTimeout(r, 50)); const b = pick();
+    st("sensor.driveway_water_tap_flow", "0.6"); drawIrr(); await new Promise(r => setTimeout(r, 50)); const c = pick();
+    return { same: a.pg.length === b.pg.length && a.pg.every((e, i) => e === b.pg[i]), waveKept: !!a.wave && a.wave === b.wave, boxKept: a.box === c.box, scbKept: a.scb === c.scb, tabsKept: a.tabs === c.tabs, bodyNew: a.body !== c.body, hasWave: !!a.wave };
+  });
+  eq("phone pop-up: a redraw with nothing new keeps every element", r.same, true);
+  eq("phone pop-up: the water wave is not restarted by it", r.waveKept, true);
+  eq("phone pop-up: a flow change keeps the sheet and tabs, replaces only the zone card", [r.boxKept, r.scbKept, r.tabsKept, r.bodyNew], [true, true, true, true]);
+  pe.forEach(e => problems.push("page error: " + e));
+  await ph.close();
+}
 errors.forEach(e => problems.push("page error: " + e));
 await browser.close(); server.close();
 if (problems.length) { console.error("IRRIGATION FAILED\n - " + problems.join("\n - ")); process.exit(1); }

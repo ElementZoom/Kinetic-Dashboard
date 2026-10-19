@@ -511,10 +511,10 @@ html[data-mode=light] .rooms2 .rc{background:rgba(255,255,255,.72)}
 }
 
 #hc{display:flex;align-items:center;gap:10px;cursor:pointer}#nacc{width:5px;height:30px;border-radius:4px;background:rgba(var(--ink-rgb),.28);box-shadow:none;transition:background .3s,box-shadow .3s}#nacc.on{background:var(--mint);animation:nglow 2.2s ease-in-out infinite}@keyframes nglow{0%,100%{opacity:.45;box-shadow:0 0 3px rgba(var(--mint-rgb),.2)}50%{opacity:1;box-shadow:0 0 14px 2px rgba(var(--mint-rgb),.8)}}@media(prefers-reduced-motion:reduce){#nacc.on{animation:none;box-shadow:0 0 10px rgba(var(--mint-rgb),.6)}}
-/* the strip as an icon: weather warning (amber), garage door open (coral), water on (blue); "+n" when more than one is true */
+/* the strip as an icon: weather warning (amber), garage door open (coral), a door open (yellow), water on (blue); "+n" when more than one is true */
 #nacc[data-k]{position:relative;width:26px;height:26px;border-radius:0;background:none;box-shadow:none;color:var(--nk);display:flex;align-items:center;justify-content:center;animation:nkglow 2.2s ease-in-out infinite}
 #nacc[data-k] svg{width:26px;height:26px;fill:currentColor}
-#nacc[data-k=leak]{--nk:#ff4d5e}#nacc[data-k=warn]{--nk:#ffb04a}#nacc[data-k=garage]{--nk:#ff7a6b}#nacc[data-k=water]{--nk:#5cc8ff}
+#nacc[data-k=leak]{--nk:#ff4d5e}#nacc[data-k=warn]{--nk:#ffb04a}#nacc[data-k=garage]{--nk:#ff7a6b}#nacc[data-k=door]{--nk:#ffc857}#nacc[data-k=water]{--nk:#5cc8ff}
 #nacc[data-more]:not([data-more=""])::after{content:attr(data-more);position:absolute;top:-8px;right:-11px;min-width:16px;height:16px;box-sizing:border-box;padding:0 4px;border-radius:8px;background:var(--nk);color:#10161c;font:700 10px/16px var(--mono);text-align:center}
 @keyframes nkglow{0%,100%{opacity:.6;filter:drop-shadow(0 0 2px var(--nk))}50%{opacity:1;filter:drop-shadow(0 0 8px var(--nk))}}
 @media(prefers-reduced-motion:reduce){#nacc[data-k]{animation:none;filter:drop-shadow(0 0 6px var(--nk))}}
@@ -1626,7 +1626,7 @@ html:not(#x) #vw.two .cam.vf:not(.ls) .vh::before{content:"";position:absolute;l
 // (notification tap such as #view/driveway, #security ...), not the return from the login, and the device has not asked for reduced motion.
 window.brandLogo = function () { var L = window.DASH_LOGO, B = (window.DASH_CONFIG || {}).brand; return L && L.svg ? { svg: L.svg, lockup: !!L.lockup } : B && B.mark ? { svg: B.mark, lockup: false } : null; };   // brand-logo.js wins over brand.mark in config.js
 window.brandMark = function (s) { var g = window.brandLogo(); if (!g) return ""; return g.svg.replace(/\bid="([\w-]+)"/g, 'id="$1' + s + '"').replace(/url\(#([\w-]+)\)/g, 'url(#$1' + s + ')'); };
-window.DASH_VER = "1.5.4";   // the one place to change the version
+window.DASH_VER = "1.5.5";   // the one place to change the version
 (function () { try {
   var B = (window.DASH_CONFIG || {}).brand, el = document.getElementById("bootld"), r = document.documentElement, lp = "on";
   try { lp = localStorage.getItem("dashLogo") || "on"; } catch (e) {}   // Theme page -> "Start-up logo": on | load (no intro) | off (plain spinner, as before)
@@ -4042,14 +4042,16 @@ TOG.forEach(g => { VIRT[g[1]] = () => g[3].filter(x => states[x[0]] && states[x[
 const tapZone = e => (CONFIG.irrigation || []).find(z => z.switch === e);
 const tileTimer = e => { const m = (CONFIG.tileTimers || {})[e]; if (m) return m; const z = tapZone(e); if (z && z.timer) return z.timer; const o = e.split(".")[1]; return ["timer." + o, "timer." + o + "_timer"].find(t => states[t]) || ""; };
 const npItem = (e, o) => { const z = tapZone(e), tap = /^switch\..*water_tap$/.test(e); return Object.assign({ entity: e, timer: tileTimer(e) }, tap ? { water: (z && z.flow) || true } : {}, o || {}); };
+const gar = x => /garage/i.test(x + " " + fname(x)) || Object.keys(galCfg()).some(k => (galCfg()[k] || {}).sensor === x);   // the garage door has its own alert, so it is not listed with the doors
+// open doors from the external-doors group (garage excluded): a list of ids, [] when the group says "on" but cannot say which one, or null when all are shut
+const doorsOpen = () => { const g = E("doorsGroup"), d0 = members(g).filter(x => x !== g && isOn(x)), d = d0.filter(x => !gar(x)); return d.length || (isOn(g) && !d0.length) ? d : null; };
 function notif(full) {
   let n = 0, h = "", bh = "", nb = 0, hasB = false;
   const sec = (t, b) => { if (full && b) h += '<div class="lbl np2">' + t + '</div>' + b; };
   const grid = a => a.length ? '<div class="tg3">' + a.map(tileHtml).join("") + '</div>' : "";
   const al = volcHtml().concat(quakeHtml() || []); n += al.length; sec("Alerts", al.join(""));
-  const gar = x => /garage/i.test(x + " " + fname(x)) || Object.keys(galCfg()).some(k => (galCfg()[k] || {}).sensor === x);   // the garage door has its own alert, so it is not listed here
-  const dr0 = members(E("doorsGroup")).filter(x => x !== E("doorsGroup") && isOn(x)), dr = dr0.filter(x => !gar(x));
-  if (dr.length || (isOn(E("doorsGroup")) && !dr0.length)) { n++; sec("Doors", '<div class="alert q"><b>' + (dr.length || 1) + ' open</b><div>' + dr.map(x => esc(fname(x))).join(" · ") + '</div></div>'); }
+  const dr = doorsOpen();
+  if (dr) { n++; sec("Doors", '<div class="alert q"><b>' + (dr.length || 1) + ' open</b><div>' + dr.map(x => esc(fname(x))).join(" · ") + '</div></div>'); }
   const LK = LEAKS().filter(x => isOn(x[0])), W2 = (CONFIG.alerts || []).filter(x => isOn(x[0]));   // leak sensors first, as red cards
   n += LK.length + W2.length; sec("Warnings", LK.map(x => '<div class="alert q"><div class="lbl">' + mdi("water-alert") + ' WATER LEAK</div><b>' + esc(x[1]) + '</b><div>' + esc(x[2]) + '</div></div>').join("") + grid(W2.map(x => npItem(x[0], { name: x[1], sub: x[2], confirm: /rubbish|recycle/.test(x[0]) }))));
   const wr = states[E("weatherWarnings")];
@@ -4072,15 +4074,16 @@ function notif(full) {
   return { n: n - (hasB ? 1 : 0), all: n, nb: nb, html: h, bh: bh };
 }
 // header strip: normally a glowing bar while something is waiting; it turns into an icon for the conditions below. Priority when several are true:
-// water leak, then weather warning, then garage door open, then water on. The top one shows and a small "+n" says how many more there are.
+// water leak, then weather warning, then garage door open, then a door open, then water on. The top one shows and a small "+n" says how many more there are.
 const LEAKS = () => (CONFIG.leakSensors || []).map(x => { x = [].concat(x); return [x[0], x[1] || fname(x[0]), x[2] || "Water detected"]; });   // config leakSensors: ["binary_sensor.x"] or [["binary_sensor.x", "Washing machine", "Water under the machine"]]
 const NSK = [
   ["leak", "water-alert", "Water leak", () => LEAKS().some(x => isOn(x[0]))],
   ["warn", "weather-cloudy-alert", "Weather warning", () => { const s = states[E("weatherWarnings")]; return !!s && s.state !== "unknown" && s.state !== "unavailable"; }],
   ["garage", "garage-open-variant", "Garage door open", () => Object.keys(galCfg()).some(k => { const c = galCfg()[k], s = c && c.sensor && states[c.sensor]; return !!s && (s.state === "on") !== !!c.invert; })],
+  ["door", "door-open", "Door open", () => !!doorsOpen()],
   ["water", "m3-water-drop", "Water on", () => Object.keys(states).some(k => /^switch\..*water_tap$/.test(k) && states[k].state === "on") || (CONFIG.irrigation || []).some(z => z.switch && states[z.switch] && states[z.switch].state === "on")]
 ];
-const nskRel = id => LEAKS().some(x => x[0] === id) || id === E("weatherWarnings") || /^switch\..*water_tap$/.test(id) || Object.keys(galCfg()).some(k => (galCfg()[k] || {}).sensor === id) || (CONFIG.irrigation || []).some(z => z.switch === id);
+const nskRel = id => LEAKS().some(x => x[0] === id) || id === E("weatherWarnings") || id === E("doorsGroup") || members(E("doorsGroup")).includes(id) || /^switch\..*water_tap$/.test(id) || Object.keys(galCfg()).some(k => (galCfg()[k] || {}).sensor === id) || (CONFIG.irrigation || []).some(z => z.switch === id);
 let npTab = "alerts";
 const ACTC = CONFIG.quickAll || [];
 

@@ -1,5 +1,5 @@
 // Phone: the room AUTOMATIONS button is a pill, its card floats in the middle (tabs kept), and the header strip turns into an icon
-// for a weather warning, an open garage door or water running (priority in that order, "+n" for more).   Run:  node tests/rooms-status.mjs
+// for a weather warning, an open garage door, an open door or water running (priority in that order, "+n" for more).   Run:  node tests/rooms-status.mjs
 import http from "node:http";
 import fs from "node:fs";
 import path from "node:path";
@@ -9,7 +9,7 @@ const cfg = `window.DASH_CONFIG = { url: location.origin, token: "", rooms: [{ i
   house: [{ id: "living", name: "Living area", icon: "sofa", lights: ["light.t1"], sections: [{ name: "Living area", items: ["light.t1"] }, { name: "Fans", items: ["fan.t_fan"] }] }],
   tileTimers: { "fan.t_fan": "timer.t_fan" }, tileFx: { "switch.t_rice": "heat", "switch.t_vac": "charge" }, activeAppliances: ["switch.t_rice", "switch.t_vac"], notifTimers: [],
   roomControls: { living: [{ entity: "input_boolean.living_presence_test", name: "Living presence sensor" }, { entity: "input_boolean.adaptive_lighting_test", name: "Adaptive lighting" }] },
-  entities: { weatherWarnings: "sensor.demo_weather_warnings" },
+  entities: { weatherWarnings: "sensor.demo_weather_warnings", doorsGroup: "group.demo_doors" },
   view: { driveway: { id: "camera.d", name: "Driveway", trig: [] }, garage: { id: "camera.g", name: "Garage", trig: [] } },
   leakSensors: [["binary_sensor.demo_leak", "Washing machine", "Water under the machine"]],
   garageAlert: { "camera.g": { sensor: "binary_sensor.demo_garage_contact", opener: "switch.demo_opener", travel: 15 } },
@@ -64,12 +64,17 @@ const kind = async () => page.evaluate(() => { drawNotif(); const n = document.g
 eq("nothing on: plain strip", await kind(), ["", ""]);
 await page.evaluate(() => __st("switch.zone_water_tap", "on")); eq("water on", await kind(), ["water", ""]);
 await page.evaluate(() => __st("binary_sensor.demo_garage_contact", "on")); eq("garage open beats water", await kind(), ["garage", "+1"]);
-await page.evaluate(() => __st("sensor.demo_weather_warnings", "Strong wind warning", { warnings: "Strong wind" })); eq("weather warning beats both", await kind(), ["warn", "+2"]);
-await page.evaluate(() => __st("binary_sensor.demo_leak", "on")); eq("leak beats everything", await kind(), ["leak", "+3"]);
+await page.evaluate(() => { __st("binary_sensor.demo_garage_contact", "off"); __st("group.demo_doors", "off", { entity_id: ["binary_sensor.demo_front_door", "binary_sensor.demo_garage_contact"] }); __st("binary_sensor.demo_front_door", "off"); });
+eq("shut doors change nothing", await kind(), ["water", ""]);
+await page.evaluate(() => { __st("binary_sensor.demo_front_door", "on"); __st("group.demo_doors", "on", { entity_id: ["binary_sensor.demo_front_door", "binary_sensor.demo_garage_contact"] }); }); eq("door open beats water", await kind(), ["door", "+1"]);
+eq("open door is still listed under Doors", await page.evaluate(() => /Doors/.test(notif(true).html) && /1 open/.test(notif(true).html)), true);
+await page.evaluate(() => __st("binary_sensor.demo_garage_contact", "on")); eq("garage open beats the door", await kind(), ["garage", "+2"]);
+await page.evaluate(() => __st("sensor.demo_weather_warnings", "Strong wind warning", { warnings: "Strong wind" })); eq("weather warning beats them all", await kind(), ["warn", "+3"]);
+await page.evaluate(() => __st("binary_sensor.demo_leak", "on")); eq("leak beats everything", await kind(), ["leak", "+4"]);
 const warn = await page.evaluate(() => { const r = notif(true); return /Washing machine/.test(r.html) && /Water under the machine/.test(r.html) && r.html.indexOf("Washing machine") < r.html.indexOf("Strong wind"); }); eq("leak is listed under Warnings", warn, true);
 await page.evaluate(() => __st("binary_sensor.demo_leak", "off"));
-await page.evaluate(() => __st("sensor.demo_weather_warnings", "unknown")); eq("unknown warning is ignored", await kind(), ["garage", "+1"]);
-await page.evaluate(() => { __st("binary_sensor.demo_garage_contact", "off"); __st("switch.zone_water_tap", "off"); }); eq("back to the plain strip", await kind(), ["", ""]);
+await page.evaluate(() => __st("sensor.demo_weather_warnings", "unknown")); eq("unknown warning is ignored", await kind(), ["garage", "+2"]);
+await page.evaluate(() => { __st("binary_sensor.demo_garage_contact", "off"); __st("binary_sensor.demo_front_door", "off"); __st("group.demo_doors", "off", { entity_id: ["binary_sensor.demo_front_door", "binary_sensor.demo_garage_contact"] }); __st("switch.zone_water_tap", "off"); }); eq("back to the plain strip", await kind(), ["", ""]);
 const chipCol = mode => page.evaluate(m => { document.documentElement.dataset.mode = m; const h = document.createElement("div"); h.className = "rc"; h.innerHTML = '<div class="ts">' + ["lights", "doors", "windows", "covers", "fans", "gopen", "gshut"].map(k => '<span class="cb2 cA al k-' + k + '"></span>').join("") + '</div>'; document.body.appendChild(h); const r = [...h.querySelectorAll(".cb2")].map(e => getComputedStyle(e).getPropertyValue("--k").trim()); h.remove(); return r; }, mode);
 for (const m of ["light", "dark"]) { const c = await chipCol(m); eq("room card chips are coloured (" + m + ")", [c.slice(0, 6).every(x => /^#/.test(x)), new Set(c.slice(0, 5)).size, /mut|rgba/.test(c[6])], [true, 5, true]); }
 await browser.close(); server.close();

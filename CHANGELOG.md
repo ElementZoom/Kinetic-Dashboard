@@ -4,6 +4,14 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
+## 1.5.6 - 2026-10-19
+
+### Fixes
+- **The glowing bar by the clock now comes back** after the last icon condition clears (door closed, water off and so on). The icon's leftover marker was hiding the bar.
+
+### Changes
+- **Heated towel rails moved from Alerts to Active.** They now appear in the Active tab as "Towel heating" with their timers and an ALL OFF button, and no longer add to the Alerts count.
+
 ## 1.5.5 - 2026-10-19
 
 ### New

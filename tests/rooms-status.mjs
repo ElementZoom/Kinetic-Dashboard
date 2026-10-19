@@ -9,7 +9,7 @@ const cfg = `window.DASH_CONFIG = { url: location.origin, token: "", rooms: [{ i
   house: [{ id: "living", name: "Living area", icon: "sofa", lights: ["light.t1"], sections: [{ name: "Living area", items: ["light.t1"] }, { name: "Fans", items: ["fan.t_fan"] }] }],
   tileTimers: { "fan.t_fan": "timer.t_fan" }, tileFx: { "switch.t_rice": "heat", "switch.t_vac": "charge" }, activeAppliances: ["switch.t_rice", "switch.t_vac"], notifTimers: [],
   roomControls: { living: [{ entity: "input_boolean.living_presence_test", name: "Living presence sensor" }, { entity: "input_boolean.adaptive_lighting_test", name: "Adaptive lighting" }] },
-  entities: { weatherWarnings: "sensor.demo_weather_warnings", doorsGroup: "group.demo_doors" },
+  entities: { weatherWarnings: "sensor.demo_weather_warnings", doorsGroup: "group.demo_doors", towelGroup: "group.demo_towels" },
   view: { driveway: { id: "camera.d", name: "Driveway", trig: [] }, garage: { id: "camera.g", name: "Garage", trig: [] } },
   leakSensors: [["binary_sensor.demo_leak", "Washing machine", "Water under the machine"]],
   garageAlert: { "camera.g": { sensor: "binary_sensor.demo_garage_contact", opener: "switch.demo_opener", travel: 15 } },
@@ -61,6 +61,7 @@ eq("card floats (gap above and below)", c.top > 40 && c.bottom > 40, true); eq("
 eq("left chevron once scrolled away from the first tab", await page.evaluate(() => { const s = document.querySelector("#cpp .cpts"), w = s.parentNode; const l0 = w.classList.contains("moreL"); s.scrollLeft = 60; hsUpd(w); return [l0, w.classList.contains("moreL")]; }), [false, true]); eq("rounded like the picker", c.radius, "26px");
 await page.evaluate(() => { document.querySelector("#cpp").classList.remove("on"); });
 const kind = async () => page.evaluate(() => { drawNotif(); const n = document.getElementById("nacc"); return [n.dataset.k || "", n.dataset.more || ""]; });
+const bare = () => page.evaluate(() => { const n = document.getElementById("nacc"); return !n.hasAttribute("data-k") && !n.hasAttribute("data-more"); });
 eq("nothing on: plain strip", await kind(), ["", ""]);
 await page.evaluate(() => __st("switch.zone_water_tap", "on")); eq("water on", await kind(), ["water", ""]);
 await page.evaluate(() => __st("binary_sensor.demo_garage_contact", "on")); eq("garage open beats water", await kind(), ["garage", "+1"]);
@@ -74,7 +75,11 @@ await page.evaluate(() => __st("binary_sensor.demo_leak", "on")); eq("leak beats
 const warn = await page.evaluate(() => { const r = notif(true); return /Washing machine/.test(r.html) && /Water under the machine/.test(r.html) && r.html.indexOf("Washing machine") < r.html.indexOf("Strong wind"); }); eq("leak is listed under Warnings", warn, true);
 await page.evaluate(() => __st("binary_sensor.demo_leak", "off"));
 await page.evaluate(() => __st("sensor.demo_weather_warnings", "unknown")); eq("unknown warning is ignored", await kind(), ["garage", "+2"]);
-await page.evaluate(() => { __st("binary_sensor.demo_garage_contact", "off"); __st("binary_sensor.demo_front_door", "off"); __st("group.demo_doors", "off", { entity_id: ["binary_sensor.demo_front_door", "binary_sensor.demo_garage_contact"] }); __st("switch.zone_water_tap", "off"); }); eq("back to the plain strip", await kind(), ["", ""]);
+await page.evaluate(() => { __st("binary_sensor.demo_garage_contact", "off"); __st("binary_sensor.demo_front_door", "off"); __st("group.demo_doors", "off", { entity_id: ["binary_sensor.demo_front_door", "binary_sensor.demo_garage_contact"] }); __st("switch.zone_water_tap", "off"); }); eq("back to the plain strip", await kind(), ["", ""]); eq("the plain strip has no icon attributes left (so the glowing bar can come back)", await bare(), true);
+await page.evaluate(() => { __st("switch.demo_towel", "on"); __st("group.demo_towels", "on", { entity_id: ["switch.demo_towel"] }); });
+eq("towel rails are listed under Active", await page.evaluate(() => /Towel heating/.test(actHtml(actList()))), true);
+eq("towel rails are not in Alerts", await page.evaluate(() => !/Towel heating/.test(notif(true).html)), true);
+await page.evaluate(() => { __st("switch.demo_towel", "off"); __st("group.demo_towels", "off", { entity_id: ["switch.demo_towel"] }); });
 const chipCol = mode => page.evaluate(m => { document.documentElement.dataset.mode = m; const h = document.createElement("div"); h.className = "rc"; h.innerHTML = '<div class="ts">' + ["lights", "doors", "windows", "covers", "fans", "gopen", "gshut"].map(k => '<span class="cb2 cA al k-' + k + '"></span>').join("") + '</div>'; document.body.appendChild(h); const r = [...h.querySelectorAll(".cb2")].map(e => getComputedStyle(e).getPropertyValue("--k").trim()); h.remove(); return r; }, mode);
 for (const m of ["light", "dark"]) { const c = await chipCol(m); eq("room card chips are coloured (" + m + ")", [c.slice(0, 6).every(x => /^#/.test(x)), new Set(c.slice(0, 5)).size, /mut|rgba/.test(c[6])], [true, 5, true]); }
 await browser.close(); server.close();

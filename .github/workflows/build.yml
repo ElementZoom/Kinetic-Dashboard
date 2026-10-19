@@ -9,11 +9,30 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          # on PRs, check out the branch itself (not the merge commit) so we can push to it
+          ref: ${{ github.event.pull_request.head.ref || github.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+
+      # 0. on same-repo PRs, rebuild dash.html from src/ and commit it if it changed
+      - name: Regenerate dash.html
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          node build.mjs
+          if ! git diff --quiet -- dash.html; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add dash.html
+            git commit -m "build: regenerate dash.html"
+            git push
+          fi
 
       # 1. dash.html in the repo must be exactly what src/ builds to
       - name: dash.html is up to date

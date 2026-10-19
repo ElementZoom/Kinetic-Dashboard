@@ -4,6 +4,12 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
+## 1.5.3 - 2026-10-19
+
+### Fixes
+- **No more flashing on Now Playing, Weather, GeoNet, Energy and the Rooms list.** These pages were redrawn on every related sensor update, even when nothing visible had changed, which made them flash and replayed their animations. They now keep what is on screen when the content is the same. On Now Playing the progress bar and ring keep running smoothly, and the GeoNet detail panel keeps its scroll position. The Media page's group button no longer redraws its icon each time.
+- A new test (`tests/no-flicker.mjs`) re-runs each page's redraw and fails if anything is rebuilt without a change.
+
 ## 1.5.2 - 2026-10-19
 
 ### Fixes

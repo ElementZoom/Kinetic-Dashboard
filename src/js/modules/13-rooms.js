@@ -30,9 +30,12 @@ $("#rtabs").onclick = e => { const b = e.target.closest("[data-rt]"); if (!b) re
 function drawRooms() {
   curRoom = null; $("#cpp").classList.remove("on"); $("#rl").style.display = ""; $("#rv").style.display = "none"; $("#rtabs").style.display = "";
   const tabs = roomTabs(); if (rtab >= tabs.length) rtab = 0;
-  $("#rtabs").innerHTML = tabs.map((t, i) => '<button class="chip' + (i === rtab ? " on" : "") + '" data-rt="' + i + '">' + esc(t[0]) + '</button>').join("");
+  const th = tabs.map((t, i) => '<button class="chip' + (i === rtab ? " on" : "") + '" data-rt="' + i + '">' + esc(t[0]) + '</button>').join(""), rs = tabs[rtab][1].map(ROOM).filter(Boolean);
+  const key = th + "|" + rs.map(r => r.id + "," + r.name + "," + r.icon).join(";") + "|" + (tabs[rtab][1].length ? "" : tabs[rtab][2] || "No rooms");
+  if ($("#rl")._k === key && $("#rl").firstChild) { updRooms(); return; }   // same tabs and cards (a motion sensor changed): keep them, only refresh the live values
+  $("#rl")._k = key; $("#rtabs").innerHTML = th;
   $("#rl").innerHTML = tabs[rtab][1].length ? "" : '<div class="lbl" style="grid-column:1/-1;margin:18px 4px">' + esc(tabs[rtab][2] || "No rooms") + '</div>';
-  tabs[rtab][1].map(ROOM).filter(Boolean).forEach(r => {
+  rs.forEach(r => {
     const a = document.createElement("a"); a.className = "rc"; a.href = "#rooms/" + r.id; a.dataset.r = r.id;
     a.innerHTML = cardHtml(r.name, r.icon);
     $("#rl").appendChild(a);

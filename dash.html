@@ -1604,7 +1604,7 @@ html:not(#x) #np .wg .ws{border-radius:16px}
 // (notification tap such as #view/driveway, #security ...), not the return from the login, and the device has not asked for reduced motion.
 window.brandLogo = function () { var L = window.DASH_LOGO, B = (window.DASH_CONFIG || {}).brand; return L && L.svg ? { svg: L.svg, lockup: !!L.lockup } : B && B.mark ? { svg: B.mark, lockup: false } : null; };   // brand-logo.js wins over brand.mark in config.js
 window.brandMark = function (s) { var g = window.brandLogo(); if (!g) return ""; return g.svg.replace(/\bid="([\w-]+)"/g, 'id="$1' + s + '"').replace(/url\(#([\w-]+)\)/g, 'url(#$1' + s + ')'); };
-window.DASH_VER = "1.5.2";   // the one place to change the version
+window.DASH_VER = "1.5.3";   // the one place to change the version
 (function () { try {
   var B = (window.DASH_CONFIG || {}).brand, el = document.getElementById("bootld"), r = document.documentElement, lp = "on";
   try { lp = localStorage.getItem("dashLogo") || "on"; } catch (e) {}   // Theme page -> "Start-up logo": on | load (no intro) | off (plain spinner, as before)
@@ -2629,9 +2629,12 @@ $("#rtabs").onclick = e => { const b = e.target.closest("[data-rt]"); if (!b) re
 function drawRooms() {
   curRoom = null; $("#cpp").classList.remove("on"); $("#rl").style.display = ""; $("#rv").style.display = "none"; $("#rtabs").style.display = "";
   const tabs = roomTabs(); if (rtab >= tabs.length) rtab = 0;
-  $("#rtabs").innerHTML = tabs.map((t, i) => '<button class="chip' + (i === rtab ? " on" : "") + '" data-rt="' + i + '">' + esc(t[0]) + '</button>').join("");
+  const th = tabs.map((t, i) => '<button class="chip' + (i === rtab ? " on" : "") + '" data-rt="' + i + '">' + esc(t[0]) + '</button>').join(""), rs = tabs[rtab][1].map(ROOM).filter(Boolean);
+  const key = th + "|" + rs.map(r => r.id + "," + r.name + "," + r.icon).join(";") + "|" + (tabs[rtab][1].length ? "" : tabs[rtab][2] || "No rooms");
+  if ($("#rl")._k === key && $("#rl").firstChild) { updRooms(); return; }   // same tabs and cards (a motion sensor changed): keep them, only refresh the live values
+  $("#rl")._k = key; $("#rtabs").innerHTML = th;
   $("#rl").innerHTML = tabs[rtab][1].length ? "" : '<div class="lbl" style="grid-column:1/-1;margin:18px 4px">' + esc(tabs[rtab][2] || "No rooms") + '</div>';
-  tabs[rtab][1].map(ROOM).filter(Boolean).forEach(r => {
+  rs.forEach(r => {
     const a = document.createElement("a"); a.className = "rc"; a.href = "#rooms/" + r.id; a.dataset.r = r.id;
     a.innerHTML = cardHtml(r.name, r.icon);
     $("#rl").appendChild(a);
@@ -3481,6 +3484,27 @@ const REL = {
 let pq = 0;
 function queuePg() { if (!pq) pq = requestAnimationFrame(() => { pq = 0; const p = curPg(); if (p === "weather") drawWeather(); else if (p === "irrigation") drawIrr(); else if (p === "scenes") updScenes(); else if (p === "media") drawMedia(); else if (p === "vehicle") drawVehicle(); else if (p === "hazards") drawHaz(); }); }
 
+
+// Skip re-writing a container when its markup has not changed. The pages below are redrawn on every related sensor update; rebuilding them
+// when nothing changed made them flash and replayed their animations (Now Playing, Weather, GeoNet, Energy).
+function keepH(el) {
+  if (!el || el._kh) return el; el._kh = 1;
+  const d = Object.getOwnPropertyDescriptor(Element.prototype, "innerHTML");
+  Object.defineProperty(el, "innerHTML", { configurable: true, get() { return d.get.call(this); }, set(v) {
+    v = String(v); const k = v.replace(/ data-(pos|upd)="[^"]*"/g, "");   // the progress timing changes on every call; it does not count as a change
+    if (this._k === k && (v === "" ? !this.firstChild : this.firstChild)) {
+      if (this._h !== v) {   // only the progress timing differs: refresh it in place so the bar and ring carry on smoothly
+        this._h = v; const t = document.createElement("template"); t.innerHTML = v;
+        const nb = t.content.querySelectorAll("[data-pos]"), ob = this.querySelectorAll("[data-pos]");
+        if (nb.length === ob.length) nb.forEach((e, i) => Object.assign(ob[i].dataset, e.dataset));
+      }
+      return;
+    }
+    this._k = k; this._h = v; d.set.call(this, v);
+  } });
+  return el;
+}
+["#gsum", "#npw", "#npmini", "#npfab", "#npbody", "#hnp", "#wx", "#energy", "#hazards"].forEach(q => keepH($(q)));
 // ---------- camera playback (Reolink recordings through HA's media browser) ----------
 function openPb(c) {
   const el = c.o.el, k = $(".pbk", el);
@@ -3845,7 +3869,7 @@ function hzSel(id, fly) {
   HZ.sel = HZ.sel === id && !fly ? "" : id; const d = HZ.d || hzData();
   $$("#hzsvg [data-hk]").forEach(g => g.classList.toggle("sel", g.dataset.hk === HZ.sel));
   $$("#hazards .hzrow").forEach(b => b.classList.toggle("on", b.dataset.v === HZ.sel));
-  const p = $("#hzd"); if (p) { p.innerHTML = hzDetail(d); p.classList.toggle("on", !!HZ.sel); p.scrollTop = 0; }
+  const p = $("#hzd"); if (p) { const hh = hzDetail(d); if (hh !== p._hd) { p._hd = hh; p.innerHTML = hh; p.scrollTop = 0; } p.classList.toggle("on", !!HZ.sel); }   // keep the scroll position while nothing changed
   const hm = $("#hazards .hzm"); if (hm) hm.classList.toggle("dop", !!HZ.sel);
   const it = d.q.concat(d.v).find(x => x.id === HZ.sel);
   if (fly && it && HZ.slide) hzPage(0);
@@ -4163,7 +4187,7 @@ function drawMedia() {
     const nb = t.content.querySelectorAll(".mpb"), ob = mp.querySelectorAll(".mpb");
     nb.forEach((b, i) => { if (ob[i]) Object.assign(ob[i].dataset, b.dataset); });
   } else { mp.innerHTML = html; mp._k = key; }
-  const gb = $("#mpgrp"); if (gb) { gb.hidden = ids.length < 2; gb.dataset.mp = cards.length > 1 ? "join" : "unjoin"; const t = cards.length > 1 ? "GROUP SPEAKERS" : "UNGROUP"; gb.setAttribute("aria-label", t.toLowerCase()); gb.querySelector("span").textContent = t; gb.querySelector("svg").outerHTML = mdi(cards.length > 1 ? "speaker-multiple" : "link-variant"); }
+  const gb = $("#mpgrp"); if (gb) { gb.hidden = ids.length < 2; gb.dataset.mp = cards.length > 1 ? "join" : "unjoin"; const t = cards.length > 1 ? "GROUP SPEAKERS" : "UNGROUP"; gb.setAttribute("aria-label", t.toLowerCase()); gb.querySelector("span").textContent = t; if (gb._t !== t) { gb._t = t; gb.querySelector("svg").outerHTML = mdi(cards.length > 1 ? "speaker-multiple" : "link-variant"); } }
   tickMedia(); lyrUpdate();
 }
 function tickMedia() {

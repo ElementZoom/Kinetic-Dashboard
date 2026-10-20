@@ -2,9 +2,16 @@ name: Build and release
 
 on:
   push:
-    branches: [main]
+    branches: [main, hichiro/ha-config]
     tags: ["v*"]
   pull_request:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: Branch to build and update
+        required: true
+        default: hichiro/ha-config
+        type: string
 
 jobs:
   build:
@@ -14,16 +21,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          # on PRs, check out the branch itself (not the merge commit) so we can push to it
-          ref: ${{ github.event.pull_request.head.ref || github.ref }}
+          ref: ${{ github.event.inputs.branch || github.event.pull_request.head.ref || github.ref_name }}
           repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
       - uses: actions/setup-node@v4
         with:
           node-version: 22
 
-      # 0. on same-repo PRs, rebuild dash.html from src/ and commit it if it changed
+      # Regenerate on demand and after pushes to the Home Assistant config branch.
       - name: Regenerate dash.html
-        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
         run: |
           node build.mjs
           if ! git diff --quiet -- dash.html; then
@@ -31,19 +37,24 @@ jobs:
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add dash.html
             git commit -m "build: regenerate dash.html"
-            git push
+            git push origin HEAD:${{ github.event.inputs.branch || github.ref_name }}
           fi
 
-      # 1. dash.html in the repo must be exactly what src/ builds to
+      # On same-repository PRs, rebuild the checked-out source before checking it.
+      - name: Regenerate dash.html for same-repository PR
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        run: node build.mjs
+
+      # dash.html in the repo must be exactly what src/ builds to.
       - name: dash.html is up to date
         run: node build.mjs --check
 
-      # 2. every source script must be valid JavaScript
+      # Every source script must be valid JavaScript.
       - name: Syntax check
         run: |
           for f in $(find src/js -name '*.js' | sort); do node --check "$f"; done
 
-      # 3. boot the built file in a real browser
+      # Boot the built file in a real browser.
       - name: Install test browser
         run: |
           npm install --no-audit --no-fund
@@ -65,7 +76,7 @@ jobs:
           path: dash.html
 
   release:
-    # only when you push a version tag, e.g.  git tag v1.0.1 && git push --tags
+    # only when you push a version tag, e.g. git tag v1.0.1 && git push --tags
     if: startsWith(github.ref, 'refs/tags/v')
     needs: build
     runs-on: ubuntu-latest

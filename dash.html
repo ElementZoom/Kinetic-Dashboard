@@ -511,10 +511,10 @@ html[data-mode=light] .rooms2 .rc{background:rgba(255,255,255,.72)}
 }
 
 #hc{display:flex;align-items:center;gap:10px;cursor:pointer}#nacc{width:5px;height:30px;border-radius:4px;background:rgba(var(--ink-rgb),.28);box-shadow:none;transition:background .3s,box-shadow .3s}#nacc.on{background:var(--mint);animation:nglow 2.2s ease-in-out infinite}@keyframes nglow{0%,100%{opacity:.45;box-shadow:0 0 3px rgba(var(--mint-rgb),.2)}50%{opacity:1;box-shadow:0 0 14px 2px rgba(var(--mint-rgb),.8)}}@media(prefers-reduced-motion:reduce){#nacc.on{animation:none;box-shadow:0 0 10px rgba(var(--mint-rgb),.6)}}
-/* the strip as an icon: weather warning (amber), garage door open (coral), water on (blue); "+n" when more than one is true */
+/* the strip as an icon: weather warning (amber), garage door open (coral), a door open (yellow), water on (blue); "+n" when more than one is true */
 #nacc[data-k]{position:relative;width:26px;height:26px;border-radius:0;background:none;box-shadow:none;color:var(--nk);display:flex;align-items:center;justify-content:center;animation:nkglow 2.2s ease-in-out infinite}
 #nacc[data-k] svg{width:26px;height:26px;fill:currentColor}
-#nacc[data-k=leak]{--nk:#ff4d5e}#nacc[data-k=warn]{--nk:#ffb04a}#nacc[data-k=garage]{--nk:#ff7a6b}#nacc[data-k=water]{--nk:#5cc8ff}
+#nacc[data-k=leak]{--nk:#ff4d5e}#nacc[data-k=warn]{--nk:#ffb04a}#nacc[data-k=garage]{--nk:#ff7a6b}#nacc[data-k=door]{--nk:#ffc857}#nacc[data-k=laundry]{--nk:#8fa8ff}#nacc[data-k=towel]{--nk:#ff9f43}#nacc[data-k=water]{--nk:#5cc8ff}
 #nacc[data-more]:not([data-more=""])::after{content:attr(data-more);position:absolute;top:-8px;right:-11px;min-width:16px;height:16px;box-sizing:border-box;padding:0 4px;border-radius:8px;background:var(--nk);color:#10161c;font:700 10px/16px var(--mono);text-align:center}
 @keyframes nkglow{0%,100%{opacity:.6;filter:drop-shadow(0 0 2px var(--nk))}50%{opacity:1;filter:drop-shadow(0 0 8px var(--nk))}}
 @media(prefers-reduced-motion:reduce){#nacc[data-k]{animation:none;filter:drop-shadow(0 0 6px var(--nk))}}
@@ -663,8 +663,10 @@ html[data-style=minimal] .card.aur::before,html[data-style=minimal] .card.aur::a
 .bq::before{animation:bqg 7s ease-in-out infinite}
 .bq:nth-child(2n)::before{animation-delay:-2.3s}.bq:nth-child(3n)::before{animation-delay:-4.6s}
 @keyframes bqg{50%{opacity:.52}}
+@property --mgc{syntax:'<color>';inherits:true;initial-value:rgb(143,240,196)}
+.mpc{--mgc:rgb(var(--mint-rgb));transition:--mgc 1.2s ease}
 .mpc.pl,.mpc.ac{position:relative;isolation:isolate}
-.mpc.pl::before,.mpc.ac::before{content:"";position:absolute;inset:0;border-radius:inherit;z-index:-1;pointer-events:none;background:radial-gradient(110% 100% at 100% 0,rgb(var(--mg,var(--mint-rgb))),transparent 75%);opacity:.2;transition:opacity .6s}
+.mpc.pl::before,.mpc.ac::before{content:"";position:absolute;inset:0;border-radius:inherit;z-index:-1;pointer-events:none;background:radial-gradient(110% 100% at 100% 0,var(--mgc),transparent 75%);opacity:.2;transition:opacity .6s}
 .mpc.pl::before{opacity:.38;animation:mpg 6s ease-in-out infinite}
 @keyframes mpg{50%{opacity:.62}}
 html[data-style=minimal] .bq::before,html[data-style=minimal] .mpc.pl::before{animation:none}
@@ -1556,6 +1558,20 @@ html:not(#x) #vw .vwx{display:none!important}
 @media(orientation:portrait) and (min-width:700px){html:not(#x) #vw.two .cam.vf:not(.ls) .vh>.px{order:4;margin-left:0!important}html:not(#x) #vw.two .cam.vf:not(.ls):not(.pb) .vh>.cx{order:5}html:not(#x) #vw.two .cam.vf:not(.ls) .vh::after{order:6}html:not(#x) #vw.two .cam.vf:not(.ls) .vh>.aud{order:7}html:not(#x) #vw.two .cam.vf:not(.ls) .vh>.fsb{display:none!important}}
 @media(orientation:landscape) and (min-width:1000px){html:not(#x) #vw.two .cam.vf:not(.ls) .vh>.px{order:4;margin-left:0!important}html:not(#x) #vw.two .cam.vf:not(.ls):not(.pb) .vh>.cx{order:5}html:not(#x) #vw.two .cam.vf:not(.ls) .vh::after{order:6}html:not(#x) #vw.two .cam.vf:not(.ls) .vh>.aud{order:7}html:not(#x) #vw.two .cam.vf:not(.ls) .vh>.fsb{display:none!important}}
 html:not(#x) #vw.two .cam.vf:not(.ls) .vh::before{content:"";position:absolute;left:-14px;right:-14px;top:-12px;height:calc(100% + 28px);background:linear-gradient(rgba(0,0,0,.6),transparent);border-radius:22px 22px 0 0;pointer-events:none;z-index:-1}   /* the dual cards have no dark band of their own: keep the labels readable over the picture */
+
+/* laundry tile (Active tab): blue while the washer runs, the drum has a wave moving inside and a soft glow pulses; a delayed start is plain */
+.ldt{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:20px;border:1px solid var(--line);background:rgba(var(--w),.04);min-height:68px}
+.ldt b{display:block;font-size:17px;font-weight:500}.ldt span{opacity:.8;font-size:13px;letter-spacing:.04em}.ldt em{font-style:normal}
+.ldi{width:40px;height:40px;display:flex;color:var(--mut)}.ldi svg,.drum{width:40px;height:40px;fill:none}
+.ldt.run{border-color:rgba(80,170,255,.7);background:linear-gradient(160deg,rgba(40,140,255,.30),rgba(10,50,110,.28));color:#e8f4ff;animation:ldglow 3s ease-in-out infinite}
+.ldt.run .ldi{color:#8fd0ff;filter:drop-shadow(0 0 5px rgba(80,170,255,.8));animation:ldshake 2.4s ease-in-out infinite}
+.ldt.run .wv,#nacc[data-k=laundry] .wv{animation:ldwave 1.6s linear infinite}
+html[data-mode=light] .ldt.run{background:linear-gradient(160deg,rgba(60,150,255,.22),rgba(120,190,255,.18));color:#0b2a4a}html[data-mode=light] .ldt.run .ldi{color:#1c6fd0}
+@keyframes ldwave{to{transform:translateX(-10px)}}@keyframes ldshake{0%,100%{transform:translateX(0)}25%{transform:translateX(-.6px)}75%{transform:translateX(.6px)}}
+@keyframes ldglow{0%,100%{box-shadow:0 0 0 rgba(80,170,255,0)}50%{box-shadow:0 0 18px rgba(80,170,255,.45)}}
+#nacc[data-k=laundry] svg{fill:none}
+@media(prefers-reduced-motion:reduce){.ldt.run,.ldt.run .ldi,.ldt.run .wv,#nacc[data-k=laundry] .wv{animation:none}}
+.tg3>.ldt{grid-column:1/-1}
 </style>
 </head>
 <body>
@@ -1626,7 +1642,7 @@ html:not(#x) #vw.two .cam.vf:not(.ls) .vh::before{content:"";position:absolute;l
 // (notification tap such as #view/driveway, #security ...), not the return from the login, and the device has not asked for reduced motion.
 window.brandLogo = function () { var L = window.DASH_LOGO, B = (window.DASH_CONFIG || {}).brand; return L && L.svg ? { svg: L.svg, lockup: !!L.lockup } : B && B.mark ? { svg: B.mark, lockup: false } : null; };   // brand-logo.js wins over brand.mark in config.js
 window.brandMark = function (s) { var g = window.brandLogo(); if (!g) return ""; return g.svg.replace(/\bid="([\w-]+)"/g, 'id="$1' + s + '"').replace(/url\(#([\w-]+)\)/g, 'url(#$1' + s + ')'); };
-window.DASH_VER = "1.5.4";   // the one place to change the version
+window.DASH_VER = "1.5.8";   // the one place to change the version
 (function () { try {
   var B = (window.DASH_CONFIG || {}).brand, el = document.getElementById("bootld"), r = document.documentElement, lp = "on";
   try { lp = localStorage.getItem("dashLogo") || "on"; } catch (e) {}   // Theme page -> "Start-up logo": on | load (no intro) | off (plain spinner, as before)
@@ -4041,26 +4057,24 @@ TOG.forEach(g => { VIRT[g[1]] = () => g[3].filter(x => states[x[0]] && states[x[
 const tapZone = e => (CONFIG.irrigation || []).find(z => z.switch === e);
 const tileTimer = e => { const m = (CONFIG.tileTimers || {})[e]; if (m) return m; const z = tapZone(e); if (z && z.timer) return z.timer; const o = e.split(".")[1]; return ["timer." + o, "timer." + o + "_timer"].find(t => states[t]) || ""; };
 const npItem = (e, o) => { const z = tapZone(e), tap = /^switch\..*water_tap$/.test(e); return Object.assign({ entity: e, timer: tileTimer(e) }, tap ? { water: (z && z.flow) || true } : {}, o || {}); };
+const gar = x => /garage/i.test(x + " " + fname(x)) || Object.keys(galCfg()).some(k => (galCfg()[k] || {}).sensor === x);   // the garage door has its own alert, so it is not listed with the doors
+// open doors from the external-doors group (garage excluded): a list of ids, [] when the group says "on" but cannot say which one, or null when all are shut
+const doorsOpen = () => { const g = E("doorsGroup"), d0 = members(g).filter(x => x !== g && isOn(x)), d = d0.filter(x => !gar(x)); return d.length || (isOn(g) && !d0.length) ? d : null; };
 function notif(full) {
   let n = 0, h = "", bh = "", nb = 0, hasB = false;
   const sec = (t, b) => { if (full && b) h += '<div class="lbl np2">' + t + '</div>' + b; };
   const grid = a => a.length ? '<div class="tg3">' + a.map(tileHtml).join("") + '</div>' : "";
   const al = volcHtml().concat(quakeHtml() || []); n += al.length; sec("Alerts", al.join(""));
-  const gar = x => /garage/i.test(x + " " + fname(x)) || Object.keys(galCfg()).some(k => (galCfg()[k] || {}).sensor === x);   // the garage door has its own alert, so it is not listed here
-  const dr0 = members(E("doorsGroup")).filter(x => x !== E("doorsGroup") && isOn(x)), dr = dr0.filter(x => !gar(x));
-  if (dr.length || (isOn(E("doorsGroup")) && !dr0.length)) { n++; sec("Doors", '<div class="alert q"><b>' + (dr.length || 1) + ' open</b><div>' + dr.map(x => esc(fname(x))).join(" · ") + '</div></div>'); }
+  const dr = doorsOpen();
+  if (dr) { n++; sec("Doors", '<div class="alert q"><b>' + (dr.length || 1) + ' open</b><div>' + dr.map(x => esc(fname(x))).join(" · ") + '</div></div>'); }
   const LK = LEAKS().filter(x => isOn(x[0])), W2 = (CONFIG.alerts || []).filter(x => isOn(x[0]));   // leak sensors first, as red cards
   n += LK.length + W2.length; sec("Warnings", LK.map(x => '<div class="alert q"><div class="lbl">' + mdi("water-alert") + ' WATER LEAK</div><b>' + esc(x[1]) + '</b><div>' + esc(x[2]) + '</div></div>').join("") + grid(W2.map(x => npItem(x[0], { name: x[1], sub: x[2], confirm: /rubbish|recycle/.test(x[0]) }))));
   const wr = states[E("weatherWarnings")];
   if (wr && sv(E("weatherWarnings")) && wr.attributes.warnings) { n++; sec("Weather warning", '<div class="alert w">' + esc(wr.attributes.warnings) + '</div>'); }
   const snap = (id, t, k) => { const c = states[id], p = c && c.attributes.entity_picture; return p ? '<div class="snap" data-vw="' + k + '" data-cam="' + id + '"><span class="dl"></span><div class="lbl">' + t + '</div><img alt="" src="' + CONFIG.url + p + (p.indexOf("?") > -1 ? "&" : "?") + 't=' + Math.floor(Date.now() / 60000) + '"></div>' : ""; };
   if (full) sec("Cameras", ((CONFIG.alerts || []).some(x => x[3] === "driveway" && isOn(x[0])) && (CONFIG.view.driveway || {}).id ? snap(CONFIG.view.driveway.id, "Driveway", "driveway") : "") + (viewTrig("garage") ? snap((CONFIG.view.garage || {}).id, "Garage", "garage") : ""));
-  const tw = members(E("towelGroup"));
-  if (isOn(E("towelGroup")) || tw.some(isOn)) { n++; sec("Towel heating", grid(tw.filter(x => x !== E("towelGroup")).map(x => npItem(x, { timer: states["timer.heated_towel_rails"] ? "timer.heated_towel_rails" : tileTimer(x) })))); }
   const ch = [];
   Object.keys(CONFIG.derived.soil || {}).sort().map(z => ["sensor.average_" + z + "_soil_moisture", title(z)]).forEach(x => { const m = parseFloat(sv(x[0])); if (m < 40) ch.push('<div class="ws"><span class="lbl">' + x[1] + ' soil</span><b style="color:var(' + (m < 15 ? "--sd0" : m < 25 ? "--sd1" : "--sd2") + ')">' + (m < 15 ? "Very dry" : m < 25 ? "Dry" : "Moist") + '</b>' + f1(m) + '%</div>'); });
-  const lm = sv(E("laundryState"));
-  if (lm === "Run" || lm === "Delay Run") ch.push('<div class="ws"><span class="lbl">Laundry</span><b>' + (lm === "Run" ? "Running" : "Delayed") + '</b>' + esc(sv(lm === "Run" ? "sensor.laundry_time_remaining_friendly" : E("laundryDelay")) || "") + '</div>');
   n += ch.length; sec("Chores", ch.length ? '<div class="wg">' + ch.join("") + '</div>' : "");
   const tm = (CONFIG.notifTimers || []).filter(x => states[x] && states[x].state === "active");   // optional Timers card: config notifTimers ["timer.x", ...] (none by default; tiles show their own countdown, see tileTimers)
   n += tm.length;
@@ -4071,15 +4085,22 @@ function notif(full) {
   return { n: n - (hasB ? 1 : 0), all: n, nb: nb, html: h, bh: bh };
 }
 // header strip: normally a glowing bar while something is waiting; it turns into an icon for the conditions below. Priority when several are true:
-// water leak, then weather warning, then garage door open, then water on. The top one shows and a small "+n" says how many more there are.
+// water leak, then weather warning, then garage door open, then a door open, then water on, then laundry running, then towel heating. The top one shows and a small "+n" says how many more there are.
 const LEAKS = () => (CONFIG.leakSensors || []).map(x => { x = [].concat(x); return [x[0], x[1] || fname(x[0]), x[2] || "Water detected"]; });   // config leakSensors: ["binary_sensor.x"] or [["binary_sensor.x", "Washing machine", "Water under the machine"]]
+const laundryOn = () => sv(E("laundryState")) === "Run";   // laundry running (the washer integration reports "Run"; "Delay Run" = waiting for its delayed start)
+const towelsOn = () => { const g = E("towelGroup"); return !!g && members(g).some(x => x !== g && isOn(x)); };
+// a washing-machine drum with a wave moving inside: used by the Laundry tile in Active and by the strip icon
+const DRUM = '<svg viewBox="0 0 24 24" class="drum" aria-hidden="true"><rect x="3" y="2" width="18" height="20" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="7" cy="5.6" r=".9" fill="currentColor"/><circle cx="12" cy="14" r="5.4" fill="none" stroke="currentColor" stroke-width="1.8"/><clipPath id="drumc"><circle cx="12" cy="14" r="4.6"/></clipPath><g clip-path="url(#drumc)"><path class="wv" d="M2 14 q2.5 -2.2 5 0 t5 0 t5 0 t5 0 t5 0 V22 H2Z" fill="currentColor" opacity=".85"/></g></svg>';
 const NSK = [
   ["leak", "water-alert", "Water leak", () => LEAKS().some(x => isOn(x[0]))],
   ["warn", "weather-cloudy-alert", "Weather warning", () => { const s = states[E("weatherWarnings")]; return !!s && s.state !== "unknown" && s.state !== "unavailable"; }],
   ["garage", "garage-open-variant", "Garage door open", () => Object.keys(galCfg()).some(k => { const c = galCfg()[k], s = c && c.sensor && states[c.sensor]; return !!s && (s.state === "on") !== !!c.invert; })],
-  ["water", "m3-water-drop", "Water on", () => Object.keys(states).some(k => /^switch\..*water_tap$/.test(k) && states[k].state === "on") || (CONFIG.irrigation || []).some(z => z.switch && states[z.switch] && states[z.switch].state === "on")]
+  ["door", "door-open", "Door open", () => !!doorsOpen()],
+  ["water", "m3-water-drop", "Water on", () => Object.keys(states).some(k => /^switch\..*water_tap$/.test(k) && states[k].state === "on") || (CONFIG.irrigation || []).some(z => z.switch && states[z.switch] && states[z.switch].state === "on")],
+  ["laundry", "washing-machine", "Laundry running", laundryOn],
+  ["towel", "radiator", "Towel heating on", towelsOn]
 ];
-const nskRel = id => LEAKS().some(x => x[0] === id) || id === E("weatherWarnings") || /^switch\..*water_tap$/.test(id) || Object.keys(galCfg()).some(k => (galCfg()[k] || {}).sensor === id) || (CONFIG.irrigation || []).some(z => z.switch === id);
+const nskRel = id => LEAKS().some(x => x[0] === id) || id === E("weatherWarnings") || id === E("doorsGroup") || id === E("laundryState") || id === E("laundryRemaining") || id === E("towelGroup") || members(E("towelGroup")).includes(id) || members(E("doorsGroup")).includes(id) || /^switch\..*water_tap$/.test(id) || Object.keys(galCfg()).some(k => (galCfg()[k] || {}).sensor === id) || (CONFIG.irrigation || []).some(z => z.switch === id);
 let npTab = "alerts";
 const ACTC = CONFIG.quickAll || [];
 
@@ -4090,6 +4111,10 @@ const actList = () => {
   A.forEach(x => x.ids.forEach(e => { seen[e] = 1; }));
   const ap = (CONFIG.activeAppliances || []).filter(e => isOn(e) && !npGone(e) && !seen[e]);   // config activeAppliances: ["switch.rice_cooker", ...] get their own "Appliances" group here
   if ((CONFIG.activeAppliances || []).length) A.push({ c: ["Appliances", "", "m3-plug-connect", "app"], ids: ap });
+  const lm = sv(E("laundryState"));
+  if (lm === "Run" || lm === "Delay Run") A.push({ c: ["Laundry", "", "washing-machine", "ld"], ids: ["laundry"] });   // one tile: the drum spins while it runs
+  const twg = E("towelGroup"), tw = twg ? members(twg).filter(x => x !== twg && isOn(x) && !npGone(x) && !seen[x]) : [];   // heated towel rails: listed under Active (they used to be in Alerts)
+  if (tw.length) A.push({ c: ["Towel heating", "", "radiator", "tw"], ids: tw });
   return A;
 };
 function npDismiss(ids) {
@@ -4098,10 +4123,12 @@ function npDismiss(ids) {
   if (any) npHold = now + 300;
   clearTimeout(npht); npht = setTimeout(queueNotif, any ? 320 : 0); setTimeout(queueNotif, 12100);
 }
+const ldTime = () => esc(sv(sv(E("laundryState")) === "Run" ? "sensor.laundry_time_remaining_friendly" : E("laundryDelay")) || "");
+const ldTile = () => { const run = sv(E("laundryState")) === "Run"; return '<div class="ldt' + (run ? " run" : "") + '"><span class="ldi">' + DRUM + '</span><div><b>Laundry</b><span>' + (run ? "RUNNING" : "DELAYED START") + ' · <em class="ldr">' + ldTime() + '</em></span></div></div>'; };
 function actHtml(A) {
   const t = A.filter(x => x.ids.length); if (!t.length) return '<div class="lbl" style="margin:14px 0">Nothing is on or open</div>';
-  return t.map((x, i) => '<div class="lbl np2 il" data-sec="' + x.c[0].toLowerCase().replace(/\s+/g, "-") + '">' + mdi(x.c[2]) + x.c[0] + ' · ' + x.ids.length + (x.c[3] === 1 ? "" : '<button class="eb" data-off="' + A.indexOf(x) + '">' + (x.c[3] === "close" ? "CLOSE ALL" : "ALL OFF") + '</button>') + '</div>' +
-    '<div class="' + (x.c[3] === 1 ? "bl" : "tg3 act-" + x.c[0].toLowerCase().replace(/\s+/g, "-")) + '">' + x.ids.map(e => tileHtml(x.c[0] === "Water taps" ? npItem(e, { icon: "m3-water-drop" }) : x.c[3] === 1 ? { entity: e, kind: x.c[0] === "Doors" ? "door" : "window" } : npItem(e))).join("") + '</div>').join("");
+  return t.map((x, i) => '<div class="lbl np2 il" data-sec="' + x.c[0].toLowerCase().replace(/\s+/g, "-") + '">' + mdi(x.c[2]) + x.c[0] + ' · ' + x.ids.length + (x.c[3] === 1 || x.c[3] === "ld" ? "" : '<button class="eb" data-off="' + A.indexOf(x) + '">' + (x.c[3] === "close" ? "CLOSE ALL" : "ALL OFF") + '</button>') + '</div>' +
+    '<div class="' + (x.c[3] === 1 ? "bl" : "tg3 act-" + x.c[0].toLowerCase().replace(/\s+/g, "-")) + '">' + x.ids.map(e => x.c[3] === "ld" ? ldTile() : tileHtml(x.c[0] === "Water taps" ? npItem(e, { icon: "m3-water-drop" }) : x.c[3] === 1 ? { entity: e, kind: x.c[0] === "Doors" ? "door" : "window" } : npItem(e, x.c[3] === "tw" ? { timer: states["timer.heated_towel_rails"] ? "timer.heated_towel_rails" : tileTimer(e) } : null))).join("") + '</div>').join("");
 }
 function drawNotif() {
   const open = document.body.classList.contains("np-open");
@@ -4109,8 +4136,8 @@ function drawNotif() {
   if (open && $$("#np input[type=range], #np .tl").some(r => r._d && r._d > Date.now())) { clearTimeout(npht); npht = setTimeout(drawNotif, 400); return; }
   const r = notif(open);
   const ks = NSK.filter(k => k[3]()), top = ks[0], nacc = $("#nacc");   // the strip turns into the icon of the most urgent condition
-  if ((nacc.dataset.k || "") !== (top ? top[0] : "")) { nacc.dataset.k = top ? top[0] : ""; nacc.innerHTML = top ? mdi(top[1]) : ""; }
-  nacc.dataset.more = ks.length > 1 ? "+" + (ks.length - 1) : "";
+  if ((nacc.dataset.k || "") !== (top ? top[0] : "")) { if (top) nacc.dataset.k = top[0]; else nacc.removeAttribute("data-k"); nacc.innerHTML = top ? (top[0] === "laundry" ? DRUM : mdi(top[1])) : ""; }
+  if (ks.length > 1) nacc.dataset.more = "+" + (ks.length - 1); else nacc.removeAttribute("data-more");
   nacc.classList.toggle("on", !!r.all || !!top);
   $("#hc").title = ks.length ? ks.map(k => k[2]).join(" · ") + (r.all ? " · " : "") + (r.all ? r.all + " notification" + (r.all > 1 ? "s" : "") : "") : r.all ? r.all + " notification" + (r.all > 1 ? "s" : "") : "Notifications";
   if (!open) return;
@@ -4119,8 +4146,9 @@ function drawNotif() {
   const np = $("#np"), tb = [["alerts", "ALERTS", r.n], ["active", "ACTIVE", tot], ["batteries", "BATTERIES", r.nb]]; let tc = false;
   if (!np.querySelector(".nptabs")) { tc = true; np.innerHTML = '<div class="nh"><div><div class="lbl">Home</div><h3>Notifications</h3></div><button class="eb" data-close="1">DONE</button></div>' + hsw('<div class="chips tabs nptabs">' + tb.map(t => '<button class="chip" data-npt="' + t[0] + '"></button>').join("") + '</div>') + '<div id="npc"></div>'; }
   np.querySelectorAll(".nptabs .chip").forEach((c, k) => { const tx = tb[k][1] + (tb[k][2] ? " · " + tb[k][2] : ""); if (c.textContent !== tx) { c.textContent = tx; tc = true; } c.classList.toggle("on", c.dataset.npt === npTab); });
-  const body = npTab === "active" ? actHtml(A) : npTab === "batteries" ? (r.bh || '<div class="lbl" style="margin:14px 0">All batteries are fine</div>') : (r.n ? "" : '<div class="lbl" style="margin:14px 0">All clear</div>') + r.html, nc = $("#npc"), key = npTab + "|" + body;
+  const body = npTab === "active" ? actHtml(A) : npTab === "batteries" ? (r.bh || '<div class="lbl" style="margin:14px 0">All batteries are fine</div>') : (r.n ? "" : '<div class="lbl" style="margin:14px 0">All clear</div>') + r.html, nc = $("#npc"), key = npTab + "|" + body.replace(/<em class="ldr">[^<]*<\/em>/g, '<em class="ldr"></em>');   // the remaining time is filled in below, so the minute ticking over does not redraw the list (and restart the drum)
   if (nc._k !== key) { nc._k = key; nc.innerHTML = body; }
+  $$("#npc .ldr").forEach(el => { const t = ldTime(); if (el.textContent !== t) el.textContent = t; });
   if (tc) requestAnimationFrame(hsAll);
   updTiles(); tickIrr();
 }
@@ -4161,9 +4189,17 @@ function artColor(pic) {
       if (curPg() === "media") drawMedia();
     } catch (e) { ARTC[pic] = ""; }
   };
-  im.onerror = () => { ARTC[pic] = ""; };
+  im.onerror = () => { ARTC[pic] = ""; if (curPg() === "media") drawMedia(); };
   im.src = (pic.charAt(0) === "/" ? CONFIG.url : "") + pic;
   return null;
+}
+// a new track's artwork (and the glow colour taken from it) is loaded before the card changes, so the card never flashes a blank cover or the old colour for a moment
+const ARTW = {};
+function artReady(pic) {
+  if (!pic) return true; artColor(pic);
+  if (ARTC[pic] !== null) return true;
+  if (!ARTW[pic]) { ARTW[pic] = Date.now(); setTimeout(() => { if (curPg() === "media") drawMedia(); }, 1600); }
+  return Date.now() - ARTW[pic] > 1500;
 }
 function mpArt(a, st, pic) {
   const t = mpTitle(a, st), map = CONFIG.mediaArt || {};
@@ -4186,7 +4222,7 @@ function mpCard(mem, ctl) {
   const bt = (m, i, on) => '<button class="rnd' + (on ? " on" : "") + '" data-mp="' + m + '" data-e="' + ctl + '">' + i + '</button>';
   const vols = mem.map(x => { const v = states[x] ? states[x].attributes : {}; return '<div class="mv"><span>' + esc(fname(x)) + '</span><input type="range" min="0" max="100" data-vol="' + x + '" value="' + Math.round((v.volume_level || 0) * 100) + '"><button class="rnd s" data-mp="mute" data-e="' + x + '">' + mdi(v.is_volume_muted ? "volume-off" : "volume-high") + '</button></div>'; }).join("");
   const mg = artColor(pic);
-  return '<div class="pn mpc' + (/^(playing|paused)$/.test(s.state) ? "" : " idle") + (play ? " pl" : "") + (mpVo ? " vo" : "") + '"' + (mg ? ' style="--mg:' + mg + '"' : "") + '>' + (/^(playing|paused)$/.test(s.state) && mt ? '<button class="rnd on mly" data-ly="open" data-e="' + ctl + '" aria-label="Lyrics">' + mdi("lyrics") + '</button>' : "") + '<div class="lbl">' + esc(title) + ' · ' + esc(s.state) + (a.source ? " · " + esc(a.source) : "") + '</div><div class="mpa">' + art + '<div>' + info + '</div></div>' +
+  return '<div class="pn mpc' + (/^(playing|paused)$/.test(s.state) ? "" : " idle") + (play ? " pl" : "") + (mpVo ? " vo" : "") + '" data-c="' + ctl + '"' + (mg ? ' style="--mgc:rgb(' + mg + ')"' : "") + '>' + (/^(playing|paused)$/.test(s.state) && mt ? '<button class="rnd on mly" data-ly="open" data-e="' + ctl + '" aria-label="Lyrics">' + mdi("lyrics") + '</button>' : "") + '<div class="lbl">' + esc(title) + ' · ' + esc(s.state) + (a.source ? " · " + esc(a.source) : "") + '</div><div class="mpa">' + art + '<div>' + info + '</div></div>' +
     '<div class="mpb" ' + mpData(ctl) + '><i></i></div>' +
     '<div class="mpt">' + bt("shuffle", mdi("shuffle-variant"), a.shuffle) + bt("prev", mdi("skip-previous")) + bt("pp", mdi(play ? "pause" : "play")) + bt("next", mdi("skip-next")) + bt("repeat", mdi(a.repeat === "one" ? "repeat-once" : a.repeat === "all" ? "repeat" : "repeat-off"), a.repeat && a.repeat !== "off") + '<button class="rnd mvt' + (mpVo ? " on" : "") + '" data-mp="voltog">' + mdi("volume-high") + '</button></div>' +
     '<div class="mvs">' + vols + '</div></div>';
@@ -4204,13 +4240,23 @@ function mpGroups() {   // Sonos lists the group coordinator first
 }
 function drawMedia() {
   const ae = document.activeElement; if (ae && ae.type === "range" && $("#media").contains(ae)) return;
-  const ids = CONFIG.media, rk = g => ({ playing: 0, paused: 1 }[(states[g.ctl] || {}).state] ?? 2), cards = mpGroups().map((g, i) => [rk(g), i, mpCard(g.mem, g.ctl)]).sort((a, b) => a[0] - b[0] || a[1] - b[1]).map(x => x[2]);
-  const html = '<div class="mpg">' + cards.join("") + '</div>', mp = $("#mp"), key = html.replace(/ data-(pos|upd)="[^"]*"/g, "");
-  if (mp._k === key && mp.firstChild) {   // nothing visible changed (some other entity updated): keep the cards as they are, so the glow does not restart and a tap is never lost; only the progress timing is refreshed
-    const t = document.createElement("template"); t.innerHTML = html;
-    const nb = t.content.querySelectorAll(".mpb"), ob = mp.querySelectorAll(".mpb");
-    nb.forEach((b, i) => { if (ob[i]) Object.assign(ob[i].dataset, b.dataset); });
-  } else { mp.innerHTML = html; mp._k = key; }
+  const ids = CONFIG.media, rk = g => ({ playing: 0, paused: 1 }[(states[g.ctl] || {}).state] ?? 2), grp = mpGroups().map((g, i) => [rk(g), i, g]).sort((a, b) => a[0] - b[0] || a[1] - b[1]).map(x => x[2]);
+  const mp = $("#mp"); let root = mp.firstElementChild; if (!root || !root.classList.contains("mpg")) { mp.innerHTML = '<div class="mpg"></div>'; root = mp.firstElementChild; }
+  const have = {}; [].slice.call(root.children).forEach(c => { have[c.dataset.c] = c; });
+  // each speaker card is kept and updated in place (the glow animation keeps running): a volume change only moves the slider, a new track waits for its artwork and then swaps the card's contents and fades to the new colour
+  const els = grp.map(g => {
+    const t = document.createElement("template"); t.innerHTML = mpCard(g.mem, g.ctl); const n = t.content.firstElementChild, o = have[g.ctl], pic = (states[g.ctl] || { attributes: {} }).attributes.entity_picture;
+    if (!o) return n;
+    if (!artReady(pic)) return o;
+    const st = n.outerHTML.replace(/ data-(pos|upd)="[^"]*"/g, "").replace(/(<input[^>]*data-vol[^>]*?) value="[^"]*"/g, "$1").replace(/ style="[^"]*"/, "");
+    if (o._s !== st) { o._s = st; o.className = n.className; o.innerHTML = n.innerHTML; }
+    else { const nb = n.querySelectorAll(".mpb"), ob = o.querySelectorAll(".mpb"); nb.forEach((b, i) => { if (ob[i]) Object.assign(ob[i].dataset, b.dataset); }); n.querySelectorAll("input[data-vol]").forEach((r, i) => { const x = o.querySelectorAll("input[data-vol]")[i]; if (x && x.value !== r.value && document.activeElement !== x) x.value = r.value; }); }
+    const c = n.style.getPropertyValue("--mgc"); if (c) { if (o.style.getPropertyValue("--mgc") !== c) o.style.setProperty("--mgc", c); } else o.style.removeProperty("--mgc");
+    return o;
+  });
+  els.forEach((e, i) => { if (!e._s) e._s = e.outerHTML.replace(/ data-(pos|upd)="[^"]*"/g, "").replace(/(<input[^>]*data-vol[^>]*?) value="[^"]*"/g, "$1").replace(/ style="[^"]*"/, ""); if (root.children[i] !== e) root.insertBefore(e, root.children[i] || null); });
+  while (root.children.length > els.length) root.removeChild(root.lastElementChild);
+  const cards = els;
   const gb = $("#mpgrp"); if (gb) { gb.hidden = ids.length < 2; gb.dataset.mp = cards.length > 1 ? "join" : "unjoin"; const t = cards.length > 1 ? "GROUP SPEAKERS" : "UNGROUP"; gb.setAttribute("aria-label", t.toLowerCase()); gb.querySelector("span").textContent = t; if (gb._t !== t) { gb._t = t; gb.querySelector("svg").outerHTML = mdi(cards.length > 1 ? "speaker-multiple" : "link-variant"); } }
   tickMedia(); lyrUpdate();
 }

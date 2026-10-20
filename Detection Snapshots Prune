@@ -1,0 +1,6 @@
+alias: Detection Snapshots Prune
+triggers:
+  - at: '03:30:00'
+    trigger: time
+actions:
+  - action: shell_command.detection_prune

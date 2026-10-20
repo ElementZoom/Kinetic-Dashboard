@@ -4,7 +4,34 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
+## 1.5.8 - 2026-10-20
+
+### Fixes
+- **Media page: the album-colour glow no longer glitches.** Changing the volume (or anything else small) now only moves the slider; before, the whole card was rebuilt, which restarted the glow. A new song keeps the same card, waits for its artwork to load (up to 1.5 s) so there is no blank cover, then swaps the text and fades the glow smoothly from the old album's colour to the new one.
+
+## 1.5.7 - 2026-10-19
+
+### New
+- **Laundry moved from Alerts to Active, with an animated washing-machine tile.** While the washer runs the tile is blue with a wave moving inside the drum, a soft glow and the time remaining; a delayed start shows as a plain "Delayed start" tile. The minute ticking over only changes the time, so the animation is not restarted.
+- **Laundry running and towel heating now join the clock-strip icon.** Priority is now water leak, weather warning, garage open, door open, water on, laundry running, then towel heating, and the "+n" badge counts every other condition that is active. The laundry icon is the same animated drum.
+
+## 1.5.6 - 2026-10-19
+
+### Fixes
+- **The glowing bar by the clock now comes back** after the last icon condition clears (door closed, water off and so on). The icon's leftover marker was hiding the bar.
+
+### Changes
+- **Heated towel rails moved from Alerts to Active.** They now appear in the Active tab as "Towel heating" with their timers and an ALL OFF button, and no longer add to the Alerts count.
+
+## 1.5.5 - 2026-10-19
+
+### New
+- **Open door icon by the clock.** When any door in your external-doors group (`entities.doorsGroup`) is open, the strip beside the clock turns into a glowing yellow open-door icon. The garage door is left out because it has its own icon. It joins the other conditions: priority is water leak, weather warning, garage open, door open, then water on, and the small "+n" badge counts every other one that is active. No new config option.
+
 ## 1.5.4 - 2026-10-19
+
+### Docs
+- README screenshots for Notifications, Rooms, Security, Weather and Irrigation (phone and tablet, dark and light) and the tablet grid were retaken with the current look. All data in them is invented.
 
 ### Fixes
 - **Camera view (#view) header, all sizes.** The Person tag no longer sits on top of the sound and mic buttons, LIVE is in the corner where it belongs, and the controls no longer overlap in the dual driveway + garage view.

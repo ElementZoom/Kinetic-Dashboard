@@ -7,26 +7,24 @@ TOG.forEach(g => { VIRT[g[1]] = () => g[3].filter(x => states[x[0]] && states[x[
 const tapZone = e => (CONFIG.irrigation || []).find(z => z.switch === e);
 const tileTimer = e => { const m = (CONFIG.tileTimers || {})[e]; if (m) return m; const z = tapZone(e); if (z && z.timer) return z.timer; const o = e.split(".")[1]; return ["timer." + o, "timer." + o + "_timer"].find(t => states[t]) || ""; };
 const npItem = (e, o) => { const z = tapZone(e), tap = /^switch\..*water_tap$/.test(e); return Object.assign({ entity: e, timer: tileTimer(e) }, tap ? { water: (z && z.flow) || true } : {}, o || {}); };
+const gar = x => /garage/i.test(x + " " + fname(x)) || Object.keys(galCfg()).some(k => (galCfg()[k] || {}).sensor === x);   // the garage door has its own alert, so it is not listed with the doors
+// open doors from the external-doors group (garage excluded): a list of ids, [] when the group says "on" but cannot say which one, or null when all are shut
+const doorsOpen = () => { const g = E("doorsGroup"), d0 = members(g).filter(x => x !== g && isOn(x)), d = d0.filter(x => !gar(x)); return d.length || (isOn(g) && !d0.length) ? d : null; };
 function notif(full) {
   let n = 0, h = "", bh = "", nb = 0, hasB = false;
   const sec = (t, b) => { if (full && b) h += '<div class="lbl np2">' + t + '</div>' + b; };
   const grid = a => a.length ? '<div class="tg3">' + a.map(tileHtml).join("") + '</div>' : "";
   const al = volcHtml().concat(quakeHtml() || []); n += al.length; sec("Alerts", al.join(""));
-  const gar = x => /garage/i.test(x + " " + fname(x)) || Object.keys(galCfg()).some(k => (galCfg()[k] || {}).sensor === x);   // the garage door has its own alert, so it is not listed here
-  const dr0 = members(E("doorsGroup")).filter(x => x !== E("doorsGroup") && isOn(x)), dr = dr0.filter(x => !gar(x));
-  if (dr.length || (isOn(E("doorsGroup")) && !dr0.length)) { n++; sec("Doors", '<div class="alert q"><b>' + (dr.length || 1) + ' open</b><div>' + dr.map(x => esc(fname(x))).join(" · ") + '</div></div>'); }
+  const dr = doorsOpen();
+  if (dr) { n++; sec("Doors", '<div class="alert q"><b>' + (dr.length || 1) + ' open</b><div>' + dr.map(x => esc(fname(x))).join(" · ") + '</div></div>'); }
   const LK = LEAKS().filter(x => isOn(x[0])), W2 = (CONFIG.alerts || []).filter(x => isOn(x[0]));   // leak sensors first, as red cards
   n += LK.length + W2.length; sec("Warnings", LK.map(x => '<div class="alert q"><div class="lbl">' + mdi("water-alert") + ' WATER LEAK</div><b>' + esc(x[1]) + '</b><div>' + esc(x[2]) + '</div></div>').join("") + grid(W2.map(x => npItem(x[0], { name: x[1], sub: x[2], confirm: /rubbish|recycle/.test(x[0]) }))));
   const wr = states[E("weatherWarnings")];
   if (wr && sv(E("weatherWarnings")) && wr.attributes.warnings) { n++; sec("Weather warning", '<div class="alert w">' + esc(wr.attributes.warnings) + '</div>'); }
   const snap = (id, t, k) => { const c = states[id], p = c && c.attributes.entity_picture; return p ? '<div class="snap" data-vw="' + k + '" data-cam="' + id + '"><span class="dl"></span><div class="lbl">' + t + '</div><img alt="" src="' + CONFIG.url + p + (p.indexOf("?") > -1 ? "&" : "?") + 't=' + Math.floor(Date.now() / 60000) + '"></div>' : ""; };
   if (full) sec("Cameras", ((CONFIG.alerts || []).some(x => x[3] === "driveway" && isOn(x[0])) && (CONFIG.view.driveway || {}).id ? snap(CONFIG.view.driveway.id, "Driveway", "driveway") : "") + (viewTrig("garage") ? snap((CONFIG.view.garage || {}).id, "Garage", "garage") : ""));
-  const tw = members(E("towelGroup"));
-  if (isOn(E("towelGroup")) || tw.some(isOn)) { n++; sec("Towel heating", grid(tw.filter(x => x !== E("towelGroup")).map(x => npItem(x, { timer: states["timer.heated_towel_rails"] ? "timer.heated_towel_rails" : tileTimer(x) })))); }
   const ch = [];
   Object.keys(CONFIG.derived.soil || {}).sort().map(z => ["sensor.average_" + z + "_soil_moisture", title(z)]).forEach(x => { const m = parseFloat(sv(x[0])); if (m < 40) ch.push('<div class="ws"><span class="lbl">' + x[1] + ' soil</span><b style="color:var(' + (m < 15 ? "--sd0" : m < 25 ? "--sd1" : "--sd2") + ')">' + (m < 15 ? "Very dry" : m < 25 ? "Dry" : "Moist") + '</b>' + f1(m) + '%</div>'); });
-  const lm = sv(E("laundryState"));
-  if (lm === "Run" || lm === "Delay Run") ch.push('<div class="ws"><span class="lbl">Laundry</span><b>' + (lm === "Run" ? "Running" : "Delayed") + '</b>' + esc(sv(lm === "Run" ? "sensor.laundry_time_remaining_friendly" : E("laundryDelay")) || "") + '</div>');
   n += ch.length; sec("Chores", ch.length ? '<div class="wg">' + ch.join("") + '</div>' : "");
   const tm = (CONFIG.notifTimers || []).filter(x => states[x] && states[x].state === "active");   // optional Timers card: config notifTimers ["timer.x", ...] (none by default; tiles show their own countdown, see tileTimers)
   n += tm.length;
@@ -37,15 +35,22 @@ function notif(full) {
   return { n: n - (hasB ? 1 : 0), all: n, nb: nb, html: h, bh: bh };
 }
 // header strip: normally a glowing bar while something is waiting; it turns into an icon for the conditions below. Priority when several are true:
-// water leak, then weather warning, then garage door open, then water on. The top one shows and a small "+n" says how many more there are.
+// water leak, then weather warning, then garage door open, then a door open, then water on, then laundry running, then towel heating. The top one shows and a small "+n" says how many more there are.
 const LEAKS = () => (CONFIG.leakSensors || []).map(x => { x = [].concat(x); return [x[0], x[1] || fname(x[0]), x[2] || "Water detected"]; });   // config leakSensors: ["binary_sensor.x"] or [["binary_sensor.x", "Washing machine", "Water under the machine"]]
+const laundryOn = () => sv(E("laundryState")) === "Run";   // laundry running (the washer integration reports "Run"; "Delay Run" = waiting for its delayed start)
+const towelsOn = () => { const g = E("towelGroup"); return !!g && members(g).some(x => x !== g && isOn(x)); };
+// a washing-machine drum with a wave moving inside: used by the Laundry tile in Active and by the strip icon
+const DRUM = '<svg viewBox="0 0 24 24" class="drum" aria-hidden="true"><rect x="3" y="2" width="18" height="20" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="7" cy="5.6" r=".9" fill="currentColor"/><circle cx="12" cy="14" r="5.4" fill="none" stroke="currentColor" stroke-width="1.8"/><clipPath id="drumc"><circle cx="12" cy="14" r="4.6"/></clipPath><g clip-path="url(#drumc)"><path class="wv" d="M2 14 q2.5 -2.2 5 0 t5 0 t5 0 t5 0 t5 0 V22 H2Z" fill="currentColor" opacity=".85"/></g></svg>';
 const NSK = [
   ["leak", "water-alert", "Water leak", () => LEAKS().some(x => isOn(x[0]))],
   ["warn", "weather-cloudy-alert", "Weather warning", () => { const s = states[E("weatherWarnings")]; return !!s && s.state !== "unknown" && s.state !== "unavailable"; }],
   ["garage", "garage-open-variant", "Garage door open", () => Object.keys(galCfg()).some(k => { const c = galCfg()[k], s = c && c.sensor && states[c.sensor]; return !!s && (s.state === "on") !== !!c.invert; })],
-  ["water", "m3-water-drop", "Water on", () => Object.keys(states).some(k => /^switch\..*water_tap$/.test(k) && states[k].state === "on") || (CONFIG.irrigation || []).some(z => z.switch && states[z.switch] && states[z.switch].state === "on")]
+  ["door", "door-open", "Door open", () => !!doorsOpen()],
+  ["water", "m3-water-drop", "Water on", () => Object.keys(states).some(k => /^switch\..*water_tap$/.test(k) && states[k].state === "on") || (CONFIG.irrigation || []).some(z => z.switch && states[z.switch] && states[z.switch].state === "on")],
+  ["laundry", "washing-machine", "Laundry running", laundryOn],
+  ["towel", "radiator", "Towel heating on", towelsOn]
 ];
-const nskRel = id => LEAKS().some(x => x[0] === id) || id === E("weatherWarnings") || /^switch\..*water_tap$/.test(id) || Object.keys(galCfg()).some(k => (galCfg()[k] || {}).sensor === id) || (CONFIG.irrigation || []).some(z => z.switch === id);
+const nskRel = id => LEAKS().some(x => x[0] === id) || id === E("weatherWarnings") || id === E("doorsGroup") || id === E("laundryState") || id === E("laundryRemaining") || id === E("towelGroup") || members(E("towelGroup")).includes(id) || members(E("doorsGroup")).includes(id) || /^switch\..*water_tap$/.test(id) || Object.keys(galCfg()).some(k => (galCfg()[k] || {}).sensor === id) || (CONFIG.irrigation || []).some(z => z.switch === id);
 let npTab = "alerts";
 const ACTC = CONFIG.quickAll || [];
 
@@ -56,6 +61,10 @@ const actList = () => {
   A.forEach(x => x.ids.forEach(e => { seen[e] = 1; }));
   const ap = (CONFIG.activeAppliances || []).filter(e => isOn(e) && !npGone(e) && !seen[e]);   // config activeAppliances: ["switch.rice_cooker", ...] get their own "Appliances" group here
   if ((CONFIG.activeAppliances || []).length) A.push({ c: ["Appliances", "", "m3-plug-connect", "app"], ids: ap });
+  const lm = sv(E("laundryState"));
+  if (lm === "Run" || lm === "Delay Run") A.push({ c: ["Laundry", "", "washing-machine", "ld"], ids: ["laundry"] });   // one tile: the drum spins while it runs
+  const twg = E("towelGroup"), tw = twg ? members(twg).filter(x => x !== twg && isOn(x) && !npGone(x) && !seen[x]) : [];   // heated towel rails: listed under Active (they used to be in Alerts)
+  if (tw.length) A.push({ c: ["Towel heating", "", "radiator", "tw"], ids: tw });
   return A;
 };
 function npDismiss(ids) {
@@ -64,10 +73,12 @@ function npDismiss(ids) {
   if (any) npHold = now + 300;
   clearTimeout(npht); npht = setTimeout(queueNotif, any ? 320 : 0); setTimeout(queueNotif, 12100);
 }
+const ldTime = () => esc(sv(sv(E("laundryState")) === "Run" ? "sensor.laundry_time_remaining_friendly" : E("laundryDelay")) || "");
+const ldTile = () => { const run = sv(E("laundryState")) === "Run"; return '<div class="ldt' + (run ? " run" : "") + '"><span class="ldi">' + DRUM + '</span><div><b>Laundry</b><span>' + (run ? "RUNNING" : "DELAYED START") + ' · <em class="ldr">' + ldTime() + '</em></span></div></div>'; };
 function actHtml(A) {
   const t = A.filter(x => x.ids.length); if (!t.length) return '<div class="lbl" style="margin:14px 0">Nothing is on or open</div>';
-  return t.map((x, i) => '<div class="lbl np2 il" data-sec="' + x.c[0].toLowerCase().replace(/\s+/g, "-") + '">' + mdi(x.c[2]) + x.c[0] + ' · ' + x.ids.length + (x.c[3] === 1 ? "" : '<button class="eb" data-off="' + A.indexOf(x) + '">' + (x.c[3] === "close" ? "CLOSE ALL" : "ALL OFF") + '</button>') + '</div>' +
-    '<div class="' + (x.c[3] === 1 ? "bl" : "tg3 act-" + x.c[0].toLowerCase().replace(/\s+/g, "-")) + '">' + x.ids.map(e => tileHtml(x.c[0] === "Water taps" ? npItem(e, { icon: "m3-water-drop" }) : x.c[3] === 1 ? { entity: e, kind: x.c[0] === "Doors" ? "door" : "window" } : npItem(e))).join("") + '</div>').join("");
+  return t.map((x, i) => '<div class="lbl np2 il" data-sec="' + x.c[0].toLowerCase().replace(/\s+/g, "-") + '">' + mdi(x.c[2]) + x.c[0] + ' · ' + x.ids.length + (x.c[3] === 1 || x.c[3] === "ld" ? "" : '<button class="eb" data-off="' + A.indexOf(x) + '">' + (x.c[3] === "close" ? "CLOSE ALL" : "ALL OFF") + '</button>') + '</div>' +
+    '<div class="' + (x.c[3] === 1 ? "bl" : "tg3 act-" + x.c[0].toLowerCase().replace(/\s+/g, "-")) + '">' + x.ids.map(e => x.c[3] === "ld" ? ldTile() : tileHtml(x.c[0] === "Water taps" ? npItem(e, { icon: "m3-water-drop" }) : x.c[3] === 1 ? { entity: e, kind: x.c[0] === "Doors" ? "door" : "window" } : npItem(e, x.c[3] === "tw" ? { timer: states["timer.heated_towel_rails"] ? "timer.heated_towel_rails" : tileTimer(e) } : null))).join("") + '</div>').join("");
 }
 function drawNotif() {
   const open = document.body.classList.contains("np-open");
@@ -75,8 +86,8 @@ function drawNotif() {
   if (open && $$("#np input[type=range], #np .tl").some(r => r._d && r._d > Date.now())) { clearTimeout(npht); npht = setTimeout(drawNotif, 400); return; }
   const r = notif(open);
   const ks = NSK.filter(k => k[3]()), top = ks[0], nacc = $("#nacc");   // the strip turns into the icon of the most urgent condition
-  if ((nacc.dataset.k || "") !== (top ? top[0] : "")) { nacc.dataset.k = top ? top[0] : ""; nacc.innerHTML = top ? mdi(top[1]) : ""; }
-  nacc.dataset.more = ks.length > 1 ? "+" + (ks.length - 1) : "";
+  if ((nacc.dataset.k || "") !== (top ? top[0] : "")) { if (top) nacc.dataset.k = top[0]; else nacc.removeAttribute("data-k"); nacc.innerHTML = top ? (top[0] === "laundry" ? DRUM : mdi(top[1])) : ""; }
+  if (ks.length > 1) nacc.dataset.more = "+" + (ks.length - 1); else nacc.removeAttribute("data-more");
   nacc.classList.toggle("on", !!r.all || !!top);
   $("#hc").title = ks.length ? ks.map(k => k[2]).join(" · ") + (r.all ? " · " : "") + (r.all ? r.all + " notification" + (r.all > 1 ? "s" : "") : "") : r.all ? r.all + " notification" + (r.all > 1 ? "s" : "") : "Notifications";
   if (!open) return;
@@ -85,8 +96,9 @@ function drawNotif() {
   const np = $("#np"), tb = [["alerts", "ALERTS", r.n], ["active", "ACTIVE", tot], ["batteries", "BATTERIES", r.nb]]; let tc = false;
   if (!np.querySelector(".nptabs")) { tc = true; np.innerHTML = '<div class="nh"><div><div class="lbl">Home</div><h3>Notifications</h3></div><button class="eb" data-close="1">DONE</button></div>' + hsw('<div class="chips tabs nptabs">' + tb.map(t => '<button class="chip" data-npt="' + t[0] + '"></button>').join("") + '</div>') + '<div id="npc"></div>'; }
   np.querySelectorAll(".nptabs .chip").forEach((c, k) => { const tx = tb[k][1] + (tb[k][2] ? " · " + tb[k][2] : ""); if (c.textContent !== tx) { c.textContent = tx; tc = true; } c.classList.toggle("on", c.dataset.npt === npTab); });
-  const body = npTab === "active" ? actHtml(A) : npTab === "batteries" ? (r.bh || '<div class="lbl" style="margin:14px 0">All batteries are fine</div>') : (r.n ? "" : '<div class="lbl" style="margin:14px 0">All clear</div>') + r.html, nc = $("#npc"), key = npTab + "|" + body;
+  const body = npTab === "active" ? actHtml(A) : npTab === "batteries" ? (r.bh || '<div class="lbl" style="margin:14px 0">All batteries are fine</div>') : (r.n ? "" : '<div class="lbl" style="margin:14px 0">All clear</div>') + r.html, nc = $("#npc"), key = npTab + "|" + body.replace(/<em class="ldr">[^<]*<\/em>/g, '<em class="ldr"></em>');   // the remaining time is filled in below, so the minute ticking over does not redraw the list (and restart the drum)
   if (nc._k !== key) { nc._k = key; nc.innerHTML = body; }
+  $$("#npc .ldr").forEach(el => { const t = ldTime(); if (el.textContent !== t) el.textContent = t; });
   if (tc) requestAnimationFrame(hsAll);
   updTiles(); tickIrr();
 }

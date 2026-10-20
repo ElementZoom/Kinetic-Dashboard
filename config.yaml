@@ -1,0 +1,14 @@
+# GETTING ALBUM ART COLOR #
+
+shell_command:
+  art_colors: 'python3 /config/scripts/art_colors.py "{{ url }}"'
+  detection_dir: 'mkdir -p /media/detections/{{ cam }}'
+  detection_prune: 'find /media/detections -type f -mtime +8 -delete'
+
+# SAVING CAMERA SNAPSHOT #
+
+homeassistant:
+  media_dirs:
+    local: /media
+  allowlist_external_dirs:
+    - /media

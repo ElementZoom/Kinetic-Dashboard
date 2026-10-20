@@ -18,9 +18,17 @@ function artColor(pic) {
       if (curPg() === "media") drawMedia();
     } catch (e) { ARTC[pic] = ""; }
   };
-  im.onerror = () => { ARTC[pic] = ""; };
+  im.onerror = () => { ARTC[pic] = ""; if (curPg() === "media") drawMedia(); };
   im.src = (pic.charAt(0) === "/" ? CONFIG.url : "") + pic;
   return null;
+}
+// a new track's artwork (and the glow colour taken from it) is loaded before the card changes, so the card never flashes a blank cover or the old colour for a moment
+const ARTW = {};
+function artReady(pic) {
+  if (!pic) return true; artColor(pic);
+  if (ARTC[pic] !== null) return true;
+  if (!ARTW[pic]) { ARTW[pic] = Date.now(); setTimeout(() => { if (curPg() === "media") drawMedia(); }, 1600); }
+  return Date.now() - ARTW[pic] > 1500;
 }
 function mpArt(a, st, pic) {
   const t = mpTitle(a, st), map = CONFIG.mediaArt || {};
@@ -43,7 +51,7 @@ function mpCard(mem, ctl) {
   const bt = (m, i, on) => '<button class="rnd' + (on ? " on" : "") + '" data-mp="' + m + '" data-e="' + ctl + '">' + i + '</button>';
   const vols = mem.map(x => { const v = states[x] ? states[x].attributes : {}; return '<div class="mv"><span>' + esc(fname(x)) + '</span><input type="range" min="0" max="100" data-vol="' + x + '" value="' + Math.round((v.volume_level || 0) * 100) + '"><button class="rnd s" data-mp="mute" data-e="' + x + '">' + mdi(v.is_volume_muted ? "volume-off" : "volume-high") + '</button></div>'; }).join("");
   const mg = artColor(pic);
-  return '<div class="pn mpc' + (/^(playing|paused)$/.test(s.state) ? "" : " idle") + (play ? " pl" : "") + (mpVo ? " vo" : "") + '"' + (mg ? ' style="--mg:' + mg + '"' : "") + '>' + (/^(playing|paused)$/.test(s.state) && mt ? '<button class="rnd on mly" data-ly="open" data-e="' + ctl + '" aria-label="Lyrics">' + mdi("lyrics") + '</button>' : "") + '<div class="lbl">' + esc(title) + ' · ' + esc(s.state) + (a.source ? " · " + esc(a.source) : "") + '</div><div class="mpa">' + art + '<div>' + info + '</div></div>' +
+  return '<div class="pn mpc' + (/^(playing|paused)$/.test(s.state) ? "" : " idle") + (play ? " pl" : "") + (mpVo ? " vo" : "") + '" data-c="' + ctl + '"' + (mg ? ' style="--mgc:rgb(' + mg + ')"' : "") + '>' + (/^(playing|paused)$/.test(s.state) && mt ? '<button class="rnd on mly" data-ly="open" data-e="' + ctl + '" aria-label="Lyrics">' + mdi("lyrics") + '</button>' : "") + '<div class="lbl">' + esc(title) + ' · ' + esc(s.state) + (a.source ? " · " + esc(a.source) : "") + '</div><div class="mpa">' + art + '<div>' + info + '</div></div>' +
     '<div class="mpb" ' + mpData(ctl) + '><i></i></div>' +
     '<div class="mpt">' + bt("shuffle", mdi("shuffle-variant"), a.shuffle) + bt("prev", mdi("skip-previous")) + bt("pp", mdi(play ? "pause" : "play")) + bt("next", mdi("skip-next")) + bt("repeat", mdi(a.repeat === "one" ? "repeat-once" : a.repeat === "all" ? "repeat" : "repeat-off"), a.repeat && a.repeat !== "off") + '<button class="rnd mvt' + (mpVo ? " on" : "") + '" data-mp="voltog">' + mdi("volume-high") + '</button></div>' +
     '<div class="mvs">' + vols + '</div></div>';
@@ -61,13 +69,23 @@ function mpGroups() {   // Sonos lists the group coordinator first
 }
 function drawMedia() {
   const ae = document.activeElement; if (ae && ae.type === "range" && $("#media").contains(ae)) return;
-  const ids = CONFIG.media, rk = g => ({ playing: 0, paused: 1 }[(states[g.ctl] || {}).state] ?? 2), cards = mpGroups().map((g, i) => [rk(g), i, mpCard(g.mem, g.ctl)]).sort((a, b) => a[0] - b[0] || a[1] - b[1]).map(x => x[2]);
-  const html = '<div class="mpg">' + cards.join("") + '</div>', mp = $("#mp"), key = html.replace(/ data-(pos|upd)="[^"]*"/g, "");
-  if (mp._k === key && mp.firstChild) {   // nothing visible changed (some other entity updated): keep the cards as they are, so the glow does not restart and a tap is never lost; only the progress timing is refreshed
-    const t = document.createElement("template"); t.innerHTML = html;
-    const nb = t.content.querySelectorAll(".mpb"), ob = mp.querySelectorAll(".mpb");
-    nb.forEach((b, i) => { if (ob[i]) Object.assign(ob[i].dataset, b.dataset); });
-  } else { mp.innerHTML = html; mp._k = key; }
+  const ids = CONFIG.media, rk = g => ({ playing: 0, paused: 1 }[(states[g.ctl] || {}).state] ?? 2), grp = mpGroups().map((g, i) => [rk(g), i, g]).sort((a, b) => a[0] - b[0] || a[1] - b[1]).map(x => x[2]);
+  const mp = $("#mp"); let root = mp.firstElementChild; if (!root || !root.classList.contains("mpg")) { mp.innerHTML = '<div class="mpg"></div>'; root = mp.firstElementChild; }
+  const have = {}; [].slice.call(root.children).forEach(c => { have[c.dataset.c] = c; });
+  // each speaker card is kept and updated in place (the glow animation keeps running): a volume change only moves the slider, a new track waits for its artwork and then swaps the card's contents and fades to the new colour
+  const els = grp.map(g => {
+    const t = document.createElement("template"); t.innerHTML = mpCard(g.mem, g.ctl); const n = t.content.firstElementChild, o = have[g.ctl], pic = (states[g.ctl] || { attributes: {} }).attributes.entity_picture;
+    if (!o) return n;
+    if (!artReady(pic)) return o;
+    const st = n.outerHTML.replace(/ data-(pos|upd)="[^"]*"/g, "").replace(/(<input[^>]*data-vol[^>]*?) value="[^"]*"/g, "$1").replace(/ style="[^"]*"/, "");
+    if (o._s !== st) { o._s = st; o.className = n.className; o.innerHTML = n.innerHTML; }
+    else { const nb = n.querySelectorAll(".mpb"), ob = o.querySelectorAll(".mpb"); nb.forEach((b, i) => { if (ob[i]) Object.assign(ob[i].dataset, b.dataset); }); n.querySelectorAll("input[data-vol]").forEach((r, i) => { const x = o.querySelectorAll("input[data-vol]")[i]; if (x && x.value !== r.value && document.activeElement !== x) x.value = r.value; }); }
+    const c = n.style.getPropertyValue("--mgc"); if (c) { if (o.style.getPropertyValue("--mgc") !== c) o.style.setProperty("--mgc", c); } else o.style.removeProperty("--mgc");
+    return o;
+  });
+  els.forEach((e, i) => { if (!e._s) e._s = e.outerHTML.replace(/ data-(pos|upd)="[^"]*"/g, "").replace(/(<input[^>]*data-vol[^>]*?) value="[^"]*"/g, "$1").replace(/ style="[^"]*"/, ""); if (root.children[i] !== e) root.insertBefore(e, root.children[i] || null); });
+  while (root.children.length > els.length) root.removeChild(root.lastElementChild);
+  const cards = els;
   const gb = $("#mpgrp"); if (gb) { gb.hidden = ids.length < 2; gb.dataset.mp = cards.length > 1 ? "join" : "unjoin"; const t = cards.length > 1 ? "GROUP SPEAKERS" : "UNGROUP"; gb.setAttribute("aria-label", t.toLowerCase()); gb.querySelector("span").textContent = t; if (gb._t !== t) { gb._t = t; gb.querySelector("svg").outerHTML = mdi(cards.length > 1 ? "speaker-multiple" : "link-variant"); } }
   tickMedia(); lyrUpdate();
 }

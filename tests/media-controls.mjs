@@ -84,7 +84,13 @@ const pos0 = await p.evaluate(() => document.querySelector("#mp .mpc.pl .mpb").d
 await p.evaluate(() => { __st("media_player.a", "playing", Object.assign({}, states["media_player.a"].attributes, { media_position: 77, media_position_updated_at: new Date().toISOString() })); drawMedia(); });
 eq("a new playback position refreshes the progress bar without rebuilding the card", await p.evaluate(p0 => [document.querySelector("#mp .mpc.pl") === window.__c, +document.querySelector("#mp .mpc.pl .mpb").dataset.pos > +p0 + 50], pos0), [true, true]);
 await p.evaluate(() => { __st("media_player.a", "playing", Object.assign({}, states["media_player.a"].attributes, { media_title: "Next Song" })); drawMedia(); });
-eq("a new song does rebuild the card", await p.evaluate(() => [document.querySelector("#mp .mpc.pl") !== window.__c, document.querySelector("#mp .mpc.pl b").textContent]), [true, "Next Song"]);
+eq("a new song changes the text but keeps the same card (so the glow keeps running)", await p.evaluate(() => [document.querySelector("#mp .mpc.pl") === window.__c, document.querySelector("#mp .mpc.pl b").textContent]), [true, "Next Song"]);
+await p.evaluate(() => { __st("media_player.a", "playing", Object.assign({}, states["media_player.a"].attributes, { media_title: "Volume Test" })); drawMedia(); window.__c.querySelector(".mpa").dataset.keep = "1"; });
+await p.evaluate(() => { const a = states["media_player.a"].attributes; __st("media_player.a", "playing", Object.assign({}, a, { volume_level: 0.77 })); drawMedia(); });
+eq("a volume change moves the slider in place: same card, same contents, new value", await p.evaluate(() => [document.querySelector("#mp .mpc.pl") === window.__c, document.querySelector("#mp .mpc.pl .mpa").dataset.keep, document.querySelector('#mp .mpc.pl input[data-vol="media_player.a"]').value]), [true, "1", "77"]);
+eq("a new track waits for its artwork: the old title stays for a moment", await p.evaluate(() => { const a = states["media_player.a"].attributes; __st("media_player.a", "playing", Object.assign({}, a, { media_title: "Art Test", entity_picture: "/nope/new-cover.jpg" })); drawMedia(); return document.querySelector("#mp .mpc.pl b").textContent; }), "Volume Test");
+await p.waitForTimeout(500);
+eq("once the artwork has loaded (or failed) the card changes, still the same card", await p.evaluate(() => [document.querySelector("#mp .mpc.pl b").textContent, document.querySelector("#mp .mpc.pl") === window.__c]), ["Art Test", true]);
 await p.evaluate(() => { __st("media_player.a", "paused", Object.assign({}, states["media_player.a"].attributes)); drawMedia(); });
 eq("paused: no glow, card says paused", await p.evaluate(() => [document.querySelectorAll("#mp .mpc.pl").length, /paused/i.test(document.querySelector("#mp .mpc:not(.idle) .lbl").textContent)]), [0, true]);
 await p.close();

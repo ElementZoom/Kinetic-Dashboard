@@ -101,3 +101,17 @@ html:not(#x) #vw .vwx{display:none!important}
 @media(orientation:portrait) and (min-width:700px){html:not(#x) #vw.two .cam.vf:not(.ls) .vh>.px{order:4;margin-left:0!important}html:not(#x) #vw.two .cam.vf:not(.ls):not(.pb) .vh>.cx{order:5}html:not(#x) #vw.two .cam.vf:not(.ls) .vh::after{order:6}html:not(#x) #vw.two .cam.vf:not(.ls) .vh>.aud{order:7}html:not(#x) #vw.two .cam.vf:not(.ls) .vh>.fsb{display:none!important}}
 @media(orientation:landscape) and (min-width:1000px){html:not(#x) #vw.two .cam.vf:not(.ls) .vh>.px{order:4;margin-left:0!important}html:not(#x) #vw.two .cam.vf:not(.ls):not(.pb) .vh>.cx{order:5}html:not(#x) #vw.two .cam.vf:not(.ls) .vh::after{order:6}html:not(#x) #vw.two .cam.vf:not(.ls) .vh>.aud{order:7}html:not(#x) #vw.two .cam.vf:not(.ls) .vh>.fsb{display:none!important}}
 html:not(#x) #vw.two .cam.vf:not(.ls) .vh::before{content:"";position:absolute;left:-14px;right:-14px;top:-12px;height:calc(100% + 28px);background:linear-gradient(rgba(0,0,0,.6),transparent);border-radius:22px 22px 0 0;pointer-events:none;z-index:-1}   /* the dual cards have no dark band of their own: keep the labels readable over the picture */
+
+/* laundry tile (Active tab): blue while the washer runs, the drum has a wave moving inside and a soft glow pulses; a delayed start is plain */
+.ldt{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:20px;border:1px solid var(--line);background:rgba(var(--w),.04);min-height:68px}
+.ldt b{display:block;font-size:17px;font-weight:500}.ldt span{opacity:.8;font-size:13px;letter-spacing:.04em}.ldt em{font-style:normal}
+.ldi{width:40px;height:40px;display:flex;color:var(--mut)}.ldi svg,.drum{width:40px;height:40px;fill:none}
+.ldt.run{border-color:rgba(80,170,255,.7);background:linear-gradient(160deg,rgba(40,140,255,.30),rgba(10,50,110,.28));color:#e8f4ff;animation:ldglow 3s ease-in-out infinite}
+.ldt.run .ldi{color:#8fd0ff;filter:drop-shadow(0 0 5px rgba(80,170,255,.8));animation:ldshake 2.4s ease-in-out infinite}
+.ldt.run .wv,#nacc[data-k=laundry] .wv{animation:ldwave 1.6s linear infinite}
+html[data-mode=light] .ldt.run{background:linear-gradient(160deg,rgba(60,150,255,.22),rgba(120,190,255,.18));color:#0b2a4a}html[data-mode=light] .ldt.run .ldi{color:#1c6fd0}
+@keyframes ldwave{to{transform:translateX(-10px)}}@keyframes ldshake{0%,100%{transform:translateX(0)}25%{transform:translateX(-.6px)}75%{transform:translateX(.6px)}}
+@keyframes ldglow{0%,100%{box-shadow:0 0 0 rgba(80,170,255,0)}50%{box-shadow:0 0 18px rgba(80,170,255,.45)}}
+#nacc[data-k=laundry] svg{fill:none}
+@media(prefers-reduced-motion:reduce){.ldt.run,.ldt.run .ldi,.ldt.run .wv,#nacc[data-k=laundry] .wv{animation:none}}
+.tg3>.ldt{grid-column:1/-1}

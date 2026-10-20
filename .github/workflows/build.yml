@@ -29,7 +29,7 @@ jobs:
 
       # Regenerate on demand and after pushes to the Home Assistant config branch.
       - name: Regenerate dash.html
-        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref_name == 'hichiro/ha-config')
         run: |
           node build.mjs
           if ! git diff --quiet -- dash.html; then

@@ -186,8 +186,7 @@ function route() {
   if (p === "vehicle") drawVehicle();
   if (p === "hazards") { HZ.vb = null; HZ.slide = 0; HZ.view = HZ.view || (states["zone.home"] ? "home" : "ni"); requestAnimationFrame(drawHaz); }
   if (h[0] === "disarm") alarmLink("disarm"); else if (h[0] === "arm") alarmLink("arm_" + (h[1] || "away"));
-  if (h[0] === "notifications" || h[0] === "active" || h[0] === "batteries") { npTab = h[0] === "active" ? "active" : h[0] === "batteries" ? "batteries" : "alerts"; document.body.classList.add("np-open"); drawNotif();
-    if (h[0] === "active" && h[1]) [80, 1500].forEach(ms => setTimeout(() => { if (document.body.classList.contains("np-open")) { const t = $('#np [data-sec="' + h[1] + '"]'); if (t) t.scrollIntoView({ block: "start" }); } }, ms)); }
+  if (h[0] === "notifications" || h[0] === "active" || h[0] === "batteries") { npTab = h[0] === "active" ? "active" : h[0] === "batteries" ? "batteries" : "alerts"; npGo = h[0] === "active" && h[1] ? { s: h[1], t: Date.now() } : null; document.body.classList.add("np-open"); drawNotif(); }
 }
 // tablet battery pill: shown on the Fully Kiosk tablet only ("kiosk" = the Fully JS interface, a FullyKiosk user agent, or ?tablet=1 once; "always" / "never" override)
 const BAT_ON = (() => {
@@ -246,5 +245,5 @@ const mq = window.matchMedia("(max-width:760px)"); if (mq.addEventListener) mq.a
   pick();
   try { window.parent.addEventListener("hashchange", () => { if (pick()) route(); }); } catch (_) {}
 })();
-route(); drawGsum(); authReturn().then(r => { if (r !== "fail") connect(); });
+// the first route() / drawGsum() / connect() now run from 41-start.js, after every other module has loaded (see there)
 

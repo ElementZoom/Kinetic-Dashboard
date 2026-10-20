@@ -1642,7 +1642,7 @@ html[data-mode=light] .ldt.run{background:linear-gradient(160deg,rgba(60,150,255
 // (notification tap such as #view/driveway, #security ...), not the return from the login, and the device has not asked for reduced motion.
 window.brandLogo = function () { var L = window.DASH_LOGO, B = (window.DASH_CONFIG || {}).brand; return L && L.svg ? { svg: L.svg, lockup: !!L.lockup } : B && B.mark ? { svg: B.mark, lockup: false } : null; };   // brand-logo.js wins over brand.mark in config.js
 window.brandMark = function (s) { var g = window.brandLogo(); if (!g) return ""; return g.svg.replace(/\bid="([\w-]+)"/g, 'id="$1' + s + '"').replace(/url\(#([\w-]+)\)/g, 'url(#$1' + s + ')'); };
-window.DASH_VER = "1.5.8";   // the one place to change the version
+window.DASH_VER = "1.5.9";   // the one place to change the version
 (function () { try {
   var B = (window.DASH_CONFIG || {}).brand, el = document.getElementById("bootld"), r = document.documentElement, lp = "on";
   try { lp = localStorage.getItem("dashLogo") || "on"; } catch (e) {}   // Theme page -> "Start-up logo": on | load (no intro) | off (plain spinner, as before)
@@ -1833,6 +1833,7 @@ Object.assign(MDI, {"water-alert": {"v": "3 1.5 18 21", "p": "M12,3.77L11.25,4.6
 Object.assign(MDI, {"plus":"M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"});
 
 Object.assign(MDI, {"lyrics":"M4,5H14V7H4V5M4,9H14V11H4V9M4,13H10V15H4V13M18,3V12.6A3,3 0 1,0 20,15.4V6H22V3H18Z"});
+MDI["battery-low"] = "M9,2H15V4H16.5A1.5,1.5 0 0,1 18,5.5V20.5A1.5,1.5 0 0,1 16.5,22H7.5A1.5,1.5 0 0,1 6,20.5V5.5A1.5,1.5 0 0,1 7.5,4H9V2M8,6V20H16V6H8M9,14H15V18H9V14Z";
 const isMobile = () => window.matchMedia("(max-width:760px)").matches;
 const MAIN = CONFIG.rooms.filter(r => r.main)[0].id, W = CONFIG.weather;
 const MODE = { heat_cool: "AUTO", fan_only: "FAN", off: "OFF", heat: "HEAT", cool: "COOL", dry: "DRY", auto: "AUTO" };
@@ -2040,7 +2041,7 @@ function openWs(tk) {
     else if (m.type === "auth_invalid") authBad();
     else if (m.type === "auth_ok") {
       setStatus(true); hideLogin();
-      send({ type: "get_states" }, list => { list.forEach(setState); palTick(); vGroups(); buildDep(); drawGsum(); if (cards[MAIN]) render(MAIN); if (!identDone) identify(); batTick(); tick(); bootMark("s"); setTimeout(bootGo, 1400); if (camPage()) startCams(); if (onRooms) { if (curRoom) drawRoom(curRoom.id); else updRooms(); } });
+      send({ type: "get_states" }, list => { list.forEach(setState); palTick(); vGroups(); buildDep(); drawGsum(); if (cards[MAIN]) render(MAIN); if (!identDone) identify(); batTick(); tick(); bootMark("s"); queueNotif(); setTimeout(bootGo, 1400); if (camPage()) startCams(); if (onRooms) { if (curRoom) drawRoom(curRoom.id); else updRooms(); } });
       send({ type: "subscribe_events", event_type: "state_changed" });
       loadFc(); loadFcH(); evBtn(); if (curPg() === "energy") { en.busy = false; loadEnergy(); }
     } else if (m.type === "result" && pending[m.id]) { try { pending[m.id](m.result, m); } catch (x) {} delete pending[m.id]; }
@@ -4105,6 +4106,16 @@ const nskRel = id => LEAKS().some(x => x[0] === id) || id === E("weatherWarnings
 let npTab = "alerts";
 const ACTC = CONFIG.quickAll || [];
 
+let npGo = null, npUser = 0;   // npGo = { s: section, t: time }: #active/<section> from a notification link. Scrolls there as soon as that section is on screen (the states can still be loading when the pop-up opens)
+["pointerdown", "wheel", "touchmove"].forEach(ev => $("#np").addEventListener(ev, () => { npUser = Date.now(); }, { passive: true }));
+function npGoRun() {
+  if (!npGo) return;
+  if (Date.now() - npGo.t > 20000) { npGo = null; return; }
+  if (npTab !== "active" || !$('#np [data-sec="' + npGo.s + '"]')) return;
+  const sec = npGo.s, t0 = Date.now(); npGo = null;
+  [80, 1500].forEach(ms => setTimeout(() => { if (npUser > t0 || !document.body.classList.contains("np-open")) return; const t = $('#np [data-sec="' + sec + '"]'); if (t) t.scrollIntoView({ block: "start" }); }, ms));   // the second pass catches rows that arrive just after; it never fights a finger already scrolling
+}
+const npLoading = () => !Object.keys(states).length;   // nothing from Home Assistant yet: say so instead of "Nothing is on or open" / "All clear"
 const NPOFF = {}; let npHold = 0, npht = 0;   // tiles switched off from the Active list vanish at once (a slow light transition would keep them "on" for seconds)
 const npGone = x => { const t = NPOFF[x]; if (!t) return false; if (!isOn(x) || Date.now() - t > 12000) { delete NPOFF[x]; return false; } return true; };
 const actList = () => {
@@ -4147,8 +4158,9 @@ function drawNotif() {
   const np = $("#np"), tb = [["alerts", "ALERTS", r.n], ["active", "ACTIVE", tot], ["batteries", "BATTERIES", r.nb]]; let tc = false;
   if (!np.querySelector(".nptabs")) { tc = true; np.innerHTML = '<div class="nh"><div><div class="lbl">Home</div><h3>Notifications</h3></div><button class="eb" data-close="1">DONE</button></div>' + hsw('<div class="chips tabs nptabs">' + tb.map(t => '<button class="chip" data-npt="' + t[0] + '"></button>').join("") + '</div>') + '<div id="npc"></div>'; }
   np.querySelectorAll(".nptabs .chip").forEach((c, k) => { const tx = tb[k][1] + (tb[k][2] ? " · " + tb[k][2] : ""); if (c.textContent !== tx) { c.textContent = tx; tc = true; } c.classList.toggle("on", c.dataset.npt === npTab); });
-  const body = npTab === "active" ? actHtml(A) : npTab === "batteries" ? (r.bh || '<div class="lbl" style="margin:14px 0">All batteries are fine</div>') : (r.n ? "" : '<div class="lbl" style="margin:14px 0">All clear</div>') + r.html, nc = $("#npc"), key = npTab + "|" + body.replace(/<em class="ldr">[^<]*<\/em>/g, '<em class="ldr"></em>');   // the remaining time is filled in below, so the minute ticking over does not redraw the list (and restart the drum)
+  const body = npLoading() ? '<div class="lbl" style="margin:14px 0">Loading…</div>' : npTab === "active" ? actHtml(A) : npTab === "batteries" ? (r.bh ? '<div class="lbl np2 il">' + mdi("battery-low") + 'Batteries · ' + r.nb + '</div>' + r.bh : '<div class="lbl" style="margin:14px 0">All batteries are fine</div>') : (r.n ? "" : '<div class="lbl" style="margin:14px 0">All clear</div>') + r.html, nc = $("#npc"), key = npTab + "|" + body.replace(/<em class="ldr">[^<]*<\/em>/g, '<em class="ldr"></em>');   // the remaining time is filled in below, so the minute ticking over does not redraw the list (and restart the drum)
   if (nc._k !== key) { nc._k = key; nc.innerHTML = body; }
+  npGoRun();
   $$("#npc .ldr").forEach(el => { const t = ldTime(); if (el.textContent !== t) el.textContent = t; });
   if (tc) requestAnimationFrame(hsAll);
   updTiles(); tickIrr();
@@ -4797,8 +4809,7 @@ function route() {
   if (p === "vehicle") drawVehicle();
   if (p === "hazards") { HZ.vb = null; HZ.slide = 0; HZ.view = HZ.view || (states["zone.home"] ? "home" : "ni"); requestAnimationFrame(drawHaz); }
   if (h[0] === "disarm") alarmLink("disarm"); else if (h[0] === "arm") alarmLink("arm_" + (h[1] || "away"));
-  if (h[0] === "notifications" || h[0] === "active" || h[0] === "batteries") { npTab = h[0] === "active" ? "active" : h[0] === "batteries" ? "batteries" : "alerts"; document.body.classList.add("np-open"); drawNotif();
-    if (h[0] === "active" && h[1]) [80, 1500].forEach(ms => setTimeout(() => { if (document.body.classList.contains("np-open")) { const t = $('#np [data-sec="' + h[1] + '"]'); if (t) t.scrollIntoView({ block: "start" }); } }, ms)); }
+  if (h[0] === "notifications" || h[0] === "active" || h[0] === "batteries") { npTab = h[0] === "active" ? "active" : h[0] === "batteries" ? "batteries" : "alerts"; npGo = h[0] === "active" && h[1] ? { s: h[1], t: Date.now() } : null; document.body.classList.add("np-open"); drawNotif(); }
 }
 // tablet battery pill: shown on the Fully Kiosk tablet only ("kiosk" = the Fully JS interface, a FullyKiosk user agent, or ?tablet=1 once; "always" / "never" override)
 const BAT_ON = (() => {
@@ -4857,7 +4868,7 @@ const mq = window.matchMedia("(max-width:760px)"); if (mq.addEventListener) mq.a
   pick();
   try { window.parent.addEventListener("hashchange", () => { if (pick()) route(); }); } catch (_) {}
 })();
-route(); drawGsum(); authReturn().then(r => { if (r !== "fail") connect(); });
+// the first route() / drawGsum() / connect() now run from 41-start.js, after every other module has loaded (see there)
 
 // ---------- keep looping animations in one shared rhythm ----------
 // Re-drawing a card (new data, re-sorting) creates its animation again, which used to restart the glow from zero (a visible "glitch").
@@ -4914,6 +4925,11 @@ function galOnState(id, s) {
   });
 }
 setInterval(() => { try { Object.keys(galCfg()).forEach(k => galStep(k, false)); } catch (e) {} }, 1000);
+// ---------- start-up: runs last, once every module above has been defined ----------
+// This used to sit at the end of 38-energy.js. A page opened from a notification link (#active/doors, #batteries ...) draws the notifications pop-up
+// straight away, and that code reaches things defined in later files (galCfg in 40-garage-alert.js): "Cannot access 'galCfg' before initialization"
+// stopped the whole script, so the pop-up stayed empty and the dashboard never connected.
+route(); drawGsum(); authReturn().then(r => { if (r !== "fail") connect(); });
 </script>
 </body>
 </html>

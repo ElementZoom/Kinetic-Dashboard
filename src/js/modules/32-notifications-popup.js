@@ -54,6 +54,16 @@ const nskRel = id => LEAKS().some(x => x[0] === id) || id === E("weatherWarnings
 let npTab = "alerts";
 const ACTC = CONFIG.quickAll || [];
 
+let npGo = null, npUser = 0;   // npGo = { s: section, t: time }: #active/<section> from a notification link. Scrolls there as soon as that section is on screen (the states can still be loading when the pop-up opens)
+["pointerdown", "wheel", "touchmove"].forEach(ev => $("#np").addEventListener(ev, () => { npUser = Date.now(); }, { passive: true }));
+function npGoRun() {
+  if (!npGo) return;
+  if (Date.now() - npGo.t > 20000) { npGo = null; return; }
+  if (npTab !== "active" || !$('#np [data-sec="' + npGo.s + '"]')) return;
+  const sec = npGo.s, t0 = Date.now(); npGo = null;
+  [80, 1500].forEach(ms => setTimeout(() => { if (npUser > t0 || !document.body.classList.contains("np-open")) return; const t = $('#np [data-sec="' + sec + '"]'); if (t) t.scrollIntoView({ block: "start" }); }, ms));   // the second pass catches rows that arrive just after; it never fights a finger already scrolling
+}
+const npLoading = () => !Object.keys(states).length;   // nothing from Home Assistant yet: say so instead of "Nothing is on or open" / "All clear"
 const NPOFF = {}; let npHold = 0, npht = 0;   // tiles switched off from the Active list vanish at once (a slow light transition would keep them "on" for seconds)
 const npGone = x => { const t = NPOFF[x]; if (!t) return false; if (!isOn(x) || Date.now() - t > 12000) { delete NPOFF[x]; return false; } return true; };
 const actList = () => {
@@ -96,8 +106,9 @@ function drawNotif() {
   const np = $("#np"), tb = [["alerts", "ALERTS", r.n], ["active", "ACTIVE", tot], ["batteries", "BATTERIES", r.nb]]; let tc = false;
   if (!np.querySelector(".nptabs")) { tc = true; np.innerHTML = '<div class="nh"><div><div class="lbl">Home</div><h3>Notifications</h3></div><button class="eb" data-close="1">DONE</button></div>' + hsw('<div class="chips tabs nptabs">' + tb.map(t => '<button class="chip" data-npt="' + t[0] + '"></button>').join("") + '</div>') + '<div id="npc"></div>'; }
   np.querySelectorAll(".nptabs .chip").forEach((c, k) => { const tx = tb[k][1] + (tb[k][2] ? " · " + tb[k][2] : ""); if (c.textContent !== tx) { c.textContent = tx; tc = true; } c.classList.toggle("on", c.dataset.npt === npTab); });
-  const body = npTab === "active" ? actHtml(A) : npTab === "batteries" ? (r.bh || '<div class="lbl" style="margin:14px 0">All batteries are fine</div>') : (r.n ? "" : '<div class="lbl" style="margin:14px 0">All clear</div>') + r.html, nc = $("#npc"), key = npTab + "|" + body.replace(/<em class="ldr">[^<]*<\/em>/g, '<em class="ldr"></em>');   // the remaining time is filled in below, so the minute ticking over does not redraw the list (and restart the drum)
+  const body = npLoading() ? '<div class="lbl" style="margin:14px 0">Loading…</div>' : npTab === "active" ? actHtml(A) : npTab === "batteries" ? (r.bh ? '<div class="lbl np2 il">' + mdi("battery-low") + 'Batteries · ' + r.nb + '</div>' + r.bh : '<div class="lbl" style="margin:14px 0">All batteries are fine</div>') : (r.n ? "" : '<div class="lbl" style="margin:14px 0">All clear</div>') + r.html, nc = $("#npc"), key = npTab + "|" + body.replace(/<em class="ldr">[^<]*<\/em>/g, '<em class="ldr"></em>');   // the remaining time is filled in below, so the minute ticking over does not redraw the list (and restart the drum)
   if (nc._k !== key) { nc._k = key; nc.innerHTML = body; }
+  npGoRun();
   $$("#npc .ldr").forEach(el => { const t = ldTime(); if (el.textContent !== t) el.textContent = t; });
   if (tc) requestAnimationFrame(hsAll);
   updTiles(); tickIrr();

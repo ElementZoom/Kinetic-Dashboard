@@ -4,6 +4,19 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
+## 1.5.9 - 2026-10-21
+
+### Fixes
+- **Opening the dashboard from a notification link no longer leaves the pop-up empty.** A link such as `#active/doors` (or `#batteries`, `#notifications`) on a cold start tried to draw the notifications pop-up before the garage-door code further down the page had loaded, which stopped the page script with "Cannot access 'galCfg' before initialization". The pop-up stayed empty and the dashboard never connected. Start-up now runs last, after everything is defined.
+- **The pop-up scrolls to the right section even when Home Assistant is slow.** `#active/doors` used to try twice (80 ms and 1.5 s after opening) and give up if the doors had not loaded yet. It now waits for the section to appear (up to 20 s) and then scrolls to it, and does not fight you if you have already started scrolling.
+- **No more misleading "Nothing is on or open" / "All clear" while loading.** Until the first states arrive the pop-up says "Loading…", and it redraws as soon as they do.
+
+### Changes
+- **Batteries tab has a heading like the Active tab.** A "Batteries · 4" heading with a battery icon (the count of low batteries, no button) now sits above the list.
+
+### Tests
+- New `tests/notification-link.mjs` opens `#active/doors` on a cold start with Home Assistant answering quickly and slowly, and checks the pop-up fills, scrolls to Doors, and the page raises no JavaScript errors. `tests/notifications.mjs` also checks the Batteries heading and that it has no button.
+
 ## 1.5.8 - 2026-10-20
 
 ### Fixes

@@ -11,8 +11,10 @@
 ## Install
 1. Put `dash.html`, `config.js` (copied from `config.example.js`) and `brand-logo.js` in Home Assistant's `www/` folder (served as `/local/`).
 2. Open `https://<your-ha>/local/dash.html` and sign in with your normal Home Assistant login. Leave `token` empty in `config.js`; never paste a long-lived token, because `www/` files can be read without a login.
-3. After every edit, bump the `?v=` number on the `config.js` script line and hard-refresh (tablets and phones cache hard).
-4. Optional: for the per-person Access panel, create one Text helper (Settings > Devices & services > Helpers, max length 255) and set `entities.access` in `config.js`.
+3. Add [script](https://github.com/ElementZoom/Kinetic-Dashboard/tree/main/scripts) folder to your root HA folder.
+4. Open `config.yaml` and add the contents into your config.yaml for the automation and the lyric script to work
+5. After every edit, bump the `?v=` number on the `config.js` script line and hard-refresh (tablets and phones cache hard).
+6. Optional: for the per-person Access panel, create one Text helper (Settings > Devices & services > Helpers, max length 255) and set `entities.access` in `config.js`.
 
 ## Screenshots
 Mock-up screens with invented data and generated camera images.

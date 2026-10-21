@@ -39,6 +39,11 @@ function irrMoist() {
     '<div class="iml">' + Z.map((z, i) => '<span><b style="color:' + PC[i % 4] + '">━</b> ' + esc(z.name) + '</span>').join("") + '<span>shaded: wet · moist · dry</span><span class="imh">swipe to look back →</span></div></div>';
 }
 let irrCi = 0;
+function irrFit() {   // phone: the swipe row is only as tall as the card showing, so the dots sit right under it instead of under the tallest card
+  const g = $("#irrigation .irc"); if (!g) return;
+  const k = g.children[irrCi]; if (innerWidth > 760 || !k) { g.style.height = ""; return; }
+  const h = k.offsetHeight; if (h && g.style.height !== h + "px") g.style.height = h + "px";
+}
 function irrPair() {   // rain + soil moisture side by side on a tablet, swipeable on a phone
   const c = [irrRain(), irrMoist()].filter(Boolean); if (c.length < 2) return c.join("");
   return '<div class="irc">' + c.join("") + '</div><div class="dots irdots">' + c.map((_, i) => '<i data-ci="' + i + '"' + (i === irrCi ? ' class="on"' : "") + '></i>').join("") + '</div>';
@@ -75,6 +80,7 @@ function drawIrr() {
   const tmp = document.createElement("div"); tmp.innerHTML = h; for (const c of tmp.children) irrStamp(c); irrSync(pg, tmp); tickIrr();   // only the parts that changed are replaced
   { const z = $("#irrigation .zsx"); if (z && kst) z.scrollTop = kst; }
   const irc = $("#irrigation .irc"); if (irc && !irc._r) { irc._r = 1; if (irrCi && irc.clientWidth) irc.scrollLeft = irrCi * (irc.clientWidth + 12); }
+  irrFit();
   const ims = $("#irrigation .ims"); if (ims) { if (!ims._r) { ims._r = 1; ims.scrollLeft = IH.sc == null ? ims.scrollWidth : IH.sc; requestAnimationFrame(hsAll); } ims.onscroll = () => { IH.sc = ims.scrollLeft >= ims.scrollWidth - ims.clientWidth - 4 ? null : ims.scrollLeft; }; }
   const zg = $("#irrigation .zg"); if (zg && !zg._r) { zg._r = 1; if (irrI && zg.clientWidth) zg.scrollLeft = irrI * (zg.clientWidth + 14); }
 }
@@ -99,7 +105,7 @@ function tickIrr() {
     if (b && +b.dataset.dur) b.style.width = Math.min(100, ms / +b.dataset.dur * 100) + "%";
   });
 }
-$("#irrigation").addEventListener("scroll", e => { const g = e.target; if (!g.classList || !g.classList.contains("irc") || !g.clientWidth) return; irrCi = Math.round(g.scrollLeft / (g.clientWidth + 12)); $$("#irrigation .irdots i").forEach((d, k) => d.classList.toggle("on", k === irrCi)); }, true);
+$("#irrigation").addEventListener("scroll", e => { const g = e.target; if (!g.classList || !g.classList.contains("irc") || !g.clientWidth) return; irrCi = Math.round(g.scrollLeft / (g.clientWidth + 12)); $$("#irrigation .irdots i").forEach((d, k) => d.classList.toggle("on", k === irrCi)); irrFit(); }, true);
 $("#irrigation").addEventListener("scroll", e => { const g = e.target; if (!g.classList || !g.classList.contains("zg") || !g.clientWidth) return; irrSc = Date.now(); irrI = Math.round(g.scrollLeft / (g.clientWidth + 14)); $$("#irrigation .dots i").forEach((d, k) => d.classList.toggle("on", k === irrI)); }, true);
 $("#irrigation").onclick = e => {
   const ci = e.target.closest("[data-ci]"); if (ci) { const g = $("#irrigation .irc"); irrCi = +ci.dataset.ci; if (g) g.scrollTo({ left: irrCi * (g.clientWidth + 12), behavior: "smooth" }); return; }

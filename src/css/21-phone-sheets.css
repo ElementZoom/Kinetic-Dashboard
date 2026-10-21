@@ -3,9 +3,9 @@
 @keyframes shUp{from{transform:translateY(102%)}to{transform:none}}@keyframes shDn{from{transform:none}to{transform:translateY(102%)}}
 @keyframes bkIn{from{opacity:0}to{opacity:1}}@keyframes bkOut{from{opacity:1}to{opacity:0}}
 @media(max-width:760px){
-  html:not(#x) .thr:not(.open),html:not(#x) #scenes .sct.col{left:10px;right:10px;bottom:86px;height:56px;padding:7px 7px 7px 8px;border-radius:18px;border:1px solid var(--line);background:var(--bg)!important;box-shadow:inset 0 0 0 999px rgba(var(--w),.08);backdrop-filter:none;-webkit-backdrop-filter:none}html:not(#x) #irrigation .zsx.col{left:10px;right:10px;bottom:86px;height:56px;padding:7px 7px 7px 8px;border-radius:18px;border:1px solid var(--line);background:var(--bg)!important;box-shadow:inset 0 0 0 999px rgba(var(--w),.08);backdrop-filter:none;-webkit-backdrop-filter:none}
+  html:not(#x) .thr:not(.open),html:not(#x) #scenes .sct.col{left:10px;right:10px;bottom:var(--dock);height:56px;padding:7px 7px 7px 8px;border-radius:18px;border:1px solid var(--line);background:var(--bg)!important;box-shadow:inset 0 0 0 999px rgba(var(--w),.08);backdrop-filter:none;-webkit-backdrop-filter:none}html:not(#x) #irrigation .zsx.col{left:10px;right:10px;bottom:var(--dock);height:56px;padding:7px 7px 7px 8px;border-radius:18px;border:1px solid var(--line);background:var(--bg)!important;box-shadow:inset 0 0 0 999px rgba(var(--w),.08);backdrop-filter:none;-webkit-backdrop-filter:none}
   html:not(#x) body.np-fab:not(.pill-open) .thr:not(.open),html:not(#x) body.np-fab:not(.pill-open) #scenes .sct.col{right:76px}html:not(#x) body.np-fab:not(.pill-open) #irrigation .zsx.col{right:76px}
-  html:not(#x) #npfab{right:10px;bottom:86px}
+  html:not(#x) #npfab{right:10px;bottom:var(--dock)}
   html:not(#x) #scenes .sct .schi{width:40px!important;height:40px!important;border-radius:10px;box-shadow:none;flex:none}html:not(#x) #irrigation .zsx .schi{width:40px!important;height:40px!important;border-radius:10px;box-shadow:none;flex:none}
   html:not(#x) #scenes .sct .sch{gap:12px}html:not(#x) #irrigation .zsx .sch{gap:12px}
   html:not(#x) #scenes .sct .h3{display:block;font:500 15px var(--font,inherit);letter-spacing:0;text-transform:none;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:0}html:not(#x) #irrigation .zsx .h3{display:block;font:500 15px var(--font,inherit);letter-spacing:0;text-transform:none;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:0}
@@ -53,4 +53,13 @@
   #scenes .sct .srl .sr.on .ts2{color:color-mix(in srgb,var(--rc,var(--mint)) 55%,var(--ink))!important}#irrigation .zsx .srl .sr.on .ts2{color:color-mix(in srgb,var(--rc,var(--mint)) 55%,var(--ink))!important}
   #scenes .sct .np2{margin-top:22px!important}#irrigation .zsx .np2{margin-top:22px!important}#scenes .sct .mv{margin:10px 0!important}#irrigation .zsx .mv{margin:10px 0!important}
   #scenes .sct .sr.stp{margin-top:16px!important;padding:12px!important;min-height:56px}#irrigation .zsx .sr.stp{margin-top:16px!important;padding:12px!important;min-height:56px}
+}
+/* phone, Irrigation: compact rain card, so the dots under it (swipe to soil moisture) stay on screen above the floating bar */
+@media(max-width:760px){
+  html:not(#x) .rn12{padding:14px 16px}
+  .rn12 .h3{margin:2px 0 8px!important;font-size:18px}
+  .rn12 .wg{gap:6px}.rn12 .ws{padding:7px 10px}.rn12 .ws b{font-size:16px}
+  .rn12 .r12{margin-top:10px;gap:3px}.r12>div{gap:3px}.r12>div>span:first-child{height:11px}.r12 .bar{height:38px}
+  .rn12>.sm{margin-top:6px!important;font-size:11px}
+  .irc{overflow-y:hidden;transition:height .25s ease}
 }

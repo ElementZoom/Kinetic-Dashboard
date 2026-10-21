@@ -25,7 +25,7 @@ html[data-mode=light]:not(#x) :is(#rv,.vbl,#np) .bd[data-k].on i,html[data-mode=
 html[data-mode=light]:not(#x) :is(#rv,.vbl,#np) .bd[data-k][data-k=door].on i,html[data-mode=light]:not(#x) :is(#rv,.vbl,#np) .bd[data-k][data-k=door].on span.st{color:#c42a1f}
 html[data-mode=light]:not(#x) :is(#rv,.vbl,#np) .bd[data-k][data-k=window].on i,html[data-mode=light]:not(#x) :is(#rv,.vbl,#np) .bd[data-k][data-k=window].on span.st{color:#9a5300}
 html[data-mode=dark]:not(#x) .tl.sir.on .ts2{color:#ffd0d6}
-html[data-mode=light] .sr .sbd{color:color-mix(in srgb,var(--rc) 60%,#000)}
+html[data-mode=light] .sr.on .sbd{color:color-mix(in srgb,var(--rc) 60%,#000)}
 /* room cards carry a temperature glow behind their text: keep secondary text and status pills strong on it */
 html:not(#x) .rooms2 .rc{--mut:rgba(var(--ink-rgb),.86)}
 html:not(#x) .rooms2 .rc .md{color:var(--ink)}

@@ -25,7 +25,7 @@ button,input,select,textarea{font-family:inherit}
 
 .srl{display:flex;flex-direction:column;gap:6px}
 .sr{--rc:var(--mint);display:flex;align-items:center;gap:12px;padding:9px 12px;border-radius:16px;background:rgba(var(--w),.05);cursor:pointer;transition:background .25s;min-width:0}
-.sr .sbd{width:34px;height:34px;border-radius:12px;display:grid;place-items:center;flex:none;color:var(--rc);background:color-mix(in srgb,var(--rc) 20%,transparent)}.sr .sbd svg{width:20px;height:20px;fill:currentColor}
+.sr .sbd{width:34px;height:34px;border-radius:12px;display:grid;place-items:center;flex:none;color:var(--mut);background:rgba(var(--w),.08);transition:color .25s,background .25s}.sr.on .sbd{color:var(--rc);background:color-mix(in srgb,var(--rc) 20%,transparent)}.sr .sbd svg{width:20px;height:20px;fill:currentColor}
 .sr b{flex:1;min-width:0;font-weight:500;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sr .ts2{flex:none;max-width:48%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:700 10px var(--mono);letter-spacing:.1em;text-transform:uppercase;padding:4px 10px;border-radius:99px;background:rgba(var(--w),.08);color:var(--mut);transition:background .25s,color .25s}
 .sr.on{background:color-mix(in srgb,var(--rc) 14%,transparent)}.sr.on .ts2{background:var(--rc);color:#161519}

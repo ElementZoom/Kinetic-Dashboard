@@ -422,7 +422,7 @@ button,input,select,textarea{font-family:inherit}
 
 .srl{display:flex;flex-direction:column;gap:6px}
 .sr{--rc:var(--mint);display:flex;align-items:center;gap:12px;padding:9px 12px;border-radius:16px;background:rgba(var(--w),.05);cursor:pointer;transition:background .25s;min-width:0}
-.sr .sbd{width:34px;height:34px;border-radius:12px;display:grid;place-items:center;flex:none;color:var(--rc);background:color-mix(in srgb,var(--rc) 20%,transparent)}.sr .sbd svg{width:20px;height:20px;fill:currentColor}
+.sr .sbd{width:34px;height:34px;border-radius:12px;display:grid;place-items:center;flex:none;color:var(--mut);background:rgba(var(--w),.08);transition:color .25s,background .25s}.sr.on .sbd{color:var(--rc);background:color-mix(in srgb,var(--rc) 20%,transparent)}.sr .sbd svg{width:20px;height:20px;fill:currentColor}
 .sr b{flex:1;min-width:0;font-weight:500;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sr .ts2{flex:none;max-width:48%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:700 10px var(--mono);letter-spacing:.1em;text-transform:uppercase;padding:4px 10px;border-radius:99px;background:rgba(var(--w),.08);color:var(--mut);transition:background .25s,color .25s}
 .sr.on{background:color-mix(in srgb,var(--rc) 14%,transparent)}.sr.on .ts2{background:var(--rc);color:#161519}
@@ -768,7 +768,7 @@ html[data-mode=light]:not(#x) :is(#rv,.vbl,#np) .bd[data-k=window].on{background
 @media(max-width:760px){.rn12 .ws{padding:10px}.rn12 .ws b{font-size:17px}}
 .wrs .h3{margin:6px 0}
 @media(max-width:760px){.wrs{padding:10px 14px;margin-bottom:10px}.wrs>.lbl{margin-bottom:2px}.wrs .h3{margin:0;font-size:16px}.wrs .sm{font-size:12px;margin-top:1px}
-.irc{align-items:stretch}.irc>.rn12{display:flex;flex-direction:column}.irc>.rn12 .r12{flex:1;align-content:space-evenly}}
+.irc{align-items:flex-start}}
 @media(max-width:760px){.hs::after{top:18px;transform:rotate(45deg)}}
 .fcs{overflow-y:hidden}
 .wdots{display:none}
@@ -856,7 +856,7 @@ html[data-mode=light]:not(#x) :is(#rv,.vbl,#np) .bd[data-k].on i,html[data-mode=
 html[data-mode=light]:not(#x) :is(#rv,.vbl,#np) .bd[data-k][data-k=door].on i,html[data-mode=light]:not(#x) :is(#rv,.vbl,#np) .bd[data-k][data-k=door].on span.st{color:#c42a1f}
 html[data-mode=light]:not(#x) :is(#rv,.vbl,#np) .bd[data-k][data-k=window].on i,html[data-mode=light]:not(#x) :is(#rv,.vbl,#np) .bd[data-k][data-k=window].on span.st{color:#9a5300}
 html[data-mode=dark]:not(#x) .tl.sir.on .ts2{color:#ffd0d6}
-html[data-mode=light] .sr .sbd{color:color-mix(in srgb,var(--rc) 60%,#000)}
+html[data-mode=light] .sr.on .sbd{color:color-mix(in srgb,var(--rc) 60%,#000)}
 /* room cards carry a temperature glow behind their text: keep secondary text and status pills strong on it */
 html:not(#x) .rooms2 .rc{--mut:rgba(var(--ink-rgb),.86)}
 html:not(#x) .rooms2 .rc .md{color:var(--ink)}
@@ -914,6 +914,7 @@ html[data-mode=dark][data-style=glass]:not(#x) :is(.card.auto,.rc.auto){backgrou
 @media(max-width:760px){.rh{flex-wrap:wrap}.cps{flex:1 0 100%;order:3}.cps>:first-child{margin-left:0}}
 
 /* phone: bottom navigation */
+:root{--dock:calc(var(--navh,72px) + 22px)}   /* where the floating pills sit: just above the tab bar. --navh is its real height, measured in 41-start.js */
 #btab,#mshe{display:none}
 @media(max-width:760px){
 nav,#hb{display:none!important}
@@ -926,7 +927,7 @@ html:not([data-style=material]) #btab a span,html:not([data-style=material]) #bt
 html:not([data-style=material]) #btab a.on,html:not([data-style=material]) #btab button.on{flex:2.4}
 html:not([data-style=material]) #btab a.on span,html:not([data-style=material]) #btab button.on span{display:inline;white-space:nowrap}
 #btab a.on,#btab button.on{background:color-mix(in srgb,var(--mint) 24%,transparent);color:var(--mint)}
-#mshe{position:fixed;left:10px;right:10px;bottom:92px;z-index:46;padding:12px;border-radius:24px;background:linear-gradient(160deg,var(--bg2),var(--bg));border:1px solid var(--line);box-shadow:0 10px 40px rgba(0,0,0,.5);grid-template-columns:repeat(3,1fr);gap:8px}
+#mshe{position:fixed;left:10px;right:10px;bottom:calc(var(--dock) + 6px);z-index:46;padding:12px;border-radius:24px;background:linear-gradient(160deg,var(--bg2),var(--bg));border:1px solid var(--line);box-shadow:0 10px 40px rgba(0,0,0,.5);grid-template-columns:repeat(3,1fr);gap:8px}
 body.more-open #mshe{display:grid}
 #mshe a{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 0;border-radius:16px;background:rgba(var(--w),.06);color:var(--ink);font:600 10px var(--mono);letter-spacing:.06em;text-transform:uppercase;text-decoration:none}
 #mshe a.on{background:var(--mint);color:var(--onmint,#07241a)}
@@ -1319,7 +1320,7 @@ body.ly-open .mlay.hasly .ly{font-size:20px;padding:8px 10px}body.ly-open .mlay.
 .npsp{display:flex;flex-wrap:wrap;gap:6px}.npsp .chip{cursor:default;display:inline-flex;align-items:center;gap:6px}.npsp .chip svg{width:16px;height:16px;fill:currentColor}
 #npmini,#npsheet{display:none}
 @media(max-width:760px){
-body.np-on:not(.np-home):not(.np-media) #npmini{display:block;position:fixed;left:10px;right:10px;bottom:86px;z-index:44;padding:9px 12px;border-radius:18px;background:rgba(var(--w),.08);background-color:var(--bg);box-shadow:inset 0 0 0 999px rgba(var(--w),.08);border:1px solid var(--line)}
+body.np-on:not(.np-home):not(.np-media) #npmini{display:block;position:fixed;left:10px;right:10px;bottom:var(--dock);z-index:44;padding:9px 12px;border-radius:18px;background:rgba(var(--w),.08);background-color:var(--bg);box-shadow:inset 0 0 0 999px rgba(var(--w),.08);border:1px solid var(--line)}
 #npmini .npr{margin:0}#npmini .npart{width:40px;height:40px}#npmini .mpb{height:3px;margin-top:8px}
 body.np-on:not(.np-home):not(.np-media) .main{padding-bottom:150px}
 body.vwb #npmini{display:none!important}
@@ -1354,9 +1355,9 @@ html[data-style] #npmini{background-color:var(--bg)}
 @keyframes shUp{from{transform:translateY(102%)}to{transform:none}}@keyframes shDn{from{transform:none}to{transform:translateY(102%)}}
 @keyframes bkIn{from{opacity:0}to{opacity:1}}@keyframes bkOut{from{opacity:1}to{opacity:0}}
 @media(max-width:760px){
-  html:not(#x) .thr:not(.open),html:not(#x) #scenes .sct.col{left:10px;right:10px;bottom:86px;height:56px;padding:7px 7px 7px 8px;border-radius:18px;border:1px solid var(--line);background:var(--bg)!important;box-shadow:inset 0 0 0 999px rgba(var(--w),.08);backdrop-filter:none;-webkit-backdrop-filter:none}html:not(#x) #irrigation .zsx.col{left:10px;right:10px;bottom:86px;height:56px;padding:7px 7px 7px 8px;border-radius:18px;border:1px solid var(--line);background:var(--bg)!important;box-shadow:inset 0 0 0 999px rgba(var(--w),.08);backdrop-filter:none;-webkit-backdrop-filter:none}
+  html:not(#x) .thr:not(.open),html:not(#x) #scenes .sct.col{left:10px;right:10px;bottom:var(--dock);height:56px;padding:7px 7px 7px 8px;border-radius:18px;border:1px solid var(--line);background:var(--bg)!important;box-shadow:inset 0 0 0 999px rgba(var(--w),.08);backdrop-filter:none;-webkit-backdrop-filter:none}html:not(#x) #irrigation .zsx.col{left:10px;right:10px;bottom:var(--dock);height:56px;padding:7px 7px 7px 8px;border-radius:18px;border:1px solid var(--line);background:var(--bg)!important;box-shadow:inset 0 0 0 999px rgba(var(--w),.08);backdrop-filter:none;-webkit-backdrop-filter:none}
   html:not(#x) body.np-fab:not(.pill-open) .thr:not(.open),html:not(#x) body.np-fab:not(.pill-open) #scenes .sct.col{right:76px}html:not(#x) body.np-fab:not(.pill-open) #irrigation .zsx.col{right:76px}
-  html:not(#x) #npfab{right:10px;bottom:86px}
+  html:not(#x) #npfab{right:10px;bottom:var(--dock)}
   html:not(#x) #scenes .sct .schi{width:40px!important;height:40px!important;border-radius:10px;box-shadow:none;flex:none}html:not(#x) #irrigation .zsx .schi{width:40px!important;height:40px!important;border-radius:10px;box-shadow:none;flex:none}
   html:not(#x) #scenes .sct .sch{gap:12px}html:not(#x) #irrigation .zsx .sch{gap:12px}
   html:not(#x) #scenes .sct .h3{display:block;font:500 15px var(--font,inherit);letter-spacing:0;text-transform:none;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:0}html:not(#x) #irrigation .zsx .h3{display:block;font:500 15px var(--font,inherit);letter-spacing:0;text-transform:none;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:0}
@@ -1404,6 +1405,15 @@ html[data-style] #npmini{background-color:var(--bg)}
   #scenes .sct .srl .sr.on .ts2{color:color-mix(in srgb,var(--rc,var(--mint)) 55%,var(--ink))!important}#irrigation .zsx .srl .sr.on .ts2{color:color-mix(in srgb,var(--rc,var(--mint)) 55%,var(--ink))!important}
   #scenes .sct .np2{margin-top:22px!important}#irrigation .zsx .np2{margin-top:22px!important}#scenes .sct .mv{margin:10px 0!important}#irrigation .zsx .mv{margin:10px 0!important}
   #scenes .sct .sr.stp{margin-top:16px!important;padding:12px!important;min-height:56px}#irrigation .zsx .sr.stp{margin-top:16px!important;padding:12px!important;min-height:56px}
+}
+/* phone, Irrigation: compact rain card, so the dots under it (swipe to soil moisture) stay on screen above the floating bar */
+@media(max-width:760px){
+  html:not(#x) .rn12{padding:14px 16px}
+  .rn12 .h3{margin:2px 0 8px!important;font-size:18px}
+  .rn12 .wg{gap:6px}.rn12 .ws{padding:7px 10px}.rn12 .ws b{font-size:16px}
+  .rn12 .r12{margin-top:10px;gap:3px}.r12>div{gap:3px}.r12>div>span:first-child{height:11px}.r12 .bar{height:38px}
+  .rn12>.sm{margin-top:6px!important;font-size:11px}
+  .irc{overflow-y:hidden;transition:height .25s ease}
 }
 /* camera viewer / full screen: the close, PLAYBACK and landscape buttons share one row (same centre line), one height and one glass look */
 .cam .px,.cam .cx,.cam .fsb,.vwx{box-sizing:border-box;height:44px;border:1px solid rgba(255,255,255,.2);background:rgba(18,18,24,.55);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:0 2px 10px rgba(0,0,0,.35);color:#fff}
@@ -1642,7 +1652,7 @@ html[data-mode=light] .ldt.run{background:linear-gradient(160deg,rgba(60,150,255
 // (notification tap such as #view/driveway, #security ...), not the return from the login, and the device has not asked for reduced motion.
 window.brandLogo = function () { var L = window.DASH_LOGO, B = (window.DASH_CONFIG || {}).brand; return L && L.svg ? { svg: L.svg, lockup: !!L.lockup } : B && B.mark ? { svg: B.mark, lockup: false } : null; };   // brand-logo.js wins over brand.mark in config.js
 window.brandMark = function (s) { var g = window.brandLogo(); if (!g) return ""; return g.svg.replace(/\bid="([\w-]+)"/g, 'id="$1' + s + '"').replace(/url\(#([\w-]+)\)/g, 'url(#$1' + s + ')'); };
-window.DASH_VER = "1.5.9";   // the one place to change the version
+window.DASH_VER = "1.5.10";   // the one place to change the version
 (function () { try {
   var B = (window.DASH_CONFIG || {}).brand, el = document.getElementById("bootld"), r = document.documentElement, lp = "on";
   try { lp = localStorage.getItem("dashLogo") || "on"; } catch (e) {}   // Theme page -> "Start-up logo": on | load (no intro) | off (plain spinner, as before)
@@ -3383,6 +3393,11 @@ function irrMoist() {
     '<div class="iml">' + Z.map((z, i) => '<span><b style="color:' + PC[i % 4] + '">━</b> ' + esc(z.name) + '</span>').join("") + '<span>shaded: wet · moist · dry</span><span class="imh">swipe to look back →</span></div></div>';
 }
 let irrCi = 0;
+function irrFit() {   // phone: the swipe row is only as tall as the card showing, so the dots sit right under it instead of under the tallest card
+  const g = $("#irrigation .irc"); if (!g) return;
+  const k = g.children[irrCi]; if (innerWidth > 760 || !k) { g.style.height = ""; return; }
+  const h = k.offsetHeight; if (h && g.style.height !== h + "px") g.style.height = h + "px";
+}
 function irrPair() {   // rain + soil moisture side by side on a tablet, swipeable on a phone
   const c = [irrRain(), irrMoist()].filter(Boolean); if (c.length < 2) return c.join("");
   return '<div class="irc">' + c.join("") + '</div><div class="dots irdots">' + c.map((_, i) => '<i data-ci="' + i + '"' + (i === irrCi ? ' class="on"' : "") + '></i>').join("") + '</div>';
@@ -3419,6 +3434,7 @@ function drawIrr() {
   const tmp = document.createElement("div"); tmp.innerHTML = h; for (const c of tmp.children) irrStamp(c); irrSync(pg, tmp); tickIrr();   // only the parts that changed are replaced
   { const z = $("#irrigation .zsx"); if (z && kst) z.scrollTop = kst; }
   const irc = $("#irrigation .irc"); if (irc && !irc._r) { irc._r = 1; if (irrCi && irc.clientWidth) irc.scrollLeft = irrCi * (irc.clientWidth + 12); }
+  irrFit();
   const ims = $("#irrigation .ims"); if (ims) { if (!ims._r) { ims._r = 1; ims.scrollLeft = IH.sc == null ? ims.scrollWidth : IH.sc; requestAnimationFrame(hsAll); } ims.onscroll = () => { IH.sc = ims.scrollLeft >= ims.scrollWidth - ims.clientWidth - 4 ? null : ims.scrollLeft; }; }
   const zg = $("#irrigation .zg"); if (zg && !zg._r) { zg._r = 1; if (irrI && zg.clientWidth) zg.scrollLeft = irrI * (zg.clientWidth + 14); }
 }
@@ -3443,7 +3459,7 @@ function tickIrr() {
     if (b && +b.dataset.dur) b.style.width = Math.min(100, ms / +b.dataset.dur * 100) + "%";
   });
 }
-$("#irrigation").addEventListener("scroll", e => { const g = e.target; if (!g.classList || !g.classList.contains("irc") || !g.clientWidth) return; irrCi = Math.round(g.scrollLeft / (g.clientWidth + 12)); $$("#irrigation .irdots i").forEach((d, k) => d.classList.toggle("on", k === irrCi)); }, true);
+$("#irrigation").addEventListener("scroll", e => { const g = e.target; if (!g.classList || !g.classList.contains("irc") || !g.clientWidth) return; irrCi = Math.round(g.scrollLeft / (g.clientWidth + 12)); $$("#irrigation .irdots i").forEach((d, k) => d.classList.toggle("on", k === irrCi)); irrFit(); }, true);
 $("#irrigation").addEventListener("scroll", e => { const g = e.target; if (!g.classList || !g.classList.contains("zg") || !g.clientWidth) return; irrSc = Date.now(); irrI = Math.round(g.scrollLeft / (g.clientWidth + 14)); $$("#irrigation .dots i").forEach((d, k) => d.classList.toggle("on", k === irrI)); }, true);
 $("#irrigation").onclick = e => {
   const ci = e.target.closest("[data-ci]"); if (ci) { const g = $("#irrigation .irc"); irrCi = +ci.dataset.ci; if (g) g.scrollTo({ left: irrCi * (g.clientWidth + 12), behavior: "smooth" }); return; }
@@ -3491,7 +3507,7 @@ function updScenes() {
     if (th) { th.classList.toggle("has", !!v); const im = $("img", th); if (v && fn) { if (!im || im.getAttribute("src") !== fn) th.innerHTML = '<img alt="" src="' + fn + '">'; } else if (im || !$("svg", th)) th.innerHTML = mdi("palette"); } }
   $$("#scenes .sc").forEach(el => el.classList.toggle("on", el.dataset.v === v));
   $$("#scenes [data-md]").forEach(b => b.classList.toggle("on", b.dataset.md === scMode));
-  $$("#scenes [data-r]").forEach(el => { const t = sv(S.rooms[el.dataset.r].t) || ""; el.classList.toggle("on", !!t); $(".ts2", el).textContent = t ? title(t) : "OFF"; });
+  $$("#scenes [data-r]").forEach(el => { const R = S.rooms[el.dataset.r], t = sv(R.t) || "", on = R.b && states[R.b] ? isOn(R.b) : !!t; el.classList.toggle("on", on); $(".ts2", el).textContent = on ? (t ? title(t) : "ON") : "OFF"; });   // grey until the room's boolean is on
   $$("#scenes [data-g]").forEach(el => { const l = S.lights[el.dataset.g], on = isOn(l.l); el.classList.toggle("on", on); $(".ts2", el).textContent = on ? title(sv(l.s) || "ON") : "OFF"; });
   $$("#scenes [data-nb]").forEach(r => { const s = states[r.dataset.nb]; if (!s) return; const a = s.attributes; r.min = a.min != null ? a.min : 0; r.max = a.max != null ? a.max : 100; r.step = a.step || 1; if (document.activeElement !== r) r.value = s.state; $(".nbv", r.parentNode).textContent = Math.round(r.value); });
   { const sm = $("#scsum"), num = k => { const x = states[E(k)], v = x ? Math.round(+x.state) : NaN; return isNaN(v) ? "" : v; }, bb = num("dynBrightness"), iv = num("dynInterval"); if (sm) sm.textContent = [scMode === "preset" ? (S.groups[scTab] || [""])[0] : "Gradient", bb !== "" ? "Brightness " + bb : "", iv !== "" ? "Interval " + iv : ""].filter(Boolean).join(" · "); }
@@ -4930,6 +4946,9 @@ setInterval(() => { try { Object.keys(galCfg()).forEach(k => galStep(k, false));
 // straight away, and that code reaches things defined in later files (galCfg in 40-garage-alert.js): "Cannot access 'galCfg' before initialization"
 // stopped the whole script, so the pop-up stayed empty and the dashboard never connected.
 route(); drawGsum(); authReturn().then(r => { if (r !== "fail") connect(); });
+
+// the floating pills (Scenes, Irrigation, Theme, Now Playing) sit a little above the phone tab bar. Its height depends on the theme and font, so measure it (--navh, read by --dock in 13-phone-nav.css)
+(() => { const b = $("#btab"); if (!b) return; const set = () => { const h = b.offsetHeight; if (h) document.documentElement.style.setProperty("--navh", h + "px"); }; set(); if (window.ResizeObserver) new ResizeObserver(set).observe(b); addEventListener("resize", set); })();
 </script>
 </body>
 </html>

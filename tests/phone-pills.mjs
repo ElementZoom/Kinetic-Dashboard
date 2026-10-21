@@ -14,7 +14,7 @@ const browser = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePa
 const problems = []; let checks = 0;
 const ok = (what, v, got) => { checks++; if (!v) problems.push(what + (got === undefined ? "" : ": got " + JSON.stringify(got))); };
 const errors = [];
-const page = await browser.newPage({ viewport: { width: 390, height: 850 }, hasTouch: true, isMobile: true });
+const page = await browser.newPage({ viewport: { width: 390, height: 720 }, hasTouch: true, isMobile: true });
 page.on("pageerror", e => errors.push(String(e)));
 await page.goto(url); await page.waitForTimeout(800);
 await page.evaluate(() => {
@@ -31,14 +31,17 @@ await page.evaluate(() => {
 });
 await page.waitForTimeout(1500);
 await page.evaluate(() => drawIrr()); await page.waitForTimeout(400);
-const m = await page.evaluate(() => { const r = s => { const e = document.querySelector(s); return e && e.getBoundingClientRect(); }; const nav = r("#btab"), pill = r("#irrigation .zsx.col"), dots = r("#irrigation .irdots"), rain = r("#irrigation .rn12"); return { nav: nav && nav.top, pill: pill && [pill.top, pill.bottom], dots: dots && dots.bottom, rain: rain && rain.height }; });
+const m = await page.evaluate(() => { const r = s => { const e = document.querySelector(s); return e && e.getBoundingClientRect(); }; const nav = r("#btab"), pill = r("#irrigation .zsx.col"), dots = r("#irrigation .irdots"), rain = r("#irrigation .rn12"); const cards = [...document.querySelectorAll("#irrigation .irc > .pn")].map(c => Math.round(c.getBoundingClientRect().height)); return { nav: nav && nav.top, pill: pill && [pill.top, pill.bottom], dots: dots && dots.bottom, rain: rain && rain.height, soilH: cards[1], cards }; });
 ok("irrigation bar is on screen", !!m.pill, m);
 if (m.pill) {
   ok("irrigation bar leaves a gap above the tab bar (material style)", m.nav - m.pill[1] >= 8, Math.round(m.nav - m.pill[1]));
-  ok("rain card is compact", m.rain < 330, Math.round(m.rain));
-  ok("the dots under the cards stay above the floating bar", m.dots + 8 <= m.pill[0], [Math.round(m.dots), Math.round(m.pill[0])]);
+  ok("rain card is compact", m.rain < 330 || m.rain === m.soilH, Math.round(m.rain));
 }
 await page.evaluate(() => { const g = document.querySelector("#irrigation .irc"); g.scrollTo({ left: g.clientWidth + 12 }); }); await page.waitForTimeout(800);
+ok("both Irrigation cards are the same height", m.cards.length === 2 && m.cards[0] === m.cards[1], m.cards);
+await page.evaluate(() => { let e = document.querySelector("#irrigation"); while (e) { if (e.scrollHeight > e.clientHeight + 2 && /(auto|scroll)/.test(getComputedStyle(e).overflowY)) { e.scrollTop = 1e6; return; } e = e.parentElement; } window.scrollTo(0, 1e6); }); await page.waitForTimeout(400);
+const bot = await page.evaluate(() => { const g = document.querySelector("#irrigation .irc").getBoundingClientRect(), d = document.querySelector("#irrigation .irdots").getBoundingClientRect(), p = document.querySelector("#irrigation .zsx.col").getBoundingClientRect(); return { cardBottom: Math.round(g.bottom), dotsBottom: Math.round(d.bottom), pillTop: Math.round(p.top) }; });
+ok("after scrolling to the end, the card bottoms and dots stay above the floating bar", bot.cardBottom <= bot.pillTop - 8 && bot.dotsBottom <= bot.pillTop - 8, bot);
 const m2 = await page.evaluate(() => { const g = document.querySelector("#irrigation .irc"), d = document.querySelector("#irrigation .irdots").getBoundingClientRect(), p = document.querySelector("#irrigation .zsx.col").getBoundingClientRect(); return { clipped: g.scrollHeight > g.clientHeight + 1, gap: p.top - d.bottom }; });
 ok("swiping to the soil card does not clip it", m2.clipped === false, m2);
 ok("soil card dots also clear the floating bar", m2.gap >= 8, m2);

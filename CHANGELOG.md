@@ -8,7 +8,7 @@ Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0
 
 ### Fixes
 - **Phone: the floating bars no longer touch the tab bar.** The Scenes, Irrigation, Theme and Now Playing bars were placed a fixed 86 px from the bottom, which only cleared the tab bar in some themes (with the Material style they sat 1 px above it). They now sit just above the tab bar's real height, measured at start-up, so the gap is the same in every theme and font size. The "More" menu sheet follows the same rule.
-- **Irrigation (phone): the Rain card is more compact.** It was tall enough that the dots under it (swipe to Soil moisture) slid behind the floating bar. The card is about 30% shorter, and the swipe row now takes the height of the card showing instead of the tallest one, so the dots stay in view on both cards.
+- **Irrigation (phone): the Rain card is more compact, and both cards are the same height.** The Rain card is shorter, and the Rain and Soil moisture cards now stretch to the same height, so swiping between them does not change the page. The page has room below the cards, so you can scroll their bottoms and the dots above the floating bar on short phones.
 - **Scenes sheet: room buttons are grey until the room is on.** Dining, Sofa, Kitchen and the rest used to show their colour all the time. The colour (and the scene name) now appears only while the room's scene switch is on; off shows grey with OFF.
 
 ### Tests

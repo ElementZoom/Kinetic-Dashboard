@@ -61,5 +61,7 @@
   .rn12 .wg{gap:6px}.rn12 .ws{padding:7px 10px}.rn12 .ws b{font-size:16px}
   .rn12 .r12{margin-top:10px;gap:3px}.r12>div{gap:3px}.r12>div>span:first-child{height:11px}.r12 .bar{height:38px}
   .rn12>.sm{margin-top:6px!important;font-size:11px}
-  .irc{overflow-y:hidden;transition:height .25s ease}
+  /* both Irrigation cards share one height (the taller one), and the page has room below so the bottoms clear the floating control */
+  .irc{align-items:stretch;overflow-y:hidden}
+  #irrigation{padding-bottom:calc(var(--dock,100px) + 76px)}
 }

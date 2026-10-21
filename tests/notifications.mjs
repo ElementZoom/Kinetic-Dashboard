@@ -41,6 +41,7 @@ eq("tabs with bigger counts scroll and show the animated arrow on a phone", awai
 await page.evaluate(() => { states["sensor.a_battery_plus"].state = "90"; states["sensor.b_battery_plus"].state = "90"; drawNotif(); });
 await page.waitForTimeout(200);
 eq("no low batteries: friendly message", /All batteries are fine/i.test(await txt()), true);
+eq("the limit is derived.batteryBelow (80): 75% is listed, 85% is not, and a non-Battery-Notes battery sensor is ignored; the count agrees", await page.evaluate(() => { CONFIG.derived.batteryBelow = 80; states["sensor.a_battery_plus"].state = "75"; states["sensor.b_battery_plus"].state = "85"; states["sensor.phone_battery"] = { entity_id: "sensor.phone_battery", state: "10", attributes: {} }; drawNotif(); return [document.querySelector('#np [data-npt="batteries"]').textContent, String(VIRT["sensor.low_battery_count"]())]; }), ["BATTERIES · 1", "1"]);
 if (process.env.SHOT) { await page.click('#np [data-npt="alerts"]'); await page.screenshot({ path: process.env.SHOT + "_np.png" }); }
 await page.close(); await browser.close(); server.close();
 if (errors.length) problems.push("JavaScript errors: " + errors.join(" | "));

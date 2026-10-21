@@ -113,7 +113,7 @@ window.DASH_CONFIG = {
       driveway: { moisture: ["sensor.demo_soil_drw_1_moisture", "sensor.demo_soil_drw_2_moisture"], temp: ["sensor.demo_soil_drw_1_temperature", "sensor.demo_soil_drw_2_temperature"] },
       backyard: { moisture: ["sensor.demo_soil_bky_1_moisture", "sensor.demo_soil_bky_2_moisture"], temp: ["sensor.demo_soil_bky_1_temperature", "sensor.demo_soil_bky_2_temperature"] }
     },
-    batteryBelow: 25,
+    batteryBelow: 25,   // Notifications > Batteries lists the Battery Notes "Battery+" sensors (sensor.<device>_battery_plus) below this percentage, and the low-battery count uses the same list
     groups: {   // whole-house groups the dashboard builds itself
       "group.all_fans": ["fan.demo_bathroom_fan", "fan.demo_laundry_fan"],
       "group.all_curtains": ["cover.demo_master_curtain_left", "cover.demo_master_curtain_right"],

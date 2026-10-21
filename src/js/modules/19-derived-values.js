@@ -1,6 +1,8 @@
 // ---------- values the dashboard works out itself (instead of template sensors / count groups in HA) ----------
 const avgOf = ids => { const v = ids.map(x => parseFloat(rawSv(x))).filter(x => !isNaN(x)); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null; };
 const fx = v => v == null ? null : v.toFixed(1);
+// Low batteries: Battery Notes makes one "Battery+" sensor per device (sensor.<device>_battery_plus). The Notifications pop-up and the low-battery count both read these, listing any below derived.batteryBelow (%, 61 if not set)
+const lowBatt = () => { const th = CONFIG.derived.batteryBelow != null ? +CONFIG.derived.batteryBelow : 61; return Object.keys(states).filter(k => /^sensor\..*battery_plus$/.test(k) && parseFloat(states[k].state) < th).sort((x, y) => states[x].state - states[y].state); };
 const wLevel = () => { const on = x => states["input_boolean." + x] && states["input_boolean." + x].state === "on"; for (let i = 4; i >= 1; i--) if (on("water_level_" + i)) return i; return on("no_water_restriction") ? 0 : -1; };
 const VIRT = {
   "sensor.house_average_temperature": () => fx(avgOf(CONFIG.derived.houseTemps)),
@@ -8,7 +10,7 @@ const VIRT = {
   "sensor.laundry_time_remaining_friendly": () => { const sec = parseInt(rawSv(E("laundryRemaining"))) || 0; if (!sec) return "Done"; const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60); return h > 0 ? h + "h " + m + "m" : m + "m"; },
   "sensor.current_water_restriction": () => { const l = wLevel(); return l === 0 ? "No Water Restriction" : l > 0 ? "Water Level " + l : "Unknown"; },
   "sensor.current_water_restriction_description": () => { const l = wLevel(); return l === 0 ? "Use water sensibly." : l > 0 ? rawSv("input_text.water_restrictions_level_" + l) : "Unknown"; },
-  "sensor.low_battery_count": () => Object.keys(states).filter(k => /^sensor\./.test(k) && /battery/.test(k) && !/temperature/.test(k) && !isNaN(parseFloat(states[k].state)) && parseFloat(states[k].state) < CONFIG.derived.batteryBelow).length
+  "sensor.low_battery_count": () => lowBatt().length
 };
 Object.keys(CONFIG.derived.soil).forEach(z => { VIRT["sensor.average_" + z + "_soil_moisture"] = () => fx(avgOf(CONFIG.derived.soil[z].moisture)); VIRT["sensor.average_" + z + "_soil_temperature"] = () => fx(avgOf(CONFIG.derived.soil[z].temp)); });
 // dashboard knows which entities feed the room badges / house average, so it refreshes when they change

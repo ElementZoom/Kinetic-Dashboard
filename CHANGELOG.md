@@ -4,6 +4,15 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
+## 1.5.11 - 2026-10-22
+
+### Fixes
+- **The low-battery limit now comes from your config.** The Notifications > Batteries list always used 61 %, whatever `derived.batteryBelow` said; only the count used the setting. Both now use `derived.batteryBelow` (61 if it is not set), so setting it to 80 lists every battery under 80 %.
+- **The Batteries count and list agree.** Both are the Battery Notes "Battery+" sensors (`sensor.<device>_battery_plus`). The count used to include any sensor with "battery" in its name (a phone, a tablet), so it could show more than the list did.
+
+### Tests
+- `tests/notifications.mjs` checks the limit follows `derived.batteryBelow`, and that a non-Battery-Notes battery sensor is ignored.
+
 ## 1.5.10 - 2026-10-21
 
 ### Fixes

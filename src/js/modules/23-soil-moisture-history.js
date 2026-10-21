@@ -20,7 +20,7 @@ function loadIrrH(force) {
 function irrMoist() {
   const Z = CONFIG.irrigation.filter(z => z.moist && IH.d && IH.d[z.moist]); if (!Z.length) return "";
   const PC = ["#2b8fd6", "#e0a21f", "#9a6bff", "#2fb67e"], mc = m => m < 15 ? "#a9a9a9" : m < 25 ? "#d9a400" : m < 45 ? "#3fb6b8" : "#2b8fd6";
-  const n = IH.d[Z[0].moist].length, W = Math.max(Math.round((n - 1) * 5.4), (($("#irrigation").clientWidth || 360) / (innerWidth > 760 ? 2 : 1) - 100)), H = 150, y = v => H - Math.max(0, Math.min(100, v)) / 100 * H;
+  const n = IH.d[Z[0].moist].length, W = Math.max(Math.round((n - 1) * 5.4), (($("#irrigation").clientWidth || 360) / (innerWidth > 760 ? 2 : 1) - 100)), H = isMobile() ? irrHn : 150, y = v => H - Math.max(0, Math.min(100, v)) / 100 * H;
   const now = Z.map(z => { const a = IH.d[z.moist], v = parseFloat(sv(z.moist)); if (!isNaN(v)) a[a.length - 1] = v; return a[a.length - 1]; });
   const dl = Z.map((z, i) => now[i] - IH.d[z.moist][IH.d[z.moist].length - 49]).filter(x => !isNaN(x)), tr = dl.length ? dl.reduce((p, q) => p + q, 0) / dl.length : 0;
   const dry = Z.filter((z, i) => now[i] < 25), wet = now.every(v => v >= 45);
@@ -35,10 +35,28 @@ function irrMoist() {
     Z.map((z, i) => '<path d="' + path(IH.d[z.moist]) + '" fill="none" stroke="' + PC[i % 4] + '" stroke-width="2.4" stroke-linejoin="round"/><circle cx="' + (W - PD) + '" cy="' + y(now[i]) + '" r="4" fill="' + PC[i % 4] + '"/>').join("") + '</svg>';
   return '<div class="pn pg imc"><div class="lbl">' + mdi("water-percent") + ' Soil moisture · last 72 hours</div><div class="h3" style="margin:6px 0 10px">' + head + '</div>' +
     '<div class="wg">' + Z.map((z, i) => '<div class="ws"><span class="lbl">' + esc(z.name) + ' now</span><b style="color:' + mc(now[i]) + '">' + Math.round(now[i]) + '%</b></div>').join("") + '<div class="ws"><span class="lbl">Trend (24 h)</span><b>' + (Math.abs(tr) < 1 ? "steady" : (tr < 0 ? "▼ " : "▲ ") + Math.abs(Math.round(tr)) + "%") + '</b></div></div>' +
-    '<div class="imw"><div class="imy"><span>100</span><span>50</span><span>0</span></div>' + hsw('<div class="ims">' + svg + '</div>') + '</div>' +
+    '<div class="imw"><div class="imy" style="height:' + H + 'px"><span>100</span><span>50</span><span>0</span></div>' + hsw('<div class="ims">' + svg + '</div>') + '</div>' +
     '<div class="iml">' + Z.map((z, i) => '<span><b style="color:' + PC[i % 4] + '">━</b> ' + esc(z.name) + '</span>').join("") + '<span>shaded: wet · moist · dry</span><span class="imh">swipe to look back →</span></div></div>';
 }
-let irrCi = 0;
+let irrCi = 0, irrHn = 110, irrFitBusy = false;   // irrHn = height of the soil chart on a phone; irrFit() shrinks it only as far as needed
+function irrFit() {   // phone: both cards share one height, short enough that the swipe dots end just above the floating bar, whatever the font size
+  const pg = $("#irrigation"), g = $("#irrigation .irc"); if (!g) return;
+  if (!isMobile()) { g.style.removeProperty("--irh"); pg.classList.remove("irtight"); return; }
+  irrFitBusy = true;
+  try {
+    const navh = parseFloat(document.documentElement.style.getPropertyValue("--navh")) || 72, pillTop = innerHeight - (navh + 22) - 56;   // top of the floating bar (see --dock in 13-phone-nav.css)
+    let over = 0;
+    for (let k = 0; k < 5; k++) {
+      const gg = $("#irrigation .irc"); if (!gg) return;
+      const dots = $("#irrigation .irdots"), tail = dots ? dots.offsetHeight : 24, top = gg.getBoundingClientRect().top + (pg.scrollTop || 0) + (window.scrollY || 0);
+      const avail = pillTop - 8 - tail - top, nat = gg.offsetHeight; over = nat - avail;
+      if (over > 1 && irrHn > 64) { irrHn = Math.max(64, irrHn - Math.ceil(over)); drawIrr(); }
+      else if (over < -6 && irrHn < 150 && gg.querySelector(".imc")) { const n = Math.min(150, irrHn + Math.floor(-over)); if (n === irrHn) break; irrHn = n; drawIrr(); }
+      else break;
+    }
+    pg.classList.toggle("irtight", over > 1);   // even the smallest chart does not fit (a very short screen or huge text): the page may scroll, with room under the cards
+  } finally { irrFitBusy = false; }
+}
 function irrPair() {   // rain + soil moisture side by side on a tablet, swipeable on a phone
   const c = [irrRain(), irrMoist()].filter(Boolean); if (c.length < 2) return c.join("");
   return '<div class="irc">' + c.join("") + '</div><div class="dots irdots">' + c.map((_, i) => '<i data-ci="' + i + '"' + (i === irrCi ? ' class="on"' : "") + '></i>').join("") + '</div>';
@@ -74,6 +92,7 @@ function drawIrr() {
   else { h += '<div class="zg">' + CONFIG.irrigation.map(irrZone).join("") + '</div><div class="dots">' + CONFIG.irrigation.map((z, i) => '<i data-zi="' + i + '" title="' + esc(z.name) + '"' + (i === irrI ? ' class="on"' : "") + '></i>').join("") + '</div>'; pg.classList.remove("zop"); }
   const tmp = document.createElement("div"); tmp.innerHTML = h; for (const c of tmp.children) irrStamp(c); irrSync(pg, tmp); tickIrr();   // only the parts that changed are replaced
   { const z = $("#irrigation .zsx"); if (z && kst) z.scrollTop = kst; }
+  if (!irrFitBusy) irrFit();
   const irc = $("#irrigation .irc"); if (irc && !irc._r) { irc._r = 1; if (irrCi && irc.clientWidth) irc.scrollLeft = irrCi * (irc.clientWidth + 12); }
   const ims = $("#irrigation .ims"); if (ims) { if (!ims._r) { ims._r = 1; ims.scrollLeft = IH.sc == null ? ims.scrollWidth : IH.sc; requestAnimationFrame(hsAll); } ims.onscroll = () => { IH.sc = ims.scrollLeft >= ims.scrollWidth - ims.clientWidth - 4 ? null : ims.scrollLeft; }; }
   const zg = $("#irrigation .zg"); if (zg && !zg._r) { zg._r = 1; if (irrI && zg.clientWidth) zg.scrollLeft = irrI * (zg.clientWidth + 14); }

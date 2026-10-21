@@ -34,6 +34,7 @@ await page.evaluate(() => drawIrr()); await page.waitForTimeout(400);
 const m = await page.evaluate(() => { const r = s => { const e = document.querySelector(s); return e && e.getBoundingClientRect(); }; const nav = r("#btab"), pill = r("#irrigation .zsx.col"), dots = r("#irrigation .irdots"), rain = r("#irrigation .rn12"); const cards = [...document.querySelectorAll("#irrigation .irc > .pn")].map(c => Math.round(c.getBoundingClientRect().height)); return { nav: nav && nav.top, pill: pill && [pill.top, pill.bottom], dots: dots && dots.bottom, rain: rain && rain.height, soilH: cards[1], cards }; });
 ok("irrigation bar is on screen", !!m.pill, m);
 if (m.pill) {
+  ok("the swipe dots under the cards are visible above the floating bar without scrolling", m.dots + 8 <= m.pill[0], [Math.round(m.dots), Math.round(m.pill[0])]);
   ok("irrigation bar leaves a gap above the tab bar (material style)", m.nav - m.pill[1] >= 8, Math.round(m.nav - m.pill[1]));
   ok("rain card is compact", m.rain < 330 || m.rain === m.soilH, Math.round(m.rain));
 }

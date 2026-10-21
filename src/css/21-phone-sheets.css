@@ -61,7 +61,12 @@
   .rn12 .wg{gap:6px}.rn12 .ws{padding:7px 10px}.rn12 .ws b{font-size:16px}
   .rn12 .r12{margin-top:10px;gap:3px}.r12>div{gap:3px}.r12>div>span:first-child{height:11px}.r12 .bar{height:38px}
   .rn12>.sm{margin-top:6px!important;font-size:11px}
-  /* both Irrigation cards share one height (the taller one), and the page has room below so the bottoms clear the floating control */
+  /* Irrigation: both cards share one height. irrFit() (23-soil-moisture-history.js) sets --irh / shrinks the soil chart so the dots end above the floating bar */
   .irc{align-items:stretch;overflow-y:hidden}
-  #irrigation{padding-bottom:calc(var(--dock,100px) + 76px)}
+  .irc>.pn{display:flex;flex-direction:column;min-height:0;overflow:hidden}.irc>.pn>*{flex:none}
+  .rn12 .r12{flex:1 1 auto;min-height:0}.rn12 .r12 .bar{height:auto;flex:1 1 auto;min-height:24px}
+  html:not(#x) .imc{padding:14px 16px}.imc .h3{margin:2px 0 8px!important;font-size:16px}
+  .imc .wg{gap:6px}.imc .ws{padding:7px 10px}.imc .ws b{font-size:16px}.imc .imw{margin-top:8px}.imc .iml{font-size:11px;gap:2px 12px;margin-top:4px}
+  #irrigation.irtight{padding-bottom:calc(var(--dock,100px) + 76px)}
+}
 }

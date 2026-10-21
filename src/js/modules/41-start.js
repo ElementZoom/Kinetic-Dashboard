@@ -5,4 +5,4 @@
 route(); drawGsum(); authReturn().then(r => { if (r !== "fail") connect(); });
 
 // the floating pills (Scenes, Irrigation, Theme, Now Playing) sit a little above the phone tab bar. Its height depends on the theme and font, so measure it (--navh, read by --dock in 13-phone-nav.css)
-(() => { const b = $("#btab"); if (!b) return; const set = () => { const h = b.offsetHeight; if (h) document.documentElement.style.setProperty("--navh", h + "px"); }; set(); if (window.ResizeObserver) new ResizeObserver(set).observe(b); addEventListener("resize", set); })();
+(() => { const b = $("#btab"); if (!b) return; const set = () => { const h = b.offsetHeight; if (h) document.documentElement.style.setProperty("--navh", h + "px"); if (curPg() === "irrigation") irrFit(); }; set(); if (window.ResizeObserver) new ResizeObserver(set).observe(b); addEventListener("resize", set); })();

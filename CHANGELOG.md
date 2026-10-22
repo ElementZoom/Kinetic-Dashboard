@@ -4,6 +4,13 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
+## 1.5.13 - 2026-10-22
+
+### Fixes
+- **Phone calendar lands cleanly on today.** The list used to stop with the previous day's events peeking out under the header; today's date now sits clear of it.
+- **Today stands out.** On the phone calendar, today's date and its events sit on a soft gradient block.
+- **Add event is a floating button on the phone.** A round + button floats above the bottom bar, and above the mini music player while music is playing. The list has room at the bottom so it never covers the last event.
+
 ## 1.5.12 - 2026-10-22
 
 ### Changes

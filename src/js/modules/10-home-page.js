@@ -75,8 +75,8 @@ function drawEvents(gs, map, fin) {
   if (isMobile()) {   // phones: agenda list instead of a month grid
     for (let i = 1, dim = new Date(cy, cm + 1, 0).getDate(); i <= dim; i++) {
       const d = new Date(cy, cm, i), l = srt(map[dk(d)] || []); if (!l.length) continue;
-      h += '<div class="ah' + (dk(d) >= today ? " up" : "") + (dk(d) === today ? " t" : "") + '">' + d.toLocaleDateString([], { weekday: "short", day: "numeric", month: "short" }).toUpperCase() + '</div>' +
-        l.map(v => '<div class="ce" data-ev="' + v.i + '" style="--c:' + v.c + '"><span class="mo">' + (v.ad ? "All day" : tm(v)) + '</span> ' + esc(v.s) + '</div>').join("");
+      h += (dk(d) === today ? '<div class="agt">' : "") + '<div class="ah' + (dk(d) >= today ? " up" : "") + (dk(d) === today ? " t" : "") + '">' + d.toLocaleDateString([], { weekday: "short", day: "numeric", month: "short" }).toUpperCase() + '</div>' +
+        l.map(v => '<div class="ce" data-ev="' + v.i + '" style="--c:' + v.c + '"><span class="mo">' + (v.ad ? "All day" : tm(v)) + '</span> ' + esc(v.s) + '</div>').join("") + (dk(d) === today ? "</div>" : "");
     }
     g.className = "cg ag"; g.innerHTML = h || '<div class="lbl" style="margin-top:18px">No events this month</div>';
     if (evJump) { const f = g.querySelector(".ah.up"); if (f && cy === new Date().getFullYear() && cm === new Date().getMonth()) f.scrollIntoView({ block: "start" }); if (fin) evJump = false; }   // current month: start at today / the next event, earlier days stay above to scroll back to

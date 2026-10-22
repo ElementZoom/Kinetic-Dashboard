@@ -304,7 +304,7 @@ body.ev-open #evm{visibility:visible;pointer-events:auto;transition:none}
 .cd .n{font:600 17px var(--mono);color:var(--mut)}.cd.t .n{color:var(--mint)}
 .ce{border-left:3px solid var(--c);background:rgba(var(--w),.07);padding:4px 9px;border-radius:7px;font-size:15px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mo{font:12px var(--mono);color:var(--mut)}
-.cg.ag{display:block}.ag .ah{font:600 13px var(--mono);letter-spacing:.1em;color:var(--mut);margin:18px 0 8px}.ag .ah{scroll-margin-top:84px}.ag .ah.t{color:var(--mint)}.ag .ce{margin-bottom:6px;white-space:normal;padding:9px 12px}
+.cg.ag{display:block}.ag .ah{font:600 13px var(--mono);letter-spacing:.1em;color:var(--mut);margin:18px 0 8px}.ag .ah{scroll-margin-top:150px}.ag .agt{margin:14px 0 0;padding:2px 6px 10px;border-radius:18px;background:linear-gradient(160deg,color-mix(in srgb,var(--mint) 30%,transparent),color-mix(in srgb,var(--mint) 6%,transparent) 70%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--mint) 35%,transparent)}.ag .agt .ah{margin-top:14px}.ag .ah.t{color:var(--mint)}.ag .ce{margin-bottom:6px;white-space:normal;padding:9px 12px}
 /* climate */
 #grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px;align-content:start;padding-bottom:6px}
 .card{display:flex;flex-direction:column;gap:12px;transition:background .3s,border-color .3s}
@@ -366,7 +366,12 @@ body.m-tabs .main{padding-bottom:72px}
 #np{top:0;right:0;bottom:0;width:100vw;border-radius:0}
 .mpg{grid-template-columns:1fr}
 }
-
+@media(max-width:760px){
+  #eadd{position:fixed;right:16px;bottom:calc(var(--dock) + 8px);z-index:43;width:56px;height:56px;padding:0;border-radius:50%;font-size:0;display:flex;align-items:center;justify-content:center;background:var(--mint);color:var(--bg);border:0;box-shadow:0 6px 18px rgba(0,0,0,.28);transition:bottom .25s}
+  #eadd::before{content:"+";font:300 34px/1 var(--sans,system-ui);margin-top:-3px}
+  body.np-on:not(.np-home):not(.np-media) #eadd{bottom:calc(var(--dock) + 86px)}
+  #events .cg.ag{padding-bottom:90px}
+}
 /* light / dark surfaces */
 .cam,nav{--w:255,255,255;--line:rgba(255,255,255,.1)}
 .cam{--ink:#eaf1fb;--ink-rgb:234,241,251;--mut:rgba(234,241,251,.6)}
@@ -1641,7 +1646,7 @@ html[data-mode=light] .ldt.run{background:linear-gradient(160deg,rgba(60,150,255
   <div id="climate" class="page"><div id="gsum" class="pn"></div><div id="grid"></div><div class="dots" id="gdots"></div></div>
 
   <div id="events" class="page">
-    <div class="eh"><button class="eb" id="ep" data-i="chevron-left"></button><h2 id="et"></h2><button class="eb" id="en" data-i="chevron-right"></button><button class="eb" id="etd">TODAY</button><button class="eb" id="eadd" style="display:none">+ ADD EVENT</button><div class="lg" id="elg"></div></div>
+    <div class="eh"><button class="eb" id="ep" data-i="chevron-left"></button><h2 id="et"></h2><button class="eb" id="en" data-i="chevron-right"></button><button class="eb" id="etd">TODAY</button><button class="eb" id="eadd" aria-label="Add event" style="display:none">+ ADD EVENT</button><div class="lg" id="elg"></div></div>
     <div class="cg" id="cg"></div>
   </div>
 </div>
@@ -1659,7 +1664,7 @@ html[data-mode=light] .ldt.run{background:linear-gradient(160deg,rgba(60,150,255
 // (notification tap such as #view/driveway, #security ...), not the return from the login, and the device has not asked for reduced motion.
 window.brandLogo = function () { var L = window.DASH_LOGO, B = (window.DASH_CONFIG || {}).brand; return L && L.svg ? { svg: L.svg, lockup: !!L.lockup } : B && B.mark ? { svg: B.mark, lockup: false } : null; };   // brand-logo.js wins over brand.mark in config.js
 window.brandMark = function (s) { var g = window.brandLogo(); if (!g) return ""; return g.svg.replace(/\bid="([\w-]+)"/g, 'id="$1' + s + '"').replace(/url\(#([\w-]+)\)/g, 'url(#$1' + s + ')'); };
-window.DASH_VER = "1.5.12";   // the one place to change the version
+window.DASH_VER = "1.5.13";   // the one place to change the version
 (function () { try {
   var B = (window.DASH_CONFIG || {}).brand, el = document.getElementById("bootld"), r = document.documentElement, lp = "on";
   try { lp = localStorage.getItem("dashLogo") || "on"; } catch (e) {}   // Theme page -> "Start-up logo": on | load (no intro) | off (plain spinner, as before)
@@ -2240,8 +2245,8 @@ function drawEvents(gs, map, fin) {
   if (isMobile()) {   // phones: agenda list instead of a month grid
     for (let i = 1, dim = new Date(cy, cm + 1, 0).getDate(); i <= dim; i++) {
       const d = new Date(cy, cm, i), l = srt(map[dk(d)] || []); if (!l.length) continue;
-      h += '<div class="ah' + (dk(d) >= today ? " up" : "") + (dk(d) === today ? " t" : "") + '">' + d.toLocaleDateString([], { weekday: "short", day: "numeric", month: "short" }).toUpperCase() + '</div>' +
-        l.map(v => '<div class="ce" data-ev="' + v.i + '" style="--c:' + v.c + '"><span class="mo">' + (v.ad ? "All day" : tm(v)) + '</span> ' + esc(v.s) + '</div>').join("");
+      h += (dk(d) === today ? '<div class="agt">' : "") + '<div class="ah' + (dk(d) >= today ? " up" : "") + (dk(d) === today ? " t" : "") + '">' + d.toLocaleDateString([], { weekday: "short", day: "numeric", month: "short" }).toUpperCase() + '</div>' +
+        l.map(v => '<div class="ce" data-ev="' + v.i + '" style="--c:' + v.c + '"><span class="mo">' + (v.ad ? "All day" : tm(v)) + '</span> ' + esc(v.s) + '</div>').join("") + (dk(d) === today ? "</div>" : "");
     }
     g.className = "cg ag"; g.innerHTML = h || '<div class="lbl" style="margin-top:18px">No events this month</div>';
     if (evJump) { const f = g.querySelector(".ah.up"); if (f && cy === new Date().getFullYear() && cm === new Date().getMonth()) f.scrollIntoView({ block: "start" }); if (fin) evJump = false; }   // current month: start at today / the next event, earlier days stay above to scroll back to

@@ -8,7 +8,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const cfg = `window.DASH_CONFIG = { url: location.origin, token: "t", rooms: [{ id: "living", name: "Living", main: true }],
   house: [{ id: "living", name: "Living", icon: "sofa", lights: ["light.t1"], occ: ["input_boolean.living_occ"], sections: [{ name: "Living", items: ["light.t1"] }] },
           { id: "den", name: "Den", icon: "sofa", lights: ["light.t2"], occ: ["input_boolean.den_occ"], sections: [{ name: "Den", items: ["light.t2"] }] }],
-  roomTabs: [["Main", ["living"]], ["Other", ["den"]]], calendars: ["calendar.t"] };`;
+  roomTabs: [["Main", ["living"]], ["Other", ["den"]]], calendars: ["calendar.t"], mediaPlayers: [{ id: "media_player.t", name: "T" }] };`;
 const server = http.createServer((q, r) => { const u = q.url.split("?")[0]; if (u === "/config.js") { r.writeHead(200, { "content-type": "text/javascript" }); return r.end(cfg); } if (u !== "/dash.html") { r.writeHead(404); return r.end(); } r.writeHead(200, { "content-type": "text/html" }); r.end(fs.readFileSync(path.join(root, "dash.html"))); }).listen(0);
 await new Promise(r => server.once("listening", r));
 const url = `http://127.0.0.1:${server.address().port}/dash.html`;
@@ -45,7 +45,18 @@ await page.evaluate(({ y, m, d }) => {
 await page.waitForTimeout(1200);
 const r = await page.evaluate(() => { const t = document.querySelector("#cg .ah.up"); const b = t && t.getBoundingClientRect(); return { top: b ? Math.round(b.top) : null, scrolled: Math.round(scrollY) + [...document.querySelectorAll("*")].reduce((a, e) => Math.max(a, e.scrollTop), 0), first: document.querySelector("#cg .ah") && document.querySelector("#cg .ah").textContent }; });
 const today = new Date().getDate();
-if (today > 3) { eq("earliest event day is above the view (scrolled down)", r.scrolled > 0, true); eq("today's header is near the top", r.top !== null && r.top >= 0 && r.top < 200, true); }
+if (today > 3) { eq("earliest event day is above the view (scrolled down)", r.scrolled > 0, true); eq("today is in view", r.top !== null && r.top >= 0 && r.top < 400, true); }
+// floating add button + mini player
+await page.evaluate(() => { __st("calendar.t", "off", { supported_features: 1, friendly_name: "T" }); evBtn(); }); await page.waitForTimeout(200);
+const fab = () => page.evaluate(() => { const b = document.querySelector("#eadd").getBoundingClientRect(), n = document.querySelector("#btab").getBoundingClientRect(), m = document.querySelector("#npmini"), mr = m && getComputedStyle(m).display !== "none" ? m.getBoundingClientRect() : null; return { round: Math.abs(b.width - b.height) < 1 && b.width >= 48, aboveNav: b.bottom <= n.top, aboveMini: mr ? b.bottom <= mr.top : null, right: Math.round(innerWidth - b.right) }; });
+const f1 = await fab(); eq("add button is a floating circle above the nav", [f1.round, f1.aboveNav], [true, true]);
+await page.evaluate(() => { document.body.classList.add("np-on"); const m = document.querySelector("#npmini"); }); await page.waitForTimeout(400);
+const f2 = await fab(); eq("add button sits above the mini player", f2.aboveMini !== false, true);
+await page.screenshot({ path: process.env.SHOT || "/tmp/cal.png" });
+const tb = await page.evaluate(() => { const t = document.querySelector("#cg .agt"); return t ? getComputedStyle(t).backgroundImage.includes("gradient") : false; });
+eq("today has a gradient block", tb, true);
+const hd = await page.evaluate(() => { const a = document.querySelector("#cg .ah.up").getBoundingClientRect(), p = document.querySelector("#ttl").getBoundingClientRect(); return a.top - p.bottom; });
+eq("today's header clears the title bar", hd > 8, true);
 eq("no page errors", errors, []);
 await browser.close(); server.close();
 if (problems.length) { console.error(problems.join("\n")); process.exit(1); }

@@ -40,7 +40,7 @@ function npPlay(g, big) {
   const prog = '<div class="mpb" ' + mpData(g.ctl) + '><i></i></div>';
   if (!big) return { art: art, title: title, sub: (a.media_artist ? esc(a.media_artist) + " · " : "") + esc(spk), pp: bt("pp", mdi(play ? "pause" : "play")), prog: mpPos(g.ctl).dur > 0 ? prog : "" };   // no bar (and no empty strip under the row) for a stream without a length, so the row sits in the middle of the card
   const vols = g.mem.map(x => { const v = states[x] ? states[x].attributes : {}; return '<div class="mv"><span>' + esc(fname(x)) + '</span><input type="range" min="0" max="100" data-vol="' + x + '" value="' + Math.round((v.volume_level || 0) * 100) + '"><button class="rnd s" data-mp="mute" data-e="' + x + '">' + mdi(v.is_volume_muted ? "volume-off" : "volume-high") + '</button></div>'; }).join("");
-  return '<div class="npx"><div class="npa">' + art + '<div><b>' + esc(title) + '</b><div>' + esc(a.media_artist || "") + '</div><small>' + esc(a.media_album_name || "") + '</small></div></div>' +
+  return '<div class="npx"><div class="npa"><span data-np="media" title="Open Media" style="display:contents;cursor:pointer">' + art + '</span><div><b>' + esc(title) + '</b><div>' + esc(a.media_artist || "") + '</div><small>' + esc(a.media_album_name || "") + '</small></div></div>' +
     '<div class="npp">' + prog + '<div class="npts"><span>0:00</span><span>0:00</span></div></div>' +
     '<div class="mpt">' + bt("shuffle", mdi("shuffle-variant"), a.shuffle) + bt("prev", mdi("skip-previous")) + bt("pp", mdi(play ? "pause" : "play")) + bt("next", mdi("skip-next")) + bt("repeat", mdi(a.repeat === "one" ? "repeat-once" : a.repeat === "all" ? "repeat" : "repeat-off"), a.repeat && a.repeat !== "off") + '</div>' +
     vols + '<div class="chips npsp">' + g.mem.map(x => '<span class="chip on">' + mdi("speaker") + esc(fname(x)) + '</span>').join("") + '</div></div>';
@@ -81,7 +81,7 @@ function npRender() {
     const fa = $("#npfab .nfa"); fa.dataset.e = g.ctl;
     fa.onclick = e => { e.stopPropagation(); const r = fa.getBoundingClientRect(), d = Math.hypot(e.clientX - r.left - r.width / 2, e.clientY - r.top - r.height / 2);
       if (d < 15) mpDo("pp", fa.dataset.e); else { npSheet = true; npRender(); } }; }   // one tap target: centre = play / pause, the ring of artwork around it = open the player
-  mi.innerHTML = '<div class="npr" data-np="sheet"><div class="npart">' + c.art + '</div><div class="npi"><b>' + esc(c.title) + '</b><small>' + c.sub + '</small></div>' + c.pp + '</div>' + c.prog;
+  mi.innerHTML = '<div class="npr" data-np="sheet"><div class="npart" data-np="media" title="Open Media">' + c.art + '</div><div class="npi"><b>' + esc(c.title) + '</b><small>' + c.sub + '</small></div>' + c.pp + '</div>' + c.prog;
   document.body.classList.toggle("nps-open", npSheet);
   if (npSheet) {
     clearTimeout(npbT);
@@ -113,7 +113,7 @@ function npClick(e) {
   if (!n) return;
   const k = n.dataset.np;
   if (k === "tog") { npAnim = $("#npw").offsetHeight; npOpen = !npOpen; try { localStorage.setItem("dashNp", npOpen ? "1" : "0"); } catch (_) {} }
-  else if (k === "media") { location.hash = "#media"; return; }
+  else if (k === "media") { if (npSheet) { npSheet = false; npRender(); } location.hash = "#media"; return; }
   else if (k === "sheet") npSheet = true;
   else if (k === "close") npSheet = false;
   npRender();

@@ -4,6 +4,14 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
+## 1.5.14 - 2026-10-22
+
+### Changes
+- **Tap the album art to open Media.** On the phone, tapping the artwork in the floating music bar, or in the Now Playing sheet, goes straight to the Media page (and closes the sheet). Tapping anywhere else on the bar still opens the sheet.
+
+### Fixes
+- **Rooms no longer errors when no rooms are configured.** Hiding the empty Occupied tab in 1.5.12 left the Rooms page with no tab at all in that case.
+
 ## 1.5.13 - 2026-10-22
 
 ### Fixes

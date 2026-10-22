@@ -16,7 +16,7 @@ const eq = (what, got, want) => { checks++; if (JSON.stringify(got) !== JSON.str
 const errors = [];
 async function open(w, h) {
   const p = await browser.newPage({ viewport: { width: w, height: h }, hasTouch: w < 700, isMobile: w < 700 });
-  p.on("pageerror", e => errors.push(String(e)));
+  p.on("pageerror", e => errors.push(String(e.stack||e).slice(0,400)));
   await p.goto(url); await p.waitForTimeout(700);
   await p.evaluate(() => {
     document.documentElement.classList.remove("boot"); const l = document.getElementById("lg"); if (l) l.hidden = true;
@@ -49,6 +49,19 @@ await p.close();
 p = await open(1200, 800);
 eq("wide: no lyrics icon, lyrics stay beside the player", await p.evaluate(() => [getComputedStyle(document.querySelector("#mp .mly")).display, getComputedStyle(document.querySelector("#lyr")).display]), ["none", "block"]);
 await p.close();
+// album art in the floating mini bar and in the Now Playing sheet opens the Media page
+p = await open(390, 800);
+await p.evaluate(() => { location.hash = "#rooms"; }); await p.waitForTimeout(500);
+await p.evaluate(() => { npRender(); }); await p.waitForTimeout(300);
+const miniArt = await p.evaluate(() => { const a = document.querySelector("#npmini .npart"); return !!a && a.dataset.np === "media" && getComputedStyle(document.querySelector("#npmini")).display !== "none"; });
+eq("mini bar art is a Media link", miniArt, true);
+await p.click("#npmini .npart"); await p.waitForTimeout(500);
+eq("tapping mini bar art opens Media (no sheet)", await p.evaluate(() => [location.hash, document.body.classList.contains("nps-open")]), ["#media", false]);
+await p.evaluate(() => { location.hash = "#rooms"; }); await p.waitForTimeout(400);
+await p.click("#npmini .npi"); await p.waitForTimeout(600);
+eq("tapping the bar elsewhere still opens the sheet", await p.evaluate(() => document.body.classList.contains("nps-open")), true);
+await p.click("#npbody .npa [data-np=media]"); await p.waitForTimeout(600);
+eq("tapping sheet art opens Media and closes the sheet", await p.evaluate(() => [location.hash, document.body.classList.contains("nps-open")]), ["#media", false]);
 await browser.close(); server.close();
 if (errors.length) problems.push("JavaScript errors: " + errors.join(" | "));
 if (problems.length) { console.error(problems.join("\n")); process.exit(1); }

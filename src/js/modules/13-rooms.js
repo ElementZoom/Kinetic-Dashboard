@@ -164,7 +164,7 @@ function updTiles() {
     else if (d === "cover") { const p = a.current_position, mv = covMove(e); el.classList.toggle("dim", p != null); el.classList.toggle("mv", !!mv); t = (mv || st).toUpperCase() + (p != null ? "  ·  " + p + "%" : ""); if (idle && p != null) rg.value = p; if (mv) covTick(); }
     else if (d === "select") t = st;
     if (!on && st === "on") t = "OFF";
-    if (!(el._d && el._d > Date.now())) $(".ts2", el).textContent = el.dataset.sub || t;
+    if (!(el._d && el._d > Date.now()) && !(d === "cover" && rg && !idle)) $(".ts2", el).textContent = el.dataset.sub || t;   // a curtain slider being dragged keeps showing the dragged value, not the positions HA reports on the way
   });
   if (curRoom) $$("#rv .pg[data-pi]").forEach(pn => {   // per-panel counts, and ALL OFF only while something in that light section is on
     const m = curPanels[+pn.dataset.pi]; if (!m) return;

@@ -4,6 +4,11 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
+## 1.5.15 - 2026-10-22
+
+### Fixes
+- **Curtain sliders no longer flicker while you drag them.** The label under a curtain slider switched between your dragged value and the positions Home Assistant reported while the curtain was still moving (for example 49 %, 61 %, 28 % while you were dragging to 12 %). The label now stays on the dragged value while a finger is on the slider and for 1.5 seconds after, then follows the curtain again. The slider itself was already held still.
+
 ## 1.5.14 - 2026-10-22
 
 ### Changes

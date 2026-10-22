@@ -4,6 +4,13 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
+## 1.5.12 - 2026-10-22
+
+### Changes
+- **Rooms: the Occupied tab only shows when a room is occupied.** With nothing occupied the tab is hidden instead of showing an empty "No rooms are occupied" page.
+- **Rooms opens on the first tab.** Coming to Rooms from anywhere else starts on Occupied (when it is there) instead of the last tab you used. Switching tabs while you stay on the page still sticks.
+- **Phone calendar opens at today.** The month list scrolls to today, or the next day with an event, instead of the first of the month. Earlier days stay above, so scroll up to see events that have already passed. Changing month or tapping Today does the same.
+
 ## 1.5.11 - 2026-10-22
 
 ### Fixes

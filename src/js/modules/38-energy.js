@@ -158,10 +158,10 @@ function route() {
   $$("nav a").forEach(a => a.classList.toggle("on", a.getAttribute("href") === "#" + p));
   document.body.classList.remove("more-open");
   { const inMore = $$("#mshe a").some(a => a.getAttribute("href") === "#" + p); $$("#btab a, #mshe a").forEach(a => a.classList.toggle("on", a.getAttribute("href") === "#" + p)); $("#bmore").classList.toggle("on", inMore); }
-  onRooms = p === "rooms"; if (!onRooms) curRoom = null;
+  if (p !== "rooms") rEnter = true; onRooms = p === "rooms"; if (!onRooms) curRoom = null;
   stopCams(); if (p === "home") { applyLayout(); queueHome(); }
   if (p === "home" || (p === "security" && h[1] !== "detections") || p === "view") startCams();
-  if (p === "events") loadEvents();
+  if (p === "events") { if (!evWasOn) evJump = true; loadEvents(); } evWasOn = p === "events";
   if (onRooms) {
     if (h[1]) { const was = curRoom && curRoom.id === h[1]; drawRoom(h[1]); if (!was) txGo($("#rv"), 1, true);
       if (h[2] === "doors") [120, 700, 1800].forEach(ms => setTimeout(() => { if (curRoom && curRoom.id === h[1] && location.hash.split("/")[2] === "doors") { const t = $('#rv [data-sec="doors"]'); if (t) { t.scrollIntoView({ block: "center", behavior: ms > 120 ? "auto" : "smooth" }); if (ms === 120) { t.classList.add("flash"); setTimeout(() => t.classList.remove("flash"), 1800); } } } }, ms)); }   // #rooms/<room>/doors scrolls to that room's Doors & windows panel   // list -> room slides in from the right

@@ -43,7 +43,7 @@ const evKey = (cal, t) => cal + "|" + (t || "").trim().toLowerCase();
 function evColSave() { try { localStorage.dashEvCol = JSON.stringify(EVCOL); } catch (e) {} send({ type: "frontend/set_user_data", key: "dash_evcol", value: EVCOL }); }
 function evColSync() { if (evColSynced) return; evColSynced = true; send({ type: "frontend/get_user_data", key: "dash_evcol" }, (r, m) => { const v = r && r.value; if (v && typeof v === "object") { EVCOL = Object.assign({}, v, EVCOL); try { localStorage.dashEvCol = JSON.stringify(EVCOL); } catch (e) {} loadEvents(); } }); }
 const CALCOL = ["#6bb8ff", "#ff9f7a", "#8ff0c4", "#f0d36b", "#c79bff", "#ff7a6b"];
-let cy = new Date().getFullYear(), cm = new Date().getMonth(), evTok = 0;
+let evWasOn = false; let cy = new Date().getFullYear(), cm = new Date().getMonth(), evTok = 0, evJump = true;   // evJump: phone agenda scrolls to today (or the next event day) on entry / month change
 const dk = d => d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
 const pd = v => { if (v.dateTime) return new Date(v.dateTime); const p = v.date.split("-"); return new Date(+p[0], +p[1] - 1, +p[2]); };
 const calName = c => (CONFIG.calNames || {})[c] || (states[c] && states[c].attributes.friendly_name) || c.replace("calendar.", "").replace(/_/g, " ");
@@ -61,9 +61,9 @@ function loadEvents() {
       let d = new Date(s.getFullYear(), s.getMonth(), s.getDate());
       for (let n = 0; n < 42 && d <= last; n++, d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1))
         (map[dk(d)] = map[dk(d)] || []).push({ t: s, ad: ad, s: v.summary, c: EVCOL[evKey(c, v.summary)] || CALCOL[i % CALCOL.length], i: EVS.push({ v: v, cal: c, ci: i }) - 1 });
-    } catch (x) { evErr.push(calName(c) + ": skipped \"" + (v && v.summary || "?") + "\" (" + x.message + ")"); } })).catch(x => { evErr.push(calName(c) + ": " + x.message); }))).then(() => { if (tok === evTok) { evLast = { k: mk, gs: gs, map: map }; drawEvents(gs, map); const el = $("#eerr"); if (el) el.textContent = evErr.length ? evErr.join(" · ") + "  |  Calendars HA has: " + Object.keys(states).filter(k => k.indexOf("calendar.") === 0).join(", ") : ""; } });
+    } catch (x) { evErr.push(calName(c) + ": skipped \"" + (v && v.summary || "?") + "\" (" + x.message + ")"); } })).catch(x => { evErr.push(calName(c) + ": " + x.message); }))).then(() => { if (tok === evTok) { evLast = { k: mk, gs: gs, map: map }; drawEvents(gs, map, true); const el = $("#eerr"); if (el) el.textContent = evErr.length ? evErr.join(" · ") + "  |  Calendars HA has: " + Object.keys(states).filter(k => k.indexOf("calendar.") === 0).join(", ") : ""; } });
 }
-function drawEvents(gs, map) {
+function drawEvents(gs, map, fin) {
   $("#et").textContent = new Date(cy, cm, 1).toLocaleDateString([], { month: "long", year: "numeric" });
   evBtn();
   if (!$("#eerr")) { const e = document.createElement("div"); e.id = "eerr"; e.style.cssText = "color:var(--heat);font-size:12px;margin:6px 2px;empty-cells:hide"; $("#elg").after(e); }
@@ -75,10 +75,12 @@ function drawEvents(gs, map) {
   if (isMobile()) {   // phones: agenda list instead of a month grid
     for (let i = 1, dim = new Date(cy, cm + 1, 0).getDate(); i <= dim; i++) {
       const d = new Date(cy, cm, i), l = srt(map[dk(d)] || []); if (!l.length) continue;
-      h += '<div class="ah' + (dk(d) === today ? " t" : "") + '">' + d.toLocaleDateString([], { weekday: "short", day: "numeric", month: "short" }).toUpperCase() + '</div>' +
+      h += '<div class="ah' + (dk(d) >= today ? " up" : "") + (dk(d) === today ? " t" : "") + '">' + d.toLocaleDateString([], { weekday: "short", day: "numeric", month: "short" }).toUpperCase() + '</div>' +
         l.map(v => '<div class="ce" data-ev="' + v.i + '" style="--c:' + v.c + '"><span class="mo">' + (v.ad ? "All day" : tm(v)) + '</span> ' + esc(v.s) + '</div>').join("");
     }
-    g.className = "cg ag"; g.innerHTML = h || '<div class="lbl" style="margin-top:18px">No events this month</div>'; return;
+    g.className = "cg ag"; g.innerHTML = h || '<div class="lbl" style="margin-top:18px">No events this month</div>';
+    if (evJump) { const f = g.querySelector(".ah.up"); if (f && cy === new Date().getFullYear() && cm === new Date().getMonth()) f.scrollIntoView({ block: "start" }); if (fin) evJump = false; }   // current month: start at today / the next event, earlier days stay above to scroll back to
+    return;
   }
   h = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"].map(n => '<div class="cw">' + n + '</div>').join("");
   for (let i = 0; i < rows * 7; i++) {
@@ -223,9 +225,9 @@ $("#cg").addEventListener("click", e => {
   if (ce) { const x = EVS[+ce.dataset.ev]; if (x) evOpen({ ev: x }); }
   else if (cd && evWritable().length) evOpen({ date: cd.dataset.d });
 });
-function shiftMonth(d) { txGo($("#cg"), d, false); cm += d; if (cm < 0) { cm = 11; cy--; } if (cm > 11) { cm = 0; cy++; } loadEvents(); }
+function shiftMonth(d) { txGo($("#cg"), d, false); evJump = true; cm += d; if (cm < 0) { cm = 11; cy--; } if (cm > 11) { cm = 0; cy++; } loadEvents(); }
 $("#ep").onclick = () => shiftMonth(-1); $("#en").onclick = () => shiftMonth(1);
-$("#etd").onclick = () => { cy = new Date().getFullYear(); cm = new Date().getMonth(); loadEvents(); };
+$("#etd").onclick = () => { evJump = true; cy = new Date().getFullYear(); cm = new Date().getMonth(); loadEvents(); };
 const HOME = { status: ".hs", cams: "#cams", rooms: "#rooms", heatpump: "#mini", nowplaying: "#npw", forecast: "#fcp" };
 const layout = () => {
   const L = ((CONFIG.layout || {})[isMobile() ? "mobile" : "tablet"] || Object.keys(HOME)).slice();

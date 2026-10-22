@@ -7,7 +7,7 @@ const ROOM = id => HOUSE().filter(r => r.id === id)[0];
 let curPanels = [], curRoom = null, onRooms = false, rq = 0;
 const camOpen = () => onView() || !!document.querySelector(".cam.fs .cpanel:not(:empty)");
 function queueRoom() { if (!rq) rq = requestAnimationFrame(() => { rq = 0; updRooms(); }); }
-let rtab = 0; try { rtab = +localStorage.getItem("dashRtab") || 0; } catch (_) {}
+let rtab = 0, rtabName = "", rEnter = true;   // rtabName: tab kept by name (the Occupied tab comes and goes); rEnter: next draw opens the first tab
 function occOf(r) {   // presence entities for a room: r.occ, else found by name
   if (r.occ) return [].concat(r.occ);
   const sl = x => String(x || "").toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, ""), out = [];
@@ -21,15 +21,15 @@ function roomTabs() {
   if (CONFIG.roomsByPresence !== false && HOUSE().some(r => occOf(r).length)) {
     const occ = HOUSE().filter(roomOccupied).map(r => r.id);
     t.forEach(x => { x[1] = x[1].filter(i => occ.indexOf(i) < 0); });
-    t.unshift(["Occupied", occ, "No rooms are occupied right now"]);
+    if (occ.length) t.unshift(["Occupied", occ, ""]);
   }
-  return RU && Array.isArray(RU.rooms) ? t.filter((x, i) => x[1].length || x[0] === "Occupied") : t;
+  return RU && Array.isArray(RU.rooms) ? t.filter(x => x[1].length) : t;
 }
 let rlq = 0; const queueRl = () => { if (!rlq) rlq = requestAnimationFrame(() => { rlq = 0; if (onRooms && !curRoom) drawRooms(); }); };
-$("#rtabs").onclick = e => { const b = e.target.closest("[data-rt]"); if (!b) return; const old = rtab; rtab = +b.dataset.rt; try { localStorage.setItem("dashRtab", rtab); } catch (_) {} drawRooms(); if (rtab !== old) txGo($("#rl"), rtab > old ? 1 : -1, true); };
+$("#rtabs").onclick = e => { const b = e.target.closest("[data-rt]"); if (!b) return; const old = rtab; rtab = +b.dataset.rt; rtabName = (roomTabs()[rtab] || [])[0] || ""; drawRooms(); if (rtab !== old) txGo($("#rl"), rtab > old ? 1 : -1, true); };
 function drawRooms() {
   curRoom = null; $("#cpp").classList.remove("on"); $("#rl").style.display = ""; $("#rv").style.display = "none"; $("#rtabs").style.display = "";
-  const tabs = roomTabs(); if (rtab >= tabs.length) rtab = 0;
+  const tabs = roomTabs(); if (rEnter) { rtab = 0; rtabName = ""; rEnter = false; } else if (rtabName) { const ix = tabs.findIndex(x => x[0] === rtabName); rtab = ix < 0 ? 0 : ix; } if (rtab >= tabs.length) rtab = 0; rtabName = tabs[rtab] ? tabs[rtab][0] : "";
   const th = tabs.map((t, i) => '<button class="chip' + (i === rtab ? " on" : "") + '" data-rt="' + i + '">' + esc(t[0]) + '</button>').join(""), rs = tabs[rtab][1].map(ROOM).filter(Boolean);
   const key = th + "|" + rs.map(r => r.id + "," + r.name + "," + r.icon).join(";") + "|" + (tabs[rtab][1].length ? "" : tabs[rtab][2] || "No rooms");
   if ($("#rl")._k === key && $("#rl").firstChild) { updRooms(); return; }   // same tabs and cards (a motion sensor changed): keep them, only refresh the live values

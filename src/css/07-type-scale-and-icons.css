@@ -76,6 +76,10 @@ button,input,select,textarea{font-family:inherit}
 #vw.two .cam:not(.ls){height:auto;display:grid;grid-template-columns:minmax(0,1fr);align-content:start;border:0;background:transparent;overflow:visible;clip-path:none}
 #vw.two .cam:not(.ls) img,#vw.two .cam:not(.ls) video{grid-area:1/1;position:static;inset:auto;width:100%;height:auto;max-height:calc(100dvh - 150px);aspect-ratio:var(--ar,16/9);object-fit:contain;background:#000;border-radius:22px}
 #vw.two .cam:not(.ls) .cpanel{grid-area:2/1;position:static;padding:12px 0 0;background:none}
+/* the two control rows line up: each camera spans both rows of the shared grid (subgrid), so the rows start at the same height and are the same height, and the tiles fill them */
+#vw.two{grid-template-rows:auto auto;row-gap:0}
+#vw.two .cam:not(.ls){grid-row:1/span 2;grid-template-rows:subgrid;align-content:stretch}
+#vw.two .cam:not(.ls) .cpanel{display:flex;flex-direction:column}#vw.two .cam:not(.ls) .cpanel .tg3{flex:1 1 auto}
 #vw.two .cam:not(.ls)::after{grid-area:1/1;position:static;inset:auto}
 }
 

@@ -4,6 +4,22 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
+## 1.5.17 - 2026-10-23
+
+### Changes
+- **The fan card is always blue while on, in light and dark mode.** Under the Material style (and any style) the fan tile took the warm "on" colour with white text, which was unreadable in light mode. It is now a blue card in every style: a blue-to-navy gradient with light text in dark mode, a soft sky-blue card with dark navy text in light mode. The countdown bar follows the same blue.
+- **New fan animation: breeze waves.** Soft wavy lines drift across the tile while the fan icon spins (the old horizontal air streaks are gone). It stays still for people who have reduced motion turned on.
+
+## 1.5.16 - 2026-10-23
+
+### Fixes
+- **Auto view: the two control rows now match.** With both cameras side by side, the Driveway and Garage control rows (door, lights and so on) could come out at different heights, so the tiles didn't line up. The two rows now start at the same height and are the same height, whichever camera's row is taller, and the tiles fill them.
+
+## 1.5.15 - 2026-10-22
+
+### Fixes
+- **Curtain sliders no longer flicker while you drag them.** The label under a curtain slider switched between your dragged value and the positions Home Assistant reported while the curtain was still moving (for example 49 %, 61 %, 28 % while you were dragging to 12 %). The label now stays on the dragged value while a finger is on the slider and for 1.5 seconds after, then follows the curtain again. The slider itself was already held still.
+
 ## 1.5.14 - 2026-10-22
 
 ### Changes

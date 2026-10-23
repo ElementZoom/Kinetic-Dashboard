@@ -1,4 +1,5 @@
 // ---------- rooms ----------
+const AIRW = '<svg viewBox="0 0 400 26" preserveAspectRatio="none"><path d="M0 13Q25 0 50 13T100 13T150 13T200 13T250 13T300 13T350 13T400 13"/></svg>';   // one wavy breeze line for the fan tile (tile effect "air")
 const members = (id, d) => { d = d == null ? 3 : d; const o = []; [].concat(id || []).forEach(x => { const a = states[x] && states[x].attributes.entity_id; (d > 0 && Array.isArray(a) ? members(a, d - 1) : [x]).forEach(y => { if (o.indexOf(y) < 0) o.push(y); }); }); return o; };
 const isOn = id => { const s = states[id]; return !!s && (s.state === "on" || s.state === "open" || s.state === "opening"); };
 const roomOK = id => !RU || !Array.isArray(RU.rooms) || RU.rooms.indexOf(id) > -1;   // a restricted person may be limited to some rooms (RU.rooms)
@@ -86,7 +87,7 @@ function tileHtml(x) {
   const it = typeof x === "string" ? { entity: x } : x, e = it.entity, d = e.split(".")[0], nm = '<span class="nm">' + (it.name ? esc(it.name) : "") + '</span>';
   if (d === "binary_sensor" && !it.script) return '<div class="bd" data-e="' + e + '"' + (it.kind ? ' data-k="' + it.kind + '"' : "") + (it.name ? ' data-n="1"' : "") + '><i></i>' + nm + '<span class="st"></span></div>';
   let ctrl = "";
-  const fx0 = it.fx || (CONFIG.tileFx || {})[e], fx = fx0 === "none" ? "" : fx0 || (/^fan\./.test(e) ? "air" : ""), fxm = fx === "heat" ? '<div class="hz"><i></i><i></i><i></i></div>' : fx === "charge" ? '<div class="bt"><b></b><b></b><b></b><b></b></div>' : fx === "air" ? '<div class="ar"><i></i><i></i><i></i><i></i></div>' : "";   // tileFx: { "switch.towel": "heat", "switch.charger": "charge", "fan.x": "air" }: a heated / charging / airflow look while the tile is on
+  const fx0 = it.fx || (CONFIG.tileFx || {})[e], fx = fx0 === "none" ? "" : fx0 || (/^fan\./.test(e) ? "air" : ""), fxm = fx === "heat" ? '<div class="hz"><i></i><i></i><i></i></div>' : fx === "charge" ? '<div class="bt"><b></b><b></b><b></b><b></b></div>' : fx === "air" ? '<div class="ar">' + AIRW + AIRW + AIRW + '</div>' : "";   // tileFx: { "switch.towel": "heat", "switch.charger": "charge", "fan.x": "air" }: a heated / charging / airflow look while the tile is on
   const pre = d === "light" ? '<i class="fill"></i>' : it.water ? irrWave(e, isOn(e), typeof it.water === "string" ? parseFloat(sv(it.water)) || 0 : 0) : "";   // water: rolling water in the tile while a tap runs (same effect as the Irrigation flow tile)
   if (d === "cover") ctrl = '<div class="cb"><button data-a="open_cover">' + mdi("chevron-up") + '</button><button data-a="stop_cover">' + mdi("stop") + '</button><button data-a="close_cover">' + mdi("chevron-down") + '</button></div><input type="range" min="0" max="100">';
   return '<div class="tl' + (fx ? " fx fx-" + fx : "") + (it.water ? " wt" : "") + (it.sensor ? " dr" : "") + (it.siren ? " sir" : "") + '" data-e="' + e + '"' + (it.siren ? ' data-sir="' + it.siren + '"' : "") + (it.script ? ' data-sc="' + it.script + '"' : "") + (it.sensor ? ' data-s="' + it.sensor + '"' : "") + (it.confirm ? ' data-cf="1"' : "") + (it.name ? ' data-n="1"' : "") + (it.nameFrom ? ' data-nf="' + it.nameFrom + '"' : "") + (it.stateIcons ? ' data-si="' + esc(JSON.stringify(it.stateIcons)) + '"' : "") + (it.sub ? ' data-sub="' + esc(it.sub) + '"' : "") + (it.timer ? ' data-tm="' + it.timer + '"' : "") + '>' + pre + '<div class="tn">' + (it.sensor ? mdi("garage-variant") : entIcon(e, it.icon)) + " " + nm + '</div><div class="ts2">--</div>' + fxm + (it.timer && states[it.timer] && states[it.timer].state === "active" ? tmrHtml(it.timer) : "") + ctrl + '</div>';   // timer: countdown + bar while the entity's timer runs
@@ -164,7 +165,7 @@ function updTiles() {
     else if (d === "cover") { const p = a.current_position, mv = covMove(e); el.classList.toggle("dim", p != null); el.classList.toggle("mv", !!mv); t = (mv || st).toUpperCase() + (p != null ? "  ·  " + p + "%" : ""); if (idle && p != null) rg.value = p; if (mv) covTick(); }
     else if (d === "select") t = st;
     if (!on && st === "on") t = "OFF";
-    if (!(el._d && el._d > Date.now())) $(".ts2", el).textContent = el.dataset.sub || t;
+    if (!(el._d && el._d > Date.now()) && !(d === "cover" && rg && !idle)) $(".ts2", el).textContent = el.dataset.sub || t;   // a curtain slider being dragged keeps showing the dragged value, not the positions HA reports on the way
   });
   if (curRoom) $$("#rv .pg[data-pi]").forEach(pn => {   // per-panel counts, and ALL OFF only while something in that light section is on
     const m = curPanels[+pn.dataset.pi]; if (!m) return;

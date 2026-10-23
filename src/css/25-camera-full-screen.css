@@ -119,8 +119,8 @@ html[data-mode=light] .ldt.run{background:linear-gradient(160deg,rgba(60,150,255
 #nacc[data-k=laundry] svg{fill:none}
 @media(prefers-reduced-motion:reduce){.ldt.run,.ldt.run .ldi,.ldt.run .wv,#nacc[data-k=laundry] .wv{animation:none}}
 .tg3>.ldt{grid-column:1/-1}
-/* Automations pop-up on wide screens (tablet, desktop): a side panel on the right with big switch rows and ALL ON / ALL OFF. The room stays visible and usable on the left.
-   Phones (760px and under) keep the centred card with the round ticks. */
+/* Automations pop-up on wide screens (tablet, desktop): a side panel on the right with bigger rows and ALL ON / ALL OFF. The room stays visible and usable on the left.
+   Same round glowing ticks as the phone card. Phones (760px and under) keep the centred card. */
 .cpft{display:none}
 @media(min-width:761px){
   #cpp{padding:0;align-items:stretch;justify-content:flex-end}
@@ -130,12 +130,8 @@ html[data-mode=light] .ldt.run{background:linear-gradient(160deg,rgba(60,150,255
   #cpp .cph h3{font-size:28px}
   #cpp .cpl{flex:1;min-height:0;overflow:auto;gap:12px;padding:2px 2px 6px}
   #cpp .cpts .chip{font-size:12px;padding:10px 14px;letter-spacing:.05em;white-space:nowrap}
-  #cpp .cpl .tl,html:not(#x) #cpp .cpl .tl{flex-direction:row;justify-content:flex-start;min-height:76px;padding:16px 18px;border-radius:22px;gap:14px}
+  #cpp .cpl .tl,html:not(#x) #cpp .cpl .tl{min-height:76px;border-radius:22px}   /* bigger rows; the round glowing tick on the left is the phone's, unchanged */
   #cpp .cpl .tl .tn{font-size:17px;gap:12px;color:var(--ink)}#cpp .cpl .tl .tn svg{width:26px;height:26px}
-  /* the round tick becomes a switch on the right */
-  #cpp .cpl .tl::after{width:56px;height:32px;border-radius:999px;background:rgba(var(--w),.16);border:0;position:relative;order:3;margin-left:auto;box-shadow:none;animation:none;background-image:radial-gradient(circle at 16px 16px,rgba(255,255,255,.9) 11px,transparent 12px);background-repeat:no-repeat;background-position:0 0;transition:background-color .2s,background-position .2s}
-  #cpp .cpl .tl::before{display:none}
-  #cpp .cpl .tl.on::after{background-color:var(--mint);background-image:radial-gradient(circle at 16px 16px,var(--onmint,#07241a) 11px,transparent 12px);background-position:24px 0;box-shadow:0 0 14px 1px rgba(var(--mint-rgb),.45);animation:none}
   .cpft{display:flex;gap:12px;border-top:1px solid var(--line);padding-top:14px}.cpft .eb{flex:1;padding:14px 10px}
 }
 @keyframes cpslide{from{transform:translateX(40px);opacity:0}to{transform:none;opacity:1}}

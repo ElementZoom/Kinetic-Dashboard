@@ -1,16 +1,16 @@
 alias: Detection Snapshot Save
 triggers:
   - entity_id:
-      - binary_sensor.right_walkway_camera_person
-      - binary_sensor.left_walkway_camera_person
-      - binary_sensor.right_backyard_camera_person
-      - binary_sensor.garage_camera_person
-      - binary_sensor.garage_camera_vehicle
-      - binary_sensor.driveway_cameras_person_detection
-      - binary_sensor.right_driveway_camera_crossline_vehicle_detection_entry
-      - binary_sensor.right_driveway_camera_crossline_vehicle_detection_exit
-      - binary_sensor.road_camera_person
-      - binary_sensor.road_camera_vehicle
+      - binary_sensor.demo_side_gate_camera_person
+      - binary_sensor.demo_patio_camera_person
+      - binary_sensor.demo_backyard_camera_person
+      - binary_sensor.demo_garage_camera_person
+      - binary_sensor.demo_garage_camera_vehicle
+      - binary_sensor.demo_driveway_camera_person
+      - binary_sensor.demo_driveway_camera_vehicle_entry
+      - binary_sensor.demo_driveway_camera_vehicle_exit
+      - binary_sensor.demo_street_camera_person
+      - binary_sensor.demo_street_camera_vehicle
     to: 'on'
     trigger: state
 conditions:
@@ -30,14 +30,14 @@ max: 10
 variables:
   cam: |-
     {% set m = {
-      'binary_sensor.right_walkway_camera_person': 'right_walkway_camera_clear',
-      'binary_sensor.left_walkway_camera_person': 'left_walkway_camera_fluent',
-      'binary_sensor.right_backyard_camera_person': 'right_backyard_camera_clear',
-      'binary_sensor.garage_camera_person': 'garage_camera_clear',
-      'binary_sensor.garage_camera_vehicle': 'garage_camera_clear',
-      'binary_sensor.road_camera_person': 'road_camera_clear',
-      'binary_sensor.road_camera_vehicle': 'road_camera_clear',
-      'binary_sensor.driveway_cameras_person_detection': 'right_driveway_camera_clear',
-      'binary_sensor.right_driveway_camera_crossline_vehicle_detection_entry': 'right_driveway_camera_clear',
-      'binary_sensor.right_driveway_camera_crossline_vehicle_detection_exit': 'right_driveway_camera_clear'
+      'binary_sensor.demo_side_gate_camera_person': 'demo_side_gate',
+      'binary_sensor.demo_patio_camera_person': 'demo_patio',
+      'binary_sensor.demo_backyard_camera_person': 'demo_backyard',
+      'binary_sensor.demo_garage_camera_person': 'demo_garage',
+      'binary_sensor.demo_garage_camera_vehicle': 'demo_garage',
+      'binary_sensor.demo_street_camera_person': 'demo_street',
+      'binary_sensor.demo_street_camera_vehicle': 'demo_street',
+      'binary_sensor.demo_driveway_camera_person': 'demo_driveway',
+      'binary_sensor.demo_driveway_camera_vehicle_entry': 'demo_driveway',
+      'binary_sensor.demo_driveway_camera_vehicle_exit': 'demo_driveway'
     } %} {{ m.get(trigger.entity_id, '') }}

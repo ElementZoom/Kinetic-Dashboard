@@ -4,6 +4,12 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
+## 1.5.19 - 2026-10-24
+
+### Changes
+- **Scenes page pictures are now original artwork.** All 80 images in `hue/` (60 in `raw/`, 20 in `multi_color/`) were redrawn from scratch for Kinetic in a similar style, so nothing third-party is shipped. File names, size (904x512) and the five colour dots are unchanged, so no config change is needed, and the folder is now about 0.9 MB instead of 2.4 MB. Credits updated.
+- **Docs:** `Detection Snapshot Save Automation` now uses sample entity ids (`demo_*`) in place of real ones; README and DEVELOPING list every `#` link.
+
 ## 1.5.18 - 2026-10-23
 
 ### Changes

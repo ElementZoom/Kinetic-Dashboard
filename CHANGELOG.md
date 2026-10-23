@@ -4,6 +4,11 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
+## 1.5.21 - 2026-10-24
+
+### Fixes
+- **Scene pictures now match the real light colours.** The 1.5.19 artwork used guessed colours, so the swatches in the corner did not match what the lights actually show. Every picture is now redrawn from the original five swatch colours of its scene (read from the previous images), and the dots are exact, so the art, the swatches and the lights agree. Same file names and size.
+
 ## 1.5.20 - 2026-10-24
 
 ### Changes

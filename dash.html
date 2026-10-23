@@ -1541,19 +1541,23 @@ body.vwm #vw.two{padding:8px;gap:8px}
 .tl.fx-charge>.bt b:nth-child(2){animation-delay:.6s}.tl.fx-charge>.bt b:nth-child(3){animation-delay:1.2s}.tl.fx-charge>.bt b:nth-child(4){animation-delay:1.8s}
 @keyframes fxcell{0%{opacity:.15}8%,70%{opacity:1}100%{opacity:.15}}
 @media(prefers-reduced-motion:reduce){.tl.fx-charge>.bt b{animation:none;opacity:1}}
-/* airflow tile (tileFx "air"): cool blue while on, the fan icon turns, air streaks blow across, blue countdown bar */
+/* airflow tile (tileFx "air"): always blue while on, light or dark, in every style. The fan icon turns and soft breeze waves drift across.
+   The colours are variables so the light and dark looks differ only in values; html:not(#x):not(#y) outranks the visual-style "on" colours. */
 .tl.fx-air{position:relative;overflow:hidden;isolation:isolate}
 .tl.fx-air>*{position:relative;z-index:2}.tl.fx-air>.ar{display:none}
-.tl.fx-air.on{border-color:rgba(92,200,255,.6);background:linear-gradient(160deg,rgba(60,170,230,.24),rgba(15,50,80,.30));color:#eaf8ff}
-.tl.fx-air.on .tn{color:#eaf8ff}.tl.fx-air.on .tn svg{fill:#9fdcff;filter:drop-shadow(0 0 5px rgba(92,200,255,.8));animation:fxspin 1.6s linear infinite}
-.tl.fx-air.on .ts2,.tl.fx-air.on .tmr{color:#cfeeff}
-.tl.fx-air.on .zb{background:rgba(0,0,0,.35)}.tl.fx-air.on .zb>i{background:linear-gradient(90deg,#36a9e2,#8fe0ff)}
+html:not(#x):not(#y) .tl.fx-air.on{--ax:92,200,255;--ab:linear-gradient(160deg,rgba(60,170,230,.26),rgba(15,50,80,.38));--abd:rgba(92,200,255,.6);--ai:#eaf8ff;--as:#cfeeff;--ac:#9fdcff;--abar:rgba(0,0,0,.35);--abf:linear-gradient(90deg,#36a9e2,#8fe0ff);
+  background:var(--ab);border:1px solid var(--abd);color:var(--ai);box-shadow:none}
+html[data-mode=light]:not(#x):not(#y) .tl.fx-air.on{--ax:31,127,192;--ab:color-mix(in srgb,#1f7fc0 24%,var(--bg));--abd:rgba(31,127,192,.55);--ai:#0a2f4d;--as:#1d5f8f;--ac:#1f7fc0;--abar:rgba(31,127,192,.2);--abf:linear-gradient(90deg,#1f7fc0,#5bb4ea)}
+.tl.fx-air.on .tn{color:var(--ai)}.tl.fx-air.on .tn svg{fill:var(--ac);filter:drop-shadow(0 0 5px rgba(var(--ax),.6));animation:fxspin 1.2s linear infinite}
+.tl.fx-air.on .ts2,.tl.fx-air.on .tmr{color:var(--as)}
+.tl.fx-air.on .zb{background:var(--abar)}.tl.fx-air.on .zb>i{background:var(--abf)}
 .tl.fx-air.on>.ar{display:block;position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden}
-.tl.fx-air .ar i{position:absolute;left:-40%;height:2px;width:40%;border-radius:2px;background:linear-gradient(90deg,transparent,rgba(190,235,255,.85),transparent);animation:fxblow 2.2s linear infinite;opacity:0}
-.tl.fx-air .ar i:nth-child(1){top:28%}.tl.fx-air .ar i:nth-child(2){top:48%;animation-delay:.7s;width:55%}.tl.fx-air .ar i:nth-child(3){top:66%;animation-delay:1.3s}.tl.fx-air .ar i:nth-child(4){top:82%;animation-delay:1.8s;width:35%}
+.tl.fx-air .ar svg{position:absolute;left:0;width:200%;height:26px;fill:none;stroke:rgba(var(--ax,92,200,255),.5);stroke-width:2;stroke-linecap:round;vector-effect:non-scaling-stroke;animation:fxdrift 4.5s linear infinite}
+.tl.fx-air .ar svg path{vector-effect:non-scaling-stroke}
+.tl.fx-air .ar svg:nth-child(1){top:22%}.tl.fx-air .ar svg:nth-child(2){top:50%;animation-duration:6s;stroke:rgba(var(--ax,92,200,255),.35)}.tl.fx-air .ar svg:nth-child(3){top:76%;animation-duration:5.2s;animation-delay:-2s}
 @keyframes fxspin{to{transform:rotate(360deg)}}
-@keyframes fxblow{0%{transform:translateX(0);opacity:0}15%{opacity:.9}100%{transform:translateX(420%);opacity:0}}
-@media(prefers-reduced-motion:reduce){.tl.fx-air.on .tn svg,.tl.fx-air .ar i{animation:none}}
+@keyframes fxdrift{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media(prefers-reduced-motion:reduce){.tl.fx-air.on .tn svg,.tl.fx-air .ar svg{animation:none}}
 /* Automations pop-up: a ticked row keeps the plain row look; the green check and its glow are the only "on" cue (no warm tint) */
 html:not(#x) #cpp .cpl .tl.on{background:rgba(var(--w),.05);border-color:var(--line);box-shadow:none}
 /* Notifications pop-up: info cards (Controls, Chores, Timers) use the same soft row as the Automations pop-up */
@@ -1668,7 +1672,7 @@ html[data-mode=light] .ldt.run{background:linear-gradient(160deg,rgba(60,150,255
 // (notification tap such as #view/driveway, #security ...), not the return from the login, and the device has not asked for reduced motion.
 window.brandLogo = function () { var L = window.DASH_LOGO, B = (window.DASH_CONFIG || {}).brand; return L && L.svg ? { svg: L.svg, lockup: !!L.lockup } : B && B.mark ? { svg: B.mark, lockup: false } : null; };   // brand-logo.js wins over brand.mark in config.js
 window.brandMark = function (s) { var g = window.brandLogo(); if (!g) return ""; return g.svg.replace(/\bid="([\w-]+)"/g, 'id="$1' + s + '"').replace(/url\(#([\w-]+)\)/g, 'url(#$1' + s + ')'); };
-window.DASH_VER = "1.5.16";   // the one place to change the version
+window.DASH_VER = "1.5.17";   // the one place to change the version
 (function () { try {
   var B = (window.DASH_CONFIG || {}).brand, el = document.getElementById("bootld"), r = document.documentElement, lp = "on";
   try { lp = localStorage.getItem("dashLogo") || "on"; } catch (e) {}   // Theme page -> "Start-up logo": on | load (no intro) | off (plain spinner, as before)
@@ -2668,6 +2672,7 @@ $("#mm").onclick = e => {
   else call("climate", "set_hvac_mode", MAIN, { hvac_mode: m });
 };
 // ---------- rooms ----------
+const AIRW = '<svg viewBox="0 0 400 26" preserveAspectRatio="none"><path d="M0 13Q25 0 50 13T100 13T150 13T200 13T250 13T300 13T350 13T400 13"/></svg>';   // one wavy breeze line for the fan tile (tile effect "air")
 const members = (id, d) => { d = d == null ? 3 : d; const o = []; [].concat(id || []).forEach(x => { const a = states[x] && states[x].attributes.entity_id; (d > 0 && Array.isArray(a) ? members(a, d - 1) : [x]).forEach(y => { if (o.indexOf(y) < 0) o.push(y); }); }); return o; };
 const isOn = id => { const s = states[id]; return !!s && (s.state === "on" || s.state === "open" || s.state === "opening"); };
 const roomOK = id => !RU || !Array.isArray(RU.rooms) || RU.rooms.indexOf(id) > -1;   // a restricted person may be limited to some rooms (RU.rooms)
@@ -2755,7 +2760,7 @@ function tileHtml(x) {
   const it = typeof x === "string" ? { entity: x } : x, e = it.entity, d = e.split(".")[0], nm = '<span class="nm">' + (it.name ? esc(it.name) : "") + '</span>';
   if (d === "binary_sensor" && !it.script) return '<div class="bd" data-e="' + e + '"' + (it.kind ? ' data-k="' + it.kind + '"' : "") + (it.name ? ' data-n="1"' : "") + '><i></i>' + nm + '<span class="st"></span></div>';
   let ctrl = "";
-  const fx0 = it.fx || (CONFIG.tileFx || {})[e], fx = fx0 === "none" ? "" : fx0 || (/^fan\./.test(e) ? "air" : ""), fxm = fx === "heat" ? '<div class="hz"><i></i><i></i><i></i></div>' : fx === "charge" ? '<div class="bt"><b></b><b></b><b></b><b></b></div>' : fx === "air" ? '<div class="ar"><i></i><i></i><i></i><i></i></div>' : "";   // tileFx: { "switch.towel": "heat", "switch.charger": "charge", "fan.x": "air" }: a heated / charging / airflow look while the tile is on
+  const fx0 = it.fx || (CONFIG.tileFx || {})[e], fx = fx0 === "none" ? "" : fx0 || (/^fan\./.test(e) ? "air" : ""), fxm = fx === "heat" ? '<div class="hz"><i></i><i></i><i></i></div>' : fx === "charge" ? '<div class="bt"><b></b><b></b><b></b><b></b></div>' : fx === "air" ? '<div class="ar">' + AIRW + AIRW + AIRW + '</div>' : "";   // tileFx: { "switch.towel": "heat", "switch.charger": "charge", "fan.x": "air" }: a heated / charging / airflow look while the tile is on
   const pre = d === "light" ? '<i class="fill"></i>' : it.water ? irrWave(e, isOn(e), typeof it.water === "string" ? parseFloat(sv(it.water)) || 0 : 0) : "";   // water: rolling water in the tile while a tap runs (same effect as the Irrigation flow tile)
   if (d === "cover") ctrl = '<div class="cb"><button data-a="open_cover">' + mdi("chevron-up") + '</button><button data-a="stop_cover">' + mdi("stop") + '</button><button data-a="close_cover">' + mdi("chevron-down") + '</button></div><input type="range" min="0" max="100">';
   return '<div class="tl' + (fx ? " fx fx-" + fx : "") + (it.water ? " wt" : "") + (it.sensor ? " dr" : "") + (it.siren ? " sir" : "") + '" data-e="' + e + '"' + (it.siren ? ' data-sir="' + it.siren + '"' : "") + (it.script ? ' data-sc="' + it.script + '"' : "") + (it.sensor ? ' data-s="' + it.sensor + '"' : "") + (it.confirm ? ' data-cf="1"' : "") + (it.name ? ' data-n="1"' : "") + (it.nameFrom ? ' data-nf="' + it.nameFrom + '"' : "") + (it.stateIcons ? ' data-si="' + esc(JSON.stringify(it.stateIcons)) + '"' : "") + (it.sub ? ' data-sub="' + esc(it.sub) + '"' : "") + (it.timer ? ' data-tm="' + it.timer + '"' : "") + '>' + pre + '<div class="tn">' + (it.sensor ? mdi("garage-variant") : entIcon(e, it.icon)) + " " + nm + '</div><div class="ts2">--</div>' + fxm + (it.timer && states[it.timer] && states[it.timer].state === "active" ? tmrHtml(it.timer) : "") + ctrl + '</div>';   // timer: countdown + bar while the entity's timer runs

@@ -4,6 +4,12 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
+## 1.5.17 - 2026-10-23
+
+### Changes
+- **The fan card is always blue while on, in light and dark mode.** Under the Material style (and any style) the fan tile took the warm "on" colour with white text, which was unreadable in light mode. It is now a blue card in every style: a blue-to-navy gradient with light text in dark mode, a soft sky-blue card with dark navy text in light mode. The countdown bar follows the same blue.
+- **New fan animation: breeze waves.** Soft wavy lines drift across the tile while the fan icon spins (the old horizontal air streaks are gone). It stays still for people who have reduced motion turned on.
+
 ## 1.5.16 - 2026-10-23
 
 ### Fixes

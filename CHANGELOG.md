@@ -4,6 +4,11 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
+## 1.5.22 - 2026-10-24
+
+### Changes
+- **Scene swatches are bigger and in the top right.** The five colour dots on every scene picture moved from the bottom-right corner (where the scene name sits) to the top-right and are twice the size, so they are easy to read on the small thumbnails. Colours are unchanged and exact.
+
 ## 1.5.21 - 2026-10-24
 
 ### Fixes

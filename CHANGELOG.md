@@ -4,6 +4,11 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
+## 1.5.16 - 2026-10-23
+
+### Fixes
+- **Auto view: the two control rows now match.** With both cameras side by side, the Driveway and Garage control rows (door, lights and so on) could come out at different heights, so the tiles didn't line up. The two rows now start at the same height and are the same height, whichever camera's row is taller, and the tiles fill them.
+
 ## 1.5.15 - 2026-10-22
 
 ### Fixes

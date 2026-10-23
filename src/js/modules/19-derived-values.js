@@ -25,7 +25,7 @@ function drawAlarm() {
   const p = $("#alp"); if (!p || !onSec()) return;
   const arm = [[1, "arm_home", "HOME"], [2, "arm_away", "AWAY"], [4, "arm_night", "NIGHT"]].filter(x => (f & x[0]) || (!f && x[1] === "arm_away"));
   p.innerHTML = '<div class="lbl">Alarm</div><div class="astate ' + c + '">' + m[0] + '</div><div class="chips">' +
-    (s.state === "disarmed" ? arm.map(x => '<button class="chip" data-m="' + x[1] + '">ARM ' + x[2] + '</button>').join("") : '<button class="chip on" data-m="disarm">DISARM</button>') +
+    (s.state === "disarmed" ? arm.map(x => '<button class="chip ag" data-ag="ok" data-m="' + x[1] + '">ARM ' + x[2] + '</button>').join("") : '<button class="chip on ag" data-ag="' + ({ arming: "wn", disarming: "wn", pending: "wn", triggered: "al" }[s.state] || "on") + '" data-m="disarm">DISARM</button>') +
     '</div><div class="tg3" style="margin-top:12px">' + CONFIG.alarmTiles.map(tileHtml).join("") + '</div>';
   updTiles();
 }

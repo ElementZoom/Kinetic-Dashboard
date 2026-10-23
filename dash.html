@@ -757,6 +757,19 @@ html:not(#x) :is(#rv,.vbl,#np) .bd[data-k=door].on{background:rgba(255,107,94,.1
 html[data-mode=light]:not(#x) :is(#rv,.vbl,#np) .bd[data-k=door].on{background:rgba(224,68,58,.14);border-color:#e0443a;box-shadow:inset 0 0 0 1px #e0443a}html[data-mode=light]:not(#x) :is(#rv,.vbl,#np) .bd[data-k=door].on i,html[data-mode=light]:not(#x) :is(#rv,.vbl,#np) .bd[data-k=door].on span.st{color:#e0443a}
 html:not(#x) :is(#rv,.vbl,#np) .bd[data-k=window].on{background:rgba(255,179,71,.18);border-color:#ffb347;box-shadow:inset 0 0 0 1px #ffb347}html:not(#x) :is(#rv,.vbl,#np) .bd[data-k=window].on i,html:not(#x) :is(#rv,.vbl,#np) .bd[data-k=window].on span.st{color:#ffb347}
 html[data-mode=light]:not(#x) :is(#rv,.vbl,#np) .bd[data-k=window].on{background:rgba(240,160,40,.14);border-color:#e08a1e;box-shadow:inset 0 0 0 1px #e08a1e}html[data-mode=light]:not(#x) :is(#rv,.vbl,#np) .bd[data-k=window].on i,html[data-mode=light]:not(#x) :is(#rv,.vbl,#np) .bd[data-k=window].on span.st{color:#e08a1e}
+
+/* alarm buttons glow by state, like a wall alarm panel: green = disarmed and ready (tap to arm), red = armed (tap to disarm), amber pulse while arming / pending, fast red flash when triggered */
+#alp .chip.ag{--ag:#5fd68a;--agr:95,214,138}
+#alp .chip.ag[data-ag=on],#alp .chip.ag[data-ag=al]{--ag:#ff6b6b;--agr:255,107,107}
+#alp .chip.ag[data-ag=wn]{--ag:#ffb547;--agr:255,181,71}
+html[data-mode=light] #alp .chip.ag{--ag:#1f9d55;--agr:31,157,85}
+html[data-mode=light] #alp .chip.ag[data-ag=on],html[data-mode=light] #alp .chip.ag[data-ag=al]{--ag:#d93a3a;--agr:217,58,58}
+html[data-mode=light] #alp .chip.ag[data-ag=wn]{--ag:#d98a00;--agr:217,138,0}
+html:not(#x) #alp .chip.ag{color:var(--ag);border:1.5px solid var(--ag);background:rgba(var(--agr),.14);box-shadow:0 0 14px rgba(var(--agr),.45),inset 0 0 10px rgba(var(--agr),.12);font-weight:700}
+html:not(#x) #alp .chip.ag[data-ag=wn]{animation:agPulse 1.3s ease-in-out infinite}
+html:not(#x) #alp .chip.ag[data-ag=al]{animation:agPulse .55s ease-in-out infinite}
+@keyframes agPulse{50%{box-shadow:0 0 26px rgba(var(--agr),.85),inset 0 0 14px rgba(var(--agr),.25)}}
+@media(prefers-reduced-motion:reduce){html:not(#x) #alp .chip.ag{animation:none!important}}
 /* irrigation: rolling water in the flow tile while the tap runs */
 .zf{position:relative;overflow:hidden}.zf>*{position:relative;z-index:1}
 .zf>.zwv{position:absolute;left:0;right:0;bottom:0;top:auto;height:100%;z-index:0;pointer-events:none;transform:translateY(var(--lv,60%));animation:zwlv 1.5s cubic-bezier(.45,.05,.35,1) both}
@@ -1689,7 +1702,7 @@ html[data-mode=light] .ldt.run{background:linear-gradient(160deg,rgba(60,150,255
 // (notification tap such as #view/driveway, #security ...), not the return from the login, and the device has not asked for reduced motion.
 window.brandLogo = function () { var L = window.DASH_LOGO, B = (window.DASH_CONFIG || {}).brand; return L && L.svg ? { svg: L.svg, lockup: !!L.lockup } : B && B.mark ? { svg: B.mark, lockup: false } : null; };   // brand-logo.js wins over brand.mark in config.js
 window.brandMark = function (s) { var g = window.brandLogo(); if (!g) return ""; return g.svg.replace(/\bid="([\w-]+)"/g, 'id="$1' + s + '"').replace(/url\(#([\w-]+)\)/g, 'url(#$1' + s + ')'); };
-window.DASH_VER = "1.5.19";   // the one place to change the version
+window.DASH_VER = "1.5.20";   // the one place to change the version
 (function () { try {
   var B = (window.DASH_CONFIG || {}).brand, el = document.getElementById("bootld"), r = document.documentElement, lp = "on";
   try { lp = localStorage.getItem("dashLogo") || "on"; } catch (e) {}   // Theme page -> "Start-up logo": on | load (no intro) | off (plain spinner, as before)
@@ -3084,7 +3097,7 @@ function drawAlarm() {
   const p = $("#alp"); if (!p || !onSec()) return;
   const arm = [[1, "arm_home", "HOME"], [2, "arm_away", "AWAY"], [4, "arm_night", "NIGHT"]].filter(x => (f & x[0]) || (!f && x[1] === "arm_away"));
   p.innerHTML = '<div class="lbl">Alarm</div><div class="astate ' + c + '">' + m[0] + '</div><div class="chips">' +
-    (s.state === "disarmed" ? arm.map(x => '<button class="chip" data-m="' + x[1] + '">ARM ' + x[2] + '</button>').join("") : '<button class="chip on" data-m="disarm">DISARM</button>') +
+    (s.state === "disarmed" ? arm.map(x => '<button class="chip ag" data-ag="ok" data-m="' + x[1] + '">ARM ' + x[2] + '</button>').join("") : '<button class="chip on ag" data-ag="' + ({ arming: "wn", disarming: "wn", pending: "wn", triggered: "al" }[s.state] || "on") + '" data-m="disarm">DISARM</button>') +
     '</div><div class="tg3" style="margin-top:12px">' + CONFIG.alarmTiles.map(tileHtml).join("") + '</div>';
   updTiles();
 }

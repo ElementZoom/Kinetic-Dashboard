@@ -4,6 +4,11 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
+## 1.5.20 - 2026-10-24
+
+### Changes
+- **Alarm buttons glow by state, like a wall alarm panel.** On the Security page ARM AWAY / HOME / NIGHT glow green while the house is disarmed and ready, DISARM glows red while armed, pulses amber while arming or pending, and flashes red when the alarm is triggered. The button label still says what the tap does; the colour says the state. Light and dark themes have their own shades, and reduced-motion turns the pulse off.
+
 ## 1.5.19 - 2026-10-24
 
 ### Changes

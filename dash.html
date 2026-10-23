@@ -1602,6 +1602,27 @@ html[data-mode=light] .ldt.run{background:linear-gradient(160deg,rgba(60,150,255
 #nacc[data-k=laundry] svg{fill:none}
 @media(prefers-reduced-motion:reduce){.ldt.run,.ldt.run .ldi,.ldt.run .wv,#nacc[data-k=laundry] .wv{animation:none}}
 .tg3>.ldt{grid-column:1/-1}
+/* Automations pop-up on wide screens (tablet, desktop): a side panel on the right with big switch rows and ALL ON / ALL OFF. The room stays visible and usable on the left.
+   Phones (760px and under) keep the centred card with the round ticks. */
+.cpft{display:none}
+@media(min-width:761px){
+  #cpp{padding:0;align-items:stretch;justify-content:flex-end}
+  #cpp.on{pointer-events:none;background:transparent;-webkit-backdrop-filter:none;backdrop-filter:none;animation:none}
+  html:not(#x) #cpp .cpsh{pointer-events:auto;width:clamp(380px,34vw,540px);max-height:none;height:100%;border-radius:28px 0 0 28px;border-right:0;padding:22px 22px 18px;gap:14px;overflow:hidden}
+  #cpp.on .cpsh{animation:cpslide .32s cubic-bezier(.2,.85,.3,1) both}
+  #cpp .cph h3{font-size:28px}
+  #cpp .cpl{flex:1;min-height:0;overflow:auto;gap:12px;padding:2px 2px 6px}
+  #cpp .cpts .chip{font-size:12px;padding:10px 14px;letter-spacing:.05em;white-space:nowrap}
+  #cpp .cpl .tl,html:not(#x) #cpp .cpl .tl{flex-direction:row;justify-content:flex-start;min-height:76px;padding:16px 18px;border-radius:22px;gap:14px}
+  #cpp .cpl .tl .tn{font-size:17px;gap:12px;color:var(--ink)}#cpp .cpl .tl .tn svg{width:26px;height:26px}
+  /* the round tick becomes a switch on the right */
+  #cpp .cpl .tl::after{width:56px;height:32px;border-radius:999px;background:rgba(var(--w),.16);border:0;position:relative;order:3;margin-left:auto;box-shadow:none;animation:none;background-image:radial-gradient(circle at 16px 16px,rgba(255,255,255,.9) 11px,transparent 12px);background-repeat:no-repeat;background-position:0 0;transition:background-color .2s,background-position .2s}
+  #cpp .cpl .tl::before{display:none}
+  #cpp .cpl .tl.on::after{background-color:var(--mint);background-image:radial-gradient(circle at 16px 16px,var(--onmint,#07241a) 11px,transparent 12px);background-position:24px 0;box-shadow:0 0 14px 1px rgba(var(--mint-rgb),.45);animation:none}
+  .cpft{display:flex;gap:12px;border-top:1px solid var(--line);padding-top:14px}.cpft .eb{flex:1;padding:14px 10px}
+}
+@keyframes cpslide{from{transform:translateX(40px);opacity:0}to{transform:none;opacity:1}}
+@media(prefers-reduced-motion:reduce){#cpp.on .cpsh{animation:none}}
 </style>
 </head>
 <body>
@@ -1672,7 +1693,7 @@ html[data-mode=light] .ldt.run{background:linear-gradient(160deg,rgba(60,150,255
 // (notification tap such as #view/driveway, #security ...), not the return from the login, and the device has not asked for reduced motion.
 window.brandLogo = function () { var L = window.DASH_LOGO, B = (window.DASH_CONFIG || {}).brand; return L && L.svg ? { svg: L.svg, lockup: !!L.lockup } : B && B.mark ? { svg: B.mark, lockup: false } : null; };   // brand-logo.js wins over brand.mark in config.js
 window.brandMark = function (s) { var g = window.brandLogo(); if (!g) return ""; return g.svg.replace(/\bid="([\w-]+)"/g, 'id="$1' + s + '"').replace(/url\(#([\w-]+)\)/g, 'url(#$1' + s + ')'); };
-window.DASH_VER = "1.5.17";   // the one place to change the version
+window.DASH_VER = "1.5.18";   // the one place to change the version
 (function () { try {
   var B = (window.DASH_CONFIG || {}).brand, el = document.getElementById("bootld"), r = document.documentElement, lp = "on";
   try { lp = localStorage.getItem("dashLogo") || "on"; } catch (e) {}   // Theme page -> "Start-up logo": on | load (no intro) | off (plain spinner, as before)
@@ -2808,7 +2829,7 @@ function drawRoom(id) {
   v.innerHTML = '<div class="rh"><a class="eb" href="#rooms">' + mdi("chevron-left") + ' ROOMS</a><h2><span class="rnm">' + esc(r.name) + '</span><span class="lbl" id="rvt">--</span></h2>' +
     (CT.length ? '<button class="eb cpb" data-cpo="1" aria-label="Automations"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg><span class="cpt">AUTOMATIONS</span><b class="cpn z">0</b></button>' : "") + '</div>' +
     (P.length ? P.map((p, i) => '<div class="pn pg" data-pi="' + i + '"' + (p[0] === "Doors & windows" ? ' data-sec="doors"' : "") + '><div class="lbl hd">' + esc(p[0]) + '<span class="rcnt"></span>' + (p[2].cv ? '<span class="rcv"><button class="eb" data-rcv="open">OPEN ALL</button><button class="eb" data-rcv="close">CLOSE ALL</button></span>' : "") + (p[2].off.length ? '<button class="eb roff" data-roff="' + i + '">ALL OFF</button>' : "") + '</div>' + p[1] + '</div>').join("") : CT.length ? "" : '<div class="pn lbl">No devices configured</div>');
-  $("#cpp").innerHTML = CT.length ? '<div class="cpsh"><div class="cph"><div><div class="lbl">' + esc(r.name) + '</div><h3>Automations</h3></div><button class="eb" data-cpc="1">DONE</button></div><div class="cpl">' + CT.map(x => x[1].replace(/^<div class="tg3[^"]*">/, "").replace(/<\/div>$/, "")).join("") + '</div></div>' : "";
+  $("#cpp").innerHTML = CT.length ? '<div class="cpsh"><div class="cph"><div><div class="lbl">' + esc(r.name) + '</div><h3>Automations</h3></div><button class="eb" data-cpc="1">DONE</button></div><div class="cpl">' + CT.map(x => x[1].replace(/^<div class="tg3[^"]*">/, "").replace(/<\/div>$/, "")).join("") + '</div><div class="cpft"><button class="eb" data-cpall="on">ALL ON</button><button class="eb" data-cpall="off">ALL OFF</button></div></div>' : "";   // .cpft (all on / all off for the open tab) only shows in the wide-screen side panel
   $("#cpp").classList.remove("on"); cpTabs(r.id);
   updTiles(); lazyIn($("#rooms"));
 }
@@ -3019,7 +3040,7 @@ function chgH(e) {
   if (d === "light") call("light", "turn_on", id, { brightness_pct: +t.value });
   else if (d === "cover") { const cur = (states[id] && states[id].attributes.current_position) || 0; call("cover", "set_cover_position", id, { position: +t.value }); if (+t.value !== cur) covMark(id, +t.value > cur ? "opening" : "closing"); }
 };
-$("#rl").className = "rooms rooms2"; $("#rv").onclick = tapH; $("#cpp").onclick = e => { if (e.target.id === "cpp" || e.target.closest("[data-cpc]")) { $("#cpp").classList.remove("on"); return; } const ct = e.target.closest("[data-cpt]"); if (ct) { const L = $("#cpp .cpl"); CPT[L.dataset.rid] = +ct.dataset.cpt; cpShow(L.dataset.rid); return; } tapH(e); }; $("#rv").onchange = chgH;
+$("#rl").className = "rooms rooms2"; $("#rv").onclick = tapH; $("#cpp").onclick = e => { const al = e.target.closest("[data-cpall]"); if (al) { $$("#cpp .cpl > *").filter(t => t.style.display !== "none" && /^(input_boolean|switch|light|fan|automation)\./.test(t.dataset.e || "")).forEach(t => { const id = t.dataset.e; if (isOn(id) !== (al.dataset.cpall === "on")) call(id.split(".")[0], "turn_" + al.dataset.cpall, id); }); return; } if (e.target.id === "cpp" || e.target.closest("[data-cpc]")) { $("#cpp").classList.remove("on"); return; } const ct = e.target.closest("[data-cpt]"); if (ct) { const L = $("#cpp .cpl"); CPT[L.dataset.rid] = +ct.dataset.cpt; cpShow(L.dataset.rid); return; } tapH(e); }; $("#rv").onchange = chgH;
 
 // ---------- alarm (Alarmo) ----------
 const ALS = { disarmed: ["DISARMED", ""], armed_away: ["ARMED AWAY", "on"], armed_home: ["ARMED HOME", "on"], armed_night: ["ARMED NIGHT", "on"], arming: ["ARMING", "wn"], disarming: ["DISARMING", "wn"], pending: ["PENDING", "al"], triggered: ["TRIGGERED", "al"] };
@@ -4835,7 +4856,7 @@ function route() {
   $$("nav a").forEach(a => a.classList.toggle("on", a.getAttribute("href") === "#" + p));
   document.body.classList.remove("more-open");
   { const inMore = $$("#mshe a").some(a => a.getAttribute("href") === "#" + p); $$("#btab a, #mshe a").forEach(a => a.classList.toggle("on", a.getAttribute("href") === "#" + p)); $("#bmore").classList.toggle("on", inMore); }
-  if (p !== "rooms") rEnter = true; onRooms = p === "rooms"; if (!onRooms) curRoom = null;
+  if (p !== "rooms") rEnter = true; onRooms = p === "rooms"; if (!onRooms) { curRoom = null; $("#cpp").classList.remove("on"); }
   stopCams(); if (p === "home") { applyLayout(); queueHome(); }
   if (p === "home" || (p === "security" && h[1] !== "detections") || p === "view") startCams();
   if (p === "events") { if (!evWasOn) evJump = true; loadEvents(); } evWasOn = p === "events";

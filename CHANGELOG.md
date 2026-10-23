@@ -4,6 +4,11 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
+## 1.5.18 - 2026-10-23
+
+### Changes
+- **Room Automations pop-up is a side panel on tablets and bigger screens.** The small centred card was too tiny for a wall tablet. On screens wider than a phone it now slides in from the right edge at full height, with larger rows, switches instead of round ticks, and ALL ON / ALL OFF for the open tab. The room stays visible and usable on the left, and the panel closes with DONE or when you leave the room. It is the same for every room. Phones keep the centred card exactly as before.
+
 ## 1.5.17 - 2026-10-23
 
 ### Changes

@@ -158,7 +158,7 @@ function route() {
   $$("nav a").forEach(a => a.classList.toggle("on", a.getAttribute("href") === "#" + p));
   document.body.classList.remove("more-open");
   { const inMore = $$("#mshe a").some(a => a.getAttribute("href") === "#" + p); $$("#btab a, #mshe a").forEach(a => a.classList.toggle("on", a.getAttribute("href") === "#" + p)); $("#bmore").classList.toggle("on", inMore); }
-  if (p !== "rooms") rEnter = true; onRooms = p === "rooms"; if (!onRooms) curRoom = null;
+  if (p !== "rooms") rEnter = true; onRooms = p === "rooms"; if (!onRooms) { curRoom = null; $("#cpp").classList.remove("on"); }
   stopCams(); if (p === "home") { applyLayout(); queueHome(); }
   if (p === "home" || (p === "security" && h[1] !== "detections") || p === "view") startCams();
   if (p === "events") { if (!evWasOn) evJump = true; loadEvents(); } evWasOn = p === "events";

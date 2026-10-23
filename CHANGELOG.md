@@ -4,6 +4,11 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
+## 1.5.19 - 2026-10-24
+
+### Changes
+- **Active list: room headings inside each category.** Under Lights, Windows, Fans and the other Active groups, the tiles are now split by room, each with a small heading (Kitchen, Master bedroom...). Rooms come in the order of your house list, and anything the house list does not contain goes last under "Other". A group with no room information looks as it did before. Set `notifRoomHeadings: false` in `config.js` to turn the headings off.
+
 ## 1.5.18 - 2026-10-23
 
 ### Changes

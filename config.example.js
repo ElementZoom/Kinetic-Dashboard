@@ -243,6 +243,7 @@ window.DASH_CONFIG = {
   // An id on its own, or [id, name, text]. Example: [["binary_sensor.demo_washing_machine_leak", "Washing machine", "Water under the machine"]]
   leakSensors: [["binary_sensor.demo_washing_machine_leak", "Washing machine", "Water under the machine"]],
   // Notification pop-up "all on" shortcuts: [label, group entity, icon, optional "close" | 1]
+  // notifRoomHeadings: false,   // Notifications > Active: set false to drop the room headings inside each category
   quickAll: [["Lights", "light.all_lights", "lightbulb-on"], ["Fans", "group.all_fans", "fan"], ["Light switches", "group.all_light_switches", "m3-switch"], ["Water taps", "group.all_water_taps", "m3-water-drop"], ["Curtains", "group.all_curtains", "m3-curtains", "close"], ["Windows", "group.all_windows", "m3-window-open", 1], ["Doors", "group.external_doors", "m3-door-open", 1]],
   adminToggles: [   // [label, counter id, word, [[entity, name], ...]]
     ["Driveway security", "sensor.disabled_driveway_camera_count", "camera", [["automation.demo_driveway_person_notification", "Person"], ["automation.demo_driveway_vehicle_notification", "Vehicle"]]]

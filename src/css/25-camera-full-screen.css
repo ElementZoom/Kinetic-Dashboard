@@ -136,3 +136,6 @@ html[data-mode=light] .ldt.run{background:linear-gradient(160deg,rgba(60,150,255
 }
 @keyframes cpslide{from{transform:translateX(40px);opacity:0}to{transform:none;opacity:1}}
 @media(prefers-reduced-motion:reduce){#cpp.on .cpsh{animation:none}}
+/* Notifications > Active: a small room heading above each room's tiles inside a category (config notifRoomHeadings: false turns it off) */
+#np .np-rm{font:600 11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--mut);margin:12px 4px 7px;display:flex;align-items:center;gap:8px}
+#np .np-rm::after{content:"";flex:1;height:1px;background:var(--line)}

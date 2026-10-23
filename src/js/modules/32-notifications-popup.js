@@ -85,10 +85,20 @@ function npDismiss(ids) {
 }
 const ldTime = () => esc(sv(sv(E("laundryState")) === "Run" ? "sensor.laundry_time_remaining_friendly" : E("laundryDelay")) || "");
 const ldTile = () => { const run = sv(E("laundryState")) === "Run"; return '<div class="ldt' + (run ? " run" : "") + '"><span class="ldi">' + DRUM + '</span><div><b>Laundry</b><span>' + (run ? "RUNNING" : "DELAYED START") + ' · <em class="ldr">' + ldTime() + '</em></span></div></div>'; };
+// which room an entity belongs to (first room in the house list that holds it): used for the small room headings inside each Active category
+const npRoomMap = () => { const m = {}, order = []; HOUSE().forEach(r => { order.push(r.name); const add = e => { if (e && !m[e]) m[e] = r.name; };
+  [r.lights, r.lightSwitches, r.covers, r.fans, r.doors, r.windows, r.climate].forEach(l => members(l || []).forEach(add));
+  (r.sections || []).forEach(sc => (sc.items || []).forEach(i => add(typeof i === "string" ? i : i.entity)));
+  ((CONFIG.roomControls || {})[r.id] || []).forEach(i => add(typeof i === "string" ? i : i.entity)); }); return { m: m, order: order }; };
 function actHtml(A) {
   const t = A.filter(x => x.ids.length); if (!t.length) return '<div class="lbl" style="margin:14px 0">Nothing is on or open</div>';
-  return t.map((x, i) => '<div class="lbl np2 il" data-sec="' + x.c[0].toLowerCase().replace(/\s+/g, "-") + '">' + mdi(x.c[2]) + x.c[0] + ' · ' + x.ids.length + (x.c[3] === 1 || x.c[3] === "ld" ? "" : '<button class="eb" data-off="' + A.indexOf(x) + '">' + (x.c[3] === "close" ? "CLOSE ALL" : "ALL OFF") + '</button>') + '</div>' +
-    '<div class="' + (x.c[3] === 1 ? "bl" : "tg3 act-" + x.c[0].toLowerCase().replace(/\s+/g, "-")) + '">' + x.ids.map(e => x.c[3] === "ld" ? ldTile() : tileHtml(x.c[0] === "Water taps" ? npItem(e, { icon: "m3-water-drop" }) : x.c[3] === 1 ? { entity: e, kind: x.c[0] === "Doors" ? "door" : "window" } : npItem(e, x.c[3] === "tw" ? { timer: states["timer.heated_towel_rails"] ? "timer.heated_towel_rails" : tileTimer(e) } : null))).join("") + '</div>').join("");
+  const RM = CONFIG.notifRoomHeadings === false ? null : npRoomMap(), tile = (x, e) => x.c[3] === "ld" ? ldTile() : tileHtml(x.c[0] === "Water taps" ? npItem(e, { icon: "m3-water-drop" }) : x.c[3] === 1 ? { entity: e, kind: x.c[0] === "Doors" ? "door" : "window" } : npItem(e, x.c[3] === "tw" ? { timer: states["timer.heated_towel_rails"] ? "timer.heated_towel_rails" : tileTimer(e) } : null));
+  return t.map(x => {
+    const cls = x.c[3] === 1 ? "bl" : "tg3 act-" + x.c[0].toLowerCase().replace(/\s+/g, "-"), head = '<div class="lbl np2 il" data-sec="' + x.c[0].toLowerCase().replace(/\s+/g, "-") + '">' + mdi(x.c[2]) + x.c[0] + ' · ' + x.ids.length + (x.c[3] === 1 || x.c[3] === "ld" ? "" : '<button class="eb" data-off="' + A.indexOf(x) + '">' + (x.c[3] === "close" ? "CLOSE ALL" : "ALL OFF") + '</button>') + '</div>';
+    if (!RM || x.c[3] === "ld" || !x.ids.some(e => RM.m[e])) return head + '<div class="' + cls + '">' + x.ids.map(e => tile(x, e)).join("") + '</div>';   // no room info for this group: as before
+    const g = {}; x.ids.forEach(e => { const r = RM.m[e] || "Other"; (g[r] = g[r] || []).push(e); });
+    return head + Object.keys(g).sort((a, b) => (a === "Other") - (b === "Other") || RM.order.indexOf(a) - RM.order.indexOf(b)).map(r => '<div class="np-rm">' + esc(r) + '</div><div class="' + cls + '">' + g[r].map(e => tile(x, e)).join("") + '</div>').join("");
+  }).join("");
 }
 function drawNotif() {
   const open = document.body.classList.contains("np-open");

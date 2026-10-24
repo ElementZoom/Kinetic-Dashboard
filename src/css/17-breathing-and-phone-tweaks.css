@@ -28,3 +28,12 @@
   body.np-fab:not(.pill-open) .thr:not(.open),body.np-fab:not(.pill-open) #scenes .sct.col{right:78px}body.np-fab:not(.pill-open) #irrigation .zsx.col{right:78px}
   
 }
+
+/* room cards: two slow translucent waves roll across the bottom in the temperature colours (roomFx "waves", default; "glow" = the old soft corner glow) */
+html[data-roomfx=waves] .rc>.rg{background:linear-gradient(to top,color-mix(in srgb,var(--tc) 26%,transparent),transparent 70%)}
+html[data-roomfx=waves] .rc>.rg::before,html[data-roomfx=waves] .rc>.rg::after{content:"";display:block;position:absolute;left:-25%;top:auto;right:auto;bottom:-70%;width:150%;height:90%;border-radius:42%;box-shadow:none!important;background:var(--tc)!important;opacity:.4;transform-origin:50% 40%;animation:rfw calc(var(--ts,4s)*7) linear infinite}
+html[data-roomfx=waves] .rc>.rg::after{bottom:-78%;background:var(--tg,var(--tc))!important;transform-origin:50% 45%;animation-duration:calc(var(--ts,4s)*10);animation-direction:reverse}
+html[data-roomfx=waves] .rc:nth-child(2n)>.rg::before{animation-delay:-5s}html[data-roomfx=waves] .rc:nth-child(3n)>.rg::after{animation-delay:-9s}
+@keyframes rfw{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){html[data-roomfx=waves] .rc>.rg::before,html[data-roomfx=waves] .rc>.rg::after{animation:none}}
+html[data-roomfx=off] .rc>.rg{display:none}

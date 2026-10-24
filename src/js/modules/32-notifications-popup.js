@@ -21,8 +21,9 @@ function notif(full) {
   n += LK.length + W2.length; sec("Warnings", LK.map(x => '<div class="alert q"><div class="lbl">' + mdi("water-alert") + ' WATER LEAK</div><b>' + esc(x[1]) + '</b><div>' + esc(x[2]) + '</div></div>').join("") + grid(W2.map(x => npItem(x[0], { name: x[1], sub: x[2], confirm: /rubbish|recycle/.test(x[0]) }))));
   const wr = states[E("weatherWarnings")];
   if (wr && sv(E("weatherWarnings")) && wr.attributes.warnings) { n++; sec("Weather warning", '<div class="alert w">' + esc(wr.attributes.warnings) + '</div>'); }
-  const snap = (id, t, k) => { const c = states[id], p = c && c.attributes.entity_picture; return p ? '<div class="snap" data-vw="' + k + '" data-cam="' + id + '"><span class="dl"></span><div class="lbl">' + t + '</div><img alt="" src="' + CONFIG.url + p + (p.indexOf("?") > -1 ? "&" : "?") + 't=' + Math.floor(Date.now() / 60000) + '"></div>' : ""; };
-  if (full) sec("Cameras", ((CONFIG.alerts || []).some(x => x[3] === "driveway" && isOn(x[0])) && (CONFIG.view.driveway || {}).id ? snap(CONFIG.view.driveway.id, "Driveway", "driveway") : "") + (viewTrig("garage") ? snap((CONFIG.view.garage || {}).id, "Garage", "garage") : ""));
+  // Cameras: live pictures (the same WebRTC streams as the Security page), mounted into these slots after the list is drawn. An alert's 4th value names the camera to show while it is on:
+  // "driveway", "garage", or any camera by its name as shown on the Security page ("road", "right-walkway"). The garage also shows while its door sensor says it is opening / open.
+  if (full) sec("Cameras", npCams().map(x => '<div class="snap npcam" data-vw="' + esc(x.key) + '" data-npc="' + esc(x.id) + '" data-name="' + esc(x.name) + '"></div>').join(""));
   const ch = [];
   Object.keys(CONFIG.derived.soil || {}).sort().map(z => ["sensor.average_" + z + "_soil_moisture", title(z)]).forEach(x => { const m = parseFloat(sv(x[0])); if (m < 40) ch.push('<div class="ws"><span class="lbl">' + x[1] + ' soil</span><b style="color:var(' + (m < 15 ? "--sd0" : m < 25 ? "--sd1" : "--sd2") + ')">' + (m < 15 ? "Very dry" : m < 25 ? "Dry" : "Moist") + '</b>' + f1(m) + '%</div>'); });
   n += ch.length; sec("Chores", ch.length ? '<div class="wg">' + ch.join("") + '</div>' : "");
@@ -85,11 +86,44 @@ function npDismiss(ids) {
 }
 const ldTime = () => esc(sv(sv(E("laundryState")) === "Run" ? "sensor.laundry_time_remaining_friendly" : E("laundryDelay")) || "");
 const ldTile = () => { const run = sv(E("laundryState")) === "Run"; return '<div class="ldt' + (run ? " run" : "") + '"><span class="ldi">' + DRUM + '</span><div><b>Laundry</b><span>' + (run ? "RUNNING" : "DELAYED START") + ' · <em class="ldr">' + ldTime() + '</em></span></div></div>'; };
+// which room an entity belongs to (first room in the house list that holds it): used for the small room headings inside each Active category
+const npRoomMap = () => { const m = {}, order = []; HOUSE().forEach(r => { order.push(r.name); const add = e => { if (e && !m[e]) m[e] = r.name; };
+  [r.lights, r.lightSwitches, r.covers, r.fans, r.doors, r.windows, r.climate].forEach(l => members(l || []).forEach(add));
+  (r.sections || []).forEach(sc => (sc.items || []).forEach(i => add(typeof i === "string" ? i : i.entity)));
+  ((CONFIG.roomControls || {})[r.id] || []).forEach(i => add(typeof i === "string" ? i : i.entity)); }); return { m: m, order: order }; };
 function actHtml(A) {
   const t = A.filter(x => x.ids.length); if (!t.length) return '<div class="lbl" style="margin:14px 0">Nothing is on or open</div>';
-  return t.map((x, i) => '<div class="lbl np2 il" data-sec="' + x.c[0].toLowerCase().replace(/\s+/g, "-") + '">' + mdi(x.c[2]) + x.c[0] + ' · ' + x.ids.length + (x.c[3] === 1 || x.c[3] === "ld" ? "" : '<button class="eb" data-off="' + A.indexOf(x) + '">' + (x.c[3] === "close" ? "CLOSE ALL" : "ALL OFF") + '</button>') + '</div>' +
-    '<div class="' + (x.c[3] === 1 ? "bl" : "tg3 act-" + x.c[0].toLowerCase().replace(/\s+/g, "-")) + '">' + x.ids.map(e => x.c[3] === "ld" ? ldTile() : tileHtml(x.c[0] === "Water taps" ? npItem(e, { icon: "m3-water-drop" }) : x.c[3] === 1 ? { entity: e, kind: x.c[0] === "Doors" ? "door" : "window" } : npItem(e, x.c[3] === "tw" ? { timer: states["timer.heated_towel_rails"] ? "timer.heated_towel_rails" : tileTimer(e) } : null))).join("") + '</div>').join("");
+  const RM = CONFIG.notifRoomHeadings === false ? null : npRoomMap(), tile = (x, e) => x.c[3] === "ld" ? ldTile() : tileHtml(x.c[0] === "Water taps" ? npItem(e, { icon: "m3-water-drop" }) : x.c[3] === 1 ? { entity: e, kind: x.c[0] === "Doors" ? "door" : "window" } : npItem(e, x.c[3] === "tw" ? { timer: states["timer.heated_towel_rails"] ? "timer.heated_towel_rails" : tileTimer(e) } : null));
+  return t.map(x => {
+    const cls = x.c[3] === 1 ? "bl" : "tg3 act-" + x.c[0].toLowerCase().replace(/\s+/g, "-"), head = '<div class="lbl np2 il" data-sec="' + x.c[0].toLowerCase().replace(/\s+/g, "-") + '">' + mdi(x.c[2]) + x.c[0] + ' · ' + x.ids.length + (x.c[3] === 1 || x.c[3] === "ld" ? "" : '<button class="eb" data-off="' + A.indexOf(x) + '">' + (x.c[3] === "close" ? "CLOSE ALL" : "ALL OFF") + '</button>') + '</div>';
+    if (!RM || x.c[3] === "ld" || !x.ids.some(e => RM.m[e])) return head + '<div class="' + cls + '">' + x.ids.map(e => tile(x, e)).join("") + '</div>';   // no room info for this group: as before
+    const g = {}; x.ids.forEach(e => { const r = RM.m[e] || "Other"; (g[r] = g[r] || []).push(e); });
+    return head + Object.keys(g).sort((a, b) => (a === "Other") - (b === "Other") || RM.order.indexOf(a) - RM.order.indexOf(b)).map(r => '<div class="np-rm">' + esc(r) + '</div><div class="' + cls + '">' + g[r].map(e => tile(x, e)).join("") + '</div>').join("");
+  }).join("");
 }
+const npCamFor = tag => {   // an alert's camera tag -> { id, name, key }
+  if (tag === "driveway") { const v = CONFIG.view.driveway; return v && v.id ? { id: v.id, name: "Driveway", key: "driveway" } : null; }
+  const t = String(tag || "").toLowerCase(), f = CONFIG.security.concat(CONFIG.cameras).filter(c => c.id === tag || slug(c.name) === t)[0]; return f ? { id: f.id, name: f.name, key: slug(f.name) } : null;
+};
+function npCams() {
+  const out = []; (CONFIG.alerts || []).forEach(x => { if (x[3] && isOn(x[0])) { const c = npCamFor(x[3]); if (c && !out.some(o => o.id === c.id)) out.push(c); } });
+  if (viewTrig("garage") && (CONFIG.view.garage || {}).id && !out.some(o => o.id === CONFIG.view.garage.id)) out.push({ id: CONFIG.view.garage.id, name: "Garage", key: "garage" });
+  return out;
+}
+const NPCAM = {};   // id -> camera object, made once and moved into the slot each time the list is drawn, so the stream keeps playing
+function npCamStop() { NPC.forEach(c => { clearTimeout(c.rt); c._on = 0; stopCam(c); }); }
+function npCamMount() {
+  const slots = $$("#npc [data-npc]"), want = {};
+  slots.forEach((sl, i) => {
+    const id = sl.dataset.npc; want[id] = 1; let c = NPCAM[id];
+    if (!c) { c = NPCAM[id] = { id: id, name: sl.dataset.name, np: true }; NPC.push(c); mkCam(c, document.createElement("div")); c.o.el.onclick = null; }
+    if (c.o.el.parentNode !== sl) sl.appendChild(c.o.el);
+    c.o.el.querySelector(".lbl").textContent = sl.dataset.name;
+    if (!c._on) { c._on = 1; clearTimeout(c.rt); c.rt = setTimeout(() => { if (document.body.classList.contains("np-open") && c._on) { if (isMobile() && CONFIG.mobileLive === false) camSnap(c); else liveCam(c); } }, i * 160); }
+  });
+  NPC.forEach(c => { if (!want[c.id] && c._on) { clearTimeout(c.rt); c._on = 0; stopCam(c); } });
+}
+setInterval(() => { if (!document.body.classList.contains("np-open")) npCamStop(); }, 2500);   // closed: no streams running behind the page
 function drawNotif() {
   const open = document.body.classList.contains("np-open");
   if (open && Date.now() < npHold) { clearTimeout(npht); npht = setTimeout(drawNotif, npHold - Date.now() + 10); return; }
@@ -100,7 +134,7 @@ function drawNotif() {
   if (ks.length > 1) nacc.dataset.more = "+" + (ks.length - 1); else nacc.removeAttribute("data-more");
   nacc.classList.toggle("on", !!r.all || !!top);
   $("#hc").title = ks.length ? ks.map(k => k[2]).join(" · ") + (r.all ? " · " : "") + (r.all ? r.all + " notification" + (r.all > 1 ? "s" : "") : "") : r.all ? r.all + " notification" + (r.all > 1 ? "s" : "") : "Notifications";
-  if (!open) return;
+  if (!open) { npCamStop(); return; }
   const A = actList(), tot = A.reduce((s, x) => s + x.ids.length, 0);
   // the header and tabs are built once and only updated in place; the list below is only replaced when its HTML really changes, so nothing blinks on a state update
   const np = $("#np"), tb = [["alerts", "ALERTS", r.n], ["active", "ACTIVE", tot], ["batteries", "BATTERIES", r.nb]]; let tc = false;
@@ -108,7 +142,7 @@ function drawNotif() {
   np.querySelectorAll(".nptabs .chip").forEach((c, k) => { const tx = tb[k][1] + (tb[k][2] ? " · " + tb[k][2] : ""); if (c.textContent !== tx) { c.textContent = tx; tc = true; } c.classList.toggle("on", c.dataset.npt === npTab); });
   const body = npLoading() ? '<div class="lbl" style="margin:14px 0">Loading…</div>' : npTab === "active" ? actHtml(A) : npTab === "batteries" ? (r.bh ? '<div class="lbl np2 il">' + mdi("battery-low") + 'Batteries · ' + r.nb + '</div>' + r.bh : '<div class="lbl" style="margin:14px 0">All batteries are fine</div>') : (r.n ? "" : '<div class="lbl" style="margin:14px 0">All clear</div>') + r.html, nc = $("#npc"), key = npTab + "|" + body.replace(/<em class="ldr">[^<]*<\/em>/g, '<em class="ldr"></em>');   // the remaining time is filled in below, so the minute ticking over does not redraw the list (and restart the drum)
   if (nc._k !== key) { nc._k = key; nc.innerHTML = body; }
-  npGoRun();
+  npGoRun(); npCamMount();
   $$("#npc .ldr").forEach(el => { const t = ldTime(); if (el.textContent !== t) el.textContent = t; });
   if (tc) requestAnimationFrame(hsAll);
   updTiles(); tickIrr();
@@ -116,7 +150,7 @@ function drawNotif() {
 let nq = 0;
 function queueNotif() { if (!nq) nq = requestAnimationFrame(() => { nq = 0; drawNotif(); }); }
 $("#hc").onclick = () => { document.body.classList.toggle("np-open"); drawNotif(); };
-const npClose = () => { document.body.classList.remove("np-open"); if (/^#(notifications|active|batteries)/.test(location.hash)) location.hash = "#home"; };
+const npClose = () => { document.body.classList.remove("np-open"); npCamStop(); if (/^#(notifications|active|batteries)/.test(location.hash)) location.hash = "#home"; };
 $("#nbd").onclick = npClose;
 $("#np").onclick = e => {
   if (e.target.closest("[data-close]")) { npClose(); return; }

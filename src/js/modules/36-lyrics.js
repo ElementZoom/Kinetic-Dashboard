@@ -63,12 +63,12 @@ function lyOpen(ctl) { if (ctl) LY.sel = ctl; LY.open = true; try { localStorage
 document.addEventListener("click", e => { if (e.target === document.body && document.body.classList.contains("ly-open")) lyClose(); });
 addEventListener("hashchange", lyClose);
 function lyrDraw(tr) {
-  const el = $("#lyr"), k = [LY.key, LY.st, LY.open, LY.sel, LY.tabs.join(), LY.off, (states[LY.ctl] || {}).state].join("|"); if (k === LY.drawn) return; LY.drawn = k;
+  const el = $("#lyr"), aiT = aiOn() && AI.tab === "artist", k = [LY.key, LY.st, LY.open, LY.sel, LY.tabs.join(), LY.off, (states[LY.ctl] || {}).state, aiT, AI.more].join("|"); if (k === LY.drawn) return; LY.drawn = k;
   const msg = { load: "Looking for lyrics…", none: "No lyrics found for this song.", inst: "Instrumental.", err: "Couldn’t reach the lyrics service (the device needs internet).", "": "" }[LY.st] || "";
   const body = !LY.open ? "" : LY.st === "sync" ? '<div class="lyb">' + LY.lines.map((l, i) => '<div class="ly" data-t="' + l.t + '" data-i="' + i + '">' + (esc(l.s) || "♪") + '</div>').join("") + '</div>'
     : LY.st === "plain" ? '<div class="lyb plain">' + esc(LY.plain) + '</div>' : '<div class="sm" style="margin-top:12px">' + msg + '</div><div class="sm lyd">' + esc((LY.key || "").replace(/\|/g, " · ") + (LY.dbg ? "  →  " + LY.dbg : "")) + '</div><button class="eb" style="margin-top:10px" data-ly="retry">TRY AGAIN</button>';
-  el.innerHTML = '<div class="lbl lyh" data-ly="tog">' + mdi("music-note") + ' Lyrics' + (LY.st === "sync" ? ' · synced' : "") + (LY.st === "sync" && LY.open ? '<span class="lyo" title="Lyrics running late? press +. Too early? press −"><button class="chip" data-ly="off-">−</button><b>' + (LY.off > 0 ? "+" : "") + LY.off.toFixed(1) + 's</b><button class="chip" data-ly="off+">+</button></span>' : "") + '<span class="npch">' + mdi(LY.open ? "chevron-up" : "chevron-down") + '</span><button class="chip lyx" data-ly="close" aria-label="Close">' + mdi("close") + '</button></div>' +
-    (LY.open && LY.tabs.length ? '<div class="chips tabs lyt">' + LY.tabs.map(t => '<button class="chip' + (t[0] === LY.sel ? " on" : "") + '" data-ly="sel" data-c="' + t[0] + '">' + mdi("speaker") + esc(t[1]) + '</button>').join("") + '</div>' : "") + body + lyFoot();
+  el.innerHTML = '<div class="lbl lyh" data-ly="tog">' + (aiOn() ? '<span class="chips aitabs"><button class="chip' + (aiT ? "" : " on") + '" data-ly="tab" data-t="lyrics">Lyrics</button><button class="chip' + (aiT ? " on" : "") + '" data-ly="tab" data-t="artist">Artist</button></span>' : mdi("music-note") + ' Lyrics' + (LY.st === "sync" ? ' · synced' : "")) + (!aiT && LY.st === "sync" && LY.open ? '<span class="lyo" title="Lyrics running late? press +. Too early? press −"><button class="chip" data-ly="off-">−</button><b>' + (LY.off > 0 ? "+" : "") + LY.off.toFixed(1) + 's</b><button class="chip" data-ly="off+">+</button></span>' : "") + '<span class="npch">' + mdi(LY.open ? "chevron-up" : "chevron-down") + '</span><button class="chip lyx" data-ly="close" aria-label="Close">' + mdi("close") + '</button></div>' +
+    (LY.open && LY.tabs.length ? '<div class="chips tabs lyt">' + LY.tabs.map(t => '<button class="chip' + (t[0] === LY.sel ? " on" : "") + '" data-ly="sel" data-c="' + t[0] + '">' + mdi("speaker") + esc(t[1]) + '</button>').join("") + '</div>' : "") + (!LY.open ? "" : aiT ? aiHtml(LY.ctl) : body) + lyFoot();
   LY.cur = -1; lyrTick(true);
 }
 function lyrTick(jump) {
@@ -85,6 +85,7 @@ function lyrTick(jump) {
 $("#lyr").onclick = e => {
   const of = e.target.closest('[data-ly="off-"],[data-ly="off+"]');
   if (of) { LY.off = Math.max(-10, Math.min(10, Math.round((LY.off + (of.dataset.ly === "off+" ? 0.5 : -0.5)) * 10) / 10)); try { localStorage.setItem("dashLyOff", LY.off); } catch (_) {} LY.drawn = ""; lyrDraw(); return; }
+  const tt = e.target.closest("[data-ly=tab]"); if (tt) { AI.tab = tt.dataset.t === "artist" ? "artist" : "lyrics"; try { localStorage.setItem("dashLyTab", AI.tab); } catch (_) {} if (!LY.open) { LY.open = true; try { localStorage.setItem("dashLyr", "1"); } catch (_) {} } LY.drawn = ""; lyrUpdate(); return; }
   const sb = e.target.closest("[data-ly=sel]"); if (sb) { LY.sel = sb.dataset.c; LY.drawn = ""; lyrUpdate(); return; }
   if (e.target.closest("[data-ly=retry]")) { delete LY.cache[LY.key]; LY.busy = ""; LY.drawn = ""; LY.st = ""; lyrUpdate(); return; }
   if (e.target.closest("[data-ly]") && innerWidth <= 760) { lyClose(); return; }

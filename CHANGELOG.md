@@ -4,6 +4,55 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
+## 1.6.7 - 2026-10-24
+
+### New
+- **Room cards have a livelier, slow animation.** Two translucent waves roll across the bottom of every room card in the room's temperature colours; warmer rooms move a little faster. Set `roomFx: "glow"` for the old soft corner glow, or `roomFx: false` for none.
+
+## 1.6.6 - 2026-10-24
+
+### New
+- **The notifications pop-up shows live cameras, not snapshot pictures.** The Cameras section uses the same live streams as the Security page (the lighter stream, one connection per camera, started when the pop-up opens and stopped when it closes). Tap a camera to open its full view as before.
+- **An alert's 4th value can name any camera.** `"driveway"` and `"garage"` still work; anything else is matched to a camera name on the Security list, so a rubbish or recycling alert can show the Road camera with `"road"`. The `alerts` comment in `config.example.js` says so.
+- **Pinch to zoom and drag also work in the camera Playback player and the Detections player** (not over the video's own play bar). A new recording always starts unzoomed.
+
+## 1.6.5 - 2026-10-24
+
+### New
+- **Pinch to zoom on a full-screen camera.** Two fingers (or the mouse wheel) zoom up to 6x, one finger moves the zoomed picture, and a tap puts it back (a tap on the unzoomed picture still closes the card). It works on the Home and Security cameras and on the `#view` page, also when the card is turned to landscape, and the buttons stay where they are. `camZoom: false` in `config.js` turns it off. New test: `tests/camera-zoom.mjs`.
+
+## 1.6.4 - 2026-10-24
+
+### Fixes
+- **Opening and closing a camera full screen no longer blinks.** The card used to leave the page layout the moment it went full screen, so the cards behind it jumped up while it faded in; it now keeps its place. Closing used to leave the phone's real full screen before the fade, which blanked the whole screen for a moment; it now leaves after the fade. A large dark play ring (the browser's own video overlay) that flashed as the card opened is hidden. New test: `tests/camera-fullscreen-hold.mjs`.
+
+## 1.6.3 - 2026-10-24
+
+### Fixes
+- **Camera playback previews look right on every device.** On a phone each preview was stretched to screen height by the full-screen camera styles (a zoomed strip of the top of the frame in portrait, an empty box in landscape); they are now always fitted to their 16:9 box. HA's detection snapshot now wins over a video frame saved earlier on that device, the camera's own thumbnail is never shown while detection snapshots are set up, and a picture that will not load falls back to a frame from the clip instead of a broken-image icon. New test: `tests/playback-thumbs.mjs`.
+
+### Changes
+- **The start-up logo and the Theme page say "Kinetic" with the version** instead of "Dashboard".
+
+## 1.6.2 - 2026-10-24
+
+### Fixes
+- **Charging and heated cards are deep green and deep orange in every style.** The Dyson charger (tileFx `charge`) was yellow with pale text in the light and Material styles, and the rice cooker (tileFx `heat`) was washed out and hard to see. Both are now a solid, saturated card with light text, in light and dark mode: charging is forest green, heated is burnt orange, with a matching countdown bar and battery.
+- **The Artist tab matches the mockup.** Lyrics and Artist are one pill switch in the card header (no separate label above it), and picking a tab opens the card if it was collapsed.
+
+## 1.6.1 - 2026-10-24
+
+### Fixes
+- **Active list: room headings are back.** This was built earlier as 1.5.19 on a separate branch (`feat/active-room-headings`) that was never merged into `main`, so the 1.5.19 to 1.5.22 builds did not have it. Under Lights, Windows, Fans and the other Active groups, the tiles are split by room, each with a small heading (Kitchen, Master bedroom...). Rooms come in the order of your house list, and anything the house list does not contain goes last under "Other". A group with no room information looks as it did before. Set `notifRoomHeadings: false` in `config.js` to turn the headings off. Test: `tests/active-rooms.mjs`.
+
+## 1.6.0 - 2026-10-24
+
+### Changes
+- **Artist info on the Media page.** The lyrics card now has Lyrics and Artist tabs. The Artist tab shows the artist's photo and name, a short bio, an OPEN IN SPOTIFY button (a Spotify search for the artist), a WIKIPEDIA link, and a "This song" list (song, performed by, album, which speakers). The artist's name on the player card is now a button that opens it. With several artists on a song, the first one is looked up. The bio and photo come from Wikipedia (no key needed); the artist's name is sent there from the device, the same way lyrics are looked up on lrclib.net. Results are kept on the device for a month.
+- **Phone: Artist is a swipe page in the Now Playing sheet.** The sheet pages are Now playing, Lyrics (when the song has synced lyrics) and Artist, with a dot for each and the page names under the dots. Tapping the artist's name jumps straight to the Artist page. On the Media page the lyrics sheet gets the same Lyrics / Artist tabs, and the artist's name opens it on the Artist tab.
+- New option `artistInfo: { enabled: true, lang: "en" }` in `config.js` (see `config.example.js`). `enabled: false` hides the tabs, the page and the name buttons; `lang` is the Wikipedia language.
+- New `tests/artist-info.mjs` (22 checks) covers the tab, the name button, the bio and links, an artist with no match, no internet, the option switched off, the phone lyrics sheet and the Now Playing sheet pages.
+
 ## 1.5.22 - 2026-10-24
 
 ### Changes

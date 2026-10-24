@@ -263,15 +263,15 @@ function camEnt(c) {
   const cl = c.o.el.classList; if (cl.contains("fs") || cl.contains("vf")) return c.id;
   const f = c.id.replace(/_clear$/, "_fluent"); return f !== c.id && states[f] ? f : c.id;
 }
-function camLiveSync() { document.documentElement.classList.toggle("camlive", CONFIG.cameras.concat(CONFIG.security, VWC).some(c => c.live)); }   // lets CSS pause decorative effects while video is playing
+function camLiveSync() { document.documentElement.classList.toggle("camlive", CONFIG.cameras.concat(CONFIG.security, VWC, NPC).some(c => c.live)); }   // lets CSS pause decorative effects while video is playing
 function stopCam(c) {
   if (c.pc) { try { c.pc.close(); } catch (x) {} c.pc = null; }
   if (c.sub) { delete subs[c.sub]; c.sub = 0; }
   const o = c.o; c.live = false; o.el.classList.remove("live"); o.vid.classList.remove("on"); o.vid.srcObject = null; camLiveSync();
 }
-function stopCams() { CONFIG.cameras.concat(CONFIG.security, VWC).forEach(c => { clearTimeout(c.rt); stopCam(c); micOff(c); }); }
+function stopCams() { CONFIG.cameras.concat(CONFIG.security, VWC, NPC).forEach(c => { clearTimeout(c.rt); stopCam(c); micOff(c); }); }
 function startCams() { if (onView()) { VW.mode = ""; applyView(); return; } if (onHome() && !camsOn()) return; cams(); camList().forEach((c, i) => { if (!isMobile() || (CONFIG.mobileLive !== false && c.o.el._vis !== false)) { clearTimeout(c.rt); c.rt = setTimeout(() => { if (camPage()) liveCam(c); }, i * 160); } }); }   // staggered so several streams do not negotiate and decode at once   // phones: live too, but only for tiles on screen (CONFIG.mobileLive:false = snapshots, live on tap)
-function retryCam(c, ms) { stopCam(c); clearTimeout(c.rt); c.rt = setTimeout(() => { if (camPage() && (onSec() || camsOn() || onView()) && (!isMobile() || c.o.el.classList.contains("fs") || (CONFIG.mobileLive !== false && c.o.el._vis !== false))) liveCam(c); }, ms); }
+function retryCam(c, ms) { stopCam(c); clearTimeout(c.rt); c.rt = setTimeout(() => { if ((c.np && document.body.classList.contains("np-open")) || camPage() && (onSec() || camsOn() || onView()) && (!isMobile() || c.o.el.classList.contains("fs") || (CONFIG.mobileLive !== false && c.o.el._vis !== false))) liveCam(c); }, ms); }
 function liveCam(c) {   // HA built-in WebRTC (go2rtc); falls back to snapshots if it fails
   stopCam(c); clearTimeout(c.rt);
   const o = c.o, sid = { v: null }, q = [], eid = camEnt(c);

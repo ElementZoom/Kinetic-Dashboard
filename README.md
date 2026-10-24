@@ -95,7 +95,7 @@ All four styles for Home, Rooms and Theme are in [`docs/screenshots/styles`](doc
 - Water taps show the same rolling water as the Irrigation page. Anything with a running timer (taps, towel rails, fans) shows a live countdown.
 
 **More pages**
-- Climate, Energy, Irrigation (floating zone bar, duration buttons 5 minutes to 2 hours with a countdown, soil sensors, rain-skip hint), Media (Sonos grouping, synced lyrics), Events, Vehicle, Hazards, Weather.
+- Climate, Energy, Irrigation (floating zone bar, duration buttons 5 minutes to 2 hours with a countdown, soil sensors, rain-skip hint), Media (Sonos grouping, synced lyrics, artist info from Wikipedia), Events, Vehicle, Hazards, Weather.
 
 **Simple to run**
 - One engine, one config. Averages and groups are calculated for you, so no template sensors are needed.

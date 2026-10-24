@@ -47,7 +47,7 @@ let mpVo = false;   // phone: volume sliders are tucked behind the speaker butto
 function mpCard(mem, ctl) {
   const s = states[ctl] || { state: "unavailable", attributes: {} }, a = s.attributes, play = s.state === "playing", pic = a.entity_picture, title = mem.map(fname).join(" + ");
   const art = mpArt(a, s.state, pic);
-  const mt = mpTitle(a, s.state), info = mt ? '<b>' + esc(mt) + '</b><div>' + esc(a.media_artist || "") + '</div><small>' + esc(a.media_album_name || "") + '</small>' : '<b>' + (s.state === "off" || s.state === "unavailable" ? esc(title) + " is " + (s.state === "off" ? "off" : "unavailable") : "Nothing playing") + '</b>';
+  const mt = mpTitle(a, s.state), info = mt ? '<b>' + esc(mt) + '</b><div>' + aiLink(a.media_artist) + '</div><small>' + esc(a.media_album_name || "") + '</small>' : '<b>' + (s.state === "off" || s.state === "unavailable" ? esc(title) + " is " + (s.state === "off" ? "off" : "unavailable") : "Nothing playing") + '</b>';
   const bt = (m, i, on) => '<button class="rnd' + (on ? " on" : "") + '" data-mp="' + m + '" data-e="' + ctl + '">' + i + '</button>';
   const vols = mem.map(x => { const v = states[x] ? states[x].attributes : {}; return '<div class="mv"><span>' + esc(fname(x)) + '</span><input type="range" min="0" max="100" data-vol="' + x + '" value="' + Math.round((v.volume_level || 0) * 100) + '"><button class="rnd s" data-mp="mute" data-e="' + x + '">' + mdi(v.is_volume_muted ? "volume-off" : "volume-high") + '</button></div>'; }).join("");
   const mg = artColor(pic);

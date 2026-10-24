@@ -14,7 +14,7 @@ function drawPalette() {
     (brandOn() ? sec("Start-up logo", '<div class="seg" style="margin-top:12px">' + [["on", "LOGO + INTRO"], ["load", "WHILE LOADING ONLY"], ["off", "OFF"]].map(x => '<button class="eb' + (logoPref() === x[0] ? " on" : "") + '" data-logo="' + x[0] + '">' + x[1] + '</button>').join("") + '</div><div class="lbl" style="margin-top:10px;text-transform:none;letter-spacing:0">Applies the next time the dashboard starts. Saved on this device only.</div>') : "") +
     (ME.admin ? accSec(sec) : "") +
     (AUTH && !AUTH.borrowed && !CONFIG.token ? sec("Account", '<div style="margin-top:12px"><button class="eb" data-signout="1">SIGN OUT OF THIS DEVICE</button><span class="lbl" style="margin-left:14px">Signed in on this device only</span></div>') : "") +
-    ('<div class="pn pg thab"><span class="lbl">Dashboard ' + esc(ENGINE_VERSION) + '</span></div>');
+    ('<div class="pn pg thab"><span class="lbl">Kinetic ' + esc(ENGINE_VERSION) + '</span></div>');
   $("#theme").innerHTML = '<div class="thg"><div class="thl">' + L + '</div></div>';
 }
 $("#theme").oninput = e => {

@@ -10,7 +10,7 @@ window.DASH_VER = "{{VERSION}}";   // the one place to change the version
   var G = window.brandLogo(); if (!B || !G || !el || lp === "off") return;
   var d = document.createElement("div"); d.className = "bl"; d.innerHTML = window.brandMark("s");
   if (!G.lockup) { var n = document.createElement("b"); n.textContent = B.name || ""; var t = document.createElement("small"); t.textContent = B.tag || ""; d.appendChild(n); d.appendChild(t); }
-  var vv = document.createElement("span"); vv.className = "bv"; vv.textContent = "Dashboard " + window.DASH_VER; d.appendChild(vv);
+  var vv = document.createElement("span"); vv.className = "bv"; vv.textContent = "Kinetic " + window.DASH_VER; d.appendChild(vv);
   el.appendChild(d); r.classList.add("brand"); if (G.lockup) r.classList.add("lockup"); window.__brandT0 = performance.now();
   var seen = 0, now = Date.now(), h = location.hash;
   try { seen = +localStorage.getItem("dashSeen") || 0; localStorage.setItem("dashSeen", now); } catch (e) {}

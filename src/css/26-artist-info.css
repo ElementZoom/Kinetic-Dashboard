@@ -1,0 +1,18 @@
+/* artist info: the Artist tab beside the lyrics (Media page, and the lyrics sheet on a phone) and the Artist page in the Now Playing sheet */
+.aitabs{display:inline-flex;gap:2px;padding:4px;border-radius:99px;background:rgba(var(--w),.1);text-transform:none}.aitabs .chip{border:0;background:transparent;box-shadow:none;padding:8px 18px;min-height:0;font:600 12px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink)}.aitabs .chip.on{background:var(--mint);color:var(--bg)}
+.lyh .aitabs{margin:-6px 0}
+.ar{max-height:46dvh;overflow-y:auto;margin-top:12px;display:flex;flex-direction:column;gap:16px;padding-bottom:22px;scrollbar-width:none;-webkit-mask-image:linear-gradient(#000 90%,transparent);mask-image:linear-gradient(#000 90%,transparent)}.ar::-webkit-scrollbar{display:none}
+@media(min-width:900px){.mlay.hasly .ar{max-height:calc(100dvh - 330px);min-height:280px}}
+body.ly-open .mlay.hasly .ar{flex:1;max-height:none;min-height:0}
+#npbody .npg .ar{max-height:calc(100dvh - 230px);min-height:340px;margin-top:14px}
+.arh{position:relative;flex:none;height:176px;border-radius:20px;overflow:hidden;background:linear-gradient(135deg,color-mix(in srgb,var(--mint) 60%,#000),color-mix(in srgb,var(--mint) 22%,var(--bg)));background-size:cover;background-position:center 22%}
+.arh::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 35%,rgba(10,8,20,.8))}
+.arh.no::before{content:attr(data-i);position:absolute;right:22px;top:8px;font-size:120px;font-weight:600;line-height:1;color:rgba(255,255,255,.16)}
+.arh .arn{position:absolute;left:18px;right:18px;bottom:14px;z-index:1;color:#fff}.arh .arn small{display:block;font:600 11px var(--mono);letter-spacing:.14em;opacity:.92}.arh .arn b{display:block;font-size:34px;font-weight:500;line-height:1.1;overflow-wrap:anywhere}
+.ara{display:flex;gap:10px;flex-wrap:wrap}.ara .eb{display:inline-flex;align-items:center;gap:8px;text-decoration:none}.ara .eb svg{width:16px;height:16px;fill:currentColor}
+.arb{font-size:14px;line-height:1.55;color:var(--ink);white-space:pre-line;margin-top:6px}.arb.cl{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.arm{border:0;background:none;color:var(--mint);font:600 12px var(--mono);letter-spacing:.1em;padding:8px 0 0;cursor:pointer}
+.ark{display:flex;justify-content:space-between;gap:14px;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px}.ark span{color:var(--mut);flex:none}.ark b{font-weight:500;text-align:right;overflow-wrap:anywhere}
+.ai-nm{display:inline-flex;align-items:center;gap:2px;max-width:100%;margin:2px 0;padding:3px 4px 3px 10px;border:0;border-radius:99px;background:rgba(var(--w),.12);color:inherit;font:inherit;text-align:left;cursor:pointer}.ai-nm svg{width:16px;height:16px;fill:currentColor;flex:none}
+#npbody .npdl{display:flex;justify-content:center;gap:22px;padding-top:8px;font:600 10.5px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--mut)}#npbody .npdl span{cursor:pointer}#npbody .npdl span.on{color:var(--mint)}
+@media(max-width:760px){.lyh .lyx{margin-left:auto;flex:none}}

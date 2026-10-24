@@ -136,3 +136,31 @@ html[data-mode=light] .ldt.run{background:linear-gradient(160deg,rgba(60,150,255
 }
 @keyframes cpslide{from{transform:translateX(40px);opacity:0}to{transform:none;opacity:1}}
 @media(prefers-reduced-motion:reduce){#cpp.on .cpsh{animation:none}}
+/* Notifications > Active: a small room heading above each room's tiles inside a category (config notifRoomHeadings: false turns it off) */
+#np .np-rm{font:600 11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--mut);margin:12px 4px 7px;display:flex;align-items:center;gap:8px}
+#np .np-rm::after{content:"";flex:1;height:1px;background:var(--line)}
+/* heated (tileFx "heat") and charging (tileFx "charge") tiles: a deep, saturated card with light text in light AND dark mode and in every style (they were washed out or yellow in the light and Material styles).
+   Same idea as the fan card: colours are variables, html:not(#x):not(#y) outranks the visual-style "on" colours. Charge = forest green, heat = burnt orange. */
+html:not(#x):not(#y) .tl.fx-charge.on{--fb:linear-gradient(160deg,#124a32,#0a2a1e);--fd:#3aa56f;--fi:#E6FFF1;--fs:#B8EBD0;--fc:#7AFFB8;--fbar:rgba(0,0,0,.35);--ff:linear-gradient(90deg,#2bbf7a,#7affb8);--fx:122,255,184}
+html:not(#x):not(#y) .tl.fx-heat.on{--fb:linear-gradient(160deg,#7a2a12,#3d1408);--fd:#ff8a4d;--fi:#FFF1E8;--fs:#FFD2B8;--fc:#FF9A5C;--fbar:rgba(0,0,0,.35);--ff:linear-gradient(90deg,#ff6a2b,#ffb36b);--fx:255,138,77}
+html[data-mode=light]:not(#x):not(#y) .tl.fx-charge.on{--fb:#2F6B4A;--fd:#1B4A32;--fi:#F0FFF6;--fs:#CDEFDC;--fc:#9BF0C0;--fbar:rgba(0,0,0,.28);--ff:linear-gradient(90deg,#5fd897,#b4ffd6)}
+html[data-mode=light]:not(#x):not(#y) .tl.fx-heat.on{--fb:#A33A12;--fd:#6B2308;--fi:#FFF4EC;--fs:#FFDCC6;--fc:#FFC59B;--fbar:rgba(0,0,0,.28);--ff:linear-gradient(90deg,#ffa05a,#ffd9a0)}
+html:not(#x):not(#y) .tl.fx-charge.on,html:not(#x):not(#y) .tl.fx-heat.on{background:var(--fb);border:1px solid var(--fd);color:var(--fi)}
+html:not(#x):not(#y) .tl.fx-charge.on .tn,html:not(#x):not(#y) .tl.fx-heat.on .tn{color:var(--fi)}
+html:not(#x):not(#y) .tl.fx-charge.on .tn svg,html:not(#x):not(#y) .tl.fx-heat.on .tn svg{fill:var(--fc);filter:drop-shadow(0 0 5px rgba(var(--fx,255,255,255),.6))}
+html:not(#x):not(#y) .tl.fx-charge.on .ts2,html:not(#x):not(#y) .tl.fx-charge.on .tmr,html:not(#x):not(#y) .tl.fx-heat.on .ts2,html:not(#x):not(#y) .tl.fx-heat.on .tmr{color:var(--fs)}
+html:not(#x):not(#y) .tl.fx-charge.on .zb,html:not(#x):not(#y) .tl.fx-heat.on .zb{background:var(--fbar)}
+html:not(#x):not(#y) .tl.fx-charge.on .zb>i,html:not(#x):not(#y) .tl.fx-heat.on .zb>i{background:var(--ff)}
+html:not(#x):not(#y) .tl.fx-charge.on>.bt{border-color:var(--fc)}html:not(#x):not(#y) .tl.fx-charge>.bt::after{background:var(--fc)}html:not(#x):not(#y) .tl.fx-charge>.bt b{background:var(--fc)}
+
+/* playback previews: the full-screen camera rules (.cam.fs img, .nfs, .ls) are written for the live picture and were also stretching these thumbnails (100vh tall = zoomed to the top strip in portrait, letterboxed or lost in landscape) */
+html:not(#x) .cam .pbth img{position:absolute;inset:0;width:100%;height:100%;max-height:none;aspect-ratio:auto;object-fit:cover;object-position:center;border-radius:0;transform:none}
+.camph{visibility:hidden;pointer-events:none}
+/* the browser's own big play overlay on the live video flashed for a moment as a card opened */
+.cam>video::-webkit-media-controls,.cam>video::-webkit-media-controls-overlay-play-button,.cam>video::-webkit-media-controls-start-playback-button{display:none!important;-webkit-appearance:none}
+/* pinch to zoom / drag on a full-screen camera (37-camera-zoom.js): the picture moves, the buttons stay put */
+.cam.fs>img,.cam.fs>video,.cam.vf>img,.cam.vf>video,.pbv>video,.dtv>video{touch-action:none}
+.zm>img,.zm>video{transform:translate(var(--zx,0px),var(--zy,0px)) scale(var(--zs,1))!important;transform-origin:50% 50%;transition:none!important;will-change:transform}
+.zm{overflow:hidden}
+/* notifications pop-up: live camera cards (32-notifications-popup.js). The card is the same live card as the Security page, without its full-screen and playback buttons: a tap opens the full view */
+.snap.npcam{aspect-ratio:16/9;background:#000}.npcam>.cam{height:100%;border:0;border-radius:inherit}.npcam .cam .fsb,.npcam .cam .cx,.npcam .cam .px,.npcam .cam .aud,.npcam .cam .cpanel{display:none!important}

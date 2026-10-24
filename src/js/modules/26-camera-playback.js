@@ -1,7 +1,7 @@
 // ---------- camera playback (Reolink recordings through HA's media browser) ----------
 function openPb(c) {
   const el = c.o.el, k = $(".pbk", el);
-  clearTimeout(c.rt); stopCam(c);
+  clearTimeout(c.rt); stopCam(c); czReset(el);
   if (!k.dataset.b) {
     k.dataset.b = 1;
     k.innerHTML = '<div class="pbh"><button class="eb" data-pb="up">' + mdi("chevron-left") + ' BACK</button><b class="pbt">Recordings</b><button class="eb" data-pb="live">' + mdi("circle") + ' LIVE</button></div><div class="pbm"><div class="pbw"><div class="pbf"></div><div class="pbl"></div></div><div class="pbv"><video controls playsinline></video><div class="pbe"></div></div></div>';
@@ -80,7 +80,7 @@ function pbList(c) {
   const rows = pb.items.map((x, i) => {
     const p = P[i]; if (pb.filter !== "all" && !(p && p.tags.indexOf(pb.filter) > -1)) return "";
     if (x.can_expand) return '<div class="pbi" data-i="' + i + '"><span>' + esc(pbDay(x.title)) + '</span><em>' + mdi("chevron-right") + '</em></div>';
-    const tg = p ? p.tags.map(t => '<i class="pbt2 ' + t.toLowerCase() + '">' + t + '</i>').join("") : "", th = pb.thumbs[x.media_content_id] || (DT.snapUrl[x.media_content_id] && Date.now() - DT.snapUrl[x.media_content_id].t < 3000000 ? DT.snapUrl[x.media_content_id].u : "") || (x.thumbnail ? (x.thumbnail.indexOf("/") === 0 ? CONFIG.url : "") + x.thumbnail : "");
+    const tg = p ? p.tags.map(t => '<i class="pbt2 ' + t.toLowerCase() + '">' + t + '</i>').join("") : "", th = (DT.snapUrl[x.media_content_id] && Date.now() - DT.snapUrl[x.media_content_id].t < 3000000 ? DT.snapUrl[x.media_content_id].u : "") || pb.thumbs[x.media_content_id] || (x.thumbnail && !snapRoot() ? (x.thumbnail.indexOf("/") === 0 ? CONFIG.url : "") + x.thumbnail : "");   // the camera's own thumbnail is a different (often off-centre) view: only used when no detection snapshots are set up
     const img = '<div class="pbth" data-th="' + i + '">' + (th ? '<img alt="" src="' + esc(th) + '">' : "") + '<b>' + mdi("play") + '</b>' + (p ? '<u>' + esc(p.len) + '</u>' : "") + '</div>';
     return '<div class="pbi pbc2" data-i="' + i + '">' + img + '<div class="pbx"><strong>' + esc(p ? pbClock(p.time) : pbT(x.title)) + '</strong><div>' + tg + '</div></div></div>';
   }).join("");
@@ -93,17 +93,20 @@ const pbDay = t => { const m = /(\d{4})[\/.-](\d{1,2})[\/.-](\d{1,2})/.exec(Stri
 // preview pictures: use HA's thumbnail when it sends one, otherwise grab one frame from each clip as it scrolls into view (one at a time, remembered until the page is reloaded)
 function pbThumbs(c) {
   const el = c.o.el, pb = el.pb, l = $(".pbl", el); if (pb.io) pb.io.disconnect();
-  const need = $$(".pbth", l).filter(n => !n.querySelector("img")); if (!need.length || !("IntersectionObserver" in window)) return;
+  const need = $$(".pbth", l); if (!need.length || !("IntersectionObserver" in window)) return;
   pb.q = []; pb.busy = 0; pb.sw = 0;
+  if (!pb.er) { pb.er = 1; l.addEventListener("error", e => { const im = e.target, n = im && im.tagName === "IMG" && im.closest ? im.closest(".pbth") : null, x = n && pb.items[+n.dataset.th]; if (!x) return;   // a picture that would not load (link expired, file gone): show the play button and grab a frame from the clip instead
+    const su = DT.snapUrl[x.media_content_id], snap = su && su.u === im.getAttribute("src"); im.remove(); if (snap) { delete DT.snapUrl[x.media_content_id]; pb.bad[x.media_content_id] = 1; } const d = pb.thumbs[x.media_content_id]; if (d) { const i2 = document.createElement("img"); i2.alt = ""; i2.src = d; n.insertBefore(i2, n.firstChild); return; } delete pb.thumbs[x.media_content_id]; pb.q.push(n); if (pb.nx) pb.nx(); }, true); }
   if (snapRoot() && !(DT.cache["s|" + c.id] && DT.cache["s|" + c.id].l && Date.now() - DT.cache["s|" + c.id].t < 120000)) { pb.sw = 1; pbSnapLoad(c.id).then(() => { pb.sw = 0; if (pb.nx) pb.nx(); }); }
   const next = () => { while (!pb.hold && !pb.sw && pb.busy < (DT.cache["s|" + c.id] && DT.cache["s|" + c.id].l && DT.cache["s|" + c.id].l.length ? thPar() : Math.min(2, thPar())) && pb.q.length && el.classList.contains("pb")) one(pb.q.shift()); };
   pb.nx = next;
   const one = n => {
-    const i = +n.dataset.th, x = pb.items[i];
-    if (!x || !n.isConnected || pb.thumbs[x.media_content_id] != null) return;
-    const sid = pbSnap(c, x);
+    const i = +n.dataset.th, x = pb.items[i]; if (!x || !n.isConnected) return;
+    const sid = pbSnap(c, x), im0 = n.querySelector("img");
+    const su0 = sid && DT.snapUrl[x.media_content_id];
+    if (im0 ? !(sid && !(su0 && su0.u === im0.getAttribute("src"))) : (!sid && pb.thumbs[x.media_content_id] != null)) return;   // has a picture already; whatever it is (a saved video frame, the camera's own thumbnail) is swapped for HA's detection snapshot when there is one
     if (sid) {   // HA's saved picture: nothing to decode
-      const put = u => { if (n.isConnected && !n.querySelector("img")) { const im = document.createElement("img"); im.alt = ""; im.src = u; n.insertBefore(im, n.firstChild); } }, su = DT.snapUrl[x.media_content_id];
+      const put = u => { if (n.isConnected) { let im = n.querySelector("img"); if (!im) { im = document.createElement("img"); im.alt = ""; n.insertBefore(im, n.firstChild); } im.src = u; } }, su = DT.snapUrl[x.media_content_id];
       if (su && Date.now() - su.t < 3000000) { put(su.u); return; }
       pb.busy++; send({ type: "media_source/resolve_media", media_content_id: sid, expires: 3600 }, r => { pb.busy--; if (r && r.url) { const u = (r.url.indexOf("http") === 0 ? "" : CONFIG.url) + r.url; DT.snapOf[x.media_content_id] = sid; DT.snapUrl[x.media_content_id] = { u: u, t: Date.now() }; put(u); } else { pb.bad[x.media_content_id] = 1; pb.q.unshift(n); } next(); });
       return;

@@ -125,6 +125,7 @@ window.DASH_CONFIG = {
     }
   },
   lyricsFrom: ["media_player.spotify_alex"],
+  artistInfo: { enabled: true, lang: "en" },   // Media: an Artist tab beside the lyrics, and an Artist page in the Now Playing sheet (bio and photo from Wikipedia; the artist name is sent there). enabled: false hides it; lang = Wikipedia language ("en", "de", "mi" ...)
   media: ["media_player.demo_living_speaker", "media_player.demo_master_speaker"],
   playback: {   // camera recordings (media sources from the camera integration)
     "camera.demo_driveway": "media-source://reolink/RES|DEMO0000000000000000000001|0|main",
@@ -231,7 +232,7 @@ window.DASH_CONFIG = {
   volcanoes: [],                         // alert-level sensors, e.g. ["sensor.volcano_name"]
   hazards: { radius: 200, focusKm: 100, minMag: 4 },
   siren: { flag: "input_boolean.demo_siren_toggle", script30: "demo_siren_30_seconds" },
-  // Notification pop-up rows: [entity, title, text, optional tag]. tag "driveway" also shows the driveway camera
+  // Notification pop-up rows: [entity, title, text, optional tag]. tag "driveway", "garage", or any camera name from the Security list (e.g. "road") also shows that camera, live, while the alert is on
   // Extra pairings for the countdown on notification tiles: entity -> timer. Taps use their zone's timer, and
   // anything with a timer.<name> or timer.<name>_timer is found on its own, so this is only for the odd ones out.
   tileTimers: { "switch.demo_towel_rail": "timer.demo_towel_rails" },   // a tile shows its timer's countdown and bar while the entity is on (rooms, Active list, Alerts)
@@ -243,6 +244,9 @@ window.DASH_CONFIG = {
   // An id on its own, or [id, name, text]. Example: [["binary_sensor.demo_washing_machine_leak", "Washing machine", "Water under the machine"]]
   leakSensors: [["binary_sensor.demo_washing_machine_leak", "Washing machine", "Water under the machine"]],
   // Notification pop-up "all on" shortcuts: [label, group entity, icon, optional "close" | 1]
+  // camZoom: false,   // Cameras: set false to turn off pinch to zoom / drag to move on a full-screen camera
+  // roomFx: "waves",   // room card animation: "waves" (slow rolling waves, default) | "glow" (soft corner glow) | false (none). Warmer rooms move a little faster
+  // notifRoomHeadings: false,   // Notifications > Active: set false to drop the room headings inside each category
   quickAll: [["Lights", "light.all_lights", "lightbulb-on"], ["Fans", "group.all_fans", "fan"], ["Light switches", "group.all_light_switches", "m3-switch"], ["Water taps", "group.all_water_taps", "m3-water-drop"], ["Curtains", "group.all_curtains", "m3-curtains", "close"], ["Windows", "group.all_windows", "m3-window-open", 1], ["Doors", "group.external_doors", "m3-door-open", 1]],
   adminToggles: [   // [label, counter id, word, [[entity, name], ...]]
     ["Driveway security", "sensor.disabled_driveway_camera_count", "camera", [["automation.demo_driveway_person_notification", "Person"], ["automation.demo_driveway_vehicle_notification", "Vehicle"]]]

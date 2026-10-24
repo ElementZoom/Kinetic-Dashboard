@@ -43,7 +43,7 @@ function camNativeOff() { try { screen.orientation.unlock(); } catch (_) {} if (
 function camSwap(el, fn) {   // landscape <-> portrait like a native app: fade out over black, switch with no animation, fade back in
   if (el._sw) return;
   if (reducedMotion()) { fn(); return; }
-  const h = document.documentElement; el._sw = 1; h.classList.add("camsw"); el.classList.add("lf");
+  const h = document.documentElement; el._sw = 1; czReset(el); h.classList.add("camsw"); el.classList.add("lf");
   setTimeout(() => { fn(); requestAnimationFrame(() => requestAnimationFrame(() => { el.classList.remove("lf"); setTimeout(() => { h.classList.remove("camsw"); el._sw = 0; }, 200); })); }, 130);
 }
 function camLandOff(el, now) {   // back to portrait (stays in full screen)
@@ -78,11 +78,10 @@ function vwFullOff() { document.body.classList.remove("vwm"); if (VWF.on) { VWF.
 const camSwapReset = el => { el._sw = 0; el.classList.remove("lf"); document.documentElement.classList.remove("camsw"); };
 function camClose(el, done) {   // smooth close: leave full screen, fade + shrink out, then the card is back in the page and fades in
   if (el.classList.contains("fclose")) return;
-  camNativeOff();
-  if (reducedMotion() || !el.classList.contains("fs")) { camSwapReset(el); camLandOff(el, true); el.classList.remove("nfs"); done(); return; }
-  el.classList.add("fclose");
+  if (reducedMotion() || !el.classList.contains("fs")) { camNativeOff(); czReset(el); camSwapReset(el); camLandOff(el, true); el.classList.remove("nfs"); done(); return; }
+  el.classList.add("fclose");   // the real full screen is left after the fade: leaving first blanked the whole screen for a moment
   setTimeout(() => {
-    el.classList.remove("fclose", "nfs", "lk"); camSwapReset(el); camLandOff(el, true); done();
+    el.classList.remove("fclose", "nfs", "lk"); czReset(el); camSwapReset(el); camLandOff(el, true); done(); camNativeOff();
     el.classList.add("fopen"); setTimeout(() => el.classList.remove("fopen"), 340);
   }, 240);
 }
@@ -132,9 +131,10 @@ function mkCam(c, host) {
     if (e.target.closest(".fsb")) { camLand(el); return; }
     if (el.classList.contains("fs")) {   // close
       closePb(c, false); c.snd = false; micOff(c); snd.classList.remove("on"); snd.innerHTML = AUD.off; o.vid.muted = true;
-      camClose(el, () => { el.classList.remove("fs"); if (isMobile() && CONFIG.mobileLive === false) { clearTimeout(c.rt); stopCam(c); } else liveCam(c); });
+      camClose(el, () => { el.classList.remove("fs"); if (el._ph) { el._ph.remove(); el._ph = null; } if (isMobile() && CONFIG.mobileLive === false) { clearTimeout(c.rt); stopCam(c); } else liveCam(c); });
       return;
     }
+    if (!el._ph && el.parentNode && el.parentNode.id !== "vw") { const cs = getComputedStyle(el), ph = document.createElement("div"); ph.className = "camph"; ph.style.height = el.offsetHeight + "px"; ph.style.gridColumn = cs.gridColumnStart + " / " + cs.gridColumnEnd; ph.style.margin = cs.margin; el.parentNode.insertBefore(ph, el); el._ph = ph; }   // the card leaves the page layout while full screen: this holds its place so the page behind does not jump during the fade
     el.classList.add("fs"); pbPre(c);
     if (isMobile()) camNative(el);   // phones: straight to real full screen
     const ctl = camCtl(c.id);

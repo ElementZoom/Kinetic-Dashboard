@@ -1111,6 +1111,15 @@ html:not(#x) .tl[data-e^="cover."].mv{animation:cvmv 1.6s ease-in-out infinite}
   body.np-fab:not(.pill-open) .thr:not(.open),body.np-fab:not(.pill-open) #scenes .sct.col{right:78px}body.np-fab:not(.pill-open) #irrigation .zsx.col{right:78px}
   
 }
+
+/* room cards: two slow translucent waves roll across the bottom in the temperature colours (roomFx "waves", default; "glow" = the old soft corner glow) */
+html[data-roomfx=waves] .rc>.rg{background:linear-gradient(to top,color-mix(in srgb,var(--tc) 26%,transparent),transparent 70%)}
+html[data-roomfx=waves] .rc>.rg::before,html[data-roomfx=waves] .rc>.rg::after{content:"";display:block;position:absolute;left:-25%;top:auto;right:auto;bottom:-70%;width:150%;height:90%;border-radius:42%;box-shadow:none!important;background:var(--tc)!important;opacity:.4;transform-origin:50% 40%;animation:rfw calc(var(--ts,4s)*7) linear infinite}
+html[data-roomfx=waves] .rc>.rg::after{bottom:-78%;background:var(--tg,var(--tc))!important;transform-origin:50% 45%;animation-duration:calc(var(--ts,4s)*10);animation-direction:reverse}
+html[data-roomfx=waves] .rc:nth-child(2n)>.rg::before{animation-delay:-5s}html[data-roomfx=waves] .rc:nth-child(3n)>.rg::after{animation-delay:-9s}
+@keyframes rfw{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){html[data-roomfx=waves] .rc>.rg::before,html[data-roomfx=waves] .rc>.rg::after{animation:none}}
+html[data-roomfx=off] .rc>.rg{display:none}
 /* ===== visual styles (Theme page → Style) ===== */
 .spv{display:block;width:100%;height:74px;border-radius:14px;margin-bottom:10px;position:relative;overflow:hidden;background:radial-gradient(60% 90% at 15% 20%,rgba(var(--mint-rgb),.8),transparent 60%),radial-gradient(60% 90% at 90% 80%,rgba(var(--cool-rgb),.8),transparent 60%),var(--bg2)}
 .spv b,.spv i{position:absolute;display:block}
@@ -1632,6 +1641,52 @@ html[data-mode=light] .ldt.run{background:linear-gradient(160deg,rgba(60,150,255
 }
 @keyframes cpslide{from{transform:translateX(40px);opacity:0}to{transform:none;opacity:1}}
 @media(prefers-reduced-motion:reduce){#cpp.on .cpsh{animation:none}}
+/* Notifications > Active: a small room heading above each room's tiles inside a category (config notifRoomHeadings: false turns it off) */
+#np .np-rm{font:600 11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--mut);margin:12px 4px 7px;display:flex;align-items:center;gap:8px}
+#np .np-rm::after{content:"";flex:1;height:1px;background:var(--line)}
+/* heated (tileFx "heat") and charging (tileFx "charge") tiles: a deep, saturated card with light text in light AND dark mode and in every style (they were washed out or yellow in the light and Material styles).
+   Same idea as the fan card: colours are variables, html:not(#x):not(#y) outranks the visual-style "on" colours. Charge = forest green, heat = burnt orange. */
+html:not(#x):not(#y) .tl.fx-charge.on{--fb:linear-gradient(160deg,#124a32,#0a2a1e);--fd:#3aa56f;--fi:#E6FFF1;--fs:#B8EBD0;--fc:#7AFFB8;--fbar:rgba(0,0,0,.35);--ff:linear-gradient(90deg,#2bbf7a,#7affb8);--fx:122,255,184}
+html:not(#x):not(#y) .tl.fx-heat.on{--fb:linear-gradient(160deg,#7a2a12,#3d1408);--fd:#ff8a4d;--fi:#FFF1E8;--fs:#FFD2B8;--fc:#FF9A5C;--fbar:rgba(0,0,0,.35);--ff:linear-gradient(90deg,#ff6a2b,#ffb36b);--fx:255,138,77}
+html[data-mode=light]:not(#x):not(#y) .tl.fx-charge.on{--fb:#2F6B4A;--fd:#1B4A32;--fi:#F0FFF6;--fs:#CDEFDC;--fc:#9BF0C0;--fbar:rgba(0,0,0,.28);--ff:linear-gradient(90deg,#5fd897,#b4ffd6)}
+html[data-mode=light]:not(#x):not(#y) .tl.fx-heat.on{--fb:#A33A12;--fd:#6B2308;--fi:#FFF4EC;--fs:#FFDCC6;--fc:#FFC59B;--fbar:rgba(0,0,0,.28);--ff:linear-gradient(90deg,#ffa05a,#ffd9a0)}
+html:not(#x):not(#y) .tl.fx-charge.on,html:not(#x):not(#y) .tl.fx-heat.on{background:var(--fb);border:1px solid var(--fd);color:var(--fi)}
+html:not(#x):not(#y) .tl.fx-charge.on .tn,html:not(#x):not(#y) .tl.fx-heat.on .tn{color:var(--fi)}
+html:not(#x):not(#y) .tl.fx-charge.on .tn svg,html:not(#x):not(#y) .tl.fx-heat.on .tn svg{fill:var(--fc);filter:drop-shadow(0 0 5px rgba(var(--fx,255,255,255),.6))}
+html:not(#x):not(#y) .tl.fx-charge.on .ts2,html:not(#x):not(#y) .tl.fx-charge.on .tmr,html:not(#x):not(#y) .tl.fx-heat.on .ts2,html:not(#x):not(#y) .tl.fx-heat.on .tmr{color:var(--fs)}
+html:not(#x):not(#y) .tl.fx-charge.on .zb,html:not(#x):not(#y) .tl.fx-heat.on .zb{background:var(--fbar)}
+html:not(#x):not(#y) .tl.fx-charge.on .zb>i,html:not(#x):not(#y) .tl.fx-heat.on .zb>i{background:var(--ff)}
+html:not(#x):not(#y) .tl.fx-charge.on>.bt{border-color:var(--fc)}html:not(#x):not(#y) .tl.fx-charge>.bt::after{background:var(--fc)}html:not(#x):not(#y) .tl.fx-charge>.bt b{background:var(--fc)}
+
+/* playback previews: the full-screen camera rules (.cam.fs img, .nfs, .ls) are written for the live picture and were also stretching these thumbnails (100vh tall = zoomed to the top strip in portrait, letterboxed or lost in landscape) */
+html:not(#x) .cam .pbth img{position:absolute;inset:0;width:100%;height:100%;max-height:none;aspect-ratio:auto;object-fit:cover;object-position:center;border-radius:0;transform:none}
+.camph{visibility:hidden;pointer-events:none}
+/* the browser's own big play overlay on the live video flashed for a moment as a card opened */
+.cam>video::-webkit-media-controls,.cam>video::-webkit-media-controls-overlay-play-button,.cam>video::-webkit-media-controls-start-playback-button{display:none!important;-webkit-appearance:none}
+/* pinch to zoom / drag on a full-screen camera (37-camera-zoom.js): the picture moves, the buttons stay put */
+.cam.fs>img,.cam.fs>video,.cam.vf>img,.cam.vf>video,.pbv>video,.dtv>video{touch-action:none}
+.zm>img,.zm>video{transform:translate(var(--zx,0px),var(--zy,0px)) scale(var(--zs,1))!important;transform-origin:50% 50%;transition:none!important;will-change:transform}
+.zm{overflow:hidden}
+/* notifications pop-up: live camera cards (32-notifications-popup.js). The card is the same live card as the Security page, without its full-screen and playback buttons: a tap opens the full view */
+.snap.npcam{aspect-ratio:16/9;background:#000}.npcam>.cam{height:100%;border:0;border-radius:inherit}.npcam .cam .fsb,.npcam .cam .cx,.npcam .cam .px,.npcam .cam .aud,.npcam .cam .cpanel{display:none!important}
+/* artist info: the Artist tab beside the lyrics (Media page, and the lyrics sheet on a phone) and the Artist page in the Now Playing sheet */
+.aitabs{display:inline-flex;gap:2px;padding:4px;border-radius:99px;background:rgba(var(--w),.1);text-transform:none}.aitabs .chip{border:0;background:transparent;box-shadow:none;padding:8px 18px;min-height:0;font:600 12px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink)}.aitabs .chip.on{background:var(--mint);color:var(--bg)}
+.lyh .aitabs{margin:-6px 0}
+.ar{max-height:46dvh;overflow-y:auto;margin-top:12px;display:flex;flex-direction:column;gap:16px;padding-bottom:22px;scrollbar-width:none;-webkit-mask-image:linear-gradient(#000 90%,transparent);mask-image:linear-gradient(#000 90%,transparent)}.ar::-webkit-scrollbar{display:none}
+@media(min-width:900px){.mlay.hasly .ar{max-height:calc(100dvh - 330px);min-height:280px}}
+body.ly-open .mlay.hasly .ar{flex:1;max-height:none;min-height:0}
+#npbody .npg .ar{max-height:calc(100dvh - 230px);min-height:340px;margin-top:14px}
+.arh{position:relative;flex:none;height:176px;border-radius:20px;overflow:hidden;background:linear-gradient(135deg,color-mix(in srgb,var(--mint) 60%,#000),color-mix(in srgb,var(--mint) 22%,var(--bg)));background-size:cover;background-position:center 22%}
+.arh::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 35%,rgba(10,8,20,.8))}
+.arh.no::before{content:attr(data-i);position:absolute;right:22px;top:8px;font-size:120px;font-weight:600;line-height:1;color:rgba(255,255,255,.16)}
+.arh .arn{position:absolute;left:18px;right:18px;bottom:14px;z-index:1;color:#fff}.arh .arn small{display:block;font:600 11px var(--mono);letter-spacing:.14em;opacity:.92}.arh .arn b{display:block;font-size:34px;font-weight:500;line-height:1.1;overflow-wrap:anywhere}
+.ara{display:flex;gap:10px;flex-wrap:wrap}.ara .eb{display:inline-flex;align-items:center;gap:8px;text-decoration:none}.ara .eb svg{width:16px;height:16px;fill:currentColor}
+.arb{font-size:14px;line-height:1.55;color:var(--ink);white-space:pre-line;margin-top:6px}.arb.cl{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.arm{border:0;background:none;color:var(--mint);font:600 12px var(--mono);letter-spacing:.1em;padding:8px 0 0;cursor:pointer}
+.ark{display:flex;justify-content:space-between;gap:14px;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px}.ark span{color:var(--mut);flex:none}.ark b{font-weight:500;text-align:right;overflow-wrap:anywhere}
+.ai-nm{display:inline-flex;align-items:center;gap:2px;max-width:100%;margin:2px 0;padding:3px 4px 3px 10px;border:0;border-radius:99px;background:rgba(var(--w),.12);color:inherit;font:inherit;text-align:left;cursor:pointer}.ai-nm svg{width:16px;height:16px;fill:currentColor;flex:none}
+#npbody .npdl{display:flex;justify-content:center;gap:22px;padding-top:8px;font:600 10.5px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--mut)}#npbody .npdl span{cursor:pointer}#npbody .npdl span.on{color:var(--mint)}
+@media(max-width:760px){.lyh .lyx{margin-left:auto;flex:none}}
 </style>
 </head>
 <body>
@@ -1702,14 +1757,14 @@ html[data-mode=light] .ldt.run{background:linear-gradient(160deg,rgba(60,150,255
 // (notification tap such as #view/driveway, #security ...), not the return from the login, and the device has not asked for reduced motion.
 window.brandLogo = function () { var L = window.DASH_LOGO, B = (window.DASH_CONFIG || {}).brand; return L && L.svg ? { svg: L.svg, lockup: !!L.lockup } : B && B.mark ? { svg: B.mark, lockup: false } : null; };   // brand-logo.js wins over brand.mark in config.js
 window.brandMark = function (s) { var g = window.brandLogo(); if (!g) return ""; return g.svg.replace(/\bid="([\w-]+)"/g, 'id="$1' + s + '"').replace(/url\(#([\w-]+)\)/g, 'url(#$1' + s + ')'); };
-window.DASH_VER = "1.5.22";   // the one place to change the version
+window.DASH_VER = "1.6.7";   // the one place to change the version
 (function () { try {
   var B = (window.DASH_CONFIG || {}).brand, el = document.getElementById("bootld"), r = document.documentElement, lp = "on";
   try { lp = localStorage.getItem("dashLogo") || "on"; } catch (e) {}   // Theme page -> "Start-up logo": on | load (no intro) | off (plain spinner, as before)
   var G = window.brandLogo(); if (!B || !G || !el || lp === "off") return;
   var d = document.createElement("div"); d.className = "bl"; d.innerHTML = window.brandMark("s");
   if (!G.lockup) { var n = document.createElement("b"); n.textContent = B.name || ""; var t = document.createElement("small"); t.textContent = B.tag || ""; d.appendChild(n); d.appendChild(t); }
-  var vv = document.createElement("span"); vv.className = "bv"; vv.textContent = "Dashboard " + window.DASH_VER; d.appendChild(vv);
+  var vv = document.createElement("span"); vv.className = "bv"; vv.textContent = "Kinetic " + window.DASH_VER; d.appendChild(vv);
   el.appendChild(d); r.classList.add("brand"); if (G.lockup) r.classList.add("lockup"); window.__brandT0 = performance.now();
   var seen = 0, now = Date.now(), h = location.hash;
   try { seen = +localStorage.getItem("dashSeen") || 0; localStorage.setItem("dashSeen", now); } catch (e) {}
@@ -1849,7 +1904,7 @@ const onHome = () => !/^#(climate|events|rooms|security|weather|energy|irrigatio
 const onView = () => /^#(view|camera)/.test(location.hash);
 const onSec = () => location.hash === "#security";
 const camPage = () => onHome() || onSec() || onView();
-const VWC = [];
+const VWC = [], NPC = [];   // NPC = the live cameras inside the notifications pop-up
 const camList = () => onView() ? VWC : onSec() ? CONFIG.security : CONFIG.cameras;
 
 // A sideways-scrolling row (tabs, scene pictures) wrapped with hsw(): while more of it is hidden past an edge, that edge fades and a chevron nudges toward it.
@@ -2471,15 +2526,15 @@ function camEnt(c) {
   const cl = c.o.el.classList; if (cl.contains("fs") || cl.contains("vf")) return c.id;
   const f = c.id.replace(/_clear$/, "_fluent"); return f !== c.id && states[f] ? f : c.id;
 }
-function camLiveSync() { document.documentElement.classList.toggle("camlive", CONFIG.cameras.concat(CONFIG.security, VWC).some(c => c.live)); }   // lets CSS pause decorative effects while video is playing
+function camLiveSync() { document.documentElement.classList.toggle("camlive", CONFIG.cameras.concat(CONFIG.security, VWC, NPC).some(c => c.live)); }   // lets CSS pause decorative effects while video is playing
 function stopCam(c) {
   if (c.pc) { try { c.pc.close(); } catch (x) {} c.pc = null; }
   if (c.sub) { delete subs[c.sub]; c.sub = 0; }
   const o = c.o; c.live = false; o.el.classList.remove("live"); o.vid.classList.remove("on"); o.vid.srcObject = null; camLiveSync();
 }
-function stopCams() { CONFIG.cameras.concat(CONFIG.security, VWC).forEach(c => { clearTimeout(c.rt); stopCam(c); micOff(c); }); }
+function stopCams() { CONFIG.cameras.concat(CONFIG.security, VWC, NPC).forEach(c => { clearTimeout(c.rt); stopCam(c); micOff(c); }); }
 function startCams() { if (onView()) { VW.mode = ""; applyView(); return; } if (onHome() && !camsOn()) return; cams(); camList().forEach((c, i) => { if (!isMobile() || (CONFIG.mobileLive !== false && c.o.el._vis !== false)) { clearTimeout(c.rt); c.rt = setTimeout(() => { if (camPage()) liveCam(c); }, i * 160); } }); }   // staggered so several streams do not negotiate and decode at once   // phones: live too, but only for tiles on screen (CONFIG.mobileLive:false = snapshots, live on tap)
-function retryCam(c, ms) { stopCam(c); clearTimeout(c.rt); c.rt = setTimeout(() => { if (camPage() && (onSec() || camsOn() || onView()) && (!isMobile() || c.o.el.classList.contains("fs") || (CONFIG.mobileLive !== false && c.o.el._vis !== false))) liveCam(c); }, ms); }
+function retryCam(c, ms) { stopCam(c); clearTimeout(c.rt); c.rt = setTimeout(() => { if ((c.np && document.body.classList.contains("np-open")) || camPage() && (onSec() || camsOn() || onView()) && (!isMobile() || c.o.el.classList.contains("fs") || (CONFIG.mobileLive !== false && c.o.el._vis !== false))) liveCam(c); }, ms); }
 function liveCam(c) {   // HA built-in WebRTC (go2rtc); falls back to snapshots if it fails
   stopCam(c); clearTimeout(c.rt);
   const o = c.o, sid = { v: null }, q = [], eid = camEnt(c);
@@ -2567,7 +2622,7 @@ function camNativeOff() { try { screen.orientation.unlock(); } catch (_) {} if (
 function camSwap(el, fn) {   // landscape <-> portrait like a native app: fade out over black, switch with no animation, fade back in
   if (el._sw) return;
   if (reducedMotion()) { fn(); return; }
-  const h = document.documentElement; el._sw = 1; h.classList.add("camsw"); el.classList.add("lf");
+  const h = document.documentElement; el._sw = 1; czReset(el); h.classList.add("camsw"); el.classList.add("lf");
   setTimeout(() => { fn(); requestAnimationFrame(() => requestAnimationFrame(() => { el.classList.remove("lf"); setTimeout(() => { h.classList.remove("camsw"); el._sw = 0; }, 200); })); }, 130);
 }
 function camLandOff(el, now) {   // back to portrait (stays in full screen)
@@ -2602,11 +2657,10 @@ function vwFullOff() { document.body.classList.remove("vwm"); if (VWF.on) { VWF.
 const camSwapReset = el => { el._sw = 0; el.classList.remove("lf"); document.documentElement.classList.remove("camsw"); };
 function camClose(el, done) {   // smooth close: leave full screen, fade + shrink out, then the card is back in the page and fades in
   if (el.classList.contains("fclose")) return;
-  camNativeOff();
-  if (reducedMotion() || !el.classList.contains("fs")) { camSwapReset(el); camLandOff(el, true); el.classList.remove("nfs"); done(); return; }
-  el.classList.add("fclose");
+  if (reducedMotion() || !el.classList.contains("fs")) { camNativeOff(); czReset(el); camSwapReset(el); camLandOff(el, true); el.classList.remove("nfs"); done(); return; }
+  el.classList.add("fclose");   // the real full screen is left after the fade: leaving first blanked the whole screen for a moment
   setTimeout(() => {
-    el.classList.remove("fclose", "nfs", "lk"); camSwapReset(el); camLandOff(el, true); done();
+    el.classList.remove("fclose", "nfs", "lk"); czReset(el); camSwapReset(el); camLandOff(el, true); done(); camNativeOff();
     el.classList.add("fopen"); setTimeout(() => el.classList.remove("fopen"), 340);
   }, 240);
 }
@@ -2656,9 +2710,10 @@ function mkCam(c, host) {
     if (e.target.closest(".fsb")) { camLand(el); return; }
     if (el.classList.contains("fs")) {   // close
       closePb(c, false); c.snd = false; micOff(c); snd.classList.remove("on"); snd.innerHTML = AUD.off; o.vid.muted = true;
-      camClose(el, () => { el.classList.remove("fs"); if (isMobile() && CONFIG.mobileLive === false) { clearTimeout(c.rt); stopCam(c); } else liveCam(c); });
+      camClose(el, () => { el.classList.remove("fs"); if (el._ph) { el._ph.remove(); el._ph = null; } if (isMobile() && CONFIG.mobileLive === false) { clearTimeout(c.rt); stopCam(c); } else liveCam(c); });
       return;
     }
+    if (!el._ph && el.parentNode && el.parentNode.id !== "vw") { const cs = getComputedStyle(el), ph = document.createElement("div"); ph.className = "camph"; ph.style.height = el.offsetHeight + "px"; ph.style.gridColumn = cs.gridColumnStart + " / " + cs.gridColumnEnd; ph.style.margin = cs.margin; el.parentNode.insertBefore(ph, el); el._ph = ph; }   // the card leaves the page layout while full screen: this holds its place so the page behind does not jump during the fade
     el.classList.add("fs"); pbPre(c);
     if (isMobile()) camNative(el);   // phones: straight to real full screen
     const ctl = camCtl(c.id);
@@ -2746,6 +2801,7 @@ function drawRooms() {
   });
   updRooms();
 }
+document.documentElement.dataset.roomfx = CONFIG.roomFx === "glow" ? "glow" : CONFIG.roomFx === false ? "off" : "waves";   // room card animation: waves (default) | glow | false
 function cardHtml(n, i) { return '<div class="lbl">' + mdi(i) + esc(n) + '</div><div class="md">--</div><div class="temp"><span class="tm">--</span></div><div class="lbl ts">--</div><i class="rg"></i><div class="hvb"></div>'; }
 // room-card badges: use your own count sensors (r.counts) when set, else count members that are on / open
 const roomLights = r => { const o = []; const add = x => { if (x && o.indexOf(x) < 0) o.push(x); };   // every light in the room: its lights, its light switches, and any light.* shown in its sections
@@ -3634,7 +3690,7 @@ function keepH(el) {
 // ---------- camera playback (Reolink recordings through HA's media browser) ----------
 function openPb(c) {
   const el = c.o.el, k = $(".pbk", el);
-  clearTimeout(c.rt); stopCam(c);
+  clearTimeout(c.rt); stopCam(c); czReset(el);
   if (!k.dataset.b) {
     k.dataset.b = 1;
     k.innerHTML = '<div class="pbh"><button class="eb" data-pb="up">' + mdi("chevron-left") + ' BACK</button><b class="pbt">Recordings</b><button class="eb" data-pb="live">' + mdi("circle") + ' LIVE</button></div><div class="pbm"><div class="pbw"><div class="pbf"></div><div class="pbl"></div></div><div class="pbv"><video controls playsinline></video><div class="pbe"></div></div></div>';
@@ -3713,7 +3769,7 @@ function pbList(c) {
   const rows = pb.items.map((x, i) => {
     const p = P[i]; if (pb.filter !== "all" && !(p && p.tags.indexOf(pb.filter) > -1)) return "";
     if (x.can_expand) return '<div class="pbi" data-i="' + i + '"><span>' + esc(pbDay(x.title)) + '</span><em>' + mdi("chevron-right") + '</em></div>';
-    const tg = p ? p.tags.map(t => '<i class="pbt2 ' + t.toLowerCase() + '">' + t + '</i>').join("") : "", th = pb.thumbs[x.media_content_id] || (DT.snapUrl[x.media_content_id] && Date.now() - DT.snapUrl[x.media_content_id].t < 3000000 ? DT.snapUrl[x.media_content_id].u : "") || (x.thumbnail ? (x.thumbnail.indexOf("/") === 0 ? CONFIG.url : "") + x.thumbnail : "");
+    const tg = p ? p.tags.map(t => '<i class="pbt2 ' + t.toLowerCase() + '">' + t + '</i>').join("") : "", th = (DT.snapUrl[x.media_content_id] && Date.now() - DT.snapUrl[x.media_content_id].t < 3000000 ? DT.snapUrl[x.media_content_id].u : "") || pb.thumbs[x.media_content_id] || (x.thumbnail && !snapRoot() ? (x.thumbnail.indexOf("/") === 0 ? CONFIG.url : "") + x.thumbnail : "");   // the camera's own thumbnail is a different (often off-centre) view: only used when no detection snapshots are set up
     const img = '<div class="pbth" data-th="' + i + '">' + (th ? '<img alt="" src="' + esc(th) + '">' : "") + '<b>' + mdi("play") + '</b>' + (p ? '<u>' + esc(p.len) + '</u>' : "") + '</div>';
     return '<div class="pbi pbc2" data-i="' + i + '">' + img + '<div class="pbx"><strong>' + esc(p ? pbClock(p.time) : pbT(x.title)) + '</strong><div>' + tg + '</div></div></div>';
   }).join("");
@@ -3726,17 +3782,20 @@ const pbDay = t => { const m = /(\d{4})[\/.-](\d{1,2})[\/.-](\d{1,2})/.exec(Stri
 // preview pictures: use HA's thumbnail when it sends one, otherwise grab one frame from each clip as it scrolls into view (one at a time, remembered until the page is reloaded)
 function pbThumbs(c) {
   const el = c.o.el, pb = el.pb, l = $(".pbl", el); if (pb.io) pb.io.disconnect();
-  const need = $$(".pbth", l).filter(n => !n.querySelector("img")); if (!need.length || !("IntersectionObserver" in window)) return;
+  const need = $$(".pbth", l); if (!need.length || !("IntersectionObserver" in window)) return;
   pb.q = []; pb.busy = 0; pb.sw = 0;
+  if (!pb.er) { pb.er = 1; l.addEventListener("error", e => { const im = e.target, n = im && im.tagName === "IMG" && im.closest ? im.closest(".pbth") : null, x = n && pb.items[+n.dataset.th]; if (!x) return;   // a picture that would not load (link expired, file gone): show the play button and grab a frame from the clip instead
+    const su = DT.snapUrl[x.media_content_id], snap = su && su.u === im.getAttribute("src"); im.remove(); if (snap) { delete DT.snapUrl[x.media_content_id]; pb.bad[x.media_content_id] = 1; } const d = pb.thumbs[x.media_content_id]; if (d) { const i2 = document.createElement("img"); i2.alt = ""; i2.src = d; n.insertBefore(i2, n.firstChild); return; } delete pb.thumbs[x.media_content_id]; pb.q.push(n); if (pb.nx) pb.nx(); }, true); }
   if (snapRoot() && !(DT.cache["s|" + c.id] && DT.cache["s|" + c.id].l && Date.now() - DT.cache["s|" + c.id].t < 120000)) { pb.sw = 1; pbSnapLoad(c.id).then(() => { pb.sw = 0; if (pb.nx) pb.nx(); }); }
   const next = () => { while (!pb.hold && !pb.sw && pb.busy < (DT.cache["s|" + c.id] && DT.cache["s|" + c.id].l && DT.cache["s|" + c.id].l.length ? thPar() : Math.min(2, thPar())) && pb.q.length && el.classList.contains("pb")) one(pb.q.shift()); };
   pb.nx = next;
   const one = n => {
-    const i = +n.dataset.th, x = pb.items[i];
-    if (!x || !n.isConnected || pb.thumbs[x.media_content_id] != null) return;
-    const sid = pbSnap(c, x);
+    const i = +n.dataset.th, x = pb.items[i]; if (!x || !n.isConnected) return;
+    const sid = pbSnap(c, x), im0 = n.querySelector("img");
+    const su0 = sid && DT.snapUrl[x.media_content_id];
+    if (im0 ? !(sid && !(su0 && su0.u === im0.getAttribute("src"))) : (!sid && pb.thumbs[x.media_content_id] != null)) return;   // has a picture already; whatever it is (a saved video frame, the camera's own thumbnail) is swapped for HA's detection snapshot when there is one
     if (sid) {   // HA's saved picture: nothing to decode
-      const put = u => { if (n.isConnected && !n.querySelector("img")) { const im = document.createElement("img"); im.alt = ""; im.src = u; n.insertBefore(im, n.firstChild); } }, su = DT.snapUrl[x.media_content_id];
+      const put = u => { if (n.isConnected) { let im = n.querySelector("img"); if (!im) { im = document.createElement("img"); im.alt = ""; n.insertBefore(im, n.firstChild); } im.src = u; } }, su = DT.snapUrl[x.media_content_id];
       if (su && Date.now() - su.t < 3000000) { put(su.u); return; }
       pb.busy++; send({ type: "media_source/resolve_media", media_content_id: sid, expires: 3600 }, r => { pb.busy--; if (r && r.url) { const u = (r.url.indexOf("http") === 0 ? "" : CONFIG.url) + r.url; DT.snapOf[x.media_content_id] = sid; DT.snapUrl[x.media_content_id] = { u: u, t: Date.now() }; put(u); } else { pb.bad[x.media_content_id] = 1; pb.q.unshift(n); } next(); });
       return;
@@ -4055,7 +4114,7 @@ function drawPalette() {
     (brandOn() ? sec("Start-up logo", '<div class="seg" style="margin-top:12px">' + [["on", "LOGO + INTRO"], ["load", "WHILE LOADING ONLY"], ["off", "OFF"]].map(x => '<button class="eb' + (logoPref() === x[0] ? " on" : "") + '" data-logo="' + x[0] + '">' + x[1] + '</button>').join("") + '</div><div class="lbl" style="margin-top:10px;text-transform:none;letter-spacing:0">Applies the next time the dashboard starts. Saved on this device only.</div>') : "") +
     (ME.admin ? accSec(sec) : "") +
     (AUTH && !AUTH.borrowed && !CONFIG.token ? sec("Account", '<div style="margin-top:12px"><button class="eb" data-signout="1">SIGN OUT OF THIS DEVICE</button><span class="lbl" style="margin-left:14px">Signed in on this device only</span></div>') : "") +
-    ('<div class="pn pg thab"><span class="lbl">Dashboard ' + esc(ENGINE_VERSION) + '</span></div>');
+    ('<div class="pn pg thab"><span class="lbl">Kinetic ' + esc(ENGINE_VERSION) + '</span></div>');
   $("#theme").innerHTML = '<div class="thg"><div class="thl">' + L + '</div></div>';
 }
 $("#theme").oninput = e => {
@@ -4157,8 +4216,9 @@ function notif(full) {
   n += LK.length + W2.length; sec("Warnings", LK.map(x => '<div class="alert q"><div class="lbl">' + mdi("water-alert") + ' WATER LEAK</div><b>' + esc(x[1]) + '</b><div>' + esc(x[2]) + '</div></div>').join("") + grid(W2.map(x => npItem(x[0], { name: x[1], sub: x[2], confirm: /rubbish|recycle/.test(x[0]) }))));
   const wr = states[E("weatherWarnings")];
   if (wr && sv(E("weatherWarnings")) && wr.attributes.warnings) { n++; sec("Weather warning", '<div class="alert w">' + esc(wr.attributes.warnings) + '</div>'); }
-  const snap = (id, t, k) => { const c = states[id], p = c && c.attributes.entity_picture; return p ? '<div class="snap" data-vw="' + k + '" data-cam="' + id + '"><span class="dl"></span><div class="lbl">' + t + '</div><img alt="" src="' + CONFIG.url + p + (p.indexOf("?") > -1 ? "&" : "?") + 't=' + Math.floor(Date.now() / 60000) + '"></div>' : ""; };
-  if (full) sec("Cameras", ((CONFIG.alerts || []).some(x => x[3] === "driveway" && isOn(x[0])) && (CONFIG.view.driveway || {}).id ? snap(CONFIG.view.driveway.id, "Driveway", "driveway") : "") + (viewTrig("garage") ? snap((CONFIG.view.garage || {}).id, "Garage", "garage") : ""));
+  // Cameras: live pictures (the same WebRTC streams as the Security page), mounted into these slots after the list is drawn. An alert's 4th value names the camera to show while it is on:
+  // "driveway", "garage", or any camera by its name as shown on the Security page ("road", "right-walkway"). The garage also shows while its door sensor says it is opening / open.
+  if (full) sec("Cameras", npCams().map(x => '<div class="snap npcam" data-vw="' + esc(x.key) + '" data-npc="' + esc(x.id) + '" data-name="' + esc(x.name) + '"></div>').join(""));
   const ch = [];
   Object.keys(CONFIG.derived.soil || {}).sort().map(z => ["sensor.average_" + z + "_soil_moisture", title(z)]).forEach(x => { const m = parseFloat(sv(x[0])); if (m < 40) ch.push('<div class="ws"><span class="lbl">' + x[1] + ' soil</span><b style="color:var(' + (m < 15 ? "--sd0" : m < 25 ? "--sd1" : "--sd2") + ')">' + (m < 15 ? "Very dry" : m < 25 ? "Dry" : "Moist") + '</b>' + f1(m) + '%</div>'); });
   n += ch.length; sec("Chores", ch.length ? '<div class="wg">' + ch.join("") + '</div>' : "");
@@ -4221,11 +4281,44 @@ function npDismiss(ids) {
 }
 const ldTime = () => esc(sv(sv(E("laundryState")) === "Run" ? "sensor.laundry_time_remaining_friendly" : E("laundryDelay")) || "");
 const ldTile = () => { const run = sv(E("laundryState")) === "Run"; return '<div class="ldt' + (run ? " run" : "") + '"><span class="ldi">' + DRUM + '</span><div><b>Laundry</b><span>' + (run ? "RUNNING" : "DELAYED START") + ' · <em class="ldr">' + ldTime() + '</em></span></div></div>'; };
+// which room an entity belongs to (first room in the house list that holds it): used for the small room headings inside each Active category
+const npRoomMap = () => { const m = {}, order = []; HOUSE().forEach(r => { order.push(r.name); const add = e => { if (e && !m[e]) m[e] = r.name; };
+  [r.lights, r.lightSwitches, r.covers, r.fans, r.doors, r.windows, r.climate].forEach(l => members(l || []).forEach(add));
+  (r.sections || []).forEach(sc => (sc.items || []).forEach(i => add(typeof i === "string" ? i : i.entity)));
+  ((CONFIG.roomControls || {})[r.id] || []).forEach(i => add(typeof i === "string" ? i : i.entity)); }); return { m: m, order: order }; };
 function actHtml(A) {
   const t = A.filter(x => x.ids.length); if (!t.length) return '<div class="lbl" style="margin:14px 0">Nothing is on or open</div>';
-  return t.map((x, i) => '<div class="lbl np2 il" data-sec="' + x.c[0].toLowerCase().replace(/\s+/g, "-") + '">' + mdi(x.c[2]) + x.c[0] + ' · ' + x.ids.length + (x.c[3] === 1 || x.c[3] === "ld" ? "" : '<button class="eb" data-off="' + A.indexOf(x) + '">' + (x.c[3] === "close" ? "CLOSE ALL" : "ALL OFF") + '</button>') + '</div>' +
-    '<div class="' + (x.c[3] === 1 ? "bl" : "tg3 act-" + x.c[0].toLowerCase().replace(/\s+/g, "-")) + '">' + x.ids.map(e => x.c[3] === "ld" ? ldTile() : tileHtml(x.c[0] === "Water taps" ? npItem(e, { icon: "m3-water-drop" }) : x.c[3] === 1 ? { entity: e, kind: x.c[0] === "Doors" ? "door" : "window" } : npItem(e, x.c[3] === "tw" ? { timer: states["timer.heated_towel_rails"] ? "timer.heated_towel_rails" : tileTimer(e) } : null))).join("") + '</div>').join("");
+  const RM = CONFIG.notifRoomHeadings === false ? null : npRoomMap(), tile = (x, e) => x.c[3] === "ld" ? ldTile() : tileHtml(x.c[0] === "Water taps" ? npItem(e, { icon: "m3-water-drop" }) : x.c[3] === 1 ? { entity: e, kind: x.c[0] === "Doors" ? "door" : "window" } : npItem(e, x.c[3] === "tw" ? { timer: states["timer.heated_towel_rails"] ? "timer.heated_towel_rails" : tileTimer(e) } : null));
+  return t.map(x => {
+    const cls = x.c[3] === 1 ? "bl" : "tg3 act-" + x.c[0].toLowerCase().replace(/\s+/g, "-"), head = '<div class="lbl np2 il" data-sec="' + x.c[0].toLowerCase().replace(/\s+/g, "-") + '">' + mdi(x.c[2]) + x.c[0] + ' · ' + x.ids.length + (x.c[3] === 1 || x.c[3] === "ld" ? "" : '<button class="eb" data-off="' + A.indexOf(x) + '">' + (x.c[3] === "close" ? "CLOSE ALL" : "ALL OFF") + '</button>') + '</div>';
+    if (!RM || x.c[3] === "ld" || !x.ids.some(e => RM.m[e])) return head + '<div class="' + cls + '">' + x.ids.map(e => tile(x, e)).join("") + '</div>';   // no room info for this group: as before
+    const g = {}; x.ids.forEach(e => { const r = RM.m[e] || "Other"; (g[r] = g[r] || []).push(e); });
+    return head + Object.keys(g).sort((a, b) => (a === "Other") - (b === "Other") || RM.order.indexOf(a) - RM.order.indexOf(b)).map(r => '<div class="np-rm">' + esc(r) + '</div><div class="' + cls + '">' + g[r].map(e => tile(x, e)).join("") + '</div>').join("");
+  }).join("");
 }
+const npCamFor = tag => {   // an alert's camera tag -> { id, name, key }
+  if (tag === "driveway") { const v = CONFIG.view.driveway; return v && v.id ? { id: v.id, name: "Driveway", key: "driveway" } : null; }
+  const t = String(tag || "").toLowerCase(), f = CONFIG.security.concat(CONFIG.cameras).filter(c => c.id === tag || slug(c.name) === t)[0]; return f ? { id: f.id, name: f.name, key: slug(f.name) } : null;
+};
+function npCams() {
+  const out = []; (CONFIG.alerts || []).forEach(x => { if (x[3] && isOn(x[0])) { const c = npCamFor(x[3]); if (c && !out.some(o => o.id === c.id)) out.push(c); } });
+  if (viewTrig("garage") && (CONFIG.view.garage || {}).id && !out.some(o => o.id === CONFIG.view.garage.id)) out.push({ id: CONFIG.view.garage.id, name: "Garage", key: "garage" });
+  return out;
+}
+const NPCAM = {};   // id -> camera object, made once and moved into the slot each time the list is drawn, so the stream keeps playing
+function npCamStop() { NPC.forEach(c => { clearTimeout(c.rt); c._on = 0; stopCam(c); }); }
+function npCamMount() {
+  const slots = $$("#npc [data-npc]"), want = {};
+  slots.forEach((sl, i) => {
+    const id = sl.dataset.npc; want[id] = 1; let c = NPCAM[id];
+    if (!c) { c = NPCAM[id] = { id: id, name: sl.dataset.name, np: true }; NPC.push(c); mkCam(c, document.createElement("div")); c.o.el.onclick = null; }
+    if (c.o.el.parentNode !== sl) sl.appendChild(c.o.el);
+    c.o.el.querySelector(".lbl").textContent = sl.dataset.name;
+    if (!c._on) { c._on = 1; clearTimeout(c.rt); c.rt = setTimeout(() => { if (document.body.classList.contains("np-open") && c._on) { if (isMobile() && CONFIG.mobileLive === false) camSnap(c); else liveCam(c); } }, i * 160); }
+  });
+  NPC.forEach(c => { if (!want[c.id] && c._on) { clearTimeout(c.rt); c._on = 0; stopCam(c); } });
+}
+setInterval(() => { if (!document.body.classList.contains("np-open")) npCamStop(); }, 2500);   // closed: no streams running behind the page
 function drawNotif() {
   const open = document.body.classList.contains("np-open");
   if (open && Date.now() < npHold) { clearTimeout(npht); npht = setTimeout(drawNotif, npHold - Date.now() + 10); return; }
@@ -4236,7 +4329,7 @@ function drawNotif() {
   if (ks.length > 1) nacc.dataset.more = "+" + (ks.length - 1); else nacc.removeAttribute("data-more");
   nacc.classList.toggle("on", !!r.all || !!top);
   $("#hc").title = ks.length ? ks.map(k => k[2]).join(" · ") + (r.all ? " · " : "") + (r.all ? r.all + " notification" + (r.all > 1 ? "s" : "") : "") : r.all ? r.all + " notification" + (r.all > 1 ? "s" : "") : "Notifications";
-  if (!open) return;
+  if (!open) { npCamStop(); return; }
   const A = actList(), tot = A.reduce((s, x) => s + x.ids.length, 0);
   // the header and tabs are built once and only updated in place; the list below is only replaced when its HTML really changes, so nothing blinks on a state update
   const np = $("#np"), tb = [["alerts", "ALERTS", r.n], ["active", "ACTIVE", tot], ["batteries", "BATTERIES", r.nb]]; let tc = false;
@@ -4244,7 +4337,7 @@ function drawNotif() {
   np.querySelectorAll(".nptabs .chip").forEach((c, k) => { const tx = tb[k][1] + (tb[k][2] ? " · " + tb[k][2] : ""); if (c.textContent !== tx) { c.textContent = tx; tc = true; } c.classList.toggle("on", c.dataset.npt === npTab); });
   const body = npLoading() ? '<div class="lbl" style="margin:14px 0">Loading…</div>' : npTab === "active" ? actHtml(A) : npTab === "batteries" ? (r.bh ? '<div class="lbl np2 il">' + mdi("battery-low") + 'Batteries · ' + r.nb + '</div>' + r.bh : '<div class="lbl" style="margin:14px 0">All batteries are fine</div>') : (r.n ? "" : '<div class="lbl" style="margin:14px 0">All clear</div>') + r.html, nc = $("#npc"), key = npTab + "|" + body.replace(/<em class="ldr">[^<]*<\/em>/g, '<em class="ldr"></em>');   // the remaining time is filled in below, so the minute ticking over does not redraw the list (and restart the drum)
   if (nc._k !== key) { nc._k = key; nc.innerHTML = body; }
-  npGoRun();
+  npGoRun(); npCamMount();
   $$("#npc .ldr").forEach(el => { const t = ldTime(); if (el.textContent !== t) el.textContent = t; });
   if (tc) requestAnimationFrame(hsAll);
   updTiles(); tickIrr();
@@ -4252,7 +4345,7 @@ function drawNotif() {
 let nq = 0;
 function queueNotif() { if (!nq) nq = requestAnimationFrame(() => { nq = 0; drawNotif(); }); }
 $("#hc").onclick = () => { document.body.classList.toggle("np-open"); drawNotif(); };
-const npClose = () => { document.body.classList.remove("np-open"); if (/^#(notifications|active|batteries)/.test(location.hash)) location.hash = "#home"; };
+const npClose = () => { document.body.classList.remove("np-open"); npCamStop(); if (/^#(notifications|active|batteries)/.test(location.hash)) location.hash = "#home"; };
 $("#nbd").onclick = npClose;
 $("#np").onclick = e => {
   if (e.target.closest("[data-close]")) { npClose(); return; }
@@ -4315,7 +4408,7 @@ let mpVo = false;   // phone: volume sliders are tucked behind the speaker butto
 function mpCard(mem, ctl) {
   const s = states[ctl] || { state: "unavailable", attributes: {} }, a = s.attributes, play = s.state === "playing", pic = a.entity_picture, title = mem.map(fname).join(" + ");
   const art = mpArt(a, s.state, pic);
-  const mt = mpTitle(a, s.state), info = mt ? '<b>' + esc(mt) + '</b><div>' + esc(a.media_artist || "") + '</div><small>' + esc(a.media_album_name || "") + '</small>' : '<b>' + (s.state === "off" || s.state === "unavailable" ? esc(title) + " is " + (s.state === "off" ? "off" : "unavailable") : "Nothing playing") + '</b>';
+  const mt = mpTitle(a, s.state), info = mt ? '<b>' + esc(mt) + '</b><div>' + aiLink(a.media_artist) + '</div><small>' + esc(a.media_album_name || "") + '</small>' : '<b>' + (s.state === "off" || s.state === "unavailable" ? esc(title) + " is " + (s.state === "off" ? "off" : "unavailable") : "Nothing playing") + '</b>';
   const bt = (m, i, on) => '<button class="rnd' + (on ? " on" : "") + '" data-mp="' + m + '" data-e="' + ctl + '">' + i + '</button>';
   const vols = mem.map(x => { const v = states[x] ? states[x].attributes : {}; return '<div class="mv"><span>' + esc(fname(x)) + '</span><input type="range" min="0" max="100" data-vol="' + x + '" value="' + Math.round((v.volume_level || 0) * 100) + '"><button class="rnd s" data-mp="mute" data-e="' + x + '">' + mdi(v.is_volume_muted ? "volume-off" : "volume-high") + '</button></div>'; }).join("");
   const mg = artColor(pic);
@@ -4374,7 +4467,7 @@ const npPw = s => { const c = s.firstElementChild; return (c && c.offsetWidth) |
 const fmtT = t => { t = Math.round(t); return Math.floor(t / 60) + ":" + ("0" + (t % 60)).slice(-2); };
 let npAnim = 0, npOpen = true, npSheet = false, npSeen = {}, npPage = 0, npHoldT = 0;   // npOpen = the Home card shows the player + lyrics pages (false = one slim row)
 try { npOpen = localStorage.getItem("dashNp") !== "0"; } catch (_) {}
-let npsPage = 0; const SL = { lines: null, ctl: "", cur: -2 };
+let npsPage = 0, npsName = ""; const SL = { lines: null, ctl: "", cur: -2 };
 const slLn = (L, i) => { let h = ""; for (let k = i - 3; k <= i + 3; k++) { const t = k >= 0 && k < L.length ? (L[k].s || "♪") : (k === i ? "♪" : ""); h += '<div' + (k === i ? ' class="on"' : "") + (Math.abs(k - i) > 1 ? ' style="opacity:.4"' : "") + '>' + esc(t) + '</div>'; } return h; };
 const HL = { busy: "", lines: null, ctl: "", cur: -2 };   // lyrics for the Home card: same LRCLIB fetch and cache as the Media page
 const hlLn = (L, i) => { const t = k => k >= 0 && k < L.length ? (L[k].s || "♪") : ""; return '<div>' + esc(t(i - 1)) + '</div><div class="on">' + esc(i < 0 ? "♪" : t(i)) + '</div><div>' + esc(t(i + 1)) + '</div>'; };
@@ -4411,7 +4504,7 @@ function npPlay(g, big) {
   const prog = '<div class="mpb" ' + mpData(g.ctl) + '><i></i></div>';
   if (!big) return { art: art, title: title, sub: (a.media_artist ? esc(a.media_artist) + " · " : "") + esc(spk), pp: bt("pp", mdi(play ? "pause" : "play")), prog: mpPos(g.ctl).dur > 0 ? prog : "" };   // no bar (and no empty strip under the row) for a stream without a length, so the row sits in the middle of the card
   const vols = g.mem.map(x => { const v = states[x] ? states[x].attributes : {}; return '<div class="mv"><span>' + esc(fname(x)) + '</span><input type="range" min="0" max="100" data-vol="' + x + '" value="' + Math.round((v.volume_level || 0) * 100) + '"><button class="rnd s" data-mp="mute" data-e="' + x + '">' + mdi(v.is_volume_muted ? "volume-off" : "volume-high") + '</button></div>'; }).join("");
-  return '<div class="npx"><div class="npa"><span data-np="media" title="Open Media" style="display:contents;cursor:pointer">' + art + '</span><div><b>' + esc(title) + '</b><div>' + esc(a.media_artist || "") + '</div><small>' + esc(a.media_album_name || "") + '</small></div></div>' +
+  return '<div class="npx"><div class="npa"><span data-np="media" title="Open Media" style="display:contents;cursor:pointer">' + art + '</span><div><b>' + esc(title) + '</b><div>' + aiLink(a.media_artist) + '</div><small>' + esc(a.media_album_name || "") + '</small></div></div>' +
     '<div class="npp">' + prog + '<div class="npts"><span>0:00</span><span>0:00</span></div></div>' +
     '<div class="mpt">' + bt("shuffle", mdi("shuffle-variant"), a.shuffle) + bt("prev", mdi("skip-previous")) + bt("pp", mdi(play ? "pause" : "play")) + bt("next", mdi("skip-next")) + bt("repeat", mdi(a.repeat === "one" ? "repeat-once" : a.repeat === "all" ? "repeat" : "repeat-off"), a.repeat && a.repeat !== "off") + '</div>' +
     vols + '<div class="chips npsp">' + g.mem.map(x => '<span class="chip on">' + mdi("speaker") + esc(fname(x)) + '</span>').join("") + '</div></div>';
@@ -4456,11 +4549,15 @@ function npRender() {
   document.body.classList.toggle("nps-open", npSheet);
   if (npSheet) {
     clearTimeout(npbT);
-    const ss = hlState(g), sh = !!(ss && ss.st === "sync" && ss.lines && ss.lines.length);
-    SL.lines = sh ? ss.lines : null; SL.ctl = g.ctl; SL.cur = -2; if (!sh) npsPage = 0;
-    $("#npbody").innerHTML = '<div class="lbl"><span class="nptx">' + (npsPage ? "Lyrics" : "Now playing") + '</span><button class="rnd s" data-np="close">' + mdi("close") + '</button></div>' +
-      (sh ? '<div class="nps"><div class="npg">' + npPlay(g, true) + '</div><div class="npg"><div class="shly">' + slLn(SL.lines, hlIdx(SL.lines, SL.ctl)) + '</div></div></div><div class="npdt"><i data-npg="0"' + (npsPage ? "" : ' class="on"') + '></i><i data-npg="1"' + (npsPage ? ' class="on"' : "") + '></i></div>' : npPlay(g, true));
-    { const sl = $("#npbody .nps"); if (sl && npsPage) sl.scrollLeft = npsPage * npPw(sl); }
+    const ss = hlState(g), sh = !!(ss && ss.st === "sync" && ss.lines && ss.lines.length), PG = [["Now playing", npPlay(g, true)]];
+    SL.lines = sh ? ss.lines : null; SL.ctl = g.ctl; SL.cur = -2;
+    if (sh) PG.push(["Lyrics", '<div class="shly">' + slLn(SL.lines, hlIdx(SL.lines, SL.ctl)) + '</div>']);
+    if (aiOn() && ga.media_artist) PG.push(["Artist", aiHtml(g.ctl)]);   // swipe pages: Now playing · Lyrics (when synced lyrics exist) · Artist
+    { const ix = PG.map(x => x[0]).indexOf(npsName); npsPage = ix < 0 ? 0 : ix; npsName = PG[npsPage][0]; }
+    const arOld = $("#npbody .ar"), arTop = arOld ? arOld.scrollTop : 0;
+    $("#npbody").innerHTML = '<div class="lbl"><span class="nptx">' + PG[npsPage][0] + '</span><button class="rnd s" data-np="close">' + mdi("close") + '</button></div>' +
+      (PG.length > 1 ? '<div class="nps" data-pn="' + PG.map(x => x[0]).join("|") + '">' + PG.map(x => '<div class="npg">' + x[1] + '</div>').join("") + '</div><div class="npdt">' + PG.map((x, i) => '<i data-npg="' + i + '"' + (i === npsPage ? ' class="on"' : "") + '></i>').join("") + '</div><div class="npdl">' + PG.map((x, i) => '<span data-npg="' + i + '"' + (i === npsPage ? ' class="on"' : "") + '>' + x[0] + '</span>').join("") + '</div>' : PG[0][1]);
+    { const sl = $("#npbody .nps"); if (sl && npsPage) sl.scrollLeft = npsPage * npPw(sl); const ar = $("#npbody .ar"); if (ar && arTop) ar.scrollTop = arTop; }
   } else { clearTimeout(npbT); npbT = setTimeout(() => { if (!npSheet) $("#npbody").innerHTML = ""; }, 420); }
   const hn = $("#hnp");
   if (isMobile() || onMed) hn.innerHTML = "";
@@ -4490,7 +4587,7 @@ function npClick(e) {
   npRender();
 }
 $("#npw").addEventListener("scroll", e => { const g = e.target; if (!g.classList || !g.classList.contains("nps") || !g.clientWidth) return; npHoldT = Date.now() + 700; const i = Math.round(g.scrollLeft / npPw(g)); npPage = i; $$("#npw .npdt i").forEach((d, k) => d.classList.toggle("on", k === i)); const t = $("#npw .nptx"); if (t) t.textContent = i ? "Lyrics" : "Now playing"; }, true);
-$("#npbody").addEventListener("scroll", e => { const g = e.target; if (!g.classList || !g.classList.contains("nps") || !g.clientWidth) return; npHoldT = Date.now() + 700; const i = Math.round(g.scrollLeft / npPw(g)); npsPage = i; $$("#npbody .npdt i").forEach((d, k) => d.classList.toggle("on", k === i)); const t = $("#npbody .nptx"); if (t) t.textContent = i ? "Lyrics" : "Now playing"; }, true);
+$("#npbody").addEventListener("scroll", e => { const g = e.target; if (!g.classList || !g.classList.contains("nps") || !g.clientWidth) return; npHoldT = Date.now() + 700; const i = Math.round(g.scrollLeft / npPw(g)), pn = (g.dataset.pn || "Now playing").split("|"); npsPage = i; npsName = pn[i] || pn[0]; $$("#npbody .npdt i, #npbody .npdl span").forEach((d, k) => d.classList.toggle("on", k === i)); const t = $("#npbody .nptx"); if (t) t.textContent = npsName; }, true);
 setInterval(() => { if (!SL.lines || !npSheet) return; const i = hlIdx(SL.lines, SL.ctl); if (i === SL.cur) return; SL.cur = i; const el = $("#npbody .shly"); if (el) el.innerHTML = slLn(SL.lines, i); }, 500);
 setInterval(() => { if (!HL.lines || !npOpen || curPg() !== "home") return; const i = hlIdx(); if (i === HL.cur) return; HL.cur = i; const el = $("#npw .nply"); if (el) el.innerHTML = hlLn(HL.lines, i); }, 500);
 $("#npw").onclick = $("#npmini").onclick = $("#npsheet").onclick = $("#hnp").onclick = $("#npfab").onclick = npClick;
@@ -4501,6 +4598,65 @@ $("#hnp").onchange = e => {   // header slider = group volume: scale every speak
 };
 $("#npw").onchange = $("#npsheet").onchange = e => { const t = e.target; if (t.dataset.vol) call("media_player", "volume_set", t.dataset.vol, { volume_level: +t.value / 100 }); };
 
+// ---------- Artist info (Media page "Artist" tab · Now Playing sheet "Artist" page) · Wikipedia, fetched by this browser ----------
+// Needs no key. Home Assistant only knows the artist's name, so the bio and photo come from Wikipedia's public API (the name is sent there, the same way lyrics are looked up on lrclib.net).
+// config: artistInfo: { enabled: true, lang: "en" }   (enabled: false hides the Artist tab and page)
+Object.assign(MDI, { "open-in-new": "M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z" });
+const AI = { cache: {}, busy: {}, more: false, tab: "lyrics" };
+try { AI.tab = localStorage.getItem("dashLyTab") === "artist" ? "artist" : "lyrics"; AI.cache = JSON.parse(localStorage.getItem("dashArtist") || "{}") || {}; } catch (_) { AI.cache = {}; }
+const aiOn = () => !CONFIG.artistInfo || CONFIG.artistInfo.enabled !== false;
+const aiSave = () => { try { const k = Object.keys(AI.cache).filter(x => AI.cache[x].st === "ok" || AI.cache[x].st === "none").sort((x, y) => AI.cache[y].t - AI.cache[x].t).slice(0, 40), o = {}; k.forEach(x => { o[x] = AI.cache[x]; }); localStorage.setItem("dashArtist", JSON.stringify(o)); } catch (_) {} };
+const aiNames = full => { const f = String(full || "").split(/\s*[,;]\s*/)[0].trim(), all = String(full || "").trim(); return (f ? [f] : []).concat(all && all !== f ? [all] : []); };   // Spotify lists every artist on a song ("A, B"): the first one is the artist, the whole text is the fallback
+function aiRedraw() { LY.drawn = ""; try { lyrUpdate(); } catch (_) {} queueNp(); }
+async function aiFetch(name) {
+  const lang = (CONFIG.artistInfo && CONFIG.artistInfo.lang) || "en", q = o => Object.keys(o).map(k => k + "=" + encodeURIComponent(o[k])).join("&");
+  const r = await fetch("https://" + lang + ".wikipedia.org/w/api.php?" + q({ action: "query", format: "json", origin: "*", generator: "search", gsrsearch: '"' + name + '" (musician OR singer OR band OR "disc jockey" OR rapper OR producer OR duo OR songwriter)', gsrlimit: 4, prop: "extracts|pageimages|info", inprop: "url", exintro: 1, explaintext: 1, exchars: 900, piprop: "thumbnail", pithumbsize: 640 }));
+  if (!r.ok) throw new Error("HTTP " + r.status);
+  const d = await r.json(), P = d && d.query && d.query.pages ? Object.keys(d.query.pages).map(k => d.query.pages[k]).sort((x, y) => x.index - y.index) : [], nm = name.toLowerCase();
+  const p = P.filter(x => /(musician|singer|band|disc jockey|\bdj\b|rapper|producer|composer|duo|songwriter|vocalist)/i.test(x.extract || "") && ((x.title || "").toLowerCase().indexOf(nm) > -1 || (x.extract || "").toLowerCase().indexOf(nm) > -1))[0];
+  return p ? { name: name, bio: String(p.extract || "").replace(/\n{2,}/g, "\n").trim(), img: p.thumbnail && /^https:\/\//.test(p.thumbnail.source || "") ? p.thumbnail.source : "", url: /^https:\/\//.test(p.fullurl || "") ? p.fullurl : "" } : null;
+}
+function aiGet(c) {   // { st: "load" | "ok" | "none" | "err", d }: cached for a month, a failed lookup is tried again after a minute
+  const key = c[0].toLowerCase(), e = AI.cache[key], age = e ? Date.now() - e.t : 0;
+  if (e && (e.st === "ok" || e.st === "none") && age < 2592e6) return e;
+  if (e && e.st === "err" && age < 60000) return e;
+  if (!AI.busy[key]) {
+    AI.busy[key] = 1;
+    (async () => { for (const n of c) { const d = await aiFetch(n); if (d) return d; } return null; })()
+      .then(d => { AI.cache[key] = { st: d ? "ok" : "none", d: d, t: Date.now() }; })
+      .catch(x => { AI.cache[key] = { st: "err", d: null, t: Date.now(), m: String(x && x.message || x) }; })
+      .then(() => { delete AI.busy[key]; aiSave(); aiRedraw(); });
+  }
+  return e && (e.st === "ok" || e.st === "none") ? e : { st: "load", d: null };
+}
+const aiLink = artist => aiOn() && artist ? '<button class="ai-nm" data-ai="open" aria-label="Artist info: ' + esc(artist) + '">' + esc(artist) + mdi("chevron-right") + '</button>' : esc(artist || "");   // the artist's name on a player card opens the Artist tab / page
+function aiHtml(ctl) {
+  const s = states[ctl] || { attributes: {} }, a = s.attributes, full = a.media_artist || "", c = aiNames(full);
+  if (!c.length) return '<div class="ar"><div class="sm">No artist is listed for this song.</div></div>';
+  const e = aiGet(c), d = e.d, nm = d ? d.name : c[0], img = d && d.img;
+  const hero = '<div class="arh' + (img ? "" : " no") + '"' + (img ? ' style="background-image:url(&quot;' + esc(img) + '&quot;)"' : ' data-i="' + esc(nm.charAt(0).toUpperCase()) + '"') + '><div class="arn"><small>ARTIST</small><b>' + esc(nm) + '</b></div></div>';
+  const acts = '<div class="ara"><a class="eb on" href="spotify:search:' + encodeURIComponent(nm) + '">' + mdi("spotify") + '<span>OPEN IN SPOTIFY</span></a>' + (d && d.url ? '<a class="eb" href="' + esc(d.url) + '" target="_blank" rel="noopener">' + mdi("open-in-new") + '<span>WIKIPEDIA</span></a>' : "") + '</div>';
+  const about = e.st === "ok" ? '<div><div class="lbl">About</div><div class="arb' + (AI.more ? "" : " cl") + '">' + esc(d.bio) + '</div>' + (d.bio.length > 230 ? '<button class="arm" data-ai="more">' + (AI.more ? "SHOW LESS" : "READ MORE") + '</button>' : "") + '</div>'
+    : e.st === "load" ? '<div class="sm">Looking for artist info…</div>' : e.st === "none" ? '<div class="sm">No artist info found for ' + esc(nm) + '.</div>' : '<div class="sm">Couldn’t reach Wikipedia (the device needs internet).</div><button class="eb" data-ai="retry">TRY AGAIN</button>';
+  let on = ""; try { const g = mpGroups().filter(x => x.ctl === ctl)[0]; on = g ? g.mem.map(fname).join(" + ") : ""; } catch (_) {}
+  const rows = [["Song", a.media_title], ["Performed by", full], ["Album", a.media_album_name], ["Playing on", on]].filter(r => r[1]);
+  return '<div class="ar">' + hero + acts + about + '<div><div class="lbl">This song</div>' + rows.map(r => '<div class="ark"><span>' + r[0] + '</span><b>' + esc(r[1]) + '</b></div>').join("") + '</div></div>';
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-ai]"); if (!b) return;
+  e.stopPropagation(); const k = b.dataset.ai;
+  if (k === "more") { AI.more = !AI.more; aiRedraw(); return; }
+  if (k === "retry") { const s = states[LY.ctl] || { attributes: {} }, c = aiNames((s.attributes || {}).media_artist); if (c.length) delete AI.cache[c[0].toLowerCase()]; aiRedraw(); return; }
+  if (k !== "open") return;
+  if (b.closest("#npbody")) {   // Now Playing sheet: slide to the Artist page
+    const sl = $("#npbody .nps"), i = sl ? (sl.dataset.pn || "").split("|").indexOf("Artist") : -1;
+    if (sl && i > -1) sl.scrollTo({ left: i * npPw(sl), behavior: "smooth" });
+    return;
+  }
+  AI.tab = "artist"; try { localStorage.setItem("dashLyTab", "artist"); } catch (_) {}
+  const c = b.closest("[data-c]");
+  if (isMobile()) lyOpen(c ? c.dataset.c : ""); else { if (c) LY.sel = c.dataset.c; LY.open = true; try { localStorage.setItem("dashLyr", "1"); } catch (_) {} LY.drawn = ""; lyrUpdate(); }
+}, true);
 // ---------- Lyrics (Media page) · LRCLIB, fetched by this browser; synced lines follow the song position ----------
 const LY = { off: 0, key: "", ctl: "", sel: "", tabs: [], lines: null, plain: "", st: "", dbg: "", drawn: "", open: true, cache: {} };
 try { LY.open = localStorage.getItem("dashLyr") !== "0"; LY.off = +localStorage.getItem("dashLyOff") || 0; } catch (_) {}
@@ -4566,12 +4722,12 @@ function lyOpen(ctl) { if (ctl) LY.sel = ctl; LY.open = true; try { localStorage
 document.addEventListener("click", e => { if (e.target === document.body && document.body.classList.contains("ly-open")) lyClose(); });
 addEventListener("hashchange", lyClose);
 function lyrDraw(tr) {
-  const el = $("#lyr"), k = [LY.key, LY.st, LY.open, LY.sel, LY.tabs.join(), LY.off, (states[LY.ctl] || {}).state].join("|"); if (k === LY.drawn) return; LY.drawn = k;
+  const el = $("#lyr"), aiT = aiOn() && AI.tab === "artist", k = [LY.key, LY.st, LY.open, LY.sel, LY.tabs.join(), LY.off, (states[LY.ctl] || {}).state, aiT, AI.more].join("|"); if (k === LY.drawn) return; LY.drawn = k;
   const msg = { load: "Looking for lyrics…", none: "No lyrics found for this song.", inst: "Instrumental.", err: "Couldn’t reach the lyrics service (the device needs internet).", "": "" }[LY.st] || "";
   const body = !LY.open ? "" : LY.st === "sync" ? '<div class="lyb">' + LY.lines.map((l, i) => '<div class="ly" data-t="' + l.t + '" data-i="' + i + '">' + (esc(l.s) || "♪") + '</div>').join("") + '</div>'
     : LY.st === "plain" ? '<div class="lyb plain">' + esc(LY.plain) + '</div>' : '<div class="sm" style="margin-top:12px">' + msg + '</div><div class="sm lyd">' + esc((LY.key || "").replace(/\|/g, " · ") + (LY.dbg ? "  →  " + LY.dbg : "")) + '</div><button class="eb" style="margin-top:10px" data-ly="retry">TRY AGAIN</button>';
-  el.innerHTML = '<div class="lbl lyh" data-ly="tog">' + mdi("music-note") + ' Lyrics' + (LY.st === "sync" ? ' · synced' : "") + (LY.st === "sync" && LY.open ? '<span class="lyo" title="Lyrics running late? press +. Too early? press −"><button class="chip" data-ly="off-">−</button><b>' + (LY.off > 0 ? "+" : "") + LY.off.toFixed(1) + 's</b><button class="chip" data-ly="off+">+</button></span>' : "") + '<span class="npch">' + mdi(LY.open ? "chevron-up" : "chevron-down") + '</span><button class="chip lyx" data-ly="close" aria-label="Close">' + mdi("close") + '</button></div>' +
-    (LY.open && LY.tabs.length ? '<div class="chips tabs lyt">' + LY.tabs.map(t => '<button class="chip' + (t[0] === LY.sel ? " on" : "") + '" data-ly="sel" data-c="' + t[0] + '">' + mdi("speaker") + esc(t[1]) + '</button>').join("") + '</div>' : "") + body + lyFoot();
+  el.innerHTML = '<div class="lbl lyh" data-ly="tog">' + (aiOn() ? '<span class="chips aitabs"><button class="chip' + (aiT ? "" : " on") + '" data-ly="tab" data-t="lyrics">Lyrics</button><button class="chip' + (aiT ? " on" : "") + '" data-ly="tab" data-t="artist">Artist</button></span>' : mdi("music-note") + ' Lyrics' + (LY.st === "sync" ? ' · synced' : "")) + (!aiT && LY.st === "sync" && LY.open ? '<span class="lyo" title="Lyrics running late? press +. Too early? press −"><button class="chip" data-ly="off-">−</button><b>' + (LY.off > 0 ? "+" : "") + LY.off.toFixed(1) + 's</b><button class="chip" data-ly="off+">+</button></span>' : "") + '<span class="npch">' + mdi(LY.open ? "chevron-up" : "chevron-down") + '</span><button class="chip lyx" data-ly="close" aria-label="Close">' + mdi("close") + '</button></div>' +
+    (LY.open && LY.tabs.length ? '<div class="chips tabs lyt">' + LY.tabs.map(t => '<button class="chip' + (t[0] === LY.sel ? " on" : "") + '" data-ly="sel" data-c="' + t[0] + '">' + mdi("speaker") + esc(t[1]) + '</button>').join("") + '</div>' : "") + (!LY.open ? "" : aiT ? aiHtml(LY.ctl) : body) + lyFoot();
   LY.cur = -1; lyrTick(true);
 }
 function lyrTick(jump) {
@@ -4588,6 +4744,7 @@ function lyrTick(jump) {
 $("#lyr").onclick = e => {
   const of = e.target.closest('[data-ly="off-"],[data-ly="off+"]');
   if (of) { LY.off = Math.max(-10, Math.min(10, Math.round((LY.off + (of.dataset.ly === "off+" ? 0.5 : -0.5)) * 10) / 10)); try { localStorage.setItem("dashLyOff", LY.off); } catch (_) {} LY.drawn = ""; lyrDraw(); return; }
+  const tt = e.target.closest("[data-ly=tab]"); if (tt) { AI.tab = tt.dataset.t === "artist" ? "artist" : "lyrics"; try { localStorage.setItem("dashLyTab", AI.tab); } catch (_) {} if (!LY.open) { LY.open = true; try { localStorage.setItem("dashLyr", "1"); } catch (_) {} } LY.drawn = ""; lyrUpdate(); return; }
   const sb = e.target.closest("[data-ly=sel]"); if (sb) { LY.sel = sb.dataset.c; LY.drawn = ""; lyrUpdate(); return; }
   if (e.target.closest("[data-ly=retry]")) { delete LY.cache[LY.key]; LY.busy = ""; LY.drawn = ""; LY.st = ""; lyrUpdate(); return; }
   if (e.target.closest("[data-ly]") && innerWidth <= 760) { lyClose(); return; }
@@ -4705,6 +4862,71 @@ function wfxFrame(ts) {
 }
 WFX.c = document.getElementById("wfx"); requestAnimationFrame(wfxFrame);
 
+// ---------- cameras: pinch to zoom, drag to move the picture ----------
+// Works on the live picture of a full-screen camera card (Home / Security card, and the #view page) and on the recording players (camera Playback, Detections). Two fingers (or the mouse wheel) zoom,
+// one finger moves the zoomed picture, a tap while zoomed puts it back (a tap on the unzoomed live picture still closes the card). Turn it off with  camZoom: false  in config.js.
+const CZ = { pts: new Map(), el: null, s0: 1, d0: 0, x0: 0, y0: 0, fx: 0, fy: 0, px: 0, py: 0, moved: 0, t: 0, max: 6 };
+const czOk = el => CONFIG.camZoom !== false && !!el && (el.classList.contains("fs") || el.classList.contains("vf")) && !el.classList.contains("pb") && !el.classList.contains("fclose");
+const czRot = el => !!el.closest(".cam.ls");   // turned with CSS (not by the phone): the card's x axis runs down the screen
+const czState = el => el._z || (el._z = { s: 1, x: 0, y: 0 });
+function czApply(el, s, x, y) {
+  const z = czState(el); s = Math.max(1, Math.min(CZ.max, s));
+  const mx = (s - 1) * el.clientWidth / 2, my = (s - 1) * el.clientHeight / 2; x = Math.max(-mx, Math.min(mx, x)); y = Math.max(-my, Math.min(my, y));
+  if (s < 1.02) { czReset(el); return; }
+  z.s = s; z.x = x; z.y = y; el.style.setProperty("--zs", s.toFixed(3)); el.style.setProperty("--zx", x.toFixed(1) + "px"); el.style.setProperty("--zy", y.toFixed(1) + "px"); el.classList.add("zm");
+}
+function czReset(el) { if (!el) return; el._z = null; el.classList.remove("zm"); el.style.removeProperty("--zs"); el.style.removeProperty("--zx"); el.style.removeProperty("--zy"); }
+function czLocal(el, sx, sy) {   // a screen point as card-centred coordinates
+  const r = el.getBoundingClientRect(), vx = sx - (r.left + r.width / 2), vy = sy - (r.top + r.height / 2); return czRot(el) ? { x: vy, y: -vx } : { x: vx, y: vy };
+}
+function czDelta(el, dx, dy) { return czRot(el) ? { x: dy, y: -dx } : { x: dx, y: dy }; }
+function czBase(el) {   // (re)start from the fingers now down
+  const z = czState(el), a = [...CZ.pts.values()]; CZ.s0 = z.s; CZ.x0 = z.x; CZ.y0 = z.y;
+  if (a.length > 1) { CZ.d0 = Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y) || 1; const m = czLocal(el, (a[0].x + a[1].x) / 2, (a[0].y + a[1].y) / 2); CZ.fx = m.x; CZ.fy = m.y; }
+  else if (a.length) { CZ.px = a[0].x; CZ.py = a[0].y; }
+}
+const czTarget = e => {   // the card / player a touch landed on, or null
+  const t = e.target; if (CONFIG.camZoom === false || !t || !t.closest || t.closest(".cpanel,button,.aud,.pbh,.pbf,.pbl,.dth")) return null;
+  const v = t.closest("img,video"); if (!v) return null; const p = v.parentElement;
+  if (p && (p.classList.contains("pbv") || p.classList.contains("dtv"))) {   // a recording player: not over its own play bar
+    if (v.tagName !== "VIDEO" || !v.getAttribute("src")) return null; if (v.hasAttribute("controls") && e.clientY > p.getBoundingClientRect().bottom - 70) return null; return p;
+  }
+  const el = v.closest(".cam"); return el && v.parentElement === el && czOk(el) ? el : null;
+};
+document.addEventListener("pointerdown", e => {
+  if (e.pointerType === "mouse") return;
+  const el = czTarget(e); if (!el) return;
+  if (CZ.el && CZ.el !== el) { CZ.pts.clear(); } CZ.el = el;
+  CZ.pts.set(e.pointerId, { x: e.clientX, y: e.clientY }); if (CZ.pts.size === 1) CZ.moved = 0; else CZ.moved = 1;
+  czBase(el);
+}, true);
+document.addEventListener("pointermove", e => {
+  const el = CZ.el, p = el && CZ.pts.get(e.pointerId); if (!p || (el.classList.contains("cam") && !czOk(el))) return;
+  const z = czState(el), prev = { x: p.x, y: p.y }; p.x = e.clientX; p.y = e.clientY;
+  if (CZ.pts.size >= 2) {
+    const a = [...CZ.pts.values()], d = Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y) || 1, s = Math.max(1, Math.min(CZ.max, CZ.s0 * d / CZ.d0)), m = czLocal(el, (a[0].x + a[1].x) / 2, (a[0].y + a[1].y) / 2);
+    CZ.moved = 1; czApply(el, s, m.x - (CZ.fx - CZ.x0) * (s / CZ.s0), m.y - (CZ.fy - CZ.y0) * (s / CZ.s0)); e.preventDefault();
+  } else if (z.s > 1) {
+    const d = czDelta(el, p.x - prev.x, p.y - prev.y); if (Math.abs(p.x - CZ.px) + Math.abs(p.y - CZ.py) > 6) CZ.moved = 1; czApply(el, z.s, z.x + d.x, z.y + d.y); e.preventDefault();
+  } else if (Math.abs(p.x - CZ.px) + Math.abs(p.y - CZ.py) > 10) CZ.moved = 1;
+}, { capture: true, passive: false });
+const czUp = e => {
+  if (!CZ.pts.has(e.pointerId)) return; CZ.pts.delete(e.pointerId); if (CZ.moved) CZ.t = Date.now();   // a drag or pinch must not count as a tap that closes the card
+  if (CZ.el) czBase(CZ.el); if (!CZ.pts.size) CZ.el = null;
+};
+document.addEventListener("pointerup", czUp, true); document.addEventListener("pointercancel", czUp, true);
+document.addEventListener("click", e => {
+  const el = czTarget(e); if (!el) return;
+  if (Date.now() - CZ.t < 450) { e.stopPropagation(); e.preventDefault(); return; }
+  if (el._z && el._z.s > 1) { czReset(el); e.stopPropagation(); e.preventDefault(); }   // tap while zoomed = back to normal
+}, true);
+["loadstart", "emptied"].forEach(n => document.addEventListener(n, e => { const p = e.target && e.target.tagName === "VIDEO" ? e.target.parentElement : null; if (p && p._z) czReset(p); }, true));   // a new recording starts unzoomed
+document.addEventListener("wheel", e => {
+  const el = czTarget(e); if (!el) return;
+  const z = czState(el), s = Math.max(1, Math.min(CZ.max, z.s * Math.exp(-e.deltaY * .0015))), m = czLocal(el, e.clientX, e.clientY);
+  e.preventDefault(); czApply(el, s, m.x - (m.x - z.x) * (s / z.s), m.y - (m.y - z.y) * (s / z.s));
+}, { capture: true, passive: false });
+addEventListener("resize", () => { document.querySelectorAll(".zm").forEach(czReset); }); addEventListener("hashchange", () => { document.querySelectorAll(".zm").forEach(czReset); });
 // ---------- energy ----------
 const EN_COL = ["#6bb8ff", "#8ff0c4", "#ffd166", "#ef476f", "#cdb4db", "#f78c6b", "#06d6a0", "#a2d2ff", "#ffafcc", "#b8f2e6"];
 let en = { r: "day", o: 0, prefs: null, data: null, mode: "bar", err: "", busy: false };

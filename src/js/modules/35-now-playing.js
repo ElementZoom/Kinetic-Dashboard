@@ -3,7 +3,7 @@ const npPw = s => { const c = s.firstElementChild; return (c && c.offsetWidth) |
 const fmtT = t => { t = Math.round(t); return Math.floor(t / 60) + ":" + ("0" + (t % 60)).slice(-2); };
 let npAnim = 0, npOpen = true, npSheet = false, npSeen = {}, npPage = 0, npHoldT = 0;   // npOpen = the Home card shows the player + lyrics pages (false = one slim row)
 try { npOpen = localStorage.getItem("dashNp") !== "0"; } catch (_) {}
-let npsPage = 0; const SL = { lines: null, ctl: "", cur: -2 };
+let npsPage = 0, npsName = ""; const SL = { lines: null, ctl: "", cur: -2 };
 const slLn = (L, i) => { let h = ""; for (let k = i - 3; k <= i + 3; k++) { const t = k >= 0 && k < L.length ? (L[k].s || "♪") : (k === i ? "♪" : ""); h += '<div' + (k === i ? ' class="on"' : "") + (Math.abs(k - i) > 1 ? ' style="opacity:.4"' : "") + '>' + esc(t) + '</div>'; } return h; };
 const HL = { busy: "", lines: null, ctl: "", cur: -2 };   // lyrics for the Home card: same LRCLIB fetch and cache as the Media page
 const hlLn = (L, i) => { const t = k => k >= 0 && k < L.length ? (L[k].s || "♪") : ""; return '<div>' + esc(t(i - 1)) + '</div><div class="on">' + esc(i < 0 ? "♪" : t(i)) + '</div><div>' + esc(t(i + 1)) + '</div>'; };
@@ -40,7 +40,7 @@ function npPlay(g, big) {
   const prog = '<div class="mpb" ' + mpData(g.ctl) + '><i></i></div>';
   if (!big) return { art: art, title: title, sub: (a.media_artist ? esc(a.media_artist) + " · " : "") + esc(spk), pp: bt("pp", mdi(play ? "pause" : "play")), prog: mpPos(g.ctl).dur > 0 ? prog : "" };   // no bar (and no empty strip under the row) for a stream without a length, so the row sits in the middle of the card
   const vols = g.mem.map(x => { const v = states[x] ? states[x].attributes : {}; return '<div class="mv"><span>' + esc(fname(x)) + '</span><input type="range" min="0" max="100" data-vol="' + x + '" value="' + Math.round((v.volume_level || 0) * 100) + '"><button class="rnd s" data-mp="mute" data-e="' + x + '">' + mdi(v.is_volume_muted ? "volume-off" : "volume-high") + '</button></div>'; }).join("");
-  return '<div class="npx"><div class="npa"><span data-np="media" title="Open Media" style="display:contents;cursor:pointer">' + art + '</span><div><b>' + esc(title) + '</b><div>' + esc(a.media_artist || "") + '</div><small>' + esc(a.media_album_name || "") + '</small></div></div>' +
+  return '<div class="npx"><div class="npa"><span data-np="media" title="Open Media" style="display:contents;cursor:pointer">' + art + '</span><div><b>' + esc(title) + '</b><div>' + aiLink(a.media_artist) + '</div><small>' + esc(a.media_album_name || "") + '</small></div></div>' +
     '<div class="npp">' + prog + '<div class="npts"><span>0:00</span><span>0:00</span></div></div>' +
     '<div class="mpt">' + bt("shuffle", mdi("shuffle-variant"), a.shuffle) + bt("prev", mdi("skip-previous")) + bt("pp", mdi(play ? "pause" : "play")) + bt("next", mdi("skip-next")) + bt("repeat", mdi(a.repeat === "one" ? "repeat-once" : a.repeat === "all" ? "repeat" : "repeat-off"), a.repeat && a.repeat !== "off") + '</div>' +
     vols + '<div class="chips npsp">' + g.mem.map(x => '<span class="chip on">' + mdi("speaker") + esc(fname(x)) + '</span>').join("") + '</div></div>';
@@ -85,11 +85,15 @@ function npRender() {
   document.body.classList.toggle("nps-open", npSheet);
   if (npSheet) {
     clearTimeout(npbT);
-    const ss = hlState(g), sh = !!(ss && ss.st === "sync" && ss.lines && ss.lines.length);
-    SL.lines = sh ? ss.lines : null; SL.ctl = g.ctl; SL.cur = -2; if (!sh) npsPage = 0;
-    $("#npbody").innerHTML = '<div class="lbl"><span class="nptx">' + (npsPage ? "Lyrics" : "Now playing") + '</span><button class="rnd s" data-np="close">' + mdi("close") + '</button></div>' +
-      (sh ? '<div class="nps"><div class="npg">' + npPlay(g, true) + '</div><div class="npg"><div class="shly">' + slLn(SL.lines, hlIdx(SL.lines, SL.ctl)) + '</div></div></div><div class="npdt"><i data-npg="0"' + (npsPage ? "" : ' class="on"') + '></i><i data-npg="1"' + (npsPage ? ' class="on"' : "") + '></i></div>' : npPlay(g, true));
-    { const sl = $("#npbody .nps"); if (sl && npsPage) sl.scrollLeft = npsPage * npPw(sl); }
+    const ss = hlState(g), sh = !!(ss && ss.st === "sync" && ss.lines && ss.lines.length), PG = [["Now playing", npPlay(g, true)]];
+    SL.lines = sh ? ss.lines : null; SL.ctl = g.ctl; SL.cur = -2;
+    if (sh) PG.push(["Lyrics", '<div class="shly">' + slLn(SL.lines, hlIdx(SL.lines, SL.ctl)) + '</div>']);
+    if (aiOn() && ga.media_artist) PG.push(["Artist", aiHtml(g.ctl)]);   // swipe pages: Now playing · Lyrics (when synced lyrics exist) · Artist
+    { const ix = PG.map(x => x[0]).indexOf(npsName); npsPage = ix < 0 ? 0 : ix; npsName = PG[npsPage][0]; }
+    const arOld = $("#npbody .ar"), arTop = arOld ? arOld.scrollTop : 0;
+    $("#npbody").innerHTML = '<div class="lbl"><span class="nptx">' + PG[npsPage][0] + '</span><button class="rnd s" data-np="close">' + mdi("close") + '</button></div>' +
+      (PG.length > 1 ? '<div class="nps" data-pn="' + PG.map(x => x[0]).join("|") + '">' + PG.map(x => '<div class="npg">' + x[1] + '</div>').join("") + '</div><div class="npdt">' + PG.map((x, i) => '<i data-npg="' + i + '"' + (i === npsPage ? ' class="on"' : "") + '></i>').join("") + '</div><div class="npdl">' + PG.map((x, i) => '<span data-npg="' + i + '"' + (i === npsPage ? ' class="on"' : "") + '>' + x[0] + '</span>').join("") + '</div>' : PG[0][1]);
+    { const sl = $("#npbody .nps"); if (sl && npsPage) sl.scrollLeft = npsPage * npPw(sl); const ar = $("#npbody .ar"); if (ar && arTop) ar.scrollTop = arTop; }
   } else { clearTimeout(npbT); npbT = setTimeout(() => { if (!npSheet) $("#npbody").innerHTML = ""; }, 420); }
   const hn = $("#hnp");
   if (isMobile() || onMed) hn.innerHTML = "";
@@ -119,7 +123,7 @@ function npClick(e) {
   npRender();
 }
 $("#npw").addEventListener("scroll", e => { const g = e.target; if (!g.classList || !g.classList.contains("nps") || !g.clientWidth) return; npHoldT = Date.now() + 700; const i = Math.round(g.scrollLeft / npPw(g)); npPage = i; $$("#npw .npdt i").forEach((d, k) => d.classList.toggle("on", k === i)); const t = $("#npw .nptx"); if (t) t.textContent = i ? "Lyrics" : "Now playing"; }, true);
-$("#npbody").addEventListener("scroll", e => { const g = e.target; if (!g.classList || !g.classList.contains("nps") || !g.clientWidth) return; npHoldT = Date.now() + 700; const i = Math.round(g.scrollLeft / npPw(g)); npsPage = i; $$("#npbody .npdt i").forEach((d, k) => d.classList.toggle("on", k === i)); const t = $("#npbody .nptx"); if (t) t.textContent = i ? "Lyrics" : "Now playing"; }, true);
+$("#npbody").addEventListener("scroll", e => { const g = e.target; if (!g.classList || !g.classList.contains("nps") || !g.clientWidth) return; npHoldT = Date.now() + 700; const i = Math.round(g.scrollLeft / npPw(g)), pn = (g.dataset.pn || "Now playing").split("|"); npsPage = i; npsName = pn[i] || pn[0]; $$("#npbody .npdt i, #npbody .npdl span").forEach((d, k) => d.classList.toggle("on", k === i)); const t = $("#npbody .nptx"); if (t) t.textContent = npsName; }, true);
 setInterval(() => { if (!SL.lines || !npSheet) return; const i = hlIdx(SL.lines, SL.ctl); if (i === SL.cur) return; SL.cur = i; const el = $("#npbody .shly"); if (el) el.innerHTML = slLn(SL.lines, i); }, 500);
 setInterval(() => { if (!HL.lines || !npOpen || curPg() !== "home") return; const i = hlIdx(); if (i === HL.cur) return; HL.cur = i; const el = $("#npw .nply"); if (el) el.innerHTML = hlLn(HL.lines, i); }, 500);
 $("#npw").onclick = $("#npmini").onclick = $("#npsheet").onclick = $("#hnp").onclick = $("#npfab").onclick = npClick;

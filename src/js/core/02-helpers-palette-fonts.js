@@ -68,7 +68,7 @@ const onHome = () => !/^#(climate|events|rooms|security|weather|energy|irrigatio
 const onView = () => /^#(view|camera)/.test(location.hash);
 const onSec = () => location.hash === "#security";
 const camPage = () => onHome() || onSec() || onView();
-const VWC = [];
+const VWC = [], NPC = [];   // NPC = the live cameras inside the notifications pop-up
 const camList = () => onView() ? VWC : onSec() ? CONFIG.security : CONFIG.cameras;
 
 // A sideways-scrolling row (tabs, scene pictures) wrapped with hsw(): while more of it is hidden past an edge, that edge fades and a chevron nudges toward it.

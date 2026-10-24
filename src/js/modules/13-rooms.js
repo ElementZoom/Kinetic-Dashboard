@@ -43,6 +43,7 @@ function drawRooms() {
   });
   updRooms();
 }
+document.documentElement.dataset.roomfx = CONFIG.roomFx === "glow" ? "glow" : CONFIG.roomFx === false ? "off" : "waves";   // room card animation: waves (default) | glow | false
 function cardHtml(n, i) { return '<div class="lbl">' + mdi(i) + esc(n) + '</div><div class="md">--</div><div class="temp"><span class="tm">--</span></div><div class="lbl ts">--</div><i class="rg"></i><div class="hvb"></div>'; }
 // room-card badges: use your own count sensors (r.counts) when set, else count members that are on / open
 const roomLights = r => { const o = []; const add = x => { if (x && o.indexOf(x) < 0) o.push(x); };   // every light in the room: its lights, its light switches, and any light.* shown in its sections

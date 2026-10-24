@@ -119,7 +119,7 @@ function npCamMount() {
     if (!c) { c = NPCAM[id] = { id: id, name: sl.dataset.name, np: true }; NPC.push(c); mkCam(c, document.createElement("div")); c.o.el.onclick = null; }
     if (c.o.el.parentNode !== sl) sl.appendChild(c.o.el);
     c.o.el.querySelector(".lbl").textContent = sl.dataset.name;
-    if (!c._on) { c._on = 1; clearTimeout(c.rt); c.rt = setTimeout(() => { if (document.body.classList.contains("np-open") && c._on) { if (isMobile() && CONFIG.mobileLive === false) camSnap(c); else liveCam(c); } }, i * 160); }
+    if (!c._on) { c._on = 1; camSnap(c); clearTimeout(c.rt); c.rt = setTimeout(() => { if (document.body.classList.contains("np-open") && c._on) { if (isMobile() && CONFIG.mobileLive === false) camSnap(c); else liveCam(c); } }, i * 160); }
   });
   NPC.forEach(c => { if (!want[c.id] && c._on) { clearTimeout(c.rt); c._on = 0; stopCam(c); } });
 }

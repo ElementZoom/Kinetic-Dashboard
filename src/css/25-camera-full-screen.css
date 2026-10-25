@@ -202,7 +202,7 @@ html:not(#x) .zc:fullscreen>video,html:not(#x) .zc.zfull>video{position:static!i
 .pbtl{grid-column:1/-1;padding:2px 2px 8px}.pbtr{position:relative;height:14px;border-radius:7px;background:rgba(var(--w),.1);overflow:hidden}
 .pbs{position:absolute;top:0;bottom:0;border-radius:3px;background:#8aa;cursor:pointer;min-width:5px}.pbs.person{background:#5eead4}.pbs.vehicle{background:#fbbf24}.pbs.animal{background:#8be0ae}.pbs.pv{background:linear-gradient(90deg,#5eead4 50%,#fbbf24 50%)}.pbs.on{outline:2px solid #fff;outline-offset:-2px}
 .pbax{display:flex;justify-content:space-between;font:10px var(--mono);color:var(--mut);margin-top:3px}.pblg{display:flex;gap:12px;font:10px var(--mono);color:var(--mut);margin-top:4px}.pblg span:before{content:"";display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:5px;background:#8aa}.pblg .person:before{background:#5eead4}.pblg .vehicle:before{background:#fbbf24}.pblg .animal:before{background:#8be0ae}
-.mkl.ai .mkb{transition-duration:.1s}
+.mkl.ai .mkb{transition-duration:.06s}
 
 .mkd{position:absolute;left:6px;top:6px;z-index:6;font:600 10px/1.2 monospace;color:#fff;background:rgba(0,0,0,.6);padding:2px 5px;border-radius:5px;pointer-events:none}
 

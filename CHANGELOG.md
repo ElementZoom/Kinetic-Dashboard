@@ -4,6 +4,11 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
+## 1.11.3 - 2026-10-25
+
+### Fixed
+- **Boxes trail a fast mover less:** a box now keeps a small lead (it slides for a moment on its way, so it is aimed a little ahead), the speed of the last two looks counts more, the speed limit is higher (a child on a scooter, a quick runner), and the slide itself is shorter. With the recogniser answering as fast as a phone does, the box stays within about 5-10 px of a walker instead of 10-20 px behind. With `lookahead` on it sits right on the person.
+
 ## 1.11.2 - 2026-10-25
 
 ### Fixed

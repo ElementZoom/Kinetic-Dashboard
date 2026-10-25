@@ -60,6 +60,11 @@ let FONT = "jakarta"; try { FONT = localStorage.getItem("dashFont") || "jakarta"
 const FONTS = [["jakarta", "Plus Jakarta Sans", "Modern, friendly", '"Plus Jakarta Sans",Inter,system-ui,sans-serif'], ["google", "Google (Roboto Flex)", "Clean, Android feel", '"Roboto Flex",Roboto,system-ui,sans-serif'], ["googlemono", "Google + mono labels", "Roboto Flex with Roboto Mono labels", '"Roboto Flex",Roboto,system-ui,sans-serif'], ["outfit", "Outfit", "Geometric, rounded", '"Outfit",Inter,system-ui,sans-serif'], ["manrope", "Manrope", "Soft and neutral", '"Manrope",Inter,system-ui,sans-serif'], ["default", "Classic", "Your previous look", 'Inter,"Segoe UI",Roboto,system-ui,sans-serif']];
 const applyFont = () => document.documentElement.setAttribute("data-font", FONTS.some(x => x[0] === FONT) ? FONT : "jakarta");
 applyFont();
+// 12- or 24-hour times: Theme page -> "Clock" (this device), else config.js clock: "12" | "24", else "auto" (the device's language decides)
+let CLOCK = ""; try { CLOCK = localStorage.getItem("dashClock") || ""; } catch (_) {}
+if (!/^(auto|12|24)$/.test(CLOCK)) CLOCK = /^(12|24)$/.test(String(CONFIG.clock)) ? String(CONFIG.clock) : "auto";
+const CLK12 = () => CLOCK === "12" || (CLOCK !== "24" && !!new Intl.DateTimeFormat([], { hour: "numeric" }).resolvedOptions().hour12);
+const tmo = o => Object.assign(o, CLK12() ? { hour12: true } : { hourCycle: "h23" });   // add to the options of any toLocale*String that shows an hour
 applyPal();
 let PAL_SEEN = palMode(); const palTick = () => { if (PAL.mode !== "sun" && PAL.mode !== "time") return; const m = palMode(); if (m !== PAL_SEEN) { PAL_SEEN = m; themeFx(applyPal); if (curPg() === "theme") drawPalette(); } };
 setInterval(palTick, 20000); document.addEventListener("visibilitychange", () => { if (!document.hidden) palTick(); });

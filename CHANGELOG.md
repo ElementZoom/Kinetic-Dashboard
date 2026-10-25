@@ -4,6 +4,18 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
+## 1.13.0 - 2026-10-25
+
+### Added
+- **12- or 24-hour clock:** Theme page > Clock chooses DEVICE (follows the language of that phone or tablet), 12-HOUR or 24-HOUR, saved on that device. `clock: "12"` or `"24"` in config.js sets the default for every device. It applies to every time the dashboard shows: the header clock, event and forecast times, detections, recording times and the day strip in Playback, hazards, the long-press info and the Energy page's peak hour.
+
+### Changed
+- **The header clock follows the device's language when nothing is chosen.** It was always 24-hour (the rest of the times already followed the device), so on a phone or tablet set to a 12-hour language it now shows 12-hour. Pick 24-HOUR on the Theme page, or set `clock: "24"`, to keep the old look.
+- **The Energy page's peak hour, Playback's recording times and the day strip's hour labels** are shown as `15:00–16:00`, `15:05:12` and `15:00` on a 24-hour clock; they were always 12-hour (`3pm–4pm`, `3:05:12 pm`, `3pm`).
+
+### Tests
+- New checks for the clock setting (`tests/clock-format.mjs`).
+
 ## 1.12.0 - 2026-10-25
 
 This release rolls up the work since 1.11.0 (the small versions in between, 1.11.1 to 1.12.1.1, were never published on their own).

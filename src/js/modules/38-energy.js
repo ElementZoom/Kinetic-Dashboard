@@ -83,7 +83,7 @@ function enDraw() {
     h += '<div class="pn pg"><div class="eh"><div><div class="lbl">Consumption overview</div><div class="h2" style="margin-top:4px">' + fm(total) + ' kWh' + (en.devH ? ' <span class="enc">· ' + mc(dev.reduce((a, x) => a + (x.cost || 0), 0)) + '</span>' : '') + '</div></div><div class="seg" style="margin-left:auto"><button class="eb' + (en.mode === "bar" ? " on" : "") + '" data-em="bar">' + mdi("chart-bar") + '</button><button class="eb' + (en.mode === "pie" ? " on" : "") + '" data-em="pie">' + mdi("chart-pie") + '</button></div></div>' + ov + '</div>';
 
     if (CS) {
-      const hf = x => { const f = k => (k % 12 || 12) + (k % 24 < 12 ? "am" : "pm"); return f(x) + "–" + f(x + 1); }, rows = [], pn = ({ day: "yesterday", week: "last week", month: "last month", year: "last year" })[en.r], pl = en.o === 0 ? pn : "the previous " + en.r, part = sp.e > Date.now() && en.o === 0 ? " so far" : "";
+      const hf = x => { const f = k => CLK12() ? (k % 12 || 12) + (k % 24 < 12 ? "am" : "pm") : ("0" + k % 24).slice(-2) + ":00"; return f(x) + "–" + f(x + 1); }, rows = [], pn = ({ day: "yesterday", week: "last week", month: "last month", year: "last year" })[en.r], pl = en.o === 0 ? pn : "the previous " + en.r, part = sp.e > Date.now() && en.o === 0 ? " so far" : "";
       if (en.prev === undefined) rows.push(["Vs " + pl, "…", "Calculating…", ""]);
       else if (en.prev) {
         let pk = 0, pc = 0; Object.keys(en.prev).forEach(t => { const v = en.prev[t]; pk += v; pc += v * enRate(new Date(+t).getHours()); });
@@ -208,7 +208,7 @@ function batTick() {
 }
 function tick() {
   const n = new Date(), h = n.getHours();
-  $("#clk").textContent = n.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
+  $("#clk").textContent = n.toLocaleTimeString([], tmo({ hour: CLK12() ? "numeric" : "2-digit", minute: "2-digit" }));
   batTick();
   $("#dt").textContent = n.toLocaleDateString([], { weekday: "long", day: "numeric", month: "long" });
   $("#gr").textContent = (h < 12 ? "Morning" : h < 18 ? "Afternoon" : "Evening") + (userName ? ", " + userName : userKnown ? "" : CONFIG.name ? ", " + CONFIG.name : "") + "!";

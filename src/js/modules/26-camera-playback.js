@@ -90,7 +90,7 @@ function pbList(c) {
   txGo(l, pb.tx || 0, true); pb.tx = 0;   // same slide / fade the rest of the dashboard uses
   pbThumbs(c);
 }
-const pbClock = t => { const p = t.split(":").map(Number), h = p[0] % 12 || 12; return h + ":" + ("0" + p[1]).slice(-2) + (p.length > 2 ? ":" + ("0" + p[2]).slice(-2) : "") + " " + (p[0] < 12 ? "am" : "pm"); };
+const pbClock = t => { const p = t.split(":").map(Number), h = p[0] % 12 || 12; if (!CLK12()) return p.map(n => ("0" + n).slice(-2)).join(":"); return h + ":" + ("0" + p[1]).slice(-2) + (p.length > 2 ? ":" + ("0" + p[2]).slice(-2) : "") + " " + (p[0] < 12 ? "am" : "pm"); };
 const pbDay = t => { const m = /(\d{4})[\/.-](\d{1,2})[\/.-](\d{1,2})/.exec(String(t)); if (!m) return pbT(t); const d = new Date(+m[1], +m[2] - 1, +m[3]), n = new Date(), a = new Date(n.getFullYear(), n.getMonth(), n.getDate()), df = Math.round((a - d) / 864e5); return (df === 0 ? "Today · " : df === 1 ? "Yesterday · " : "") + d.toLocaleDateString([], { weekday: "short", day: "numeric", month: "short", year: "numeric" }); };
 // preview pictures: use HA's thumbnail when it sends one, otherwise grab one frame from each clip as it scrolls into view (one at a time, remembered until the page is reloaded)
 function pbThumbs(c) {

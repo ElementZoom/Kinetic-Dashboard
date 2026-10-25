@@ -14,7 +14,7 @@ let infT = 0;
 function lsInfo(id, el) {
   const s = states[id]; if (!s) return; const t = Date.parse(s.last_changed || s.last_updated || ""); if (!t) return;
   let b = $("#linf"); if (!b) { document.body.insertAdjacentHTML("beforeend", '<div id="linf"></div>'); b = $("#linf"); b.onclick = () => b.classList.remove("show"); }
-  const dt = new Date(t), p2 = n => ("0" + n).slice(-2), when = p2(dt.getDate()) + "/" + p2(dt.getMonth() + 1) + "/" + dt.getFullYear() + " " + p2(dt.getHours()) + ":" + p2(dt.getMinutes());
+  const dt = new Date(t), p2 = n => ("0" + n).slice(-2), when = p2(dt.getDate()) + "/" + p2(dt.getMonth() + 1) + "/" + dt.getFullYear() + " " + dt.toLocaleTimeString([], tmo({ hour: CLK12() ? "numeric" : "2-digit", minute: "2-digit" }));
   b.innerHTML = '<b>' + esc(s.attributes.friendly_name || fname(id)) + '</b><span>' + lastVerb(id, el) + " " + agoFull(Date.now() - t) + '</span><small>' + when + '</small>';
   b.classList.add("show"); clearTimeout(infT); infT = setTimeout(() => b.classList.remove("show"), 6000);
 }

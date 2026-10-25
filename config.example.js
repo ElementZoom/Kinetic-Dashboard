@@ -256,6 +256,7 @@ window.DASH_CONFIG = {
   //   maxMs: 1500,                      // switch the recogniser off if three looks in a row take longer than this (ms)
   //   debug: false,                     // true shows a small chip with the version and the speed (or add ?mkdebug to the address once)
   // },
+  // detectLive: true,   // needs detectAI: a camera tapped to full screen gets the same boxes (people, cars, animals) on its live picture; closing it stops them. Off when left out. Live has no lookahead, so boxes trail a fast mover a little more than on recordings
   // roomFx: "waves",   // room card animation: "waves" (slow rolling waves, default) | "glow" (soft corner glow) | false (none). Warmer rooms move a little faster
   // notifRoomHeadings: false,   // Notifications > Active: set false to drop the room headings inside each category
   quickAll: [["Lights", "light.all_lights", "lightbulb-on"], ["Fans", "group.all_fans", "fan"], ["Light switches", "group.all_light_switches", "m3-switch"], ["Water taps", "group.all_water_taps", "m3-water-drop"], ["Curtains", "group.all_curtains", "m3-curtains", "close"], ["Windows", "group.all_windows", "m3-window-open", 1], ["Doors", "group.external_doors", "m3-door-open", 1]],

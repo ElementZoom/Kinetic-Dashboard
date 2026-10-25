@@ -1816,7 +1816,7 @@ body.ly-open .mlay.hasly .ar{flex:1;max-height:none;min-height:0}
 // (notification tap such as #view/driveway, #security ...), not the return from the login, and the device has not asked for reduced motion.
 window.brandLogo = function () { var L = window.DASH_LOGO, B = (window.DASH_CONFIG || {}).brand; return L && L.svg ? { svg: L.svg, lockup: !!L.lockup } : B && B.mark ? { svg: B.mark, lockup: false } : null; };   // brand-logo.js wins over brand.mark in config.js
 window.brandMark = function (s) { var g = window.brandLogo(); if (!g) return ""; return g.svg.replace(/\bid="([\w-]+)"/g, 'id="$1' + s + '"').replace(/url\(#([\w-]+)\)/g, 'url(#$1' + s + ')'); };
-window.DASH_VER = "1.11.3";   // the one place to change the version
+window.DASH_VER = "1.12.0";   // the one place to change the version
 (function () { try {
   var B = (window.DASH_CONFIG || {}).brand, el = document.getElementById("bootld"), r = document.documentElement, lp = "on";
   try { lp = localStorage.getItem("dashLogo") || "on"; } catch (e) {}   // Theme page -> "Start-up logo": on | load (no intro) | off (plain spinner, as before)
@@ -2763,12 +2763,12 @@ function mkCam(c, host) {
   if (host.id === "vw") {   // the camera view's top controls share one wrapper, so the layout can put them in one row (tablets) or two (phones)
     const vh = document.createElement("div"); vh.className = "vh"; ["lbl", "dl", "lv", "aud", "px", "cx", "fsb"].forEach(k => { const n = el.querySelector("." + k); if (n) vh.appendChild(n); }); el.appendChild(vh); el.dataset.k = c.k;
   }
-  if (host.id === "vw") { el.classList.add("vf"); setTimeout(() => pbPre(c), 600); const ctl = camCtl(c.id); if (ctl) { cp.innerHTML = '<div class="tg3">' + ctl.map(tileHtml).join("") + '</div>'; cp.dataset.b = 1; } el.onclick = e => { if (e.target.closest(".fsb")) camLand(el); else if (e.target.closest(".cx")) vwClose(); }; return host.appendChild(el); }   // phones: the card has the same X as a Security camera (the tablet keeps the round X above the pictures)
+  if (host.id === "vw") { el.classList.add("vf"); setTimeout(() => pbPre(c), 600); const ctl = camCtl(c.id); if (ctl) { cp.innerHTML = '<div class="tg3">' + ctl.map(tileHtml).join("") + '</div>'; cp.dataset.b = 1; } el.onclick = e => { if (e.target.closest(".fsb")) camLand(el); else if (e.target.closest(".cx")) vwClose(); }; host.appendChild(el); setTimeout(() => mkLiveOn(el), 0); return el; }   // phones: the card has the same X as a Security camera (the tablet keeps the round X above the pictures)
   el.onclick = e => {
     if (e.target.closest(".cpanel, .pbk, .px")) return;
     if (e.target.closest(".fsb")) { camLand(el); return; }
     if (el.classList.contains("fs")) {   // close
-      closePb(c, false); c.snd = false; micOff(c); snd.classList.remove("on"); snd.innerHTML = AUD.off; o.vid.muted = true;
+      mkLiveOff(el); closePb(c, false); c.snd = false; micOff(c); snd.classList.remove("on"); snd.innerHTML = AUD.off; o.vid.muted = true;
       camClose(el, () => { el.classList.remove("fs"); if (el._ph) { el._ph.remove(); el._ph = null; } if (isMobile() && CONFIG.mobileLive === false) { clearTimeout(c.rt); stopCam(c); } else liveCam(c); });
       return;
     }
@@ -2777,7 +2777,7 @@ function mkCam(c, host) {
     if (isMobile()) camNative(el);   // phones: straight to real full screen
     const ctl = camCtl(c.id);
     if (ctl && !cp.dataset.b) { cp.innerHTML = '<div class="tg3">' + ctl.map(tileHtml).join("") + '</div>'; cp.dataset.b = 1; }
-    updTiles(); liveCam(c); };
+    updTiles(); liveCam(c); mkLiveOn(el); };
   host.appendChild(el);
 }
 CONFIG.cameras.forEach(c => mkCam(c, $("#cams")));
@@ -5045,6 +5045,7 @@ document.addEventListener("keydown", e => { if (e.key === "Escape") document.que
 // config.js: detectAI: true  adds a small object-detection model (TensorFlow.js COCO-SSD, loaded from the internet the first time; nothing is sent anywhere, the picture is only looked at on this device). The movement only says where to look; the model decides what is a person / car / animal, so shadows and light changes stop counting. Needs internet on the viewing device, otherwise the movement boxes are used.
 //   detectAI: { engine: "yolox", model: "/local/yolox_tiny.onnx" }  uses a YOLOX model (more exact, Apache-2.0, file hosted by you; onnxruntime-web is loaded from the internet). yolox_s.onnx finds smaller / further people but is slower (about 4x tiny); the picture size comes from the model file (416 for nano and tiny, 640 for s)
 //   detectAI: { base: "mobilenet_v2" }  (bigger, more exact)   or   { model: "https://…/model.json", tf: "https://…/tf.min.js", coco: "https://…/coco-ssd.min.js" } to host the files yourself
+const mkSrc = v => v.getAttribute("src") || v.srcObject;   // a recording has a web address; a live camera is a stream
 const mkStyle = () => { const m = CONFIG.detectMark; return m === false ? "" : m === "box" || m === "glow" ? m : "brackets"; };
 const MKN = { Person: "Person", Vehicle: "Car", Animal: "Animal" };
 function mkKind(types, ar, area, prev) {   // which of the camera's tags a box is. One tag: that. Several: a big wide shape is a car, a small one a person (or an animal when wide); once chosen it only changes for a clear reason
@@ -5065,11 +5066,15 @@ function mkAttach(el, tags) {   // el = .pbv or .dtv; call each time a clip is l
   mkDbg(el);
   if (mkAiOn()) { mkAiLoad(); if (!el._mkAiT) el._mkAiT = setTimeout(() => mkAiRun(el), 300); }
 }
+function mkLiveOn(el) {   // detectLive: true (needs detectAI): a camera that is full screen gets the same boxes as a recording, for every kind the model knows
+  if (!CONFIG.detectLive || !mkAiCfg() || !mkStyle()) return; el._mkLive = 1; mkAttach(el, ["Person", "Vehicle", "Animal"]);
+}
+function mkLiveOff(el) { if (!el._mkLive) return; el._mkLive = 0; mkAttach(el, []); }
 function mkClear(el) { el._mkS = null; el._mkB = []; el._mkD = []; el._mkG = []; el._mkPD = -1; el._mkTok = (el._mkTok || 0) + 1; if (el._mk) el._mk.innerHTML = ""; }
 function mkTick(el) {
   el._mkT = 0; if (!el.isConnected) return;
   const v = mkAv(el); el._mkT = setTimeout(() => mkTick(el), 130);
-  if (!el.classList.contains("mkon") || !v.getAttribute("src") || v.paused || v.ended || v.seeking || v.readyState < 2 || !v.videoWidth || document.hidden) return;
+  if (!el.classList.contains("mkon") || !mkSrc(v) || v.paused || v.ended || v.seeking || v.readyState < 2 || !v.videoWidth || !v.offsetWidth || document.hidden) return;
   try { mkStep(el, v); } catch (e) { el.classList.remove("mkon"); mkClear(el); }   // a picture the page may not read (other web address without permission): the labels stay, the boxes are off
 }
 function mkStep(el, v) {   // learns what the empty scene looks like and boxes what is different from it, ignoring the whole picture getting lighter or darker
@@ -5104,7 +5109,7 @@ function mkStep(el, v) {   // learns what the empty scene looks like and boxes w
     else B.push({ x: f.x, y: f.y, w: f.w, h: f.h, hit: 1, ttl: 5, age: 1, ar: ar, area: f.w * f.h, kind: mkKind(ty, ar, f.w * f.h, "") }); });
   B.forEach(b => { if (!b.hit && B.some(o => o.hit && b.x + b.w / 2 > o.x - .02 && b.x + b.w / 2 < o.x + o.w + .02 && b.y + b.h / 2 > o.y - .02 && b.y + b.h / 2 < o.y + o.h + .02)) b.ttl = 0; });   // a leftover half of an object that is now seen whole
   B.forEach(b => { if (!b.hit) b.ttl--; }); el._mkB = B.filter(b => b.ttl > 0);
-  if (mkAiOn()) return;   // the model draws (once it is up); until it has failed nothing is drawn from movement alone
+  if (mkAiOn() || el._mkLive) return;   // the model draws (once it is up); until it has failed nothing is drawn from movement alone
   const B0 = (el._mkB || []).filter(b => b.age >= 3).sort((a, b) => b.w * b.h - a.w * a.h); mkDraw(el, v, B0.filter((b, i) => i < 2 && b.w * b.h >= B0[0].w * B0[0].h * .3));
 }
 const MKC = { person: "Person", car: "Vehicle", truck: "Vehicle", bus: "Vehicle", motorcycle: "Vehicle", bicycle: "Vehicle", dog: "Animal", cat: "Animal", bird: "Animal", horse: "Animal", sheep: "Animal", cow: "Animal", bear: "Animal" };
@@ -5186,7 +5191,7 @@ function mkDbg(el) {   // detectAI: { debug: true } (or ?mkdebug in the address)
 const mkLaCfg = () => { const a = mkAiCfg(), l = a && a.lookahead; return l ? Math.max(.3, Math.min(2, l === true ? .8 : +l || .8)) : 0; };
 const mkAv = el => el._mkLaOk && el._mkv2 ? el._mkv2 : el._mkv;   // the picture the movement and the model look at: with lookahead a hidden second copy of the recording that runs a little ahead
 function mkLaSync(el) {   // detectAI: { lookahead: 0.8 }: recordings only. The second copy plays that many seconds ahead, so a box is ready before the shown picture reaches the person
-  const v = el._mkv, L = mkLaCfg(), now = Date.now(), live = v && el.classList.contains("mkon") && L && mkAiOn() && !el._mkLaOff && v.getAttribute("src") && v.readyState > 0 && isFinite(v.duration);
+  const v = el._mkv, L = mkLaCfg(), now = Date.now(), live = v && el.classList.contains("mkon") && L && mkAiOn() && !el._mkLaOff && !el._mkLive && v.getAttribute("src") && v.readyState > 0 && isFinite(v.duration);
   if (!live) { if (el._mkw) { el._mkw.remove(); el._mkw = el._mkv2 = null; } if (el._mkLaOk) { el._mkLaOk = 0; el._mkS = null; el._mkB = []; } return; }
   let w = el._mkv2; if (!w) { const bx = document.createElement("div"); bx.className = "mklv"; w = document.createElement("video"); w.className = "mkw"; w.muted = true; w.playsInline = true; w.setAttribute("playsinline", ""); w.preload = "auto"; if (v.crossOrigin) w.crossOrigin = v.crossOrigin; bx.appendChild(w); el.appendChild(bx); el._mkw = bx; el._mkv2 = w; }
   const src = v.getAttribute("src"); if (w.getAttribute("src") !== src) { w.src = src; el._mkLaOk = 0; }
@@ -5217,7 +5222,7 @@ function mkAiRun(el) {
   el._mk.classList.add("ai"); const now = Date.now(); mkKeep(el, d => now - d.t < 3500 || v.paused && d.pp === v.currentTime); const la = !!el._mkLaOk; if (!v.paused && !la) mkFollow(el);
   const hold = v.paused && !v.seeking, done = hold && el._mkPD === v.currentTime;   // paused: the box stays on the person (no moving on at its old speed, no timing out) once the look at this very picture is done
   const L = el._mkD.filter(d => { if (done) return d.pp === v.currentTime; const lk = d.trk && d.trk.ttl > 0; return (hold ? now - d.t < 4000 : now - d.t < (d.miss >= 1 ? 500 : lk ? 1300 : 900)) && (d.n >= 2 || d.score >= .7 || d.pz || d.kind === "Vehicle" && lk)   // seen twice, or very sure, before it is shown
-    && (d.kind === "Vehicle" ? d.pz || lk && (d.mv > Math.max(.04, .6 * Math.max(d.w, d.h * .56)) || d.score >= .6 && d.trk.w * d.trk.h > .15 * d.w * d.h) : d.pz || lk || d.mv > .02 || now - d.t0 < 2000); }).sort((a, b) => b.score - a.score);
+    && (d.kind === "Vehicle" ? d.pz || lk && (d.mv > Math.max(.04, .6 * Math.max(d.w, d.h * .56)) || d.score >= .6 && d.trk.w * d.trk.h > .15 * d.w * d.h) : d.pz || lk || d.mv > .02 || now - d.t0 < 2000 || el._mkLive && d.score >= .75); }).sort((a, b) => b.score - a.score);
   // a car only counts once it has really travelled; a "person" that never moves and has nothing moving under it is a post or a bush
   let P; if (la) {   // lookahead: the picture the model looks at is ahead of the one shown, so each box is read off its own track at the time being shown
     const m = v.currentTime, ta = el._mkv2.currentTime; L.forEach(d => { if (d.hs && d.hs.length) { if (d.vOn == null) d.vOn = d.v0; d.vOff = Math.min(ta, d.hs[d.hs.length - 1][0] + (d.miss >= 1 ? .25 : .7)); } });
@@ -5226,7 +5231,7 @@ function mkAiRun(el) {
   } else P = L.map(d => { const q = hold ? [0, 0] : mkPred(d, now); return Object.assign({}, d, { x: Math.max(0, Math.min(1 - d.w, d.x + q[0])), y: Math.max(0, Math.min(1 - d.h, d.y + q[1])) }); });
   mkDraw(el, v, P.filter((d, i) => !(d.kind === "Vehicle" && P.some(p => p.kind === "Person" && p.x + p.w / 2 > d.x && p.x + p.w / 2 < d.x + d.w && p.y + p.h / 2 > d.y && p.y + p.h / 2 < d.y + d.h && d.w * d.h < 5 * p.w * p.h)) && !P.some((o, j) => j < i && mkIou(o, d) > .5)).sort((a, b) => b.w * b.h - a.w * a.h).slice(0, 4));   // a "car" hardly bigger than the person standing in it is that person's shadow
   const a = mkAv(el);
-  if (el._mkAiBusy || !a.getAttribute("src") || a.ended || a.seeking || a.readyState < 2 || !a.videoWidth || document.hidden) return;
+  if (el._mkAiBusy || !mkSrc(a) || a.ended || a.seeking || a.readyState < 2 || !a.videoWidth || !a.offsetWidth || document.hidden) return;
   let job = null;
   if (!v.paused) {
     const L = (el._mkB || []).filter(b => b.age >= 1 && now - (b.aiT || 0) > 120 && !(b.miss >= 2 && now - (b.badT || 0) < 5000)).sort((a, b) => (a.aiT || 0) - (b.aiT || 0));

@@ -155,6 +155,18 @@ for (const [n, c] of [["direct", AI], ["la", LA]]) { CFG = c; const ctx = await 
   const e = o.filter(x => x !== "-").map(Math.abs).sort((a, b) => a - b), med = e[e.length >> 1]; ok("a phone-speed model (70 ms): the box stays within 14 px of the walker (" + n + ")", e.length > 20 && med <= 14 && e[Math.floor(e.length * .9)] <= 28, { median: med, p90: e[Math.floor(e.length * .9)], n: e.length }); await ctx.close(); }
 }
 
+// --- live: a camera tapped to full screen gets boxes too (detectLive: true); closing it stops them; without the option nothing changes
+for (const live of [true, false]) { CFG = AI + (live ? ", detectLive: true" : ""); const ctx = await browser.newContext({ viewport: { width: 900, height: 600 } }), p = await ctx.newPage(); p.on("pageerror", e => errors.push(String(e)));
+  await p.goto(`http://127.0.0.1:${server.address().port}/dash.html`); await p.waitForTimeout(700);
+  const o = await p.evaluate(async () => { document.documentElement.classList.remove("boot"); const lg = document.getElementById("lg"); if (lg) lg.hidden = true; const wait = ms => new Promise(r => setTimeout(r, ms));
+    mkAiLoad(); for (let i = 0; i < 600 && MKAI.st === 1; i++) await wait(100);
+    const c = CONFIG.cameras[0], el = c.o.el, out = { before: el.classList.contains("mkon") }; el.click(); await wait(300);
+    const src = document.createElement("video"); src.muted = true; src.src = "/clips/one.webm"; src.style.cssText = "position:fixed;left:-9999px;width:320px"; document.body.appendChild(src); await src.play(); c.o.vid.srcObject = src.captureStream(); await c.o.vid.play().catch(() => {});
+    out.open = el.classList.contains("mkon"); const seen = []; for (let i = 0; i < 40; i++) { await wait(150); seen.push([...el.querySelectorAll(".mkl .mkb")].map(n => n.className.replace("mkb ", ""))); if (src.ended) break; }
+    out.kinds = [...new Set(seen.flat())]; out.frames = seen.filter(a => a.length).length; el.click(); await wait(1200); out.closed = !el.classList.contains("mkon") && el.querySelectorAll(".mkl .mkb").length === 0; return out; });
+  if (live) { ok("live: the full-screen camera is marked on", o.open, o); ok("live: a person is boxed on the live picture", o.kinds.indexOf("person") >= 0 && o.frames >= 3, o); ok("live: nothing is marked on the tile before opening", !o.before); ok("live: closing it stops the marks", o.closed, o); }
+  else ok("live: without detectLive nothing is marked", !o.open && o.frames === 0, o); await ctx.close(); }
+
 await browser.close(); server.close();
 if (errors.length) problems.push("page errors: " + errors.join(" | "));
 if (problems.length) { console.error("FAIL:\n- " + problems.join("\n- ")); process.exit(1); }

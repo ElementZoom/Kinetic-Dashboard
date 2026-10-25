@@ -6,96 +6,33 @@ Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0
 
 ## 1.11.0 - 2026-10-25
 
-### Added
-- **Lookahead for the detection boxes (recordings only, off by default):** `detectAI: { lookahead: 0.8 }` plays a hidden second copy of the recording a little ahead of the one you watch, so the model has already found the person by the time the picture gets there and the box no longer trails behind a walking person. A paused recording still looks at the exact picture shown. It needs a second video decoder, so it is opt-in; if the second copy cannot keep up (a few seconds), it switches itself off and the boxes work as before.
-- **Bigger YOLOX models:** the picture size is now read from the model file, so `yolox_s.onnx` (more accurate, about 4x slower) runs at its own 640 whatever `size:` says in config.js. The debug chip shows the size.
-
-### Tests
-- New checks for the camera page with `camFullscreen: false`, and for the lookahead.
-
-## 1.10.1 - 2026-10-25
-
-### Fixed
-- **Marks on a paused recording:** the box now stays on the person in the picture. It used to keep moving on at the person's walking speed and then disappear about a second after pausing.
-- **Two boxes on one person:** someone walking quickly (or a slow device, which looks less often) used to get a second box next to the first one for a moment. A new look is now matched to where the person should be by now, not only to where they were.
-
-## 1.10.0.2 - 2026-10-25
-
-### Fixed
-- **Labels on the marks:** two people standing close together no longer wear their labels on top of each other, and a box at the edge of the picture puts its label below or inside it instead of off the picture. Also when the picture is zoomed in.
-
-## 1.10.0.1 - 2026-10-25
-
-### Fixed
-- **Detections pop-up on a landscape phone:** the card was taller than the screen, so the close button and the play bar were off it. The card now shrinks to fit the screen (and keeps clear of the notch).
-- **Recordings screen on the camera page (#view):** the Playback pill no longer sits on top of the "Recordings" heading, and on phones the Close X is at the right of the heading instead of on top of BACK.
-- **Recordings on a short landscape phone:** the list is on the left and the recording beside it, instead of a thin strip under the heading.
-
-## 1.10.0 - 2026-10-25
+This release rolls up the work since 1.6.8 (the small versions in between, 1.6.8.1 to 1.10.1, were never published on their own).
 
 ### Added
-- **camFullscreen: false** (config.js): on phones the full-screen camera fills the screen without asking the browser for real full screen, so there is no blink when it opens or closes and the system bars stay.
-
-## 1.9.2.1 - 2026-10-25
-
-### Fixed
-- **Recordings screen header:** the close X is in the heading row, the live controls are hidden while recordings are open, and the panel is opaque.
-
-## 1.9.2 - 2026-10-25
+- **Marks on recordings** (Playback and Detections): the person, car or animal that moves is boxed. `detectMark: "brackets"` (default), `"box"`, `"glow"` or `false`; only clips the camera tagged Person / Vehicle / Animal are marked. Without any recogniser the boxes follow movement only (background model, tracks, a kind per box).
+- **Recognising with `detectAI`** so a shadow, a bush or a light change is not boxed:
+  - `engine: "yolox"` (Apache-2.0), with `model: "/local/yolox_tiny.onnx"` hosted by you in Home Assistant's www folder, and onnxruntime-web loaded from the internet. Falls back to movement boxes when it cannot load or is too slow (`maxMs`).
+  - `size`: read from the model file, so the bigger, more accurate `yolox_s.onnx` (about 4x slower) runs at its own 640.
+  - `gpu: true`: the phone's graphics chip (WebGPU) does the recognising, with the processor as the fall-back (about 25 MB more to load the first time).
+  - `lookahead: 0.8` (recordings only, off by default): a hidden second copy of the recording plays a little ahead, so the box is ready before the picture reaches the person and no longer trails a walking person. A paused recording still looks at the exact picture shown. It needs a second video decoder and switches itself off if it cannot keep up.
+  - `debug: true` (or `?mkdebug` in the address): a small chip with the version, the speed and the picture size, or why only movement boxes are used.
+- **Day strip on Playback:** one coloured bar per clip showing where it sits in the day; tap one to play it.
+- **Own recording-player controls** in Playback and Detections: pinching is easy, full screen keeps the zoom, and there is one play button.
+- **`camFullscreen: false`** (config.js): on phones the full-screen camera fills the screen without asking the browser for real full screen, so there is no blink when it opens or closes and the system bars stay.
 
 ### Changed
 - **Camera full-screen open / close animation:** a solid black card, and the picture dissolves into the waiting tile instead of jumping.
-
-## 1.9.1 - 2026-10-25
-
-### Changed
-- **Boxes follow better:** each box is moved on at the speed it had since the last two looks, counted from the moment the picture was taken, and the model is asked again straight after each answer.
-
-### Added
-- **detectAI: { gpu: true }:** the phone's graphics chip (WebGPU) does the recognising, with the processor as the fall-back. About 25 MB more to load the first time.
-
-## 1.9.0.2 - 2026-10-25
-
-### Added
-- **detectAI: { debug: true }** (or ?mkdebug in the address): a small chip on the recording shows the version and how long each look takes, or why only movement boxes are used.
-
-## 1.9.0.1 - 2026-10-25
-
-### Changed
-- **Fewer false boxes:** a person has to be upright and sure enough (more sure when standing still), a car has to be seen twice and travel, a "car" hardly bigger than the person standing in it is dropped, and a box that is not confirmed goes after 0.9 s.
-
-## 1.9.0 - 2026-10-25
-
-### Added
-- **YOLOX engine for the recognising** (detectAI: { engine: "yolox", model: "/local/yolox_tiny.onnx", size: 416 }). YOLOX is Apache-2.0; the model file is hosted by you (Home Assistant's www folder) and onnxruntime-web is loaded from the internet.
-
-## 1.8.1 - 2026-10-25
+- **Fewer false boxes:** a person has to be upright and sure enough (more sure when standing still), a car has to be seen twice and travel, a "car" hardly bigger than the person standing in it is dropped, and an unconfirmed box goes after 0.9 s.
+- **Boxes follow better:** each box moves on at the speed it had since the last two looks, and a new look is matched to where the person should be by now, so someone walking quickly no longer gets a second box.
 
 ### Fixed
-- Boxes catch up with the person faster, and the model is preloaded.
+- **Marks on a paused recording:** the box stays on the person; it no longer walks on and disappears.
+- **Labels on the marks:** two people close together no longer wear their labels on top of each other, and a box at the edge puts its label below or inside it. Also when zoomed in.
+- **Detections pop-up on a landscape phone:** the card shrinks to fit the screen (clear of the notch), so the close button and play bar are reachable.
+- **Recordings screen on the camera page:** the Playback pill no longer sits on the "Recordings" heading, the close X is in the heading row (not on BACK), the live controls are hidden while recordings are open, and the panel is opaque. On a short landscape phone the list is on the left and the recording beside it.
 
-## 1.8.0 - 2026-10-25
-
-### Added
-- **detectAI** (config.js): a small object-detection model (COCO-SSD) decides what is a person, car or animal, so shadows and light changes are no longer boxed. Falls back to movement boxes when it cannot load.
-
-## 1.7.0.2 - 2026-10-25
-
-### Changed
-- The movement-only detector uses a background model, tracks and a kind per box.
-
-## 1.7.0 - 2026-10-25
-
-### Added
-- **Day strip on Playback:** one coloured bar per clip showing where it sits in the day; tap one to play it.
-- **Marks on recordings:** the person or car that moves is marked (detectMark: "brackets" (default), "box", "glow" or false). Only clips the camera tagged Person / Vehicle / Animal are marked.
-
-## 1.6.8.1 - 2026-10-25
-
-### Changed
-- **Own recording-player controls** in Playback and Detections: pinching is easy, full screen keeps the zoom, and there is one play button.
-
-(Entries 1.6.8.1 to 1.10.0 were written back in from the hand-off notes after the working copy was lost; the dates are approximate.)
+### Tests
+- New checks for the marks and recogniser (`tests/detection-marks.mjs`), the mobile layouts (`tests/layout-mobile.mjs`), and `camFullscreen: false` (`tests/cam-no-native.mjs`).
 
 ## 1.6.8 - 2026-10-24
 

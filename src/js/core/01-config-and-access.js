@@ -1,4 +1,4 @@
-window.onerror = function (m, u, l) { document.documentElement.classList.remove("boot"); var s = document.getElementById("st"); s.className = "bad"; s.textContent = "JS ERROR: " + m + " (line " + l + ")"; };
+window.onerror = function (m, u, l) { if (/ResizeObserver loop/i.test(String(m))) return true; /* harmless browser notice, not a fault */ document.documentElement.classList.remove("boot"); var s = document.getElementById("st"); s.className = "bad"; s.textContent = "JS ERROR: " + m + " (line " + l + ")"; };
 
 // ===== CONFIG: lives in config.js (one per house). The engine only fills in safe defaults. =====
 const ENGINE_VERSION = window.DASH_VER;

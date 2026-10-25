@@ -14,7 +14,7 @@ const SRC = path.join(root, "src");
 const version = (arg("version") || fs.readFileSync(path.join(root, "VERSION"), "utf8")).trim();
 const outFile = path.resolve(root, arg("out", "dash.html"));
 
-if (!/^\d+\.\d+\.\d+$/.test(version)) { console.error(`Bad version "${version}" (expected MAJOR.MINOR.PATCH, e.g. 1.0.0)`); process.exit(2); }
+if (!/^\d+\.\d+\.\d+(\.\d+)?$/.test(version)) { console.error(`Bad version "${version}" (expected MAJOR.MINOR.PATCH or MAJOR.MINOR.PATCH.FIX, e.g. 1.0.0 or 1.0.0.1)`); process.exit(2); }
 
 // A line that is exactly   <!-- @include some/file.ext -->   is replaced by that file's contents, verbatim.
 const INC = /^<!-- @include (\S+) -->$/;

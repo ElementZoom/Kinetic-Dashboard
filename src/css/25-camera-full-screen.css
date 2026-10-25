@@ -2,15 +2,23 @@
 .cam.fs.nfs{border:0;border-radius:0}
 .cam.fs.nfs:not(.ls){inset:0}
 .cam.fs.nfs:not(.ls) img{height:100vh;height:100dvh}
-.cam.fs.nfs:not(.ls):not(.fclose){animation:camFin .22s ease-out}
-@keyframes camFin{from{opacity:.0;transform:scale(.97)}}
-.cam.fclose:not(.ls){animation:camFout .24s cubic-bezier(.4,0,.2,1) both}
+.camph.snap{visibility:visible;border-radius:20px;border:1px solid var(--line);background:#000 center/cover no-repeat}
+/* opening and closing: the card is solid black from the first frame, so the page behind never shows through it (the Home heading and the camera buttons used to sit on top of each other for a moment).
+   Opening: the card grows a little while its contents fade in. Closing: the buttons fade out quickly while the picture dissolves into the tile that is waiting underneath. */
+.cam.fs{background:#000;animation:none}
+.cam.fs.fin:not(.fclose):not(.ls){animation:camBgIn .2s cubic-bezier(.2,.8,.2,1) both}
+.cam.fs.fin:not(.fclose):not(.ls)>*{animation:camKidsIn .22s ease-out both}
+@keyframes camBgIn{from{transform:scale(.97)}}
+@keyframes camKidsIn{from{opacity:0}}
+.cam.fclose:not(.ls){animation:camBgOut .2s ease-out both}
+.cam.fclose:not(.ls)>*:not(img):not(video){animation:camKidsOut .07s ease-out both}
 .cam.fclose.ls{animation:camFoutLs .24s ease both}
-@keyframes camFout{to{opacity:0;transform:scale(.93)}}
+@keyframes camBgOut{to{opacity:0}}
+@keyframes camKidsOut{to{opacity:0}}
 @keyframes camFoutLs{from{transform:translateX(100vw) rotate(90deg)}to{transform:translateX(100vw) rotate(90deg);opacity:0}}
-.cam.fopen{animation:camFopen .3s cubic-bezier(.2,.8,.2,1)}
-@keyframes camFopen{from{opacity:0;transform:scale(.96)}}
-@media(prefers-reduced-motion:reduce){.cam.fs.nfs,.cam.fclose,.cam.fopen{animation:none!important}}
+.cam.fopen{animation:camFopen .2s ease-out}
+@keyframes camFopen{from{opacity:0}}
+@media(prefers-reduced-motion:reduce){.cam.fs,.cam.fs>*,.cam.fclose,.cam.fclose>*,.cam.fopen{animation:none!important}}
 /* turning to landscape / back: like a native app, fade out over black, switch with no animation, fade in (only opacity moves, so nothing is re-laid-out every frame) */
 html.camsw::before{content:"";position:fixed;inset:0;background:#000;z-index:49}
 html.camsw .cam{transition:opacity .18s ease}
@@ -164,3 +172,40 @@ html:not(#x) .cam .pbth img{position:absolute;inset:0;width:100%;height:100%;max
 .zm{overflow:hidden}
 /* notifications pop-up: live camera cards (32-notifications-popup.js). The card is the same live card as the Security page, without its full-screen and playback buttons: a tap opens the full view */
 .snap.npcam{aspect-ratio:16/9;background:#000}.npcam>.cam{height:100%;border:0;border-radius:inherit}.npcam .cam .fsb,.npcam .cam .cx,.npcam .cam .px,.npcam .cam .aud,.npcam .cam .cpanel{display:none!important}
+
+/* recording players (Playback, Detections): our own controls, so nothing is scaled or doubled when the picture is zoomed or full screen */
+.zc{overflow:hidden}
+.zc:not(.has):not(.dtv) .zgc,.zc:not(.has):not(.dtv) .zpp,.zc:not(.has):not(.dtv) .zbar{display:none}
+.zc .zgc{position:absolute;inset:0;z-index:2;touch-action:none;background:transparent}
+.zc>.zpp{position:absolute;left:50%;top:50%;width:72px;height:72px;margin:-36px 0 0 -36px;border-radius:50%;border:0;padding:0;background:rgba(240,240,240,.92);color:#111;display:flex;align-items:center;justify-content:center;z-index:4;cursor:pointer;box-shadow:0 2px 14px rgba(0,0,0,.4);opacity:0;pointer-events:none;transition:opacity .2s}
+.zc>.zpp.on{opacity:1;pointer-events:auto}
+.zc>.zbar{position:absolute;left:0;right:0;bottom:0;z-index:5;display:flex;align-items:center;gap:6px;padding:22px 8px 6px;background:linear-gradient(transparent,rgba(0,0,0,.72));color:#fff;font:12px var(--mono);opacity:0;pointer-events:none;transition:opacity .2s}
+.zc>.zbar.on{opacity:1;pointer-events:auto}
+.zbar .zt{flex:none;white-space:nowrap;min-width:84px}.zbar .zr{flex:1;min-width:0;height:28px;margin:0;accent-color:#c4b4ff;touch-action:pan-x}
+.zbar .zbt{flex:none;width:36px;height:36px;border:0;border-radius:50%;background:transparent;color:#fff;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer}
+html:not(#x) .zc:fullscreen,html:not(#x) .zc.zfull{position:fixed;inset:0;width:100vw;height:100vh;height:100dvh;max-height:none;aspect-ratio:auto;z-index:2147483000;background:#000;border-radius:0}
+html:not(#x) .zc:fullscreen>video,html:not(#x) .zc.zfull>video{position:static!important;width:100%!important;height:100%!important;max-height:none!important;object-fit:contain}
+
+/* marks on the person / car that moves, and the day strip above the clips (37-detection-marks.js) */
+.mkl{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden}.zm>.mkl{transform:translate(var(--zx,0px),var(--zy,0px)) scale(var(--zs,1));transform-origin:50% 50%}
+.mkb{--k:#5eead4;position:absolute;transition:left .13s linear,top .13s linear,width .13s linear,height .13s linear}.mkb.vehicle{--k:#fbbf24}.mkb.animal{--k:#8be0ae}
+.mkb em{position:absolute;left:-2px;bottom:100%;margin-bottom:3px;font:600 11px var(--mono);font-style:normal;padding:2px 7px;border-radius:6px;background:var(--k);color:#111;white-space:nowrap;transform-origin:left bottom;transform:scale(calc(1/var(--zs,1)))}
+.mkl .mkb{--bw:calc(2px/var(--zs,1))}
+[data-mk=brackets] .mkb{background:linear-gradient(var(--k),var(--k)) 0 0/14px var(--bw),linear-gradient(var(--k),var(--k)) 0 0/var(--bw) 14px,linear-gradient(var(--k),var(--k)) 100% 0/14px var(--bw),linear-gradient(var(--k),var(--k)) 100% 0/var(--bw) 14px,linear-gradient(var(--k),var(--k)) 0 100%/14px var(--bw),linear-gradient(var(--k),var(--k)) 0 100%/var(--bw) 14px,linear-gradient(var(--k),var(--k)) 100% 100%/14px var(--bw),linear-gradient(var(--k),var(--k)) 100% 100%/var(--bw) 14px;background-repeat:no-repeat}
+[data-mk=box] .mkb{border:var(--bw) solid var(--k);border-radius:8px;box-shadow:0 0 12px var(--k),inset 0 0 10px color-mix(in srgb,var(--k) 35%,transparent)}
+[data-mk=glow] .mkb{border-radius:50%;background:radial-gradient(closest-side,color-mix(in srgb,var(--k) 45%,transparent),transparent);transform:scale(1.25)}[data-mk=glow] .mkb em{display:none}
+.mkg{position:absolute;right:8px;top:8px;z-index:1;display:flex;gap:5px;pointer-events:none}.mkg span{font:600 11px var(--mono);padding:3px 8px;border-radius:99px;background:rgba(0,0,0,.65);border:1px solid #5eead4;color:#5eead4}.mkg .vehicle{border-color:#fbbf24;color:#fbbf24}.mkg .animal{border-color:#8be0ae;color:#8be0ae}
+.pbtl{grid-column:1/-1;padding:2px 2px 8px}.pbtr{position:relative;height:14px;border-radius:7px;background:rgba(var(--w),.1);overflow:hidden}
+.pbs{position:absolute;top:0;bottom:0;border-radius:3px;background:#8aa;cursor:pointer;min-width:5px}.pbs.person{background:#5eead4}.pbs.vehicle{background:#fbbf24}.pbs.animal{background:#8be0ae}.pbs.pv{background:linear-gradient(90deg,#5eead4 50%,#fbbf24 50%)}.pbs.on{outline:2px solid #fff;outline-offset:-2px}
+.pbax{display:flex;justify-content:space-between;font:10px var(--mono);color:var(--mut);margin-top:3px}.pblg{display:flex;gap:12px;font:10px var(--mono);color:var(--mut);margin-top:4px}.pblg span:before{content:"";display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:5px;background:#8aa}.pblg .person:before{background:#5eead4}.pblg .vehicle:before{background:#fbbf24}.pblg .animal:before{background:#8be0ae}
+.mkl.ai .mkb{transition-duration:.1s}
+
+.mkd{position:absolute;left:6px;top:6px;z-index:6;font:600 10px/1.2 monospace;color:#fff;background:rgba(0,0,0,.6);padding:2px 5px;border-radius:5px;pointer-events:none}
+
+/* the recordings screen: the close button sits in the heading row (it used to float half over the picture), and the live controls underneath cannot show through */
+.cam.pb.fs{--pbh:68px}
+@media(min-width:761px){.cam.pb.fs{--pbh:76px}}
+.cam.pb.fs .pbh{box-sizing:border-box;min-height:var(--pbh)}
+.cam.pb.fs .cx{top:calc(var(--pbh) / 2 - 22px);right:14px}
+.cam.pb .lbl,.cam.pb .dl,.cam.pb .lv,.cam.pb .fsb,.cam.pb .aud{visibility:hidden}
+.cam.pb .pbk{background:rgb(6,16,22)}

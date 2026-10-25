@@ -1120,6 +1120,10 @@ html[data-roomfx=waves] .rc:nth-child(2n)>.rg::before{animation-delay:-5s}html[d
 @keyframes rfw{to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){html[data-roomfx=waves] .rc>.rg::before,html[data-roomfx=waves] .rc>.rg::after{animation:none}}
 html[data-roomfx=off] .rc>.rg{display:none}
+/* the waves keep rolling while cameras are live (the old glow pauses then). They only move by transform, so they stay on the graphics chip */
+html.camlive[data-roomfx=waves] .rc>.rg::before{animation:rfw calc(var(--ts,4s)*7) linear infinite!important}
+html.camlive[data-roomfx=waves] .rc>.rg::after{animation:rfw calc(var(--ts,4s)*10) linear infinite reverse!important}
+html[data-roomfx=waves] .rc>.rg::before,html[data-roomfx=waves] .rc>.rg::after{will-change:transform}
 /* ===== visual styles (Theme page → Style) ===== */
 .spv{display:block;width:100%;height:74px;border-radius:14px;margin-bottom:10px;position:relative;overflow:hidden;background:radial-gradient(60% 90% at 15% 20%,rgba(var(--mint-rgb),.8),transparent 60%),radial-gradient(60% 90% at 90% 80%,rgba(var(--cool-rgb),.8),transparent 60%),var(--bg2)}
 .spv b,.spv i{position:absolute;display:block}
@@ -1507,15 +1511,23 @@ html[data-style] #npmini{background-color:var(--bg)}
 .cam.fs.nfs{border:0;border-radius:0}
 .cam.fs.nfs:not(.ls){inset:0}
 .cam.fs.nfs:not(.ls) img{height:100vh;height:100dvh}
-.cam.fs.nfs:not(.ls):not(.fclose){animation:camFin .22s ease-out}
-@keyframes camFin{from{opacity:.0;transform:scale(.97)}}
-.cam.fclose:not(.ls){animation:camFout .24s cubic-bezier(.4,0,.2,1) both}
+.camph.snap{visibility:visible;border-radius:20px;border:1px solid var(--line);background:#000 center/cover no-repeat}
+/* opening and closing: the card is solid black from the first frame, so the page behind never shows through it (the Home heading and the camera buttons used to sit on top of each other for a moment).
+   Opening: the card grows a little while its contents fade in. Closing: the buttons fade out quickly while the picture dissolves into the tile that is waiting underneath. */
+.cam.fs{background:#000;animation:none}
+.cam.fs.fin:not(.fclose):not(.ls){animation:camBgIn .2s cubic-bezier(.2,.8,.2,1) both}
+.cam.fs.fin:not(.fclose):not(.ls)>*{animation:camKidsIn .22s ease-out both}
+@keyframes camBgIn{from{transform:scale(.97)}}
+@keyframes camKidsIn{from{opacity:0}}
+.cam.fclose:not(.ls){animation:camBgOut .2s ease-out both}
+.cam.fclose:not(.ls)>*:not(img):not(video){animation:camKidsOut .07s ease-out both}
 .cam.fclose.ls{animation:camFoutLs .24s ease both}
-@keyframes camFout{to{opacity:0;transform:scale(.93)}}
+@keyframes camBgOut{to{opacity:0}}
+@keyframes camKidsOut{to{opacity:0}}
 @keyframes camFoutLs{from{transform:translateX(100vw) rotate(90deg)}to{transform:translateX(100vw) rotate(90deg);opacity:0}}
-.cam.fopen{animation:camFopen .3s cubic-bezier(.2,.8,.2,1)}
-@keyframes camFopen{from{opacity:0;transform:scale(.96)}}
-@media(prefers-reduced-motion:reduce){.cam.fs.nfs,.cam.fclose,.cam.fopen{animation:none!important}}
+.cam.fopen{animation:camFopen .2s ease-out}
+@keyframes camFopen{from{opacity:0}}
+@media(prefers-reduced-motion:reduce){.cam.fs,.cam.fs>*,.cam.fclose,.cam.fclose>*,.cam.fopen{animation:none!important}}
 /* turning to landscape / back: like a native app, fade out over black, switch with no animation, fade in (only opacity moves, so nothing is re-laid-out every frame) */
 html.camsw::before{content:"";position:fixed;inset:0;background:#000;z-index:49}
 html.camsw .cam{transition:opacity .18s ease}
@@ -1669,6 +1681,43 @@ html:not(#x) .cam .pbth img{position:absolute;inset:0;width:100%;height:100%;max
 .zm{overflow:hidden}
 /* notifications pop-up: live camera cards (32-notifications-popup.js). The card is the same live card as the Security page, without its full-screen and playback buttons: a tap opens the full view */
 .snap.npcam{aspect-ratio:16/9;background:#000}.npcam>.cam{height:100%;border:0;border-radius:inherit}.npcam .cam .fsb,.npcam .cam .cx,.npcam .cam .px,.npcam .cam .aud,.npcam .cam .cpanel{display:none!important}
+
+/* recording players (Playback, Detections): our own controls, so nothing is scaled or doubled when the picture is zoomed or full screen */
+.zc{overflow:hidden}
+.zc:not(.has):not(.dtv) .zgc,.zc:not(.has):not(.dtv) .zpp,.zc:not(.has):not(.dtv) .zbar{display:none}
+.zc .zgc{position:absolute;inset:0;z-index:2;touch-action:none;background:transparent}
+.zc>.zpp{position:absolute;left:50%;top:50%;width:72px;height:72px;margin:-36px 0 0 -36px;border-radius:50%;border:0;padding:0;background:rgba(240,240,240,.92);color:#111;display:flex;align-items:center;justify-content:center;z-index:4;cursor:pointer;box-shadow:0 2px 14px rgba(0,0,0,.4);opacity:0;pointer-events:none;transition:opacity .2s}
+.zc>.zpp.on{opacity:1;pointer-events:auto}
+.zc>.zbar{position:absolute;left:0;right:0;bottom:0;z-index:5;display:flex;align-items:center;gap:6px;padding:22px 8px 6px;background:linear-gradient(transparent,rgba(0,0,0,.72));color:#fff;font:12px var(--mono);opacity:0;pointer-events:none;transition:opacity .2s}
+.zc>.zbar.on{opacity:1;pointer-events:auto}
+.zbar .zt{flex:none;white-space:nowrap;min-width:84px}.zbar .zr{flex:1;min-width:0;height:28px;margin:0;accent-color:#c4b4ff;touch-action:pan-x}
+.zbar .zbt{flex:none;width:36px;height:36px;border:0;border-radius:50%;background:transparent;color:#fff;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer}
+html:not(#x) .zc:fullscreen,html:not(#x) .zc.zfull{position:fixed;inset:0;width:100vw;height:100vh;height:100dvh;max-height:none;aspect-ratio:auto;z-index:2147483000;background:#000;border-radius:0}
+html:not(#x) .zc:fullscreen>video,html:not(#x) .zc.zfull>video{position:static!important;width:100%!important;height:100%!important;max-height:none!important;object-fit:contain}
+
+/* marks on the person / car that moves, and the day strip above the clips (37-detection-marks.js) */
+.mkl{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden}.zm>.mkl{transform:translate(var(--zx,0px),var(--zy,0px)) scale(var(--zs,1));transform-origin:50% 50%}
+.mkb{--k:#5eead4;position:absolute;transition:left .13s linear,top .13s linear,width .13s linear,height .13s linear}.mkb.vehicle{--k:#fbbf24}.mkb.animal{--k:#8be0ae}
+.mkb em{position:absolute;left:-2px;bottom:100%;margin-bottom:3px;font:600 11px var(--mono);font-style:normal;padding:2px 7px;border-radius:6px;background:var(--k);color:#111;white-space:nowrap;transform-origin:left bottom;transform:scale(calc(1/var(--zs,1)))}
+.mkl .mkb{--bw:calc(2px/var(--zs,1))}
+[data-mk=brackets] .mkb{background:linear-gradient(var(--k),var(--k)) 0 0/14px var(--bw),linear-gradient(var(--k),var(--k)) 0 0/var(--bw) 14px,linear-gradient(var(--k),var(--k)) 100% 0/14px var(--bw),linear-gradient(var(--k),var(--k)) 100% 0/var(--bw) 14px,linear-gradient(var(--k),var(--k)) 0 100%/14px var(--bw),linear-gradient(var(--k),var(--k)) 0 100%/var(--bw) 14px,linear-gradient(var(--k),var(--k)) 100% 100%/14px var(--bw),linear-gradient(var(--k),var(--k)) 100% 100%/var(--bw) 14px;background-repeat:no-repeat}
+[data-mk=box] .mkb{border:var(--bw) solid var(--k);border-radius:8px;box-shadow:0 0 12px var(--k),inset 0 0 10px color-mix(in srgb,var(--k) 35%,transparent)}
+[data-mk=glow] .mkb{border-radius:50%;background:radial-gradient(closest-side,color-mix(in srgb,var(--k) 45%,transparent),transparent);transform:scale(1.25)}[data-mk=glow] .mkb em{display:none}
+.mkg{position:absolute;right:8px;top:8px;z-index:1;display:flex;gap:5px;pointer-events:none}.mkg span{font:600 11px var(--mono);padding:3px 8px;border-radius:99px;background:rgba(0,0,0,.65);border:1px solid #5eead4;color:#5eead4}.mkg .vehicle{border-color:#fbbf24;color:#fbbf24}.mkg .animal{border-color:#8be0ae;color:#8be0ae}
+.pbtl{grid-column:1/-1;padding:2px 2px 8px}.pbtr{position:relative;height:14px;border-radius:7px;background:rgba(var(--w),.1);overflow:hidden}
+.pbs{position:absolute;top:0;bottom:0;border-radius:3px;background:#8aa;cursor:pointer;min-width:5px}.pbs.person{background:#5eead4}.pbs.vehicle{background:#fbbf24}.pbs.animal{background:#8be0ae}.pbs.pv{background:linear-gradient(90deg,#5eead4 50%,#fbbf24 50%)}.pbs.on{outline:2px solid #fff;outline-offset:-2px}
+.pbax{display:flex;justify-content:space-between;font:10px var(--mono);color:var(--mut);margin-top:3px}.pblg{display:flex;gap:12px;font:10px var(--mono);color:var(--mut);margin-top:4px}.pblg span:before{content:"";display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:5px;background:#8aa}.pblg .person:before{background:#5eead4}.pblg .vehicle:before{background:#fbbf24}.pblg .animal:before{background:#8be0ae}
+.mkl.ai .mkb{transition-duration:.1s}
+
+.mkd{position:absolute;left:6px;top:6px;z-index:6;font:600 10px/1.2 monospace;color:#fff;background:rgba(0,0,0,.6);padding:2px 5px;border-radius:5px;pointer-events:none}
+
+/* the recordings screen: the close button sits in the heading row (it used to float half over the picture), and the live controls underneath cannot show through */
+.cam.pb.fs{--pbh:68px}
+@media(min-width:761px){.cam.pb.fs{--pbh:76px}}
+.cam.pb.fs .pbh{box-sizing:border-box;min-height:var(--pbh)}
+.cam.pb.fs .cx{top:calc(var(--pbh) / 2 - 22px);right:14px}
+.cam.pb .lbl,.cam.pb .dl,.cam.pb .lv,.cam.pb .fsb,.cam.pb .aud{visibility:hidden}
+.cam.pb .pbk{background:rgb(6,16,22)}
 /* artist info: the Artist tab beside the lyrics (Media page, and the lyrics sheet on a phone) and the Artist page in the Now Playing sheet */
 .aitabs{display:inline-flex;gap:2px;padding:4px;border-radius:99px;background:rgba(var(--w),.1);text-transform:none}.aitabs .chip{border:0;background:transparent;box-shadow:none;padding:8px 18px;min-height:0;font:600 12px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink)}.aitabs .chip.on{background:var(--mint);color:var(--bg)}
 .lyh .aitabs{margin:-6px 0}
@@ -1757,7 +1806,7 @@ body.ly-open .mlay.hasly .ar{flex:1;max-height:none;min-height:0}
 // (notification tap such as #view/driveway, #security ...), not the return from the login, and the device has not asked for reduced motion.
 window.brandLogo = function () { var L = window.DASH_LOGO, B = (window.DASH_CONFIG || {}).brand; return L && L.svg ? { svg: L.svg, lockup: !!L.lockup } : B && B.mark ? { svg: B.mark, lockup: false } : null; };   // brand-logo.js wins over brand.mark in config.js
 window.brandMark = function (s) { var g = window.brandLogo(); if (!g) return ""; return g.svg.replace(/\bid="([\w-]+)"/g, 'id="$1' + s + '"').replace(/url\(#([\w-]+)\)/g, 'url(#$1' + s + ')'); };
-window.DASH_VER = "1.6.8";   // the one place to change the version
+window.DASH_VER = "1.10.0";   // the one place to change the version
 (function () { try {
   var B = (window.DASH_CONFIG || {}).brand, el = document.getElementById("bootld"), r = document.documentElement, lp = "on";
   try { lp = localStorage.getItem("dashLogo") || "on"; } catch (e) {}   // Theme page -> "Start-up logo": on | load (no intro) | off (plain spinner, as before)
@@ -1774,7 +1823,7 @@ window.DASH_VER = "1.6.8";   // the one place to change the version
 } catch (e) {} })();
 </script>
 <script>
-window.onerror = function (m, u, l) { document.documentElement.classList.remove("boot"); var s = document.getElementById("st"); s.className = "bad"; s.textContent = "JS ERROR: " + m + " (line " + l + ")"; };
+window.onerror = function (m, u, l) { if (/ResizeObserver loop/i.test(String(m))) return true; /* harmless browser notice, not a fault */ document.documentElement.classList.remove("boot"); var s = document.getElementById("st"); s.className = "bad"; s.textContent = "JS ERROR: " + m + " (line " + l + ")"; };
 
 // ===== CONFIG: lives in config.js (one per house). The engine only fills in safe defaults. =====
 const ENGINE_VERSION = window.DASH_VER;
@@ -2612,7 +2661,7 @@ const fsEl = () => document.fullscreenElement || document.webkitFullscreenElemen
 const reducedMotion = () => matchMedia("(prefers-reduced-motion:reduce)").matches;
 function camNative(el) {   // ask for real full screen; "nfs" = full-bleed look straight away, taken off again if the browser says no
   const root = document.documentElement, rf = root.requestFullscreen || root.webkitRequestFullscreen; if (!rf) return false;
-  if (fsEl()) { el.classList.add("nfs"); return true; }
+  if (fsEl() || CONFIG.camFullscreen === false) { el.classList.add("nfs"); return true; }   // camFullscreen: false = the full-bleed look without asking the browser for real full screen (no system bars moving, so no blink on open / close)
   el.classList.add("nfs");
   let p; try { p = rf.call(root, { navigationUI: "hide" }); } catch (e) { p = Promise.reject(e); }
   Promise.resolve(p).catch(() => el.classList.remove("nfs"));
@@ -2658,10 +2707,10 @@ const camSwapReset = el => { el._sw = 0; el.classList.remove("lf"); document.doc
 function camClose(el, done) {   // smooth close: leave full screen, fade + shrink out, then the card is back in the page and fades in
   if (el.classList.contains("fclose")) return;
   if (reducedMotion() || !el.classList.contains("fs")) { camNativeOff(); czReset(el); camSwapReset(el); camLandOff(el, true); el.classList.remove("nfs"); done(); return; }
+  if (el._ph) { const im = $("img", el); if (im && im.src) { el._ph.style.backgroundImage = 'url("' + im.src + '")'; el._ph.classList.add("snap"); } }   // the empty spot in the page shows the last picture, so the card dissolves into the tile instead of into a hole
   el.classList.add("fclose");   // the real full screen is left after the fade: leaving first blanked the whole screen for a moment
   setTimeout(() => {
     el.classList.remove("fclose", "nfs", "lk"); czReset(el); camSwapReset(el); camLandOff(el, true); done(); camNativeOff();
-    el.classList.add("fopen"); setTimeout(() => el.classList.remove("fopen"), 340);
   }, 240);
 }
 addEventListener("resize", () => { const el = document.querySelector(".cam.ls"); if (el && innerWidth > innerHeight) { el.classList.remove("ls"); document.documentElement.classList.remove("camls"); } });
@@ -2714,7 +2763,7 @@ function mkCam(c, host) {
       return;
     }
     if (!el._ph && el.parentNode && el.parentNode.id !== "vw") { const cs = getComputedStyle(el), ph = document.createElement("div"); ph.className = "camph"; ph.style.height = el.offsetHeight + "px"; ph.style.gridColumn = cs.gridColumnStart + " / " + cs.gridColumnEnd; ph.style.margin = cs.margin; el.parentNode.insertBefore(ph, el); el._ph = ph; }   // the card leaves the page layout while full screen: this holds its place so the page behind does not jump during the fade
-    el.classList.add("fs"); pbPre(c);
+    el.classList.add("fs", "fin"); setTimeout(() => el.classList.remove("fin"), 300); pbPre(c);   // "fin": the opening animation runs once, not again when the card turns or a panel opens
     if (isMobile()) camNative(el);   // phones: straight to real full screen
     const ctl = camCtl(c.id);
     if (ctl && !cp.dataset.b) { cp.innerHTML = '<div class="tg3">' + ctl.map(tileHtml).join("") + '</div>'; cp.dataset.b = 1; }
@@ -3689,6 +3738,7 @@ function keepH(el) {
 ["#gsum", "#npw", "#npmini", "#npfab", "#npbody", "#hnp", "#wx", "#energy", "#hazards"].forEach(q => keepH($(q)));
 // ---------- camera playback (Reolink recordings through HA's media browser) ----------
 function openPb(c) {
+  if (mkAiOn()) mkAiLoad();   // the recognition model starts downloading now, so it is ready when a clip plays
   const el = c.o.el, k = $(".pbk", el);
   clearTimeout(c.rt); stopCam(c); czReset(el);
   if (!k.dataset.b) {
@@ -3696,11 +3746,12 @@ function openPb(c) {
     k.innerHTML = '<div class="pbh"><button class="eb" data-pb="up">' + mdi("chevron-left") + ' BACK</button><b class="pbt">Recordings</b><button class="eb" data-pb="live">' + mdi("circle") + ' LIVE</button></div><div class="pbm"><div class="pbw"><div class="pbf"></div><div class="pbl"></div></div><div class="pbv"><video controls playsinline></video><div class="pbe"></div></div></div>';
     k.onclick = e => {
       e.stopPropagation();   // the list redraws on tap; don't let the click fall through and close the camera
-      const b = e.target.closest("[data-pb]"), it = e.target.closest(".pbi"), pb = el.pb, f = e.target.closest("[data-pf]"), vw = e.target.closest("[data-pview]");
+      const b = e.target.closest("[data-pb]"), it = e.target.closest(".pbi"), pb = el.pb, f = e.target.closest("[data-pf]"), vw = e.target.closest("[data-pview]"), sg = e.target.closest("[data-si]");
       if (f) { pb.filter = f.dataset.pf; pbList(c); }
       else if (vw) { pb.view = pb.view === "list" ? "grid" : "list"; try { localStorage.dashPbView = pb.view; } catch (x) {} pbList(c); }
       else if (b && b.dataset.pb === "up" && pb.st.length > 1) { pb.st.pop(); pb.tx = -1; const p = pb.st[pb.st.length - 1]; pbBrowse(c, p.id, p.t, false); }
       else if (b) closePb(c, true);
+      else if (sg) { const li = $('.pbi[data-i="' + sg.dataset.si + '"]', k), x = pb.items[+sg.dataset.si]; if (li && x && x.can_play) { pbPlay(c, x, li); li.scrollIntoView({ block: "nearest" }); } }
       else if (it) { const x = pb.items[+it.dataset.i]; if (x.can_expand) { pb.tx = 1; pbBrowse(c, x.media_content_id, x.title, true); } else if (x.can_play) pbPlay(c, x, it); }
     };
     $("video", k).onloadeddata = () => { const q = el.pb; if (q) { q.hold = 0; if (q.nx) q.nx(); } };   // clip is up: preview pictures carry on
@@ -3773,7 +3824,7 @@ function pbList(c) {
     const img = '<div class="pbth" data-th="' + i + '">' + (th ? '<img alt="" src="' + esc(th) + '">' : "") + '<b>' + mdi("play") + '</b>' + (p ? '<u>' + esc(p.len) + '</u>' : "") + '</div>';
     return '<div class="pbi pbc2" data-i="' + i + '">' + img + '<div class="pbx"><strong>' + esc(p ? pbClock(p.time) : pbT(x.title)) + '</strong><div>' + tg + '</div></div></div>';
   }).join("");
-  l.innerHTML = rows || pm(pb.items.length ? "Nothing matches this filter" : "No recordings");
+  l.innerHTML = rows ? (playable && mkStyle() ? pbStrip(P, pb.items, pb.filter) : "") + rows : pm(pb.items.length ? "Nothing matches this filter" : "No recordings");
   txGo(l, pb.tx || 0, true); pb.tx = 0;   // same slide / fade the rest of the dashboard uses
   pbThumbs(c);
 }
@@ -3828,10 +3879,10 @@ function pbBrowse(c, id, ttl, push, auto) {
 }
 function pbPlay(c, x, it) {
   const el = c.o.el, v = $(".pbk video", el), e = $(".pbe", el), pv = $(".pbv", el); pv.classList.add("has"); e.textContent = "Loading…"; el.pb.hold = 1;   // preview pictures wait, so the clip gets the whole connection
-  $$(".pbi", el).forEach(n => n.classList.toggle("on", n === it));
+  $$(".pbi", el).forEach(n => n.classList.toggle("on", n === it)); $$(".pbs", el).forEach(n => n.classList.toggle("on", !!it && n.dataset.si === it.dataset.i));
   send({ type: "media_source/resolve_media", media_content_id: x.media_content_id, expires: 3600 }, r => {
     if (!r || !r.url) { e.textContent = "Could not open this recording"; return; }
-    e.textContent = ""; v.removeAttribute("crossorigin"); v.src = (r.url.indexOf("http") === 0 ? "" : CONFIG.url) + r.url; v.play().catch(() => {});
+    e.textContent = ""; v.removeAttribute("crossorigin"); v.src = (r.url.indexOf("http") === 0 ? "" : CONFIG.url) + r.url; v.play().catch(() => {}); const pp = pbParse(x.title); mkAttach(pv, pp ? pp.tags : []);
   });
 }
 
@@ -3886,7 +3937,7 @@ function dtDraw(soft) {
   const P = $("#dtp"); if (!P) return; if (!dtCams().length || CONFIG.detections === false) { P.style.display = "none"; return; } P.style.display = "";
   const all = dtItems(), tyOn = k => DT.types[k], vis = all.filter(x => (DT.cam === "all" || x.cam === DT.cam) && x.p.tags.some(t => tyOn(t)));
   const cnt = k => all.filter(x => x.p.tags.indexOf(k) > -1 && (DT.cam === "all" || x.cam === DT.cam)).length;
-  const body = vis.slice(0, DT.show).map((x, i) => { const su = DT.snapUrl[x.mc], th = su && Date.now() - su.t < 3000000 ? su.u : DT.th[x.mc] || (x.th ? (x.th.indexOf("/") === 0 ? CONFIG.url : "") + x.th : ""); return '<div class="dti" data-dt="play" data-k="' + esc(x.mc) + '" data-cam="' + esc(x.cam) + '" data-ts="' + x.ts + '"><div class="pbth" data-dth="' + esc(x.mc) + '">' + (th ? '<img alt="" src="' + esc(th) + '">' : "") + '<b>' + mdi("play") + '</b><u>' + esc(x.p.len) + '</u></div><div class="pbx"><strong>' + esc(dtName(x.cam)) + '</strong><span>' + esc(dtWhen(x.ts)) + '</span><div>' + x.p.tags.map(t => '<i class="pbt2 ' + t.toLowerCase() + '">' + t + '</i>').join("") + '</div></div></div>'; }).join("");
+  const body = vis.slice(0, DT.show).map((x, i) => { const su = DT.snapUrl[x.mc], th = su && Date.now() - su.t < 3000000 ? su.u : DT.th[x.mc] || (x.th ? (x.th.indexOf("/") === 0 ? CONFIG.url : "") + x.th : ""); return '<div class="dti" data-dt="play" data-k="' + esc(x.mc) + '" data-cam="' + esc(x.cam) + '" data-ts="' + x.ts + '" data-tg="' + esc(x.p.tags.join(",")) + '"><div class="pbth" data-dth="' + esc(x.mc) + '">' + (th ? '<img alt="" src="' + esc(th) + '">' : "") + '<b>' + mdi("play") + '</b><u>' + esc(x.p.len) + '</u></div><div class="pbx"><strong>' + esc(dtName(x.cam)) + '</strong><span>' + esc(dtWhen(x.ts)) + '</span><div>' + x.p.tags.map(t => '<i class="pbt2 ' + t.toLowerCase() + '">' + t + '</i>').join("") + '</div></div></div>'; }).join("");
   const loading = DT.busy ? '<div class="pbn">Looking through the recordings' + (DT.loaded ? " · " + DT.loaded : "") + '…</div>' : "";
   P.innerHTML = '<div class="lbl dthd">Recent detections<button class="eb" data-dt="refresh" aria-label="Refresh">' + mdi("refresh") + '</button></div>' +
     '<div class="pbc dtf">' + [["Person", "PERSON"], ["Vehicle", "VEHICLE"], ["Animal", "ANIMAL"], ["Motion", "OTHER MOTION"]].map(x => '<button class="chip' + (DT.types[x[0]] ? " on" : "") + '" data-dt="type" data-v="' + x[0] + '">' + x[1] + (all.length ? " · " + cnt(x[0]) : "") + '</button>').join("") + '</div>' +
@@ -3938,7 +3989,7 @@ function secTab(t) {   // Security page: LIVE (alarm + cameras) or DETECTIONS (l
 }
 let secPrev = "";
 $("#stabs").onclick = e => { const b = e.target.closest("[data-st]"); if (b && location.hash !== b.dataset.st) location.hash = b.dataset.st; };
-function dtInit() { if (!dtCams().length || CONFIG.detections === false || !ruSec("detections")) return; if (!DT.stored) { DT.stored = 1; THDB.load().then(n => { if (n && location.hash === "#security/detections") dtDraw(true); }); } dtDraw(); if (!DT.t0 || Date.now() - DT.t0 > 5 * 60000) dtLoad(); }
+function dtInit() { if (mkAiOn()) mkAiLoad(); if (!dtCams().length || CONFIG.detections === false || !ruSec("detections")) return; if (!DT.stored) { DT.stored = 1; THDB.load().then(n => { if (n && location.hash === "#security/detections") dtDraw(true); }); } dtDraw(); if (!DT.t0 || Date.now() - DT.t0 > 5 * 60000) dtLoad(); }
 function dtClose() { const m = $("#dtm"), v = $("#dtm video"); m.classList.remove("on"); v.pause(); v.removeAttribute("src"); try { v.load(); } catch (e) {} }
 $("#dtm .evx").innerHTML = mdi("close"); $("#dtm").addEventListener("click", e => { if (e.target.closest("[data-dt=close]") || e.target.id === "dtm") dtClose(); });
 document.addEventListener("keydown", e => { if (e.key === "Escape" && $("#dtm").classList.contains("on")) dtClose(); });
@@ -3951,7 +4002,7 @@ $("#dtp").addEventListener("click", e => {
   else if (k === "refresh") dtLoad(true);
   else if (k === "play") {
     const m = $("#dtm"), v = $("#dtm video"), mc = b.dataset.k; m.classList.add("on"); $("#dtm .dtt").textContent = dtName(b.dataset.cam) + " · " + dtWhen(+b.dataset.ts); $("#dtm .dte").textContent = "Loading…"; v.removeAttribute("src");
-    send({ type: "media_source/resolve_media", media_content_id: mc, expires: 3600 }, r => { if (!m.classList.contains("on")) return; if (!r || !r.url) { $("#dtm .dte").textContent = "Could not open this recording"; return; } $("#dtm .dte").textContent = ""; v.removeAttribute("crossorigin"); v.src = (r.url.indexOf("http") === 0 ? "" : CONFIG.url) + r.url; v.play().catch(() => {}); });
+    send({ type: "media_source/resolve_media", media_content_id: mc, expires: 3600 }, r => { if (!m.classList.contains("on")) return; if (!r || !r.url) { $("#dtm .dte").textContent = "Could not open this recording"; return; } $("#dtm .dte").textContent = ""; v.removeAttribute("crossorigin"); v.src = (r.url.indexOf("http") === 0 ? "" : CONFIG.url) + r.url; v.play().catch(() => {}); mkAttach($("#dtm .dtv"), (b.dataset.tg || "").split(",")); });
   }
 });
 $("#dtm video").onerror = () => { if ($("#dtm").classList.contains("on") && $("#dtm video").getAttribute("src")) $("#dtm .dte").textContent = "This browser can't play this recording"; };
@@ -4864,7 +4915,7 @@ WFX.c = document.getElementById("wfx"); requestAnimationFrame(wfxFrame);
 
 // ---------- cameras: pinch to zoom, drag to move the picture ----------
 // Works on the live picture of a full-screen camera card (Home / Security card, and the #view page) and on the recording players (camera Playback, Detections). Two fingers (or the mouse wheel) zoom,
-// one finger moves the zoomed picture, a tap while zoomed puts it back (a tap on the unzoomed live picture still closes the card). Turn it off with  camZoom: false  in config.js.
+// one finger moves the zoomed picture, a tap while zoomed puts it back (a tap on the unzoomed live picture still closes the card; on a zoomed recording a tap shows the round play / pause button and a double tap puts it back). Turn it off with  camZoom: false  in config.js.
 const CZ = { pts: new Map(), el: null, s0: 1, d0: 0, x0: 0, y0: 0, fx: 0, fy: 0, px: 0, py: 0, moved: 0, t: 0, max: 6 };
 const czOk = el => CONFIG.camZoom !== false && !!el && (el.classList.contains("fs") || el.classList.contains("vf")) && !el.classList.contains("pb") && !el.classList.contains("fclose");
 const czRot = el => !!el.closest(".cam.ls");   // turned with CSS (not by the phone): the card's x axis runs down the screen
@@ -4875,6 +4926,7 @@ function czApply(el, s, x, y) {
   if (s < 1.02) { czReset(el); return; }
   z.s = s; z.x = x; z.y = y; el.style.setProperty("--zs", s.toFixed(3)); el.style.setProperty("--zx", x.toFixed(1) + "px"); el.style.setProperty("--zy", y.toFixed(1) + "px"); el.classList.add("zm");
 }
+const czPlayer = el => !!el && (el.classList.contains("pbv") || el.classList.contains("dtv"));
 function czReset(el) { if (!el) return; el._z = null; el.classList.remove("zm"); el.style.removeProperty("--zs"); el.style.removeProperty("--zx"); el.style.removeProperty("--zy"); }
 function czLocal(el, sx, sy) {   // a screen point as card-centred coordinates
   const r = el.getBoundingClientRect(), vx = sx - (r.left + r.width / 2), vy = sy - (r.top + r.height / 2); return czRot(el) ? { x: vy, y: -vx } : { x: vx, y: vy };
@@ -4886,7 +4938,8 @@ function czBase(el) {   // (re)start from the fingers now down
   else if (a.length) { CZ.px = a[0].x; CZ.py = a[0].y; }
 }
 const czTarget = e => {   // the card / player a touch landed on, or null
-  const t = e.target; if (CONFIG.camZoom === false || !t || !t.closest || t.closest(".cpanel,button,.aud,.pbh,.pbf,.pbl,.dth")) return null;
+  const t = e.target; if (CONFIG.camZoom === false || !t || !t.closest || t.closest(".cpanel,button,.aud,.pbh,.pbf,.pbl,.dth,.zbar")) return null;
+  const gc = t.closest(".zgc"); if (gc) { const q = gc.parentElement; return q.querySelector("video").getAttribute("src") ? q : null; }   // the clear layer over a recording player
   const v = t.closest("img,video"); if (!v) return null; const p = v.parentElement;
   if (p && (p.classList.contains("pbv") || p.classList.contains("dtv"))) {   // a recording player: not over its own play bar
     if (v.tagName !== "VIDEO" || !v.getAttribute("src")) return null; if (v.hasAttribute("controls") && e.clientY > p.getBoundingClientRect().bottom - 70) return null; return p;
@@ -4918,6 +4971,9 @@ document.addEventListener("pointerup", czUp, true); document.addEventListener("p
 document.addEventListener("click", e => {
   const el = czTarget(e); if (!el) return;
   if (Date.now() - CZ.t < 450) { e.stopPropagation(); e.preventDefault(); return; }
+  if (czPlayer(el)) {   // a recording: a tap shows / hides the controls, a double tap on a zoomed picture puts it back
+    e.stopPropagation(); e.preventDefault(); const n = Date.now(); if (el._z && el._z.s > 1 && n - (el._zlast || 0) < 320) { el._zlast = 0; czReset(el); return; } el._zlast = n; czPpShow(el, !el._zshow); return;
+  }
   if (el._z && el._z.s > 1) { czReset(el); e.stopPropagation(); e.preventDefault(); }   // tap while zoomed = back to normal
 }, true);
 ["loadstart", "emptied"].forEach(n => document.addEventListener(n, e => { const p = e.target && e.target.tagName === "VIDEO" ? e.target.parentElement : null; if (p && p._z) czReset(p); }, true));   // a new recording starts unzoomed
@@ -4927,6 +4983,229 @@ document.addEventListener("wheel", e => {
   e.preventDefault(); czApply(el, s, m.x - (m.x - z.x) * (s / z.s), m.y - (m.y - z.y) * (s / z.s));
 }, { capture: true, passive: false });
 addEventListener("resize", () => { document.querySelectorAll(".zm").forEach(czReset); }); addEventListener("hashchange", () => { document.querySelectorAll(".zm").forEach(czReset); });
+
+// ---------- recording players: one set of controls of our own ----------
+// The browser's own controls sit inside the <video>, so they grew, slid around and doubled up (a second play button) when the picture was zoomed or the player went full screen.
+// Camera Playback and Detections now use: a clear layer over the picture (it catches the pinch, the drag and the taps), one round play / pause button in the middle that never changes size, and a bar
+// with the seek line, the time, sound and full screen. Full screen is the player itself, so zooming works there too, in both orientations. Turn it all off with  camZoom: false.
+const CZI = { play: '<svg viewBox="0 0 24 24" width="34" height="34"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>', pause: '<svg viewBox="0 0 24 24" width="34" height="34"><path fill="currentColor" d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>',
+  vol: '<svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M3 9v6h4l5 5V4L7 9zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg>',
+  mute: '<svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M16.5 12A4.5 4.5 0 0 0 14 8v2.2l2.4 2.4c.1-.2.1-.4.1-.6zM19 12c0 .9-.2 1.8-.5 2.600l1.500 1.500A9 9 0 0 0 21 12a9 9 0 0 0-7-8.800v2.100A7 7 0 0 1 19 12zM4.300 3 3 4.300 7.700 9H3v6h4l5 5v-6.700l4.200 4.200c-.7.500-1.400.9-2.200 1.100v2.100a9 9 0 0 0 3.600-1.800l2.100 2.100 1.300-1.300L4.300 3zM12 4 9.900 6.100 12 8.200z"/></svg>',
+  full: '<svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M7 14H5v5h5v-2H7zm-2-4h2V7h3V5H5zm12 7h-3v2h5v-5h-2zM14 5v2h3v3h2V5z"/></svg>',
+  exit: '<svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M5 16h3v3h2v-5H5zm3-8H5v2h5V5H8zm6 11h2v-3h3v-2h-5zm2-11V5h-2v5h5V8z"/></svg>' };
+const czFmt = t => { t = Math.max(0, Math.floor(t || 0)); return Math.floor(t / 60) + ":" + ("0" + (t % 60)).slice(-2); };
+const czFsNow = () => document.fullscreenElement || document.webkitFullscreenElement || null;
+function czUi(el) {
+  const v = el.querySelector("video"), show = v.paused || !!el._zshow;
+  el._zpp.classList.toggle("on", show); el._zbar.classList.toggle("on", show); el._zpp.innerHTML = v.paused ? CZI.play : CZI.pause;
+  el._zmu.innerHTML = v.muted || v.volume === 0 ? CZI.mute : CZI.vol; el._zfs.innerHTML = (czFsNow() === el || el.classList.contains("zfull")) ? CZI.exit : CZI.full;
+  if (!el._zdrag) { const d = v.duration || 0; el._zr.value = d ? Math.round(v.currentTime / d * 1000) : 0; el._zt.textContent = czFmt(v.currentTime) + " / " + czFmt(d); }
+}
+function czPpShow(el, on) { if (!el._zui) return; clearTimeout(el._ztm); el._zshow = on; czUi(el); const v = el.querySelector("video"); if (on && !v.paused) el._ztm = setTimeout(() => { el._zshow = false; czUi(el); }, 3000); }
+function czFull(el) {
+  if (czFsNow() === el) { (document.exitFullscreen || document.webkitExitFullscreen).call(document); return; }
+  if (el.classList.contains("zfull")) { el.classList.remove("zfull"); czReset(el); czUi(el); return; }
+  const rf = el.requestFullscreen || el.webkitRequestFullscreen; let p; if (rf) { try { p = rf.call(el); } catch (x) { p = Promise.reject(x); } }
+  const pseudo = () => { el.classList.add("zfull"); czReset(el); czUi(el); };   // no real full screen here (an iPhone, an iframe that does not allow it): fill the page instead
+  if (!rf) pseudo(); else Promise.resolve(p).catch(pseudo);
+}
+function czEnhance(el) {
+  if (el._zui || CONFIG.camZoom === false) return; const v = el.querySelector("video"); if (!v) return; el._zui = 1;
+  v.removeAttribute("controls"); el.classList.add("zc");
+  const mk = (tag, cls, html) => { const n = document.createElement(tag); n.className = cls; if (html) n.innerHTML = html; if (tag === "button") n.type = "button"; return n; };
+  const gc = mk("div", "zgc"), pp = mk("button", "zpp"), bar = mk("div", "zbar"), tm = mk("span", "zt", "0:00 / 0:00"), rg = mk("input", "zr"), mu = mk("button", "zbt"), fs = mk("button", "zbt");
+  rg.type = "range"; rg.min = 0; rg.max = 1000; rg.value = 0; pp.setAttribute("aria-label", "Play or pause"); mu.setAttribute("aria-label", "Sound"); fs.setAttribute("aria-label", "Full screen");
+  bar.append(tm, rg, mu, fs); el.append(gc, pp, bar); Object.assign(el, { _zpp: pp, _zbar: bar, _zt: tm, _zr: rg, _zmu: mu, _zfs: fs });
+  pp.onclick = e => { e.stopPropagation(); if (v.paused) v.play().catch(() => {}); else v.pause(); czPpShow(el, true); };
+  mu.onclick = e => { e.stopPropagation(); v.muted = !v.muted; czPpShow(el, true); };
+  fs.onclick = e => { e.stopPropagation(); czFull(el); czPpShow(el, true); };
+  rg.oninput = () => { if (v.duration) v.currentTime = rg.value / 1000 * v.duration; el._zt.textContent = czFmt(v.currentTime) + " / " + czFmt(v.duration); clearTimeout(el._ztm); };
+  rg.addEventListener("pointerdown", () => { el._zdrag = 1; }); ["pointerup", "pointercancel", "change"].forEach(n => rg.addEventListener(n, () => { el._zdrag = 0; czPpShow(el, true); }));
+  ["play", "pause", "ended", "timeupdate", "durationchange", "loadedmetadata", "volumechange", "emptied"].forEach(n => v.addEventListener(n, () => czUi(el)));
+  v.addEventListener("play", () => czPpShow(el, true)); czUi(el);
+}
+const czScan = () => document.querySelectorAll(".pbv,.dtv").forEach(czEnhance);
+czScan(); if (window.MutationObserver) { let q = 0; new MutationObserver(() => { if (!q) q = requestAnimationFrame(() => { q = 0; czScan(); }); }).observe(document.body, { childList: true, subtree: true }); }
+["loadstart"].forEach(n => document.addEventListener(n, e => { const p = e.target && e.target.tagName === "VIDEO" ? e.target.parentElement : null; if (p && czPlayer(p)) czEnhance(p); }, true));
+["fullscreenchange", "webkitfullscreenchange"].forEach(n => document.addEventListener(n, () => { document.querySelectorAll(".zm").forEach(czReset); document.querySelectorAll(".zc").forEach(e => { if (e._zui) czUi(e); }); }));
+document.addEventListener("keydown", e => { if (e.key === "Escape") document.querySelectorAll(".zc.zfull").forEach(czFull); });
+// ---------- Playback / Detections: mark the person or car that moves ----------
+// Needs no extra software: the picture is compared with the one a moment ago, and a box follows whatever changed. It only runs for clips the camera tagged Person / Vehicle / Animal, so wind and shadows in plain "Motion" clips are left alone.
+// config.js: detectMark: "brackets" (default) | "box" | "glow" | false
+// config.js: detectAI: true  adds a small object-detection model (TensorFlow.js COCO-SSD, loaded from the internet the first time; nothing is sent anywhere, the picture is only looked at on this device). The movement only says where to look; the model decides what is a person / car / animal, so shadows and light changes stop counting. Needs internet on the viewing device, otherwise the movement boxes are used.
+//   detectAI: { engine: "yolox", model: "/local/yolox_tiny.onnx" }  uses a YOLOX model (more exact, Apache-2.0, file hosted by you; onnxruntime-web is loaded from the internet). size: 416 (nano, tiny) or 640 (s and bigger)
+//   detectAI: { base: "mobilenet_v2" }  (bigger, more exact)   or   { model: "https://…/model.json", tf: "https://…/tf.min.js", coco: "https://…/coco-ssd.min.js" } to host the files yourself
+const mkStyle = () => { const m = CONFIG.detectMark; return m === false ? "" : m === "box" || m === "glow" ? m : "brackets"; };
+const MKN = { Person: "Person", Vehicle: "Car", Animal: "Animal" };
+function mkKind(types, ar, area, prev) {   // which of the camera's tags a box is. One tag: that. Several: a big wide shape is a car, a small one a person (or an animal when wide); once chosen it only changes for a clear reason
+  if (types.length === 1) return types[0];
+  const veh = types.indexOf("Vehicle") > -1, oth = types.filter(t => t !== "Vehicle"), per = types.indexOf("Person") > -1;
+  if (veh && oth.length) { const big = prev === "Vehicle" ? !(area < .03 || ar < .9) : area >= .07 && ar > 1.3; return big ? "Vehicle" : mkSmall(oth, ar, per); }
+  return prev || types[0];
+}
+const mkSmall = (oth, ar, per) => per && !(ar > 1.5 && oth.length > 1) ? "Person" : oth.length > 1 && ar > 1.2 ? oth.filter(t => t !== "Person")[0] || "Person" : oth[0];
+function mkAttach(el, tags) {   // el = .pbv or .dtv; call each time a clip is loaded
+  const v = el && el.querySelector("video"), st = mkStyle(); if (!v) return;
+  el._mkTags = (tags || []).filter(t => MKN[t]); el._mkv = v; el.dataset.mk = st; el._mkTok = (el._mkTok || 0) + 1; el._mkAiBusy = 0; el._mkD = []; el._mkPT = -1;
+  mkClear(el); const on = st && el._mkTags.length; el.classList.toggle("mkon", !!on);
+  if (!on) { if (el._mkg) el._mkg.innerHTML = ""; return; }
+  if (!el._mk) { el._mk = document.createElement("div"); el._mk.className = "mkl"; el._mkg = document.createElement("div"); el._mkg.className = "mkg"; el.append(el._mk, el._mkg); ["seeked", "emptied", "loadstart", "ended"].forEach(n => v.addEventListener(n, () => mkClear(el))); }
+  el._mkg.innerHTML = st === "glow" ? el._mkTags.map(t => '<span class="' + t.toLowerCase() + '">' + MKN[t] + '</span>').join("") : "";
+  if (!el._mkT) el._mkT = setTimeout(() => mkTick(el), 200);
+  mkDbg(el);
+  if (mkAiOn()) { mkAiLoad(); if (!el._mkAiT) el._mkAiT = setTimeout(() => mkAiRun(el), 300); }
+}
+function mkClear(el) { el._mkS = null; el._mkB = []; el._mkD = []; el._mkTok = (el._mkTok || 0) + 1; if (el._mk) el._mk.innerHTML = ""; }
+function mkTick(el) {
+  el._mkT = 0; if (!el.isConnected) return;
+  const v = el._mkv; el._mkT = setTimeout(() => mkTick(el), 130);
+  if (!el.classList.contains("mkon") || !v.getAttribute("src") || v.paused || v.ended || v.seeking || v.readyState < 2 || !v.videoWidth || document.hidden) return;
+  try { mkStep(el, v); } catch (e) { el.classList.remove("mkon"); mkClear(el); }   // a picture the page may not read (other web address without permission): the labels stay, the boxes are off
+}
+function mkStep(el, v) {   // learns what the empty scene looks like and boxes what is different from it, ignoring the whole picture getting lighter or darker
+  const cw = 240, ch = Math.max(16, Math.round(cw * v.videoHeight / v.videoWidth)), C = 4, gx = Math.ceil(cw / C), gy = Math.ceil(ch / C), N = cw * ch;
+  const cv = el._mkc || (el._mkc = document.createElement("canvas")); cv.width = cw; cv.height = ch;
+  const cx = cv.getContext("2d", { willReadFrequently: true }); cx.drawImage(v, 0, 0, cw, ch);
+  const d = cx.getImageData(0, 0, cw, ch).data, r0 = new Float32Array(N), g = new Float32Array(N); for (let i = 0, j = 0; i < d.length; i += 4, j++) r0[j] = (d[i] * 77 + d[i + 1] * 150 + d[i + 2] * 29) / 256;
+  for (let y = 0; y < ch; y++) for (let x = 0; x < cw; x++) { let t = 0, c = 0; for (let dy = -1; dy <= 1; dy++) { const yy = y + dy; if (yy < 0 || yy >= ch) continue; for (let dx = -1; dx <= 1; dx++) { const xx = x + dx; if (xx < 0 || xx >= cw) continue; t += r0[yy * cw + xx]; c++; } } g[y * cw + x] = t / c; }   // 3x3 average: video noise and compression blocks fade out
+  let S = el._mkS; if (!S || S.len !== N) { el._mkS = { len: N, bg: Float32Array.from(g), prev: g, noise: 3 }; el._mkB = []; return; }
+  const bg = S.bg; let gs = 0, gn = 0; for (let i = 0; i < N; i += 3) { const dd = g[i] - bg[i]; if (dd < 25 && dd > -25) { gs += dd; gn++; } } const gain = gn ? gs / gn : 0, T = Math.max(20, S.noise * 3.5);   // gain: the camera's exposure moved
+  const cnt = new Uint16Array(gx * gy), mc = new Uint16Array(gx * gy); let nz = 0, nn = 0;
+  for (let y = 0; y < ch; y++) for (let x = 0; x < cw; x++) { const k = y * cw + x, dd = g[k] - bg[k] - gain, ad = dd < 0 ? -dd : dd, fg = ad > T; if (fg) cnt[((y / C) | 0) * gx + ((x / C) | 0)]++; else { nz += ad; nn++; }
+    const mv = Math.abs(g[k] - S.prev[k]); if (mv > 14) mc[((y / C) | 0) * gx + ((x / C) | 0)]++; bg[k] += (g[k] - bg[k]) * (!fg ? .05 : mv < 6 ? .1 : .008); }   // what keeps still is slowly taken into the background (a parked car, a person who stopped, where someone used to be)
+  if (nn) S.noise += (nz / nn - S.noise) * .1; S.prev = g;
+  const heat = S.heat && S.heat.length === gx * gy ? S.heat : (S.heat = new Float32Array(gx * gy)); S.gx = gx; S.gy = gy; for (let i = 0; i < heat.length; i++) heat[i] = mc[i] >= 2 ? 1 : heat[i] * .9;   // a longer memory of where things moved (about 2 s), for the model to check against
+  const me = S.me && S.me.length === gx * gy ? S.me : (S.me = new Float32Array(gx * gy)); for (let i = 0; i < me.length; i++) me[i] = mc[i] >= 2 ? 1 : me[i] * .5;   // where something moved in the last half second
+  const near = new Uint8Array(gx * gy); for (let k = 0; k < me.length; k++) if (me[k] > .2) { const x = k % gx, y = (k / gx) | 0; for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const a = x + dx, b = y + dy; if (a >= 0 && b >= 0 && a < gx && b < gy) near[b * gx + a] = 1; } }
+  const on = new Uint8Array(gx * gy); let act = 0, all = 0; for (let i = 0; i < on.length; i++) if (cnt[i] >= (mkAiOn() ? 3 : 5)) { all++; if (near[i]) { on[i] = 1; act++; } }   // different from the empty scene AND moving: the trail left where a car just was (still in the background picture for a few seconds) is not an object
+  if (all > on.length * 0.45) { S.bg = Float32Array.from(g); el._mkB = []; return; }   // the whole picture changed (light, scene change): start again
+  const dm = new Uint8Array(gx * gy); for (let k = 0; k < on.length; k++) if (on[k]) { const x = k % gx, y = (k / gx) | 0; for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const a = x + dx, b = y + dy; if (a >= 0 && b >= 0 && a < gx && b < gy) dm[b * gx + a] = 1; } }
+  const seen = new Uint8Array(gx * gy), comps = [];
+  for (let s0 = 0; s0 < on.length; s0++) { if (!on[s0] || seen[s0]) continue; const st = [s0]; seen[s0] = 1; let n = 0, x0 = gx, x1 = 0, y0 = gy, y1 = 0, px = 0;
+    while (st.length) { const k = st.pop(), x = k % gx, y = (k / gx) | 0; if (on[k]) { n++; px += cnt[k]; if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const a = x + dx, b = y + dy, q = b * gx + a; if (a >= 0 && b >= 0 && a < gx && b < gy && dm[q] && !seen[q]) { seen[q] = 1; st.push(q); } } }
+    if (n >= (mkAiOn() ? 2 : 4) || (n >= 3 && px >= 36)) comps.push({ x0: x0, x1: x1, y0: y0, y1: y1, n: n }); }
+  for (let ch2 = 1; ch2;) { ch2 = 0; for (let i = 0; i < comps.length && !ch2; i++) for (let j = i + 1; j < comps.length && !ch2; j++) { const a = comps[i], b = comps[j]; if (a.x0 - 4 <= b.x1 && b.x0 - 4 <= a.x1 && a.y0 - 3 <= b.y1 && b.y0 - 3 <= a.y1) { a.x0 = Math.min(a.x0, b.x0); a.x1 = Math.max(a.x1, b.x1); a.y0 = Math.min(a.y0, b.y0); a.y1 = Math.max(a.y1, b.y1); a.n += b.n; comps.splice(j, 1); ch2 = 1; } } }   // bits close together are one object
+  const found = comps.map(c => { const l = Math.max(0, c.x0 * C - 2), t = Math.max(0, c.y0 * C - 2), rr = Math.min(cw, (c.x1 + 1) * C + 2), bb = Math.min(ch, (c.y1 + 1) * C + 2); return { n: c.n, x: l / cw, y: t / ch, w: (rr - l) / cw, h: (bb - t) / ch }; }).sort((a, b) => b.n - a.n);
+  const B = el._mkB || (el._mkB = []); B.forEach(b => b.hit = 0);
+  found.slice(0, 3).forEach(f => { let best = null, bd = .25; B.forEach(b => { if (b.hit) return; const dd = Math.hypot(b.x + b.w / 2 - f.x - f.w / 2, b.y + b.h / 2 - f.y - f.h / 2); if (dd < bd) { bd = dd; best = b; } });
+    const ar = f.w * v.videoWidth / (f.h * v.videoHeight), ty = el._mkTags;
+    if (best) { ["x", "y", "w", "h"].forEach(k => best[k] += (f[k] - best[k]) * .6); best.hit = 1; best.ttl = 5; best.age++; best.ar += (ar - best.ar) * .25; best.area += (f.w * f.h - best.area) * .25; best.kind = mkKind(ty, best.ar, best.area, best.kind); }
+    else B.push({ x: f.x, y: f.y, w: f.w, h: f.h, hit: 1, ttl: 5, age: 1, ar: ar, area: f.w * f.h, kind: mkKind(ty, ar, f.w * f.h, "") }); });
+  B.forEach(b => { if (!b.hit && B.some(o => o.hit && b.x + b.w / 2 > o.x - .02 && b.x + b.w / 2 < o.x + o.w + .02 && b.y + b.h / 2 > o.y - .02 && b.y + b.h / 2 < o.y + o.h + .02)) b.ttl = 0; });   // a leftover half of an object that is now seen whole
+  B.forEach(b => { if (!b.hit) b.ttl--; }); el._mkB = B.filter(b => b.ttl > 0);
+  if (mkAiOn()) return;   // the model draws (once it is up); until it has failed nothing is drawn from movement alone
+  const B0 = (el._mkB || []).filter(b => b.age >= 3).sort((a, b) => b.w * b.h - a.w * a.h); mkDraw(el, v, B0.filter((b, i) => i < 2 && b.w * b.h >= B0[0].w * B0[0].h * .3));
+}
+const MKC = { person: "Person", car: "Vehicle", truck: "Vehicle", bus: "Vehicle", motorcycle: "Vehicle", bicycle: "Vehicle", dog: "Animal", cat: "Animal", bird: "Animal", horse: "Animal", sheep: "Animal", cow: "Animal", bear: "Animal" };
+const MKAI = { st: 0, m: null, slow: 0 };   // st: 0 not asked yet, 1 loading, 2 ready, -1 not available (offline, blocked, too slow)
+const mkAiCfg = () => { const a = CONFIG.detectAI; return a ? (typeof a === "object" ? a : {}) : null; };
+const mkAiOn = () => !!mkAiCfg() && MKAI.st !== -1;
+const MKY = ["person", "bicycle", "car", "motorcycle", "airplane", "bus", "train", "truck", "boat", "traffic light", "fire hydrant", "stop sign", "parking meter", "bench", "bird", "cat", "dog", "horse", "sheep", "cow", "elephant", "bear"];   // the first COCO classes: all the ones used
+function mkYolox(ort, session, S) {   // YOLOX (Apache-2.0): picture in as 0-255 BGR on a grey square, raw grid out; decoded and merged here
+  const cv = document.createElement("canvas"); cv.width = cv.height = S; const cx = cv.getContext("2d", { willReadFrequently: true }), f = new Float32Array(3 * S * S), N = S * S;
+  const grids = []; [8, 16, 32].forEach(st => { const n = S / st; for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) grids.push([x, y, st]); });
+  return { size: S, async detect(src) {
+    const r = Math.min(S / src.width, S / src.height), nw = Math.round(src.width * r), nh = Math.round(src.height * r);
+    cx.fillStyle = "rgb(114,114,114)"; cx.fillRect(0, 0, S, S); cx.drawImage(src, 0, 0, nw, nh); const d = cx.getImageData(0, 0, S, S).data;
+    for (let i = 0; i < N; i++) { f[i] = d[i * 4 + 2]; f[N + i] = d[i * 4 + 1]; f[2 * N + i] = d[i * 4]; }
+    const out = await session.run({ [session.inputNames[0]]: new ort.Tensor("float32", f, [1, 3, S, S]) }), o = out[session.outputNames[0]].data, K = o.length / grids.length, C = K - 5, cand = [];
+    for (let i = 0; i < grids.length; i++) { const b = i * K, ob = o[b + 4]; if (ob < .1) continue; let bc = 0, bs = 0; for (let c = 0; c < Math.min(C, 24); c++) { const sc = o[b + 5 + c]; if (sc > bs) { bs = sc; bc = c; } } const sc = ob * bs; if (sc < .3 || !MKY[bc]) continue;
+      const g = grids[i], cxx = (o[b] + g[0]) * g[2], cyy = (o[b + 1] + g[1]) * g[2], w = Math.exp(o[b + 2]) * g[2], h = Math.exp(o[b + 3]) * g[2]; cand.push({ c: bc, s: sc, x: (cxx - w / 2) / r, y: (cyy - h / 2) / r, w: w / r, h: h / r }); }
+    cand.sort((a, b) => b.s - a.s); const keep = []; cand.forEach(a => { if (keep.length < 20 && !keep.some(k => k.c === a.c && mkIou({ x: k.x, y: k.y, w: k.w, h: k.h }, { x: a.x, y: a.y, w: a.w, h: a.h }) > .45)) keep.push(a); });
+    return keep.map(k => ({ class: MKY[k.c], score: k.s, bbox: [Math.max(0, k.x), Math.max(0, k.y), Math.min(k.w, src.width - Math.max(0, k.x)), Math.min(k.h, src.height - Math.max(0, k.y))] }));
+  } };
+}
+function mkAiLoad() {
+  const a = mkAiCfg(); if (!a || MKAI.st) return; MKAI.st = 1;
+  const js = u => new Promise((ok, no) => { const s = document.createElement("script"); s.src = u; s.onload = ok; s.onerror = () => no(new Error(u)); document.head.appendChild(s); });
+  if (a.engine === "yolox" || /\.onnx(\?|$)/.test(a.model || "")) {
+    const ou = a.ort || "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.27.0/dist/" + (a.gpu ? "ort.webgpu.min.js" : "ort.wasm.min.js"), S = a.size || 416;   // gpu: true = the phone's graphics chip does the work (WebGPU), and the processor if it can't
+    js(ou).then(() => { const ort = window.ort; ort.env.wasm.wasmPaths = ou.replace(/[^/]*$/, ""); ort.env.wasm.numThreads = Math.min(4, navigator.hardwareConcurrency || 2); return ort.InferenceSession.create(a.model || "/local/yolox_tiny.onnx", { executionProviders: a.gpu ? ["webgpu", "wasm"] : ["wasm"], graphOptimizationLevel: "all" }).then(se => { MKAI.m = mkYolox(ort, se, S); MKAI.size = S; MKAI.st = 2; }); }).catch(e => { MKAI.st = -1; MKAI.err = String(e && e.message || e).slice(0, 60); });
+    return;
+  }
+  js(a.tf || "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js").then(() => js(a.coco || "https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js"))
+    .then(() => window.cocoSsd.load(a.model ? { modelUrl: a.model } : { base: a.base || "lite_mobilenet_v2" })).then(m => { MKAI.m = m; MKAI.size = 300; MKAI.st = 2; }).catch(e => { MKAI.st = -1; MKAI.err = String(e && e.message || e).slice(0, 60); });
+}
+const mkIou = (a, b) => { const w = Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x), h = Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y); return w > 0 && h > 0 ? w * h / (a.w * a.h + b.w * b.h - w * h) : 0; };
+const mkMoved = (el, g) => {   // is the thing really moving: the cells that changed lately inside its box must spread over most of it (a parked car with someone walking past only has a small patch)
+  const S = el._mkS; if (!S || !S.heat) return false; const gx = S.gx, gy = S.gy, x0 = Math.max(0, Math.floor((g.x - g.w * .1) * gx)), x1 = Math.min(gx - 1, Math.ceil((g.x + g.w * 1.1) * gx) - 1), y0 = Math.max(0, Math.floor((g.y - g.h * .1) * gy)), y1 = Math.min(gy - 1, Math.ceil((g.y + g.h * 1.1) * gy) - 1);
+  let ax = gx, bx = -1, ay = gy, by = -1; for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) if (S.heat[y * gx + x] > .25) { if (x < ax) ax = x; if (x > bx) bx = x; if (y < ay) ay = y; if (y > by) by = y; }
+  return bx >= 0 && (bx - ax + 1) * (by - ay + 1) >= (x1 - x0 + 1) * (y1 - y0 + 1) * (g.kind === "Person" ? .25 : .45);
+};
+function mkShift(g, snap) {   // the model needs a moment: the person has walked on since the picture it looked at, so move the box by how far the movement under it went
+  const cx = g.x + g.w / 2, cy = g.y + g.h / 2; let best = null, bd = 1; snap.forEach(q => { if (q.cx < g.x - g.w * .2 || q.cx > g.x + g.w * 1.2 || q.cy < g.y - g.h * .2 || q.cy > g.y + g.h * 1.2) return; const d = Math.hypot(q.cx - cx, q.cy - cy); if (d < bd) { bd = d; best = q; } });
+  if (best) { g.x += best.b.x + best.b.w / 2 - best.cx; g.y += best.b.y + best.b.h / 2 - best.cy; } return !!best;
+}
+const mkAiOk = (kind, score, ar, moved, paused, crop) => kind === "Person"   // ar = height / width
+  ? ar >= .9 && ar <= 5 && score >= (paused ? .5 : moved ? .45 : .7)   // people are upright: a wide bush is not one; standing still, the model has to be really sure
+  : score >= .6;
+async function mkAiJob(el, v, B, paused) {   // B = a moving spot to look at closely, or none = the whole picture
+  const vw = v.videoWidth, vh = v.videoHeight, tok = el._mkTok; let sx = 0, sy = 0, sw = vw, sh = vh, cw = !MKAI.size || MKAI.size === 300 ? 640 : MKAI.size, ch = Math.round(cw * vh / vw);
+  if (B) { const m = Math.min(vw, vh), cs = Math.min(m, Math.max(Math.max(B.w * vw, B.h * vh) * 2.2, m * .3)); sw = sh = cs; sx = Math.max(0, Math.min(vw - cs, (B.x + B.w / 2) * vw - cs / 2)); sy = Math.max(0, Math.min(vh - cs, (B.y + B.h / 2) * vh - cs / 2)); cw = ch = MKAI.size || 300; B.aiT = Date.now(); }   // a close-up of the spot: small people become big enough to recognise
+  const ac = el._mkAc || (el._mkAc = document.createElement("canvas")); ac.width = cw; ac.height = ch; ac.getContext("2d").drawImage(v, sx, sy, sw, sh, 0, 0, cw, ch);
+  const snap = (el._mkB || []).filter(b => b.ttl > 0).map(b => ({ b: b, cx: b.x + b.w / 2, cy: b.y + b.h / 2 })), t0 = Date.now(), res = await MKAI.m.detect(ac, 8, .3), now = Date.now(); MKAI.ms = now - t0; if (tok !== el._mkTok) return;
+  MKAI.slow = now - t0 > (mkAiCfg().maxMs || 1500) ? MKAI.slow + 1 : 0; if (MKAI.slow >= 3) { MKAI.st = -1; MKAI.err = "too slow, " + (now - t0) + "ms"; el._mkD = []; return; }   // this device is too slow for it: back to the movement boxes
+  const D = el._mkD || (el._mkD = []), cr = { x: sx / vw, y: sy / vh, w: sw / vw, h: sh / vh }, hit = new Set(), got = [];
+  res.forEach(r => { const kind = MKC[r.class]; if (!kind || el._mkTags.indexOf(kind) < 0 || r.score < .4 || (kind === "Vehicle" && B)) return;   // a close-up cuts a car in half: cars are only taken from looks at the whole picture
+    const g = { x: (sx + r.bbox[0] * sw / cw) / vw, y: (sy + r.bbox[1] * sh / ch) / vh, w: r.bbox[2] * sw / cw / vw, h: r.bbox[3] * sh / ch / vh, kind: kind, score: r.score };
+    if (mkAiOk(kind, r.score, g.h * vh / (g.w * vw), paused || mkMoved(el, g), paused, !!B)) { g.rc = [g.x + g.w / 2, g.y + g.h / 2]; g.tl = mkShift(g, snap) ? now : t0; got.push(g); } });   // a bush, a pole or a house front the model was only half sure about is not let through
+  got.sort((a, b) => b.score - a.score); for (let i = got.length - 1; i >= 0; i--) if (got.some((o, j) => j < i && mkIou(o, got[i]) > .5)) got.splice(i, 1);   // one thing is one box, whatever the model first thought it was
+  got.forEach(g => { let best = null, bs = .2; D.forEach(d => { if (hit.has(d) || d.kind !== g.kind) return; const q = Math.max(mkIou(d, g), Math.hypot(d.x + d.w / 2 - g.x - g.w / 2, d.y + d.h / 2 - g.y - g.h / 2) < .06 ? .25 : 0); if (q > bs) { bs = q; best = d; } });
+    if (best) { const cx = g.x + g.w / 2, cy = g.y + g.h / 2; if (best.px != null && g.tl - best.pt > 60) { const dt = (g.tl - best.pt) / 1000, vx = Math.max(-1.2, Math.min(1.2, (cx - best.px) / dt)), vy = Math.max(-1.2, Math.min(1.2, (cy - best.py) / dt)); best.vx = best.vx == null ? vx : best.vx * .4 + vx * .6; best.vy = best.vy == null ? vy : best.vy * .4 + vy * .6; } best.px = cx; best.py = cy; best.pt = g.tl; best.tl = g.tl;   // how fast it goes, from the last two looks
+      ["x", "y", "w", "h"].forEach(k => best[k] += (g[k] - best[k]) * .8); best.t = now; best.miss = 0; best.n = (best.n || 1) + 1; best.score += (g.score - best.score) * .5; hit.add(best); best.mv = Math.max(best.mv || 0, Math.hypot(g.rc[0] - best.c0[0], g.rc[1] - best.c0[1])); } else { g.px = g.x + g.w / 2; g.py = g.y + g.h / 2; g.pt = g.tl; g.t = now; g.t0 = now; g.n = paused ? 2 : 1; g.pz = paused; g.miss = 0; g.c0 = [g.x + g.w / 2, g.y + g.h / 2]; g.mv = 0; D.push(g); hit.add(g); } });
+  D.forEach(d => { if (hit.has(d)) return; const cx = d.x + d.w / 2, cy = d.y + d.h / 2; if (!B || (cx > cr.x && cx < cr.x + cr.w && cy > cr.y && cy < cr.y + cr.h)) d.miss = (d.miss || 0) + 1; });   // looked where it was and it is not there
+  hit.forEach(d => mkLink(el, d)); el._mkD = D.filter(d => d.miss < 2 && now - d.t < 3500);
+  if (B) { const near = got.some(g => { const cx = g.x + g.w / 2, cy = g.y + g.h / 2; return cx > B.x - B.w * .5 && cx < B.x + B.w * 1.5 && cy > B.y - B.h * .5 && cy < B.y + B.h * 1.5; }); B.miss = near ? 0 : (B.miss || 0) + 1; if (B.miss >= 2) B.badT = now; }   // movement with nothing in it (a shadow, light): not looked at again for a few seconds
+}
+const mkPred = (d, now) => { if (d.vx == null) return [0, 0]; const t = Math.min(now - (d.tl || d.t), 700) / 1000; return [d.vx * t, d.vy * t]; };   // the box goes on at the speed it had since the last look, so it is where the person is now and not where they were
+function mkFollow(el) {   // between two looks of the model the box moves with the movement under it, so it stays on the person instead of catching up
+  (el._mkD || []).forEach(d => { const b = d.trk; if (!b || b.ttl <= 0 || d.vx != null) return; const cx = b.x + b.w / 2, cy = b.y + b.h / 2; if (d.tx != null) { d.x += cx - d.tx; d.y += cy - d.ty; } d.tx = cx; d.ty = cy; });
+}
+function mkLink(el, d) {   // which moving spot is this person / car standing on
+  let best = null, bd = 1; (el._mkB || []).forEach(b => { if (b.ttl <= 0) return; const cx = b.x + b.w / 2, cy = b.y + b.h / 2; if (cx < d.x - d.w * .2 || cx > d.x + d.w * 1.2 || cy < d.y - d.h * .2 || cy > d.y + d.h * 1.2) return; const q = Math.hypot(cx - d.x - d.w / 2, cy - d.y - d.h / 2); if (q < bd) { bd = q; best = b; } });
+  d.trk = best; d.tx = best ? best.x + best.w / 2 : null; d.ty = best ? best.y + best.h / 2 : null;
+}
+function mkDbg(el) {   // detectAI: { debug: true } (or ?mkdebug in the address) shows what the boxes come from and which version runs, to tell why a box looks wrong
+  const a = mkAiCfg(); if (!(a && a.debug) && !/mkdebug/.test(location.search + location.hash)) return; let c = el.querySelector(":scope>.mkd"); if (!c) { c = document.createElement("div"); c.className = "mkd"; el.appendChild(c); }
+  c.textContent = "v" + (window.DASH_VER || "?") + " · " + (!a ? "no detectAI in config.js: movement only" : MKAI.st === 2 ? "AI " + Math.round(MKAI.ms || 0) + "ms" : MKAI.st === 1 ? "AI loading" : "movement only (" + (MKAI.err || "AI not started") + ")");
+}
+function mkAiRun(el) {
+  el._mkAiT = 0; if (el.isConnected) mkDbg(el); if (!el.isConnected || !mkAiOn()) return; const v = el._mkv; el._mkAiT = setTimeout(() => mkAiRun(el), 100);
+  if (MKAI.st === 1) { mkAiLoad(); return; }
+  if (!el.classList.contains("mkon") || MKAI.st !== 2) return;
+  el._mk.classList.add("ai"); const now = Date.now(); el._mkD = (el._mkD || []).filter(d => now - d.t < 3500); if (!v.paused) mkFollow(el);
+  const L = el._mkD.filter(d => { const lk = d.trk && d.trk.ttl > 0; return now - d.t < (d.miss >= 1 ? 500 : lk ? 1300 : 900) && (d.n >= 2 || d.score >= .7 || d.pz)   // seen twice, or very sure, before it is shown
+    && (d.kind === "Vehicle" ? d.pz || lk && d.mv > Math.max(.04, .6 * Math.max(d.w, d.h * .56)) : d.pz || lk || d.mv > .02 || now - d.t0 < 2000); }).sort((a, b) => b.score - a.score); L.forEach((d, i) => { if (d.kind === "Vehicle" && L.some(p => p.kind === "Person" && p.x + p.w / 2 > d.x && p.x + p.w / 2 < d.x + d.w && p.y + p.h / 2 > d.y && p.y + p.h / 2 < d.y + d.h && d.w * d.h < 5 * p.w * p.h)) d.hide = 1; else d.hide = 0; });   // a "car" hardly bigger than the person standing in it is that person's shadow
+  // a car only counts once it has really travelled; a "person" that never moves and has nothing moving under it is a post or a bush
+  mkDraw(el, v, L.filter((d, i) => !d.hide && !L.some((o, j) => j < i && mkIou(o, d) > .5)).sort((a, b) => b.w * b.h - a.w * a.h).slice(0, 4).map(d => { const q = mkPred(d, now); return Object.assign({}, d, { x: Math.max(0, Math.min(1 - d.w, d.x + q[0])), y: Math.max(0, Math.min(1 - d.h, d.y + q[1])) }); }));
+  if (el._mkAiBusy || !v.getAttribute("src") || v.ended || v.seeking || v.readyState < 2 || !v.videoWidth || document.hidden) return;
+  let job = null;
+  if (!v.paused) {
+    const L = (el._mkB || []).filter(b => b.age >= 1 && now - (b.aiT || 0) > 120 && !(b.miss >= 2 && now - (b.badT || 0) < 5000)).sort((a, b) => (a.aiT || 0) - (b.aiT || 0));
+    L.forEach(b => { if (b.miss >= 2) b.miss = 1; }); if (L.length) job = { b: L[0] }; else if (now - (el._mkFull || 0) > 2000) job = {};
+  } else if (el._mkPT !== v.currentTime) { el._mkPT = v.currentTime; job = {}; }
+  if (!job) return; if (!job.b) el._mkFull = now; el._mkAiBusy = 1;
+  mkAiJob(el, v, job.b, v.paused).catch(() => { MKAI.slow += 1; if (MKAI.slow >= 3) MKAI.st = -1; }).then(() => { el._mkAiBusy = 0; if (el._mkAiT) { clearTimeout(el._mkAiT); el._mkAiT = setTimeout(() => mkAiRun(el), 15); } });
+}
+function mkDraw(el, v, B) {
+  const o = el._mk, W = v.offsetWidth, Hh = v.offsetHeight, r = v.videoWidth / v.videoHeight; if (!o || !W || !Hh) return;
+  let pw = W, ph = Hh; if (W / Hh > r) pw = Hh * r; else ph = W / r; const pl = v.offsetLeft + (W - pw) / 2, pt = v.offsetTop + (Hh - ph) / 2;
+  while (o.children.length < B.length) { const n = document.createElement("div"); n.className = "mkb"; n.innerHTML = "<em></em>"; o.appendChild(n); }
+  while (o.children.length > B.length) o.lastChild.remove();
+  B.forEach((b, i) => { const n = o.children[i], k = b.kind;
+    n.style.cssText = "left:" + (pl + b.x * pw) + "px;top:" + (pt + b.y * ph) + "px;width:" + b.w * pw + "px;height:" + b.h * ph + "px"; const cl = "mkb " + k.toLowerCase(); if (n.className !== cl) { n.className = cl; n.firstChild.textContent = MKN[k]; } });
+}
+// day strip above the list of clips: one coloured bar per clip, where it sits in the day; tap one to play it
+function pbStrip(P, items, filter) {
+  const L = []; items.forEach((x, i) => { const p = P[i]; if (!p || x.can_expand || (filter !== "all" && p.tags.indexOf(filter) < 0)) return; const t = p.time.split(":").map(Number); L.push({ i: i, s: t[0] * 3600 + t[1] * 60 + (t[2] || 0), len: p.secs, tags: p.tags }); });
+  if (L.length < 2) return "";
+  let lo = Math.floor(Math.min.apply(0, L.map(x => x.s)) / 3600) * 3600, hi = Math.ceil(Math.max.apply(0, L.map(x => x.s + x.len)) / 3600) * 3600; if (hi - lo < 4 * 3600) hi = Math.min(86400, lo + 4 * 3600); if (hi - lo < 4 * 3600) lo = hi - 4 * 3600;
+  const hr = s => { const h = Math.round(s / 3600) % 24; return (h % 12 || 12) + (h < 12 ? "am" : "pm"); }, ty = a => a.indexOf("Person") > -1 && a.indexOf("Vehicle") > -1 ? "pv" : a.indexOf("Person") > -1 ? "person" : a.indexOf("Vehicle") > -1 ? "vehicle" : a.indexOf("Animal") > -1 ? "animal" : "motion", used = {};
+  const segs = L.map(x => { const k = ty(x.tags); used[k] = 1; return '<i class="pbs ' + k + '" data-si="' + x.i + '" style="left:' + ((x.s - lo) / (hi - lo) * 100).toFixed(2) + '%;width:' + Math.max(1.2, x.len / (hi - lo) * 100).toFixed(2) + '%" title="' + esc(pbClock(Math.floor(x.s / 3600) + ":" + ("0" + Math.floor(x.s % 3600 / 60)).slice(-2))) + '"></i>'; }).join("");
+  const lg = [["person", "Person"], ["vehicle", "Car"], ["animal", "Animal"], ["motion", "Other"]].filter(a => used[a[0]] || (a[0] === "person" && used.pv) || (a[0] === "vehicle" && used.pv)).map(a => '<span class="' + a[0] + '">' + a[1] + '</span>').join("");
+  return '<div class="pbtl"><div class="pbtr">' + segs + '</div><div class="pbax"><span>' + hr(lo) + '</span><span>' + hr((lo + hi) / 2) + '</span><span>' + hr(hi) + '</span></div><div class="pblg">' + lg + '</div></div>';
+}
 // ---------- energy ----------
 const EN_COL = ["#6bb8ff", "#8ff0c4", "#ffd166", "#ef476f", "#cdb4db", "#f78c6b", "#06d6a0", "#a2d2ff", "#ffafcc", "#b8f2e6"];
 let en = { r: "day", o: 0, prefs: null, data: null, mode: "bar", err: "", busy: false };

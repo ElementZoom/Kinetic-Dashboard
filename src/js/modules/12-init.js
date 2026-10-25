@@ -33,7 +33,7 @@ const fsEl = () => document.fullscreenElement || document.webkitFullscreenElemen
 const reducedMotion = () => matchMedia("(prefers-reduced-motion:reduce)").matches;
 function camNative(el) {   // ask for real full screen; "nfs" = full-bleed look straight away, taken off again if the browser says no
   const root = document.documentElement, rf = root.requestFullscreen || root.webkitRequestFullscreen; if (!rf) return false;
-  if (fsEl()) { el.classList.add("nfs"); return true; }
+  if (fsEl() || CONFIG.camFullscreen === false) { el.classList.add("nfs"); return true; }   // camFullscreen: false = the full-bleed look without asking the browser for real full screen (no system bars moving, so no blink on open / close)
   el.classList.add("nfs");
   let p; try { p = rf.call(root, { navigationUI: "hide" }); } catch (e) { p = Promise.reject(e); }
   Promise.resolve(p).catch(() => el.classList.remove("nfs"));
@@ -79,10 +79,10 @@ const camSwapReset = el => { el._sw = 0; el.classList.remove("lf"); document.doc
 function camClose(el, done) {   // smooth close: leave full screen, fade + shrink out, then the card is back in the page and fades in
   if (el.classList.contains("fclose")) return;
   if (reducedMotion() || !el.classList.contains("fs")) { camNativeOff(); czReset(el); camSwapReset(el); camLandOff(el, true); el.classList.remove("nfs"); done(); return; }
+  if (el._ph) { const im = $("img", el); if (im && im.src) { el._ph.style.backgroundImage = 'url("' + im.src + '")'; el._ph.classList.add("snap"); } }   // the empty spot in the page shows the last picture, so the card dissolves into the tile instead of into a hole
   el.classList.add("fclose");   // the real full screen is left after the fade: leaving first blanked the whole screen for a moment
   setTimeout(() => {
     el.classList.remove("fclose", "nfs", "lk"); czReset(el); camSwapReset(el); camLandOff(el, true); done(); camNativeOff();
-    el.classList.add("fopen"); setTimeout(() => el.classList.remove("fopen"), 340);
   }, 240);
 }
 addEventListener("resize", () => { const el = document.querySelector(".cam.ls"); if (el && innerWidth > innerHeight) { el.classList.remove("ls"); document.documentElement.classList.remove("camls"); } });
@@ -135,7 +135,7 @@ function mkCam(c, host) {
       return;
     }
     if (!el._ph && el.parentNode && el.parentNode.id !== "vw") { const cs = getComputedStyle(el), ph = document.createElement("div"); ph.className = "camph"; ph.style.height = el.offsetHeight + "px"; ph.style.gridColumn = cs.gridColumnStart + " / " + cs.gridColumnEnd; ph.style.margin = cs.margin; el.parentNode.insertBefore(ph, el); el._ph = ph; }   // the card leaves the page layout while full screen: this holds its place so the page behind does not jump during the fade
-    el.classList.add("fs"); pbPre(c);
+    el.classList.add("fs", "fin"); setTimeout(() => el.classList.remove("fin"), 300); pbPre(c);   // "fin": the opening animation runs once, not again when the card turns or a panel opens
     if (isMobile()) camNative(el);   // phones: straight to real full screen
     const ctl = camCtl(c.id);
     if (ctl && !cp.dataset.b) { cp.innerHTML = '<div class="tg3">' + ctl.map(tileHtml).join("") + '</div>'; cp.dataset.b = 1; }

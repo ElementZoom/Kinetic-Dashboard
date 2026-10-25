@@ -1,5 +1,6 @@
 // ---------- camera playback (Reolink recordings through HA's media browser) ----------
 function openPb(c) {
+  if (mkAiOn()) mkAiLoad();   // the recognition model starts downloading now, so it is ready when a clip plays
   const el = c.o.el, k = $(".pbk", el);
   clearTimeout(c.rt); stopCam(c); czReset(el);
   if (!k.dataset.b) {
@@ -7,11 +8,12 @@ function openPb(c) {
     k.innerHTML = '<div class="pbh"><button class="eb" data-pb="up">' + mdi("chevron-left") + ' BACK</button><b class="pbt">Recordings</b><button class="eb" data-pb="live">' + mdi("circle") + ' LIVE</button></div><div class="pbm"><div class="pbw"><div class="pbf"></div><div class="pbl"></div></div><div class="pbv"><video controls playsinline></video><div class="pbe"></div></div></div>';
     k.onclick = e => {
       e.stopPropagation();   // the list redraws on tap; don't let the click fall through and close the camera
-      const b = e.target.closest("[data-pb]"), it = e.target.closest(".pbi"), pb = el.pb, f = e.target.closest("[data-pf]"), vw = e.target.closest("[data-pview]");
+      const b = e.target.closest("[data-pb]"), it = e.target.closest(".pbi"), pb = el.pb, f = e.target.closest("[data-pf]"), vw = e.target.closest("[data-pview]"), sg = e.target.closest("[data-si]");
       if (f) { pb.filter = f.dataset.pf; pbList(c); }
       else if (vw) { pb.view = pb.view === "list" ? "grid" : "list"; try { localStorage.dashPbView = pb.view; } catch (x) {} pbList(c); }
       else if (b && b.dataset.pb === "up" && pb.st.length > 1) { pb.st.pop(); pb.tx = -1; const p = pb.st[pb.st.length - 1]; pbBrowse(c, p.id, p.t, false); }
       else if (b) closePb(c, true);
+      else if (sg) { const li = $('.pbi[data-i="' + sg.dataset.si + '"]', k), x = pb.items[+sg.dataset.si]; if (li && x && x.can_play) { pbPlay(c, x, li); li.scrollIntoView({ block: "nearest" }); } }
       else if (it) { const x = pb.items[+it.dataset.i]; if (x.can_expand) { pb.tx = 1; pbBrowse(c, x.media_content_id, x.title, true); } else if (x.can_play) pbPlay(c, x, it); }
     };
     $("video", k).onloadeddata = () => { const q = el.pb; if (q) { q.hold = 0; if (q.nx) q.nx(); } };   // clip is up: preview pictures carry on
@@ -84,7 +86,7 @@ function pbList(c) {
     const img = '<div class="pbth" data-th="' + i + '">' + (th ? '<img alt="" src="' + esc(th) + '">' : "") + '<b>' + mdi("play") + '</b>' + (p ? '<u>' + esc(p.len) + '</u>' : "") + '</div>';
     return '<div class="pbi pbc2" data-i="' + i + '">' + img + '<div class="pbx"><strong>' + esc(p ? pbClock(p.time) : pbT(x.title)) + '</strong><div>' + tg + '</div></div></div>';
   }).join("");
-  l.innerHTML = rows || pm(pb.items.length ? "Nothing matches this filter" : "No recordings");
+  l.innerHTML = rows ? (playable && mkStyle() ? pbStrip(P, pb.items, pb.filter) : "") + rows : pm(pb.items.length ? "Nothing matches this filter" : "No recordings");
   txGo(l, pb.tx || 0, true); pb.tx = 0;   // same slide / fade the rest of the dashboard uses
   pbThumbs(c);
 }
@@ -139,10 +141,10 @@ function pbBrowse(c, id, ttl, push, auto) {
 }
 function pbPlay(c, x, it) {
   const el = c.o.el, v = $(".pbk video", el), e = $(".pbe", el), pv = $(".pbv", el); pv.classList.add("has"); e.textContent = "Loading…"; el.pb.hold = 1;   // preview pictures wait, so the clip gets the whole connection
-  $$(".pbi", el).forEach(n => n.classList.toggle("on", n === it));
+  $$(".pbi", el).forEach(n => n.classList.toggle("on", n === it)); $$(".pbs", el).forEach(n => n.classList.toggle("on", !!it && n.dataset.si === it.dataset.i));
   send({ type: "media_source/resolve_media", media_content_id: x.media_content_id, expires: 3600 }, r => {
     if (!r || !r.url) { e.textContent = "Could not open this recording"; return; }
-    e.textContent = ""; v.removeAttribute("crossorigin"); v.src = (r.url.indexOf("http") === 0 ? "" : CONFIG.url) + r.url; v.play().catch(() => {});
+    e.textContent = ""; v.removeAttribute("crossorigin"); v.src = (r.url.indexOf("http") === 0 ? "" : CONFIG.url) + r.url; v.play().catch(() => {}); const pp = pbParse(x.title); mkAttach(pv, pp ? pp.tags : []);
   });
 }
 

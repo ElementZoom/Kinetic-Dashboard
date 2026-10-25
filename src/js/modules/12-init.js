@@ -131,7 +131,7 @@ function mkCam(c, host) {
     if (e.target.closest(".fsb")) { camLand(el); return; }
     if (el.classList.contains("fs")) {   // close
       mkLiveOff(el); closePb(c, false); c.snd = false; micOff(c); snd.classList.remove("on"); snd.innerHTML = AUD.off; o.vid.muted = true;
-      camClose(el, () => { el.classList.remove("fs"); if (el._ph) { el._ph.remove(); el._ph = null; } if (isMobile() && CONFIG.mobileLive === false) { clearTimeout(c.rt); stopCam(c); } else liveCam(c); });
+      camClose(el, () => { el.classList.remove("fs"); if (el._ph) { el._ph.remove(); el._ph = null; } if (isMobile() && CONFIG.mobileLive === false) { clearTimeout(c.rt); stopCam(c); } else liveCam(c, true); });
       return;
     }
     if (!el._ph && el.parentNode && el.parentNode.id !== "vw") { const cs = getComputedStyle(el), ph = document.createElement("div"); ph.className = "camph"; ph.style.height = el.offsetHeight + "px"; ph.style.gridColumn = cs.gridColumnStart + " / " + cs.gridColumnEnd; ph.style.margin = cs.margin; el.parentNode.insertBefore(ph, el); el._ph = ph; }   // the card leaves the page layout while full screen: this holds its place so the page behind does not jump during the fade
@@ -139,7 +139,7 @@ function mkCam(c, host) {
     if (isMobile()) camNative(el);   // phones: straight to real full screen
     const ctl = camCtl(c.id);
     if (ctl && !cp.dataset.b) { cp.innerHTML = '<div class="tg3">' + ctl.map(tileHtml).join("") + '</div>'; cp.dataset.b = 1; }
-    updTiles(); liveCam(c); mkLiveOn(el); };
+    updTiles(); liveCam(c, true); mkLiveOn(el); };
   host.appendChild(el);
 }
 CONFIG.cameras.forEach(c => mkCam(c, $("#cams")));

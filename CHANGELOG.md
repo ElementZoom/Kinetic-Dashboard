@@ -4,6 +4,11 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
+## 1.12.1 - 2026-10-25
+
+### Changed
+- **Full screen no longer freezes the picture while the clear stream connects:** the light stream keeps playing until the clear one has its first picture, then it swaps over (and the same on the way back). It used to stop the light stream first and show a still picture for the few seconds the clear stream took. If the clear stream does not arrive within 8 seconds, the light one stays. The connection time itself is unchanged; for a shorter wait, a shorter keyframe interval on the camera's main stream and H.264 help.
+
 ## 1.12.0 - 2026-10-25
 
 ### Added

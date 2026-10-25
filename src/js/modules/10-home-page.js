@@ -264,7 +264,9 @@ function camEnt(c) {
   const f = c.id.replace(/_clear$/, "_fluent"); return f !== c.id && states[f] ? f : c.id;
 }
 function camLiveSync() { document.documentElement.classList.toggle("camlive", CONFIG.cameras.concat(CONFIG.security, VWC, NPC).some(c => c.live)); }   // lets CSS pause decorative effects while video is playing
+function dropOld(c) { clearTimeout(c.swapT); if (c.old) { try { c.old.pc.close(); } catch (x) {} delete subs[c.old.sub]; c.old = null; } }   // the stream that was playing until the new one had its first picture
 function stopCam(c) {
+  dropOld(c);
   if (c.pc) { try { c.pc.close(); } catch (x) {} c.pc = null; }
   if (c.sub) { delete subs[c.sub]; c.sub = 0; }
   const o = c.o; c.live = false; o.el.classList.remove("live"); o.vid.classList.remove("on"); o.vid.srcObject = null; camLiveSync();
@@ -272,14 +274,20 @@ function stopCam(c) {
 function stopCams() { CONFIG.cameras.concat(CONFIG.security, VWC, NPC).forEach(c => { clearTimeout(c.rt); stopCam(c); micOff(c); }); }
 function startCams() { if (onView()) { VW.mode = ""; applyView(); return; } if (onHome() && !camsOn()) return; cams(); camList().forEach((c, i) => { if (!isMobile() || (CONFIG.mobileLive !== false && c.o.el._vis !== false)) { clearTimeout(c.rt); c.rt = setTimeout(() => { if (camPage()) liveCam(c); }, i * 160); } }); }   // staggered so several streams do not negotiate and decode at once   // phones: live too, but only for tiles on screen (CONFIG.mobileLive:false = snapshots, live on tap)
 function retryCam(c, ms) { stopCam(c); clearTimeout(c.rt); c.rt = setTimeout(() => { if ((c.np && document.body.classList.contains("np-open")) || camPage() && (onSec() || camsOn() || onView()) && (!isMobile() || c.o.el.classList.contains("fs") || (CONFIG.mobileLive !== false && c.o.el._vis !== false))) liveCam(c); }, ms); }
-function liveCam(c) {   // HA built-in WebRTC (go2rtc); falls back to snapshots if it fails
-  stopCam(c); clearTimeout(c.rt);
+function liveCam(c, up) {   // HA built-in WebRTC (go2rtc); falls back to snapshots if it fails. up = a switch between the light and the clear stream: the picture that is playing keeps playing until the new one has its first picture
   const o = c.o, sid = { v: null }, q = [], eid = camEnt(c);
+  dropOld(c); if (up && c.live && c.pc && o.vid.srcObject && c.eid && c.eid !== eid) { c.old = { pc: c.pc, sub: c.sub }; c.pc = null; c.sub = 0; clearTimeout(c.rt); } else stopCam(c);
+  clearTimeout(c.rt); c.eid = eid;
   o.vid.muted = !(c.snd && (o.el.classList.contains("fs") || o.el.classList.contains("vf")));
   send({ type: "camera/webrtc/get_client_config", entity_id: eid }, cfg => {
     try {
       const pc = new RTCPeerConnection(cfg.configuration); c.pc = pc;
-      pc.ontrack = e => { if (e.track.kind === "video") { o.vid.srcObject = e.streams[0] || new MediaStream([e.track]); o.vid.play().catch(() => {}); } };
+      if (c.old) c.swapT = setTimeout(() => { if (c.pc !== pc || !c.old) return; try { pc.close(); } catch (x) {} delete subs[c.sub]; c.pc = c.old.pc; c.sub = c.old.sub; c.old = null; c.eid = ""; }, 8000);   // the new picture never came: the one that was playing stays
+      pc.ontrack = e => { if (e.track.kind !== "video") return; const ms = e.streams[0] || new MediaStream([e.track]);
+        if (!c.old) { o.vid.srcObject = ms; o.vid.play().catch(() => {}); return; }
+        const tv = document.createElement("video"); tv.muted = true; tv.playsInline = true; tv.srcObject = ms;   // the new picture is waited for off screen
+        tv.addEventListener("playing", () => { tv.srcObject = null; if (c.pc !== pc) return; o.vid.srcObject = ms; o.vid.play().catch(() => {}); dropOld(c); }, { once: true }); tv.play().catch(() => {});
+        };
       pc.addTransceiver("video", { direction: "recvonly" });
       const mt = c.mic && c.mic.getAudioTracks()[0];
       if (mt) pc.addTransceiver(mt, { direction: "sendrecv", streams: [c.mic] }); else pc.addTransceiver("audio", { direction: "recvonly" }); pc.createDataChannel("dataSendChannel");

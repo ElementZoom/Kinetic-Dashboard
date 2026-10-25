@@ -11,6 +11,7 @@ function drawPalette() {
     sec("Font", '<div class="stg">' + FONTS.map(x => '<button class="eb fnb' + (FONT === x[0] ? " sel" : "") + '" data-font="' + x[0] + '" style="font-family:' + x[3] + '"><b>22.5°</b><span>' + x[1] + '</span><small>' + x[2] + '</small></button>').join("") + '</div>') +
     sec("Mode", '<div class="seg" style="margin-top:12px;flex-wrap:wrap">' + [["dark", "DARK"], ["light", "LIGHT"], ["auto", "FOLLOW DEVICE"], ["sun", "FOLLOW SUN"], ["time", "SCHEDULE"]].map(x => '<button class="eb' + (PAL.mode === x[0] ? " on" : "") + '" data-mode="' + x[0] + '">' + x[1] + '</button>').join("") + '</div>' +
       (PAL.mode === "time" ? '<div class="lbl" style="margin-top:12px;text-transform:none;letter-spacing:0;display:flex;gap:10px;align-items:center;flex-wrap:wrap">Dark from <input type="time" data-tm="from" value="' + esc(PAL.from || "18:00") + '"> until <input type="time" data-tm="to" value="' + esc(PAL.to || "06:00") + '"></div>' : "") + (PAL.mode === "sun" ? '<div class="lbl" style="margin-top:12px;text-transform:none;letter-spacing:0">Dark from sunset to sunrise, from <b>sun.sun</b> in Home Assistant' + (states["sun.sun"] ? "" : " (not found, using 6am–7pm)") + '. Saved on this device only.</div>' : "")) +
+    sznSec(sec) +
     sec("Clock", '<div class="seg" style="margin-top:12px">' + [["auto", "DEVICE"], ["12", "12-HOUR"], ["24", "24-HOUR"]].map(x => '<button class="eb' + (CLOCK === x[0] ? " on" : "") + '" data-clock="' + x[0] + '">' + x[1] + '</button>').join("") + '</div><div class="lbl" style="margin-top:10px;text-transform:none;letter-spacing:0">How times are shown on this dashboard. DEVICE follows the language of this phone or tablet. Saved on this device only.</div>') +
     (brandOn() ? sec("Start-up logo", '<div class="seg" style="margin-top:12px">' + [["on", "LOGO + INTRO"], ["load", "WHILE LOADING ONLY"], ["off", "OFF"]].map(x => '<button class="eb' + (logoPref() === x[0] ? " on" : "") + '" data-logo="' + x[0] + '">' + x[1] + '</button>').join("") + '</div><div class="lbl" style="margin-top:10px;text-transform:none;letter-spacing:0">Applies the next time the dashboard starts. Saved on this device only.</div>') : "") +
     (ME.admin ? accSec(sec) : "") +
@@ -31,6 +32,7 @@ $("#theme").onclick = e => {
   const ac = e.target.closest("[data-acc]"); if (ac) { accClick(ac); return; }
   if (fn) { themeDip(() => { FONT = fn.dataset.font; try { localStorage.setItem("dashFont", FONT); } catch (_) {} applyFont(); drawPalette(); }); return; }
   if (sy) { themeDip(() => { STYLE = sy.dataset.style; try { localStorage.setItem("dashStyle", STYLE); } catch (_) {} applyStyle(); drawPalette(); }); return; }
+  if (sznClick(e)) return;
   const ck = e.target.closest("button[data-clock]");
   if (ck) { CLOCK = ck.dataset.clock; try { localStorage.setItem("dashClock", CLOCK); } catch (_) {} tick(); drawPalette(); queueHome(); return; }
   const lg = e.target.closest("button[data-logo]");

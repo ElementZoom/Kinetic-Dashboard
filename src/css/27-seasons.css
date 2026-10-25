@@ -1,0 +1,21 @@
+/* seasonal themes (40-seasons.js): the decorations sit in one layer above the page and below pop-ups and full-screen cameras. They never take a tap.
+   The falling / floating bits (.fx) are switched off while any camera is live and under reduced motion; the rest stands still then. */
+#szn{position:fixed;inset:0;z-index:20;pointer-events:none;overflow:hidden}
+#szn[hidden]{display:none}
+#szn i,#szn svg{position:absolute;display:block;pointer-events:none}
+#szn i{font-style:normal}
+html.camlive #szn .fx{display:none}
+html.camlive #szn *{animation-play-state:paused!important}
+@media(prefers-reduced-motion:reduce){#szn .fx{display:none}#szn *{animation:none!important}}
+@keyframes sznFall{from{transform:translate3d(0,-8vh,0) rotate(0)}to{transform:translate3d(var(--dx,0px),112vh,0) rotate(var(--r,0deg))}}
+@keyframes sznRise{from{transform:translate3d(0,0,0)}to{transform:translate3d(var(--dx,0px),-118vh,0)}}
+@keyframes sznTw{0%,100%{opacity:.3}50%{opacity:1}}
+@keyframes sznSway{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
+@keyframes sznDrift{from{transform:translate3d(-14vw,0,0)}to{transform:translate3d(114vw,var(--dy,0px),0)}}
+@keyframes sznFlap{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.45)}}
+@keyframes sznBurst{0%{transform:scale(.15);opacity:0}10%{opacity:1}55%{opacity:.95}100%{transform:scale(1.2);opacity:0}}
+@keyframes sznShoot{0%,86%{transform:translate3d(0,0,0) rotate(28deg);opacity:0}88%{opacity:1}100%{transform:translate3d(46vw,26vw,0) rotate(28deg);opacity:0}}
+@keyframes sznFog{0%,100%{transform:translateX(-4vw)}50%{transform:translateX(4vw)}}
+#szn .sway{transform-origin:50% 0;animation:sznSway 4.5s ease-in-out infinite}
+#szn .tw{animation:sznTw 2.6s ease-in-out infinite}
+#szn .fx.dot{border-radius:50%}

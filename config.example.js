@@ -60,6 +60,8 @@ window.DASH_CONFIG = {
   mobileNav: "drawer",               // phones: "drawer" | "tabs"
   tileStyle: "line",                 // "line" | "edge" | "dot" | "text"
   clock: "auto",                     // times: "auto" (the device's language decides) | "12" | "24". Each device can change it on the Theme page
+  seasonal: false,                  // true: Christmas, New Year, Halloween, Valentine's, Matariki, Easter, Diwali and Chinese New Year change the colours and add a light decoration for their days (hidden on camera pages, still while a camera is live). Each device can switch it on the Theme page
+  // seasons: { christmas: ["12-05", "12-26"], matariki: false, diwali: { 2031: "11-14" } },   // optional: change a season's dates (MM-DD, MM-DD), turn one off with false, or give the day for a year past the built-in table
   calNames: { "calendar.alex": "Alex", "calendar.sam": "Sam" },
   outside: "",
   weather: "weather.home",

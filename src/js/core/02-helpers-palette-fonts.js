@@ -26,6 +26,7 @@ const GEN = (h, s, la) => ({ dark: C([hsl(h, 8 * s, 9), hsl(h, 42 * s, 17), hsl(
 Object.assign(PAL_PRE, { Magenta: GEN(315, 1), Plum: GEN(290, .8), Lavender: GEN(268, .75), Mint: GEN(152, 1, 27), Sage: GEN(125, .45), Gold: GEN(48, 1, 27), Sand: GEN(38, .5), Rose: GEN(350, .7), Slate: GEN(212, .35), Graphite: GEN(0, 0) });
 const PAL_DEF = { mode: "dark", dark: Object.assign({}, PAL_PRE.Violet.dark), light: Object.assign({}, PAL_PRE.Violet.light), temp: ["#ccc2dc", "#a8c7fa", "#9ed6f0", "#b6ddb8", "#f9de8e", "#ffb88c", "#f2a09b"] };
 let PAL = JSON.parse(JSON.stringify(PAL_DEF));
+let SEASON = null;   // the seasonal theme that is on right now (see 40-seasons.js): its colours replace the palette while it lasts
 try {
   const o = JSON.parse(localStorage.getItem("dashPal") || "{}");
   if (o.bg) { const d = {}; Object.keys(PAL_DEF.dark).forEach(k => { if (o[k]) d[k] = o[k]; }); o.dark = d; }
@@ -45,7 +46,7 @@ function palMode() {
 }
 const rgbOf = h => [1, 3, 5].map(i => parseInt(h.substr(i, 2), 16)).join(",");
 function applyPal() {
-  const m = palMode(), r = document.documentElement, p = PAL[m], v = (k, x) => r.style.setProperty(k, x), c = rgbOf(p.nav1).split(",").map(Number);
+  const m = palMode(), r = document.documentElement, p = (SEASON && SEASON.pal[m]) || PAL[m], v = (k, x) => r.style.setProperty(k, x), c = rgbOf(p.nav1).split(",").map(Number);
   r.setAttribute("data-mode", m); r.style.colorScheme = m; v("--w", m === "light" ? "0,0,0" : "255,255,255");
   v("--bg", p.bg); v("--bg2", p.glow); v("--ink", p.ink); v("--ink-rgb", rgbOf(p.ink)); v("--mint", p.accent); { const ac = rgbOf(p.accent).split(",").map(Number); v("--onmint", (0.299 * ac[0] + 0.587 * ac[1] + 0.114 * ac[2]) / 255 > 0.6 ? "#07241a" : "#ffffff"); } v("--mint-rgb", rgbOf(p.accent));
   v("--heat", p.heat); v("--heat-rgb", rgbOf(p.heat)); v("--cool", p.cool); v("--cool-rgb", rgbOf(p.cool)); v("--lit-rgb", rgbOf(p.lit));

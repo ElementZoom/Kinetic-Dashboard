@@ -4,6 +4,17 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
+## 1.14.0 - 2026-10-26
+
+### Added
+- **Seasonal themes:** eight seasons with their own colours (dark and light) and their own decorations, not reused presets: **Christmas** (1-26 Dec, string lights and snow), **New Year** (27 Dec-2 Jan, fireworks and confetti), **Halloween** (25-31 Oct, cobweb, spider, bats, mist), **Valentine's** (12-14 Feb, hearts), **Matariki** (3 days either side of the public holiday, the star cluster and drifting stars), **Easter** (Holy Week to Easter Monday, hanging eggs and petals), **Diwali** (2 days either side of the main day, diyas, fairy lights and rising sparks) and **Chinese New Year** (3 days before to 4 days after, lanterns, coins and sparkle). Matariki and Chinese New Year dates are built in to 2052 and 2036, Diwali to 2030, Easter is calculated for any year.
+- **Theme page > Seasonal themes:** ON or OFF for that device (saved on the device, wins over config.js), with a chip for each season to preview it (tap again to stop). While a season is on, it replaces the colours and ends by itself; the normal theme comes back after.
+- **Cameras are left alone:** the decorations are hidden on the Security and camera pages, the falling and floating bits stop while any camera is live, and none of it runs with reduced motion on. Decorations never take a tap.
+- **config.js:** `seasonal: true` turns it on for every device that has not chosen; `seasons: { christmas: ["12-05", "12-26"], matariki: false, diwali: { 2031: "11-14" } }` moves a season's dates, switches one off, or adds a date for a year past the built-in table.
+
+### Tests
+- New checks for the dates of all eight seasons, the switch, config.js overrides, the palettes and decorations, the camera pages (`tests/seasons.mjs`).
+
 ## 1.13.0 - 2026-10-25
 
 ### Added

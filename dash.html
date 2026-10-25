@@ -1746,6 +1746,27 @@ body.ly-open .mlay.hasly .ar{flex:1;max-height:none;min-height:0}
 .ai-nm{display:inline-flex;align-items:center;gap:2px;max-width:100%;margin:2px 0;padding:3px 4px 3px 10px;border:0;border-radius:99px;background:rgba(var(--w),.12);color:inherit;font:inherit;text-align:left;cursor:pointer}.ai-nm svg{width:16px;height:16px;fill:currentColor;flex:none}
 #npbody .npdl{display:flex;justify-content:center;gap:22px;padding-top:8px;font:600 10.5px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--mut)}#npbody .npdl span{cursor:pointer}#npbody .npdl span.on{color:var(--mint)}
 @media(max-width:760px){.lyh .lyx{margin-left:auto;flex:none}}
+/* seasonal themes (40-seasons.js): the decorations sit in one layer above the page and below pop-ups and full-screen cameras. They never take a tap.
+   The falling / floating bits (.fx) are switched off while any camera is live and under reduced motion; the rest stands still then. */
+#szn{position:fixed;inset:0;z-index:20;pointer-events:none;overflow:hidden}
+#szn[hidden]{display:none}
+#szn i,#szn svg{position:absolute;display:block;pointer-events:none}
+#szn i{font-style:normal}
+html.camlive #szn .fx{display:none}
+html.camlive #szn *{animation-play-state:paused!important}
+@media(prefers-reduced-motion:reduce){#szn .fx{display:none}#szn *{animation:none!important}}
+@keyframes sznFall{from{transform:translate3d(0,-8vh,0) rotate(0)}to{transform:translate3d(var(--dx,0px),112vh,0) rotate(var(--r,0deg))}}
+@keyframes sznRise{from{transform:translate3d(0,0,0)}to{transform:translate3d(var(--dx,0px),-118vh,0)}}
+@keyframes sznTw{0%,100%{opacity:.3}50%{opacity:1}}
+@keyframes sznSway{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
+@keyframes sznDrift{from{transform:translate3d(-14vw,0,0)}to{transform:translate3d(114vw,var(--dy,0px),0)}}
+@keyframes sznFlap{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.45)}}
+@keyframes sznBurst{0%{transform:scale(.15);opacity:0}10%{opacity:1}55%{opacity:.95}100%{transform:scale(1.2);opacity:0}}
+@keyframes sznShoot{0%,86%{transform:translate3d(0,0,0) rotate(28deg);opacity:0}88%{opacity:1}100%{transform:translate3d(46vw,26vw,0) rotate(28deg);opacity:0}}
+@keyframes sznFog{0%,100%{transform:translateX(-4vw)}50%{transform:translateX(4vw)}}
+#szn .sway{transform-origin:50% 0;animation:sznSway 4.5s ease-in-out infinite}
+#szn .tw{animation:sznTw 2.6s ease-in-out infinite}
+#szn .fx.dot{border-radius:50%}
 </style>
 </head>
 <body>
@@ -1816,7 +1837,7 @@ body.ly-open .mlay.hasly .ar{flex:1;max-height:none;min-height:0}
 // (notification tap such as #view/driveway, #security ...), not the return from the login, and the device has not asked for reduced motion.
 window.brandLogo = function () { var L = window.DASH_LOGO, B = (window.DASH_CONFIG || {}).brand; return L && L.svg ? { svg: L.svg, lockup: !!L.lockup } : B && B.mark ? { svg: B.mark, lockup: false } : null; };   // brand-logo.js wins over brand.mark in config.js
 window.brandMark = function (s) { var g = window.brandLogo(); if (!g) return ""; return g.svg.replace(/\bid="([\w-]+)"/g, 'id="$1' + s + '"').replace(/url\(#([\w-]+)\)/g, 'url(#$1' + s + ')'); };
-window.DASH_VER = "1.13.0";   // the one place to change the version
+window.DASH_VER = "1.14.0";   // the one place to change the version
 (function () { try {
   var B = (window.DASH_CONFIG || {}).brand, el = document.getElementById("bootld"), r = document.documentElement, lp = "on";
   try { lp = localStorage.getItem("dashLogo") || "on"; } catch (e) {}   // Theme page -> "Start-up logo": on | load (no intro) | off (plain spinner, as before)
@@ -1921,6 +1942,7 @@ const GEN = (h, s, la) => ({ dark: C([hsl(h, 8 * s, 9), hsl(h, 42 * s, 17), hsl(
 Object.assign(PAL_PRE, { Magenta: GEN(315, 1), Plum: GEN(290, .8), Lavender: GEN(268, .75), Mint: GEN(152, 1, 27), Sage: GEN(125, .45), Gold: GEN(48, 1, 27), Sand: GEN(38, .5), Rose: GEN(350, .7), Slate: GEN(212, .35), Graphite: GEN(0, 0) });
 const PAL_DEF = { mode: "dark", dark: Object.assign({}, PAL_PRE.Violet.dark), light: Object.assign({}, PAL_PRE.Violet.light), temp: ["#ccc2dc", "#a8c7fa", "#9ed6f0", "#b6ddb8", "#f9de8e", "#ffb88c", "#f2a09b"] };
 let PAL = JSON.parse(JSON.stringify(PAL_DEF));
+let SEASON = null;   // the seasonal theme that is on right now (see 40-seasons.js): its colours replace the palette while it lasts
 try {
   const o = JSON.parse(localStorage.getItem("dashPal") || "{}");
   if (o.bg) { const d = {}; Object.keys(PAL_DEF.dark).forEach(k => { if (o[k]) d[k] = o[k]; }); o.dark = d; }
@@ -1940,7 +1962,7 @@ function palMode() {
 }
 const rgbOf = h => [1, 3, 5].map(i => parseInt(h.substr(i, 2), 16)).join(",");
 function applyPal() {
-  const m = palMode(), r = document.documentElement, p = PAL[m], v = (k, x) => r.style.setProperty(k, x), c = rgbOf(p.nav1).split(",").map(Number);
+  const m = palMode(), r = document.documentElement, p = (SEASON && SEASON.pal[m]) || PAL[m], v = (k, x) => r.style.setProperty(k, x), c = rgbOf(p.nav1).split(",").map(Number);
   r.setAttribute("data-mode", m); r.style.colorScheme = m; v("--w", m === "light" ? "0,0,0" : "255,255,255");
   v("--bg", p.bg); v("--bg2", p.glow); v("--ink", p.ink); v("--ink-rgb", rgbOf(p.ink)); v("--mint", p.accent); { const ac = rgbOf(p.accent).split(",").map(Number); v("--onmint", (0.299 * ac[0] + 0.587 * ac[1] + 0.114 * ac[2]) / 255 > 0.6 ? "#07241a" : "#ffffff"); } v("--mint-rgb", rgbOf(p.accent));
   v("--heat", p.heat); v("--heat-rgb", rgbOf(p.heat)); v("--cool", p.cool); v("--cool-rgb", rgbOf(p.cool)); v("--lit-rgb", rgbOf(p.lit));
@@ -4185,6 +4207,7 @@ function drawPalette() {
     sec("Font", '<div class="stg">' + FONTS.map(x => '<button class="eb fnb' + (FONT === x[0] ? " sel" : "") + '" data-font="' + x[0] + '" style="font-family:' + x[3] + '"><b>22.5°</b><span>' + x[1] + '</span><small>' + x[2] + '</small></button>').join("") + '</div>') +
     sec("Mode", '<div class="seg" style="margin-top:12px;flex-wrap:wrap">' + [["dark", "DARK"], ["light", "LIGHT"], ["auto", "FOLLOW DEVICE"], ["sun", "FOLLOW SUN"], ["time", "SCHEDULE"]].map(x => '<button class="eb' + (PAL.mode === x[0] ? " on" : "") + '" data-mode="' + x[0] + '">' + x[1] + '</button>').join("") + '</div>' +
       (PAL.mode === "time" ? '<div class="lbl" style="margin-top:12px;text-transform:none;letter-spacing:0;display:flex;gap:10px;align-items:center;flex-wrap:wrap">Dark from <input type="time" data-tm="from" value="' + esc(PAL.from || "18:00") + '"> until <input type="time" data-tm="to" value="' + esc(PAL.to || "06:00") + '"></div>' : "") + (PAL.mode === "sun" ? '<div class="lbl" style="margin-top:12px;text-transform:none;letter-spacing:0">Dark from sunset to sunrise, from <b>sun.sun</b> in Home Assistant' + (states["sun.sun"] ? "" : " (not found, using 6am–7pm)") + '. Saved on this device only.</div>' : "")) +
+    sznSec(sec) +
     sec("Clock", '<div class="seg" style="margin-top:12px">' + [["auto", "DEVICE"], ["12", "12-HOUR"], ["24", "24-HOUR"]].map(x => '<button class="eb' + (CLOCK === x[0] ? " on" : "") + '" data-clock="' + x[0] + '">' + x[1] + '</button>').join("") + '</div><div class="lbl" style="margin-top:10px;text-transform:none;letter-spacing:0">How times are shown on this dashboard. DEVICE follows the language of this phone or tablet. Saved on this device only.</div>') +
     (brandOn() ? sec("Start-up logo", '<div class="seg" style="margin-top:12px">' + [["on", "LOGO + INTRO"], ["load", "WHILE LOADING ONLY"], ["off", "OFF"]].map(x => '<button class="eb' + (logoPref() === x[0] ? " on" : "") + '" data-logo="' + x[0] + '">' + x[1] + '</button>').join("") + '</div><div class="lbl" style="margin-top:10px;text-transform:none;letter-spacing:0">Applies the next time the dashboard starts. Saved on this device only.</div>') : "") +
     (ME.admin ? accSec(sec) : "") +
@@ -4205,6 +4228,7 @@ $("#theme").onclick = e => {
   const ac = e.target.closest("[data-acc]"); if (ac) { accClick(ac); return; }
   if (fn) { themeDip(() => { FONT = fn.dataset.font; try { localStorage.setItem("dashFont", FONT); } catch (_) {} applyFont(); drawPalette(); }); return; }
   if (sy) { themeDip(() => { STYLE = sy.dataset.style; try { localStorage.setItem("dashStyle", STYLE); } catch (_) {} applyStyle(); drawPalette(); }); return; }
+  if (sznClick(e)) return;
   const ck = e.target.closest("button[data-clock]");
   if (ck) { CLOCK = ck.dataset.clock; try { localStorage.setItem("dashClock", CLOCK); } catch (_) {} tick(); drawPalette(); queueHome(); return; }
   const lg = e.target.closest("button[data-logo]");
@@ -5591,6 +5615,116 @@ function galOnState(id, s) {
   });
 }
 setInterval(() => { try { Object.keys(galCfg()).forEach(k => galStep(k, false)); } catch (e) {} }, 1000);
+// ---------- seasonal themes ----------
+// Eight seasons, each with its own colours and decorations: Christmas, New Year, Halloween, Valentine's, Matariki, Easter, Diwali, Chinese New Year.
+// Theme page -> "Seasonal themes" (this device) or config.js seasonal: true (every device that has not chosen). Dates can be changed in config.js: seasons: { christmas: ["12-01", "12-26"], matariki: false, diwali: { 2031: "11-14" } }
+// A season only replaces the colours (dark or light, as chosen), puts a light decoration layer over the page, and ends by itself. The layer is hidden on the camera pages, the falling bits stop while a camera is live (27-seasons.css).
+const sznR = s => () => (s = s * 16807 % 2147483647) / 2147483647;
+const sznN = (n, f) => Array.from({ length: n }, (_, i) => f(i)).join("");
+const sznY = (m, y) => { const o = {}; Object.keys(m).forEach(k => { o[k] = m[k]; }); return o[y]; };
+const SZN_MATARIKI = { 2026: "07-10", 2027: "06-25", 2028: "07-14", 2029: "07-06", 2030: "06-21", 2031: "07-11", 2032: "07-02", 2033: "06-24", 2034: "07-07", 2035: "06-29", 2036: "07-18", 2037: "07-10", 2038: "06-25", 2039: "07-15", 2040: "07-06", 2041: "07-19", 2042: "07-11", 2043: "07-03", 2044: "06-24", 2045: "07-07", 2046: "06-29", 2047: "07-19", 2048: "07-03", 2049: "06-25", 2050: "07-15", 2051: "06-30", 2052: "06-21" };   // the public holiday, set by law
+const SZN_CNY = { 2026: "02-17", 2027: "02-06", 2028: "01-26", 2029: "02-13", 2030: "02-03", 2031: "01-23", 2032: "02-11", 2033: "01-31", 2034: "02-19", 2035: "02-08", 2036: "01-28" };
+const SZN_DIWALI = { 2026: "11-08", 2027: "10-29", 2028: "10-17", 2029: "11-05", 2030: "10-26" };   // the main day (Lakshmi Puja); later years: config.js seasons: { diwali: { 2031: "MM-DD" } }
+function sznEaster(y) { const a = y % 19, b = Math.floor(y / 100), c = y % 100, d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3), h = (19 * a + b - d - g + 15) % 30, i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - h - k) % 7, m = Math.floor((a + 11 * h + 22 * l) / 451), mo = Math.floor((h + l - 7 * m + 114) / 31), dy = (h + l - 7 * m + 114) % 31 + 1; return new Date(y, mo - 1, dy); }
+const sznDate = (y, md) => { const a = String(md).split("-"); return new Date(y, (+a[0] || 1) - 1, +a[1] || 1); };
+const sznC = a => ({ bg: a[0], glow: a[1], ink: a[2], accent: a[3], heat: a[4], cool: a[5], lit: a[6], nav1: a[7], nav2: a[8] });
+// win(y) -> [first day, last day] for the season that starts in year y; days around a moving festival come from the table (or config)
+const SZN = [
+  { id: "cny", name: "Chinese New Year", note: "around the festival", day: y => SZN_CNY[y], around: [-3, 4], build: sznCny,
+    pal: { dark: sznC(["#180c0c", "#4d1111", "#f2e6e0", "#ffcc4d", "#ff8a80", "#a8c7fa", "#ffdf6b", "#f06a5a", "#c9372b"]), light: sznC(["#fff6f2", "#ffdcd6", "#2a1210", "#b3261e", "#b3261e", "#0b57d0", "#e3a600", "#ffb4a8", "#ff8a7a"]) } },
+  { id: "diwali", name: "Diwali", note: "around the main day", day: y => SZN_DIWALI[y], around: [-2, 2], build: sznDiwali,
+    pal: { dark: sznC(["#170b10", "#4a1030", "#f0e4dc", "#ffb347", "#ff8a65", "#a8c7fa", "#ffd86b", "#f4a259", "#d9823a"]), light: sznC(["#fffaf2", "#ffe3bf", "#2a1410", "#b35a00", "#b3261e", "#0b57d0", "#e3a600", "#ffd9a8", "#ffbd6e"]) } },
+  { id: "matariki", name: "Matariki", note: "around the public holiday", day: y => SZN_MATARIKI[y], around: [-3, 3], build: sznMatariki,
+    pal: { dark: sznC(["#0b0e1a", "#1a2350", "#e6e8f2", "#c8d4ff", "#f2b8b5", "#a8c7fa", "#f9de8e", "#9fb2ee", "#7f93d6"]), light: sznC(["#f7f8ff", "#dfe5ff", "#14172a", "#3b4aa8", "#b3261e", "#0b57d0", "#e3a600", "#c9d3fb", "#a6b6f2"]) } },
+  { id: "easter", name: "Easter", note: "Holy Week to Easter Monday", day: y => { const d = sznEaster(y); return (d.getMonth() + 1) + "-" + d.getDate(); }, around: [-7, 1], build: sznEaster2,
+    pal: { dark: sznC(["#12150f", "#2d3a1c", "#e8ecdf", "#d4f06a", "#f2b8b5", "#a8c7fa", "#f9de8e", "#e1c8ff", "#c7a6f2"]), light: sznC(["#fbfdf3", "#eaf5c4", "#1a1d14", "#4c7a00", "#b3261e", "#0b57d0", "#e3a600", "#e8d6ff", "#d2b4fb"]) } },
+  { id: "newyear", name: "New Year", note: "27 Dec - 2 Jan", fixed: ["12-27", "01-02"], build: sznNewYear,
+    pal: { dark: sznC(["#0e0d12", "#2a2146", "#ece6da", "#ffd166", "#f2b8b5", "#a8c7fa", "#f9de8e", "#e9d9a6", "#c9b57a"]), light: sznC(["#fffcf5", "#fbefc9", "#1d1b16", "#7a5a00", "#b3261e", "#0b57d0", "#e3a600", "#f4e2a0", "#e6c85e"]) } },
+  { id: "christmas", name: "Christmas", note: "1 - 26 Dec", fixed: ["12-01", "12-26"], build: sznXmas,
+    pal: { dark: sznC(["#0f1511", "#1d3a28", "#e6ebe4", "#ff7b72", "#ffb4a9", "#9ecaff", "#f9de8e", "#9fd8a6", "#7fb88a"]), light: sznC(["#fbfdf8", "#dbefd9", "#171d18", "#b3261e", "#ba1a1a", "#1565c0", "#e3a600", "#bfe5c0", "#8fcf96"]) } },
+  { id: "valentines", name: "Valentine's", note: "12 - 14 Feb", fixed: ["02-12", "02-14"], build: sznValentines,
+    pal: { dark: sznC(["#1a1114", "#4a1228", "#f0dfe3", "#ff7aa2", "#f2b8b5", "#a8c7fa", "#f9de8e", "#f2b3c6", "#d98aa3"]), light: sznC(["#fff8fa", "#ffdfe8", "#201418", "#c2185b", "#b3261e", "#0b57d0", "#e3a600", "#ffc2d4", "#ff9db9"]) } },
+  { id: "halloween", name: "Halloween", note: "25 - 31 Oct", fixed: ["10-25", "10-31"], build: sznHalloween,
+    pal: { dark: sznC(["#140f18", "#34154a", "#eadff0", "#ff9a3c", "#f2b8b5", "#a8c7fa", "#f9de8e", "#c9a6e8", "#a583c9"]), light: sznC(["#fffaf5", "#ffe6cf", "#1f1620", "#b34700", "#b3261e", "#0b57d0", "#e3a600", "#ffd2a8", "#ffb06b"]) } }
+];
+// the first day and the last day of a season that starts in year y (or null)
+function sznWin(s, y) {
+  const o = (CONFIG.seasons || {})[s.id]; if (o === false) return null;
+  if (Array.isArray(o) && o.length > 1) { const a = sznDate(y, o[0]), b = sznDate(y, o[1]); if (b < a) b.setFullYear(y + 1); return [a, b]; }
+  if (s.fixed) { const a = sznDate(y, s.fixed[0]), b = sznDate(y, s.fixed[1]); if (b < a) b.setFullYear(y + 1); return [a, b]; }
+  const md = (o && typeof o === "object" && o[y]) || s.day(y); if (!md) return null; const d = sznDate(y, md);
+  return [new Date(y, d.getMonth(), d.getDate() + s.around[0]), new Date(y, d.getMonth(), d.getDate() + s.around[1])];
+}
+function sznFind(now) {   // which season the date falls in (the first in the list wins when two overlap)
+  const t = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  for (const s of SZN) for (const y of [now.getFullYear(), now.getFullYear() - 1]) { const w = sznWin(s, y); if (w && t >= w[0].getTime() && t <= w[1].getTime()) return { s: s, end: w[1] }; }
+  return null;
+}
+const sznPref = () => { let v = ""; try { v = localStorage.getItem("dashSeason") || ""; } catch (_) {} return v === "on" || v === "off" ? v : CONFIG.seasonal === true ? "on" : "off"; };
+let SZN_PREV = ((/[?&#]season=([a-z]+)/.exec(location.search + location.hash) || [])[1]) || "", SZN_CUR = "", SZN_END = null;
+function sznWhich() { if (SZN_PREV) { const p = SZN.filter(s => s.id === SZN_PREV)[0]; SZN_END = null; return p || null; } if (sznPref() !== "on") { SZN_END = null; return null; } const f = sznFind(new Date()); SZN_END = f ? f.end : null; return f ? f.s : null; }
+function sznApply() {
+  const s = sznWhich(), id = s ? s.id : ""; if (id === SZN_CUR) return; SZN_CUR = id; SEASON = s; applyPal();
+  const old = $("#szn"); if (old) old.remove(); if (s) { const l = document.createElement("div"); l.id = "szn"; l.innerHTML = s.build(innerWidth, innerHeight); document.body.appendChild(l); sznVis(); }
+  if (curPg() === "theme") drawPalette();
+}
+const sznVis = () => { const l = $("#szn"); if (l) l.hidden = onSec() || onView(); };   // the camera pages are left alone
+let sznRs = 0; addEventListener("resize", () => { clearTimeout(sznRs); sznRs = setTimeout(() => { const c = SZN_CUR; SZN_CUR = "\0"; sznApply(); SZN_CUR = c; }, 300); });
+addEventListener("hashchange", sznVis); document.addEventListener("visibilitychange", () => { if (!document.hidden) sznApply(); });
+// ---- Theme page: Seasonal themes
+const sznFmt = d => d.toLocaleDateString([], { day: "numeric", month: "short" });
+function sznSec(sec) {
+  const on = sznPref() === "on", s = SEASON, nm = s ? s.name : "", st = SZN_PREV ? "Previewing " + nm + ". Tap it again to stop." : on ? (s ? nm + " is on" + (SZN_END ? ", until " + sznFmt(SZN_END) : "") + "." : "On. Nothing is in season today.") : "Off.";
+  return sec("Seasonal themes", '<div class="seg" style="margin-top:12px">' + [["on", "ON"], ["off", "OFF"]].map(x => '<button class="eb' + (sznPref() === x[0] ? " on" : "") + '" data-sznm="' + x[0] + '">' + x[1] + '</button>').join("") + '</div>' +
+    '<div class="lbl" style="margin-top:10px;text-transform:none;letter-spacing:0">' + esc(st) + ' A season changes the colours and adds a light decoration; it stops by itself. Falling bits stop while a camera is live.</div>' +
+    '<div class="pg4" style="margin-top:12px">' + SZN.map(z => '<button class="pre2' + (SZN_PREV === z.id ? " on" : "") + '" data-szn="' + z.id + '"><i style="background:' + z.pal[palMode()].accent + '"></i><b>' + esc(z.name) + '</b><small class="lbl" style="text-transform:none;letter-spacing:0">' + esc(z.note) + '</small></button>').join("") + '</div>');
+}
+function sznClick(e) {
+  const m = e.target.closest("button[data-sznm]"), p = e.target.closest("button[data-szn]");
+  if (m) { try { localStorage.setItem("dashSeason", m.dataset.sznm); } catch (_) {} sznApply(); drawPalette(); return true; }
+  if (p) { SZN_PREV = SZN_PREV === p.dataset.szn ? "" : p.dataset.szn; SZN_CUR = "\0"; sznApply(); drawPalette(); return true; }
+  return false;
+}
+// ---- decorations (one function per season: returns the layer's markup for a screen W x H)
+const sznWire = (W, n, d, fn) => {   // a sagging wire along the top with n things hanging from it; fn(x, y, i) draws one
+  const seg = Math.max(2, Math.round(W / 320)); let o = '<svg width="' + W + '" height="' + (d + 40) + '" style="left:0;top:0"><path d="M-10 4 ' + sznN(seg, k => 'Q' + (W / seg * (k + .5)) + ' ' + (d + 12) + ' ' + (W / seg * (k + 1)) + ' 6') + '" stroke="rgba(var(--w),.28)" stroke-width="1.6" fill="none"/>';
+  for (let i = 0; i < n; i++) { const t = (i + .5) / n * seg, k = Math.min(seg - 1, Math.floor(t)), u = t - k, x0 = W / seg * k, x1 = W / seg * (k + 1), cx = W / seg * (k + .5), y0 = 6, y1 = 6, cy = d + 12, x = (1 - u) * (1 - u) * x0 + 2 * (1 - u) * u * cx + u * u * x1, y = (1 - u) * (1 - u) * y0 + 2 * (1 - u) * u * cy + u * u * y1; o += fn(x, y, i); }
+  return o + '</svg>';
+};
+const sznFlake = (r, n, o) => sznN(n, i => { const z = o.min + r() * (o.max - o.min), dur = o.d0 + r() * o.d1; return '<i class="fx dot" style="left:' + (r() * 100).toFixed(1) + '%;top:0;width:' + z.toFixed(1) + 'px;height:' + z.toFixed(1) + 'px;background:' + o.col(i) + ';opacity:' + (.3 + r() * .55).toFixed(2) + ';--dx:' + Math.round((r() - .5) * 90) + 'px;animation:sznFall ' + dur.toFixed(1) + 's linear -' + (r() * dur).toFixed(1) + 's infinite"></i>'; });
+function sznXmas(W) { const r = sznR(11), cols = ["#ff5a52", "#52d273", "#ffd35c", "#5aaeff"];
+  return sznWire(W, Math.max(10, Math.round(W / 46)), 50, (x, y, i) => { const c = cols[i % 4]; return '<circle cx="' + x.toFixed(1) + '" cy="' + (y + 12).toFixed(1) + '" r="13" fill="' + c + '" opacity=".14" class="tw" style="animation-delay:-' + (i * .37).toFixed(2) + 's"/><rect x="' + (x - 3).toFixed(1) + '" y="' + y.toFixed(1) + '" width="6" height="5" fill="#2c4a35"/><ellipse cx="' + x.toFixed(1) + '" cy="' + (y + 12).toFixed(1) + '" rx="4.4" ry="7" fill="' + c + '" class="tw" style="animation-delay:-' + (i * .37).toFixed(2) + 's"/>'; }) + sznFlake(r, 36, { min: 2.5, max: 7, d0: 12, d1: 12, col: () => "#fff" }); }
+function sznNewYear(W, H) { const r = sznR(23), hs = [42, 330, 200, 280, 120];
+  const burst = (x, y, R, h, dl) => { let c = ""; for (let i = 0; i < 26; i++) { const a = i / 26 * Math.PI * 2, q = R * (.6 + r() * .4); for (let k = 0; k < 4; k++) c += '<circle cx="' + (R + Math.cos(a) * q * (1 - k * .06)).toFixed(1) + '" cy="' + (R + Math.sin(a) * q * (1 - k * .06) + k * 1.4).toFixed(1) + '" r="' + (2.4 - k * .45).toFixed(2) + '" fill="hsl(' + (h + r() * 24) + ',100%,' + (66 + k * 6) + '%)" opacity="' + (1 - k * .22) + '"/>'; }
+    return '<svg class="fx" width="' + R * 2 + '" height="' + R * 2 + '" style="left:' + (x - R) + 'px;top:' + (y - R) + 'px;animation:sznBurst 5.5s ease-out ' + dl + 's infinite">' + c + '</svg>'; };
+  const spark = (x, y, s) => '<svg class="tw" width="' + s + '" height="' + s + '" viewBox="0 0 10 10" style="left:' + x + 'px;top:' + y + 'px;animation-delay:-' + (x % 7) * .3 + 's"><path d="M5 0 L6 4 L10 5 L6 6 L5 10 L4 6 L0 5 L4 4Z" fill="#ffd166"/></svg>';
+  return burst(W * .2, H * .2, 70, hs[0], -1) + burst(W * .76, H * .17, 90, hs[1], -2.8) + burst(W * .5, H * .1, 60, hs[2], -4.2) + burst(W * .9, H * .42, 58, hs[3], -.3) + spark(14, 10, 14) + spark(W - 36, 12, 16) + spark(W * .42, 6, 11) + spark(W * .66, 8, 12) +
+    sznN(26, i => { const c = ["#ffd166", "#ff7aa2", "#a8c7fa", "#fff"][i % 4], dur = 9 + r() * 9; return '<i class="fx" style="left:' + (r() * 100).toFixed(1) + '%;top:0;width:' + (4 + r() * 4).toFixed(1) + 'px;height:' + (8 + r() * 5).toFixed(1) + 'px;background:' + c + ';opacity:.6;--dx:' + Math.round((r() - .5) * 120) + 'px;--r:' + Math.round(360 + r() * 360) + 'deg;animation:sznFall ' + dur.toFixed(1) + 's linear -' + (r() * dur).toFixed(1) + 's infinite"></i>'; }); }
+function sznHalloween(W, H) { const r = sznR(31);
+  const bat = (top, dur, dl, s, dy) => '<i class="fx" style="left:0;top:' + top + '%;--dy:' + dy + 'px;animation:sznDrift ' + dur + 's linear ' + dl + 's infinite"><svg width="' + 56 * s + '" height="' + 26 * s + '" viewBox="0 -12 64 30" style="position:static;transform-origin:50% 50%;animation:sznFlap .5s ease-in-out infinite"><path d="M30 -2 C26 -10 18 -12 8 -8 C14 -4 12 0 6 4 C14 2 18 4 22 10 C24 6 27 4 30 8 C33 4 36 6 38 10 C42 4 46 2 54 4 C48 0 46 -4 52 -8 C42 -12 34 -10 30 -2Z" fill="#05020a" stroke="rgba(200,160,255,.35)" stroke-width=".8"/></svg></i>';
+  return '<svg width="200" height="200" viewBox="0 0 200 200" style="left:0;top:0" stroke="rgba(var(--w),.42)" fill="none" stroke-width="1.2"><path d="M0 0 L200 0 M0 0 L178 42 M0 0 L126 104 M0 0 L62 168 M0 0 L0 200 M0 0 L32 184"/>' + [44, 84, 126, 168].map(q => '<path d="M' + q + ' 0 Q' + q * .62 + ' ' + q * .62 + ' 0 ' + q + '"/>').join("") + '</svg>' +
+    '<svg class="sway" width="34" height="86" viewBox="0 0 34 86" style="left:' + Math.round(W * .8) + 'px;top:0;transform-origin:17px 0"><path d="M17 0 V46" stroke="rgba(var(--w),.5)" stroke-width="1"/><ellipse cx="17" cy="58" rx="9" ry="8" fill="#0a0410"/><circle cx="17" cy="47" r="5" fill="#0a0410"/><circle cx="15" cy="46" r="1.2" fill="#ff9a3c"/><circle cx="19.5" cy="46" r="1.2" fill="#ff9a3c"/><path d="M8 54 L1 66 M9 60 L2 74 M26 54 L33 66 M25 60 L32 74" stroke="#0a0410" stroke-width="1.6"/></svg>' +
+    bat(8, 30, -4, 1.1, 40) + bat(18, 38, -17, .8, -30) + bat(28, 33, -26, 1.4, 20) + bat(12, 44, -33, .7, 60) +
+    '<i class="fx" style="left:-10vw;bottom:-60px;width:60vw;height:220px;background:radial-gradient(closest-side,rgba(200,160,240,.22),transparent);filter:blur(14px);animation:sznFog 20s ease-in-out infinite"></i><i class="fx" style="right:-10vw;bottom:-70px;width:60vw;height:200px;background:radial-gradient(closest-side,rgba(255,154,60,.14),transparent);filter:blur(14px);animation:sznFog 26s ease-in-out -9s infinite"></i>'; }
+function sznValentines(W) { const r = sznR(41), cs = ["#ff7aa2", "#ff9db9", "#ffc2d4", "#e8456f"], heart = (s, c) => '<path transform="scale(' + s + ')" d="M15 27 C3 17 0 11 0 7.5 C0 3 3.4 0 7.4 0 C10.6 0 13.4 1.8 15 4.6 C16.6 1.8 19.4 0 22.6 0 C26.6 0 30 3 30 7.5 C30 11 27 17 15 27Z" fill="' + c + '"/>';
+  return sznWire(W, Math.max(8, Math.round(W / 70)), 36, (x, y, i) => '<g transform="translate(' + (x - 8).toFixed(1) + ' ' + (y + 1).toFixed(1) + ')">' + heart(.55, cs[i % 4]) + '</g>') +
+    sznN(16, i => { const z = .5 + r() * 1.1, dur = 16 + r() * 16; return '<i class="fx" style="left:' + (r() * 100).toFixed(1) + '%;top:100vh;opacity:' + (.25 + r() * .35).toFixed(2) + ';--dx:' + Math.round((r() - .5) * 120) + 'px;animation:sznRise ' + dur.toFixed(1) + 's linear -' + (r() * dur).toFixed(1) + 's infinite"><svg width="' + 30 * z + '" height="' + 28 * z + '" viewBox="0 0 30 28" style="position:static;filter:blur(' + (z > 1.1 ? 1 : 0) + 'px)">' + heart(1, cs[i % 4]) + '</svg></i>'; }); }
+function sznMatariki(W) { const r = sznR(53), x0 = Math.round(W * .62), st = [[0, 4, 4], [15, 10, 3.2], [30, 2, 3], [44, 12, 3.4], [58, 6, 2.8], [24, 22, 3], [40, 26, 2.6], [8, 28, 2.8], [52, 28, 2.6]];
+  return '<svg width="80" height="48" style="left:' + x0 + 'px;top:2px" viewBox="0 0 80 48">' + st.map((q, i) => '<circle cx="' + (q[0] + 8) + '" cy="' + (q[1] + 8) + '" r="' + q[2] * 3.2 + '" fill="#c8d4ff" opacity=".12" class="tw" style="animation-delay:-' + i * .5 + 's"/><circle cx="' + (q[0] + 8) + '" cy="' + (q[1] + 8) + '" r="' + q[2] * .62 + '" fill="#fff" class="tw" style="animation-delay:-' + i * .5 + 's"/>').join("") + '</svg>' +
+    sznN(30, i => '<i class="fx dot tw" style="left:' + (r() * 100).toFixed(1) + '%;top:' + (r() * 100).toFixed(1) + '%;width:' + (1.6 + r() * 1.8).toFixed(1) + 'px;height:' + (1.6 + r() * 1.8).toFixed(1) + 'px;background:#e6ecff;animation-duration:' + (2 + r() * 4).toFixed(1) + 's;animation-delay:-' + (r() * 5).toFixed(1) + 's"></i>') +
+    '<i class="fx" style="left:12%;top:4%;width:110px;height:2px;background:linear-gradient(90deg,transparent,#fff);transform-origin:0 50%;animation:sznShoot 15s linear -3s infinite"></i><i class="fx" style="left:48%;top:2%;width:90px;height:2px;background:linear-gradient(90deg,transparent,#e6ecff);transform-origin:0 50%;animation:sznShoot 21s linear -12s infinite"></i>'; }
+function sznEaster2(W) { const r = sznR(61), cs = [["#ffb3d1", "#fff"], ["#b8e6ff", "#ffe27a"], ["#c9f0a8", "#fff"], ["#e1c8ff", "#ffb3d1"], ["#ffe27a", "#b8e6ff"]], n = Math.max(6, Math.round(W / 120));
+  return sznN(n, i => { const x = W * .14 + (i + .5) / n * W * .86 + (r() - .5) * 30, len = 14 + r() * 34, c = cs[i % 5]; return '<svg class="sway" width="30" height="' + (len + 34) + '" viewBox="0 0 30 ' + (len + 34) + '" style="left:' + (x - 15).toFixed(0) + 'px;top:0;animation-delay:-' + (i * .8).toFixed(1) + 's"><path d="M15 0 V' + len + '" stroke="rgba(var(--w),.4)" stroke-width="1"/><ellipse cx="15" cy="' + (len + 16) + '" rx="10" ry="14" fill="' + c[0] + '"/><path d="M5.4 ' + (len + 12) + ' L9 ' + (len + 8) + ' L12.5 ' + (len + 12) + ' L16 ' + (len + 8) + ' L19.5 ' + (len + 12) + ' L23 ' + (len + 8) + ' L24.6 ' + (len + 12) + '" stroke="' + c[1] + '" stroke-width="2.2" fill="none"/><circle cx="11" cy="' + (len + 22) + '" r="1.8" fill="' + c[1] + '"/><circle cx="19" cy="' + (len + 22) + '" r="1.8" fill="' + c[1] + '"/></svg>'; }) +
+    sznN(22, i => { const dur = 12 + r() * 12, z = 6 + r() * 5; return '<i class="fx" style="left:' + (r() * 100).toFixed(1) + '%;top:0;width:' + z.toFixed(1) + 'px;height:' + (z * 1.4).toFixed(1) + 'px;border-radius:60% 40% 60% 40%;background:' + ["#ffd1e3", "#fff", "#ffe9a8"][i % 3] + ';opacity:.7;--dx:' + Math.round((r() - .5) * 140) + 'px;--r:' + Math.round(300 + r() * 300) + 'deg;animation:sznFall ' + dur.toFixed(1) + 's linear -' + (r() * dur).toFixed(1) + 's infinite"></i>'; }); }
+function sznDiwali(W) { const r = sznR(71);
+  return sznWire(W, Math.max(12, Math.round(W / 38)), 40, (x, y, i) => i % 3 === 2 ? '<circle cx="' + x.toFixed(1) + '" cy="' + (y + 9).toFixed(1) + '" r="11" fill="#fff2b3" opacity=".2" class="tw" style="animation-delay:-' + (i * .31).toFixed(2) + 's"/><circle cx="' + x.toFixed(1) + '" cy="' + (y + 9).toFixed(1) + '" r="3.2" fill="#fff6c9" class="tw" style="animation-delay:-' + (i * .31).toFixed(2) + 's"/>' : '<circle cx="' + x.toFixed(1) + '" cy="' + (y + 8).toFixed(1) + '" r="8" fill="' + (i % 3 ? "#ff9f1c" : "#ffcf4a") + '"/><circle cx="' + x.toFixed(1) + '" cy="' + (y + 8).toFixed(1) + '" r="4.2" fill="' + (i % 3 ? "#ffcf4a" : "#ff9f1c") + '"/>') +
+    sznN(26, i => { const z = 2.5 + r() * 3.5, dur = 14 + r() * 14; return '<i class="fx dot" style="left:' + (r() * 100).toFixed(1) + '%;top:100vh;width:' + z.toFixed(1) + 'px;height:' + z.toFixed(1) + 'px;background:' + (i % 2 ? "#ffb347" : "#ffe08a") + ';box-shadow:0 0 ' + (z * 3).toFixed(0) + 'px ' + (z * .8).toFixed(0) + 'px rgba(255,170,60,.55);opacity:' + (.5 + r() * .45).toFixed(2) + ';--dx:' + Math.round((r() - .5) * 100) + 'px;animation:sznRise ' + dur.toFixed(1) + 's linear -' + (r() * dur).toFixed(1) + 's infinite"></i>'; }); }
+function sznCny(W) { const r = sznR(83), xs = [.3, .5, .74, .93];
+  const lantern = (x, len, dl) => '<svg class="sway" width="46" height="' + (len + 78) + '" viewBox="0 0 46 ' + (len + 78) + '" style="left:' + (x - 23).toFixed(0) + 'px;top:0;animation-delay:-' + dl + 's"><path d="M23 0 V' + len + '" stroke="#ffcc4d" stroke-width="1.4"/><rect x="14" y="' + len + '" width="18" height="5" rx="2" fill="#ffcc4d"/><ellipse cx="23" cy="' + (len + 27) + '" rx="21" ry="22" fill="#d92b1f"/><ellipse cx="23" cy="' + (len + 27) + '" rx="11" ry="22" fill="#f04a3a"/><path d="M23 ' + (len + 5) + ' V' + (len + 49) + '" stroke="#b3170c" stroke-width="1"/><rect x="14" y="' + (len + 48) + '" width="18" height="5" rx="2" fill="#ffcc4d"/><path d="M23 ' + (len + 53) + ' V' + (len + 70) + ' M19 ' + (len + 53) + ' V' + (len + 66) + ' M27 ' + (len + 53) + ' V' + (len + 66) + '" stroke="#ffcc4d" stroke-width="1.6"/></svg>';
+  return xs.map((x, i) => lantern(W * x, 12 + (i % 2) * 22, i * 1.1)).join("") +
+    sznN(18, i => { const z = 5 + r() * 4, dur = 14 + r() * 12; return '<i class="fx dot" style="left:' + (r() * 100).toFixed(1) + '%;top:0;width:' + z.toFixed(1) + 'px;height:' + z.toFixed(1) + 'px;background:radial-gradient(circle at 35% 35%,#ffe58a,#e0a21a);box-shadow:inset 0 0 0 1.5px rgba(120,70,0,.5);opacity:.75;--dx:' + Math.round((r() - .5) * 90) + 'px;--r:' + Math.round(200 + r() * 200) + 'deg;animation:sznFall ' + dur.toFixed(1) + 's linear -' + (r() * dur).toFixed(1) + 's infinite"></i>'; }) +
+    sznN(10, i => '<i class="fx tw" style="left:' + (r() * 100).toFixed(1) + '%;top:' + (r() * 60).toFixed(1) + '%;width:10px;height:10px;background:#ffe58a;clip-path:polygon(50% 0,60% 40%,100% 50%,60% 60%,50% 100%,40% 60%,0 50%,40% 40%);animation-delay:-' + (r() * 3).toFixed(1) + 's"></i>'); }
+setInterval(sznApply, 60000); sznApply();   // last, so every decoration above exists
 // ---------- start-up: runs last, once every module above has been defined ----------
 // This used to sit at the end of 38-energy.js. A page opened from a notification link (#active/doors, #batteries ...) draws the notifications pop-up
 // straight away, and that code reaches things defined in later files (galCfg in 40-garage-alert.js): "Cannot access 'galCfg' before initialization"

@@ -256,13 +256,14 @@ html.camlive .cam[data-det]::after,html.camlive .snap[data-det]::after{animation
 #dtp .dthd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}#dtp .dthd .eb svg{width:18px;height:18px;fill:currentColor}.pbc.dtf{padding:10px 10px 16px;margin:-10px -10px -6px}
 .dtg{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-top:6px}@media(max-width:520px){.dtg{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.dti{padding:6px}}.dti{display:flex;flex-direction:column;gap:8px;padding:8px;border-radius:14px;border:1px solid var(--line);background:rgba(var(--w),.05);cursor:pointer}.dti .pbth img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .dti .pbx{padding:0 4px 4px}.dti strong{display:block;font-weight:500;font-size:14px}.dti span{display:block;color:var(--mut);font-size:12px;margin:2px 0 6px}.dti .pbx div{display:flex;gap:4px;flex-wrap:wrap}.dtmore{display:block;margin:14px auto 0}
-#dtm{position:fixed;inset:0;z-index:95;display:none;align-items:center;justify-content:center;padding:14px;background:rgba(0,0,0,.55);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}#dtm.on{display:flex}.dtc{width:min(900px,100%);border-radius:22px;overflow:hidden;background:linear-gradient(160deg,var(--bg2),var(--bg));border:1px solid var(--line);box-shadow:0 24px 70px rgba(0,0,0,.6)}.dth{display:flex;align-items:center;gap:10px;padding:12px 14px}.dth b{flex:1;font-weight:500;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#dtm{position:fixed;inset:0;z-index:95;display:none;align-items:center;justify-content:center;padding:max(14px,env(safe-area-inset-top)) max(14px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left));background:rgba(0,0,0,.55);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}#dtm.on{display:flex}.dtc{width:min(900px,100%,calc((100vh - 92px) * 1.7778));width:min(900px,100%,calc((100dvh - 92px) * 1.7778));border-radius:22px;overflow:hidden;background:linear-gradient(160deg,var(--bg2),var(--bg));border:1px solid var(--line);box-shadow:0 24px 70px rgba(0,0,0,.6)}.dth{display:flex;align-items:center;gap:10px;padding:12px 14px}.dth b{flex:1;font-weight:500;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .dtv{position:relative;background:#000;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center}.dtv video{width:100%;height:100%;object-fit:contain}.dte{position:absolute;color:var(--mut);font:13px var(--mono);pointer-events:none;text-align:center;max-width:80%}
 .pbv:not(.has) video{display:none}.pbv:not(.has) .pbe{top:50%;color:var(--mut)}.pbv:not(.has)::after{content:"Pick a recording";color:var(--mut);font:12px var(--mono);letter-spacing:.08em;text-transform:uppercase}
 .pbv{display:flex;align-items:center;justify-content:center;background:#000;position:relative;min-height:0}
 .cam .pbv video{position:static!important;opacity:1!important;width:100%;height:auto;max-height:100%;aspect-ratio:auto;object-fit:contain}
 .pbe{position:absolute;left:50%;top:calc(50% + 34px);transform:translate(-50%,-50%);color:var(--mut);font:13px var(--mono);pointer-events:none;text-align:center;max-width:80%}
 @media(max-width:760px){.pbm{grid-template-columns:1fr;grid-template-rows:34% 66%}.pbv{order:-1}.cam .px{right:64px;padding:0 12px}}
+@media(max-width:760px) and (orientation:landscape){.pbm{grid-template-columns:minmax(0,40%) minmax(0,1fr);grid-template-rows:minmax(0,1fr)}.pbv{order:0}}   /* a short landscape phone: list on the left, the recording beside it (not a thin strip under the heading) */
 /* camera controls */
 .cams.cams3{grid-template-columns:repeat(3,1fr)}
 @media(max-width:1100px){.cams.cams3{grid-template-columns:repeat(2,1fr)}}
@@ -1718,6 +1719,10 @@ html:not(#x) .zc:fullscreen>video,html:not(#x) .zc.zfull>video{position:static!i
 .cam.pb.fs .cx{top:calc(var(--pbh) / 2 - 22px);right:14px}
 .cam.pb .lbl,.cam.pb .dl,.cam.pb .lv,.cam.pb .fsb,.cam.pb .aud{visibility:hidden}
 .cam.pb .pbk{background:rgb(6,16,22)}
+/* #view recordings screen: the Playback pill is not shown on top of the heading, and on phones the Close X sits at the right of the heading row, not on top of BACK */
+html:not(#x) #vw .cam.vf.pb .vh>.px,html:not(#x) #vw .cam.pb .px{display:none!important}
+html:not(#x) #vw .cam.vf.pb:not(.ls) .vh{display:contents}html:not(#x) #vw .cam.vf.pb:not(.ls) .vh::before,html:not(#x) #vw .cam.vf.pb:not(.ls) .vh::after{display:none}
+html:not(#x) #vw .cam.vf.pb:not(.ls) .vh>.cx{position:absolute!important;top:calc(var(--pbh,68px) / 2 - 22px)!important;right:14px!important;left:auto!important;bottom:auto!important;margin:0!important;z-index:6}
 /* artist info: the Artist tab beside the lyrics (Media page, and the lyrics sheet on a phone) and the Artist page in the Now Playing sheet */
 .aitabs{display:inline-flex;gap:2px;padding:4px;border-radius:99px;background:rgba(var(--w),.1);text-transform:none}.aitabs .chip{border:0;background:transparent;box-shadow:none;padding:8px 18px;min-height:0;font:600 12px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink)}.aitabs .chip.on{background:var(--mint);color:var(--bg)}
 .lyh .aitabs{margin:-6px 0}
@@ -1806,7 +1811,7 @@ body.ly-open .mlay.hasly .ar{flex:1;max-height:none;min-height:0}
 // (notification tap such as #view/driveway, #security ...), not the return from the login, and the device has not asked for reduced motion.
 window.brandLogo = function () { var L = window.DASH_LOGO, B = (window.DASH_CONFIG || {}).brand; return L && L.svg ? { svg: L.svg, lockup: !!L.lockup } : B && B.mark ? { svg: B.mark, lockup: false } : null; };   // brand-logo.js wins over brand.mark in config.js
 window.brandMark = function (s) { var g = window.brandLogo(); if (!g) return ""; return g.svg.replace(/\bid="([\w-]+)"/g, 'id="$1' + s + '"').replace(/url\(#([\w-]+)\)/g, 'url(#$1' + s + ')'); };
-window.DASH_VER = "1.10.0";   // the one place to change the version
+window.DASH_VER = "1.10.0.1";   // the one place to change the version
 (function () { try {
   var B = (window.DASH_CONFIG || {}).brand, el = document.getElementById("bootld"), r = document.documentElement, lp = "on";
   try { lp = localStorage.getItem("dashLogo") || "on"; } catch (e) {}   // Theme page -> "Start-up logo": on | load (no intro) | off (plain spinner, as before)

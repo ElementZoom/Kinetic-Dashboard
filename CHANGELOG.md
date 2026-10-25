@@ -4,6 +4,79 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
+## 1.10.0.1 - 2026-10-25
+
+### Fixed
+- **Detections pop-up on a landscape phone:** the card was taller than the screen, so the close button and the play bar were off it. The card now shrinks to fit the screen (and keeps clear of the notch).
+- **Recordings screen on the camera page (#view):** the Playback pill no longer sits on top of the "Recordings" heading, and on phones the Close X is at the right of the heading instead of on top of BACK.
+- **Recordings on a short landscape phone:** the list is on the left and the recording beside it, instead of a thin strip under the heading.
+
+## 1.10.0 - 2026-10-25
+
+### Added
+- **camFullscreen: false** (config.js): on phones the full-screen camera fills the screen without asking the browser for real full screen, so there is no blink when it opens or closes and the system bars stay.
+
+## 1.9.2.1 - 2026-10-25
+
+### Fixed
+- **Recordings screen header:** the close X is in the heading row, the live controls are hidden while recordings are open, and the panel is opaque.
+
+## 1.9.2 - 2026-10-25
+
+### Changed
+- **Camera full-screen open / close animation:** a solid black card, and the picture dissolves into the waiting tile instead of jumping.
+
+## 1.9.1 - 2026-10-25
+
+### Changed
+- **Boxes follow better:** each box is moved on at the speed it had since the last two looks, counted from the moment the picture was taken, and the model is asked again straight after each answer.
+
+### Added
+- **detectAI: { gpu: true }:** the phone's graphics chip (WebGPU) does the recognising, with the processor as the fall-back. About 25 MB more to load the first time.
+
+## 1.9.0.2 - 2026-10-25
+
+### Added
+- **detectAI: { debug: true }** (or ?mkdebug in the address): a small chip on the recording shows the version and how long each look takes, or why only movement boxes are used.
+
+## 1.9.0.1 - 2026-10-25
+
+### Changed
+- **Fewer false boxes:** a person has to be upright and sure enough (more sure when standing still), a car has to be seen twice and travel, a "car" hardly bigger than the person standing in it is dropped, and a box that is not confirmed goes after 0.9 s.
+
+## 1.9.0 - 2026-10-25
+
+### Added
+- **YOLOX engine for the recognising** (detectAI: { engine: "yolox", model: "/local/yolox_tiny.onnx", size: 416 }). YOLOX is Apache-2.0; the model file is hosted by you (Home Assistant's www folder) and onnxruntime-web is loaded from the internet.
+
+## 1.8.1 - 2026-10-25
+
+### Fixed
+- Boxes catch up with the person faster, and the model is preloaded.
+
+## 1.8.0 - 2026-10-25
+
+### Added
+- **detectAI** (config.js): a small object-detection model (COCO-SSD) decides what is a person, car or animal, so shadows and light changes are no longer boxed. Falls back to movement boxes when it cannot load.
+
+## 1.7.0.2 - 2026-10-25
+
+### Changed
+- The movement-only detector uses a background model, tracks and a kind per box.
+
+## 1.7.0 - 2026-10-25
+
+### Added
+- **Day strip on Playback:** one coloured bar per clip showing where it sits in the day; tap one to play it.
+- **Marks on recordings:** the person or car that moves is marked (detectMark: "brackets" (default), "box", "glow" or false). Only clips the camera tagged Person / Vehicle / Animal are marked.
+
+## 1.6.8.1 - 2026-10-25
+
+### Changed
+- **Own recording-player controls** in Playback and Detections: pinching is easy, full screen keeps the zoom, and there is one play button.
+
+(Entries 1.6.8.1 to 1.10.0 were written back in from the hand-off notes after the working copy was lost; the dates are approximate.)
+
 ## 1.6.8 - 2026-10-24
 
 ### Fixed

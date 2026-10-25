@@ -209,3 +209,7 @@ html:not(#x) .zc:fullscreen>video,html:not(#x) .zc.zfull>video{position:static!i
 .cam.pb.fs .cx{top:calc(var(--pbh) / 2 - 22px);right:14px}
 .cam.pb .lbl,.cam.pb .dl,.cam.pb .lv,.cam.pb .fsb,.cam.pb .aud{visibility:hidden}
 .cam.pb .pbk{background:rgb(6,16,22)}
+/* #view recordings screen: the Playback pill is not shown on top of the heading, and on phones the Close X sits at the right of the heading row, not on top of BACK */
+html:not(#x) #vw .cam.vf.pb .vh>.px,html:not(#x) #vw .cam.pb .px{display:none!important}
+html:not(#x) #vw .cam.vf.pb:not(.ls) .vh{display:contents}html:not(#x) #vw .cam.vf.pb:not(.ls) .vh::before,html:not(#x) #vw .cam.vf.pb:not(.ls) .vh::after{display:none}
+html:not(#x) #vw .cam.vf.pb:not(.ls) .vh>.cx{position:absolute!important;top:calc(var(--pbh,68px) / 2 - 22px)!important;right:14px!important;left:auto!important;bottom:auto!important;margin:0!important;z-index:6}

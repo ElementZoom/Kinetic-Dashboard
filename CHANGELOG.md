@@ -4,35 +4,22 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
-## 1.12.1.1 - 2026-10-25
+## 1.12.0 - 2026-10-25
 
-### Fixed
-- **Camera page with two cameras side by side (`detectLive`):** the box landed in the wrong place and the page could hang (two live recognisers at once). Two cameras side by side are no longer marked; a single camera on the camera page and a camera tapped to full screen still are.
+This release rolls up the work since 1.11.0 (the small versions in between, 1.11.1 to 1.12.1.1, were never published on their own).
 
-## 1.12.1 - 2026-10-25
+### Added
+- **Boxes on a live camera (`detectLive: true`, needs `detectAI`):** a camera you tap to full screen, and a single camera on the camera page, gets the same boxes as a recording, for people, cars and animals. Only the camera you opened is looked at, and closing it stops the recogniser. Off by default. There is no lookahead on live (it cannot see the future), so a fast mover is boxed a little behind. A person standing still is kept boxed when the model is very sure. Two cameras side by side on the camera page are not marked (heavy, and laid out differently).
 
 ### Changed
 - **Full screen no longer freezes the picture while the clear stream connects:** the light stream keeps playing until the clear one has its first picture, then it swaps over (and the same on the way back). It used to stop the light stream first and show a still picture for the few seconds the clear stream took. If the clear stream does not arrive within 8 seconds, the light one stays. The connection time itself is unchanged; for a shorter wait, a shorter keyframe interval on the camera's main stream and H.264 help.
-
-## 1.12.0 - 2026-10-25
-
-### Added
-- **Boxes on a live camera (`detectLive: true`, needs `detectAI`):** a camera you tap to full screen (and the camera page) gets the same boxes as a recording, for people, cars and animals. Only the camera you opened is looked at, and closing it stops the recogniser. Off by default. There is no lookahead on live (it cannot see the future), so a fast mover is boxed a little behind. A person standing still is kept boxed when the model is very sure.
-
-## 1.11.3 - 2026-10-25
+- **Boxes trail a fast mover less:** a box keeps a small lead (it slides for a moment on its way, so it is aimed a little ahead), the speed of the last two looks counts more, the speed limit is higher (a child on a scooter, a quick runner), and the slide itself is shorter. With the recogniser answering as fast as a phone does, the box stays within about 5-10 px of a walker instead of 10-20 px behind; with `lookahead` on it sits right on the person.
 
 ### Fixed
-- **Boxes trail a fast mover less:** a box now keeps a small lead (it slides for a moment on its way, so it is aimed a little ahead), the speed of the last two looks counts more, the speed limit is higher (a child on a scooter, a quick runner), and the slide itself is shorter. With the recogniser answering as fast as a phone does, the box stays within about 5-10 px of a walker instead of 10-20 px behind. With `lookahead` on it sits right on the person.
+- **Fast cars on recordings:** a car crossing the picture in a second or two was often not boxed. The model did see it, but whole-picture looks (the only ones that find cars) were crowded out by close-ups on the moving spot, and a car had to travel a fair distance (or be seen twice) before it showed. With Vehicle tagged, the whole picture is now looked at straight away and again every fraction of a second while something moves, and a car with movement under it that the model is 60% sure of is shown after one look.
 
-## 1.11.2 - 2026-10-25
-
-### Fixed
-- **Cars boxed sooner:** a car with movement under it is shown after its first look (it used to wait for a second look or a very sure first one), and a blurry car the model is 60% sure of counts.
-
-## 1.11.1 - 2026-10-25
-
-### Fixed
-- **Fast cars on recordings:** a car crossing the picture in a second or two was often not boxed. The model did see it, but whole-picture looks (the only ones that find cars) were crowded out by close-ups on the moving spot, and a car had to travel a fair distance before it showed. With Vehicle tagged, the whole picture is now looked at straight away and again every fraction of a second while something moves, and a car the model is sure of that has movement under it is shown after one look.
+### Tests
+- New checks for live boxes, the camera page, the stream swap (`tests/cam-stream-swap.mjs`), a fast car, and how close the box stays to a walker.
 
 ## 1.11.0 - 2026-10-25
 

@@ -125,7 +125,7 @@ function mkCam(c, host) {
   if (host.id === "vw") {   // the camera view's top controls share one wrapper, so the layout can put them in one row (tablets) or two (phones)
     const vh = document.createElement("div"); vh.className = "vh"; ["lbl", "dl", "lv", "aud", "px", "cx", "fsb"].forEach(k => { const n = el.querySelector("." + k); if (n) vh.appendChild(n); }); el.appendChild(vh); el.dataset.k = c.k;
   }
-  if (host.id === "vw") { el.classList.add("vf"); setTimeout(() => pbPre(c), 600); const ctl = camCtl(c.id); if (ctl) { cp.innerHTML = '<div class="tg3">' + ctl.map(tileHtml).join("") + '</div>'; cp.dataset.b = 1; } el.onclick = e => { if (e.target.closest(".fsb")) camLand(el); else if (e.target.closest(".cx")) vwClose(); }; host.appendChild(el); setTimeout(() => mkLiveOn(el), 0); return el; }   // phones: the card has the same X as a Security camera (the tablet keeps the round X above the pictures)
+  if (host.id === "vw") { el.classList.add("vf"); setTimeout(() => pbPre(c), 600); const ctl = camCtl(c.id); if (ctl) { cp.innerHTML = '<div class="tg3">' + ctl.map(tileHtml).join("") + '</div>'; cp.dataset.b = 1; } el.onclick = e => { if (e.target.closest(".fsb")) camLand(el); else if (e.target.closest(".cx")) vwClose(); }; host.appendChild(el); return el; }   // phones: the card has the same X as a Security camera (the tablet keeps the round X above the pictures)
   el.onclick = e => {
     if (e.target.closest(".cpanel, .pbk, .px")) return;
     if (e.target.closest(".fsb")) { camLand(el); return; }
@@ -167,7 +167,7 @@ function viewMode() {
 function applyView() {
   if (!onView()) return; const m = viewMode(); if (m === VW.mode) return; VW.mode = m;
   const vw = $("#vw"); vw.className = "on " + (m === "both" ? "two" : "one");
-  VWC.forEach(c => { const vis = m === "both" ? (c.k === "driveway" || c.k === "garage") : m === c.k; c.o.el.style.display = vis ? "" : "none"; if (vis) { liveCam(c); const s = states[c.id], pc = s && s.attributes.entity_picture; if (pc) c.o.img.src = CONFIG.url + pc + (pc.indexOf("?") > -1 ? "&" : "?") + "t=" + Date.now(); } else { clearTimeout(c.rt); stopCam(c); } });
+  VWC.forEach(c => { const vis = m === "both" ? (c.k === "driveway" || c.k === "garage") : m === c.k; c.o.el.style.display = vis ? "" : "none"; if (vis) { liveCam(c); if (m === "both") mkLiveOff(c.o.el); else mkLiveOn(c.o.el);   /* two cameras side by side: no recogniser (heavy, and the picture is laid out differently) */ const s = states[c.id], pc = s && s.attributes.entity_picture; if (pc) c.o.img.src = CONFIG.url + pc + (pc.indexOf("?") > -1 ? "&" : "?") + "t=" + Date.now(); } else { clearTimeout(c.rt); stopCam(c); mkLiveOff(c.o.el); } });
   updTiles();
 }
 setInterval(() => { const V = CONFIG.view; if (onView() && V.returnAfter && VW.seen && /^#view(\/auto)?$/.test(location.hash) && Date.now() - Math.max(VW.hold.driveway, VW.hold.garage) > V.returnAfter * 1000) location.hash = "#home"; applyView(); }, 5000);

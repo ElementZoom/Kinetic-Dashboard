@@ -4,6 +4,11 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
+## 1.12.1.1 - 2026-10-25
+
+### Fixed
+- **Camera page with two cameras side by side (`detectLive`):** the box landed in the wrong place and the page could hang (two live recognisers at once). Two cameras side by side are no longer marked; a single camera on the camera page and a camera tapped to full screen still are.
+
 ## 1.12.1 - 2026-10-25
 
 ### Changed

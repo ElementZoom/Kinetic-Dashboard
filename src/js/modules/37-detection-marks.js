@@ -26,7 +26,7 @@ function mkAttach(el, tags) {   // el = .pbv or .dtv; call each time a clip is l
   if (mkAiOn()) { mkAiLoad(); if (!el._mkAiT) el._mkAiT = setTimeout(() => mkAiRun(el), 300); }
 }
 function mkLiveOn(el) {   // detectLive: true (needs detectAI): a camera that is full screen gets the same boxes as a recording, for every kind the model knows
-  if (!CONFIG.detectLive || !mkAiCfg() || !mkStyle()) return; el._mkLive = 1; mkAttach(el, ["Person", "Vehicle", "Animal"]);
+  if (el._mkLive || !CONFIG.detectLive || !mkAiCfg() || !mkStyle()) return; el._mkLive = 1; mkAttach(el, ["Person", "Vehicle", "Animal"]);
 }
 function mkLiveOff(el) { if (!el._mkLive) return; el._mkLive = 0; mkAttach(el, []); }
 function mkClear(el) { el._mkS = null; el._mkB = []; el._mkD = []; el._mkG = []; el._mkPD = -1; el._mkTok = (el._mkTok || 0) + 1; if (el._mk) el._mk.innerHTML = ""; }

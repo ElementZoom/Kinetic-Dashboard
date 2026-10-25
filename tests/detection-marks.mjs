@@ -167,6 +167,12 @@ for (const live of [true, false]) { CFG = AI + (live ? ", detectLive: true" : ""
   if (live) { ok("live: the full-screen camera is marked on", o.open, o); ok("live: a person is boxed on the live picture", o.kinds.indexOf("person") >= 0 && o.frames >= 3, o); ok("live: nothing is marked on the tile before opening", !o.before); ok("live: closing it stops the marks", o.closed, o); }
   else ok("live: without detectLive nothing is marked", !o.open && o.frames === 0, o); await ctx.close(); }
 
+// --- the camera page: one camera gets the boxes, two side by side do not
+{ CFG = AI + ", detectLive: true"; const ctx = await browser.newContext({ viewport: { width: 1100, height: 800 } }), p = await ctx.newPage(); p.on("pageerror", e => errors.push(String(e)));
+  await p.goto(`http://127.0.0.1:${server.address().port}/dash.html#view`); await p.waitForTimeout(1500);
+  const o = await p.evaluate(async () => { const wait = ms => new Promise(r => setTimeout(r, ms)), out = {}; for (const m of ["both", "driveway", "both", "garage"]) { viewMode = () => m; VW.mode = ""; applyView(); await wait(100); out[m + (out[m] ? "2" : "")] = VWC.map(c => c.o.el.style.display + ":" + (c.o.el.classList.contains("mkon") ? "mk" : "-")); } return out; });
+  ok("camera page: two cameras side by side are not marked", o.both.every(x => x.endsWith("-")) && o.both2.every(x => x.endsWith("-")), o); ok("camera page: one camera is marked, the hidden one not", o.driveway[0].endsWith("mk") && o.driveway[1].endsWith("-") && o.garage[1].endsWith("mk") && o.garage[0].endsWith("-"), o); await ctx.close(); }
+
 await browser.close(); server.close();
 if (errors.length) problems.push("page errors: " + errors.join(" | "));
 if (problems.length) { console.error("FAIL:\n- " + problems.join("\n- ")); process.exit(1); }

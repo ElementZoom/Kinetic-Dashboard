@@ -1816,7 +1816,7 @@ body.ly-open .mlay.hasly .ar{flex:1;max-height:none;min-height:0}
 // (notification tap such as #view/driveway, #security ...), not the return from the login, and the device has not asked for reduced motion.
 window.brandLogo = function () { var L = window.DASH_LOGO, B = (window.DASH_CONFIG || {}).brand; return L && L.svg ? { svg: L.svg, lockup: !!L.lockup } : B && B.mark ? { svg: B.mark, lockup: false } : null; };   // brand-logo.js wins over brand.mark in config.js
 window.brandMark = function (s) { var g = window.brandLogo(); if (!g) return ""; return g.svg.replace(/\bid="([\w-]+)"/g, 'id="$1' + s + '"').replace(/url\(#([\w-]+)\)/g, 'url(#$1' + s + ')'); };
-window.DASH_VER = "1.12.0";   // the one place to change the version
+window.DASH_VER = "1.13.0";   // the one place to change the version
 (function () { try {
   var B = (window.DASH_CONFIG || {}).brand, el = document.getElementById("bootld"), r = document.documentElement, lp = "on";
   try { lp = localStorage.getItem("dashLogo") || "on"; } catch (e) {}   // Theme page -> "Start-up logo": on | load (no intro) | off (plain spinner, as before)
@@ -1955,6 +1955,11 @@ let FONT = "jakarta"; try { FONT = localStorage.getItem("dashFont") || "jakarta"
 const FONTS = [["jakarta", "Plus Jakarta Sans", "Modern, friendly", '"Plus Jakarta Sans",Inter,system-ui,sans-serif'], ["google", "Google (Roboto Flex)", "Clean, Android feel", '"Roboto Flex",Roboto,system-ui,sans-serif'], ["googlemono", "Google + mono labels", "Roboto Flex with Roboto Mono labels", '"Roboto Flex",Roboto,system-ui,sans-serif'], ["outfit", "Outfit", "Geometric, rounded", '"Outfit",Inter,system-ui,sans-serif'], ["manrope", "Manrope", "Soft and neutral", '"Manrope",Inter,system-ui,sans-serif'], ["default", "Classic", "Your previous look", 'Inter,"Segoe UI",Roboto,system-ui,sans-serif']];
 const applyFont = () => document.documentElement.setAttribute("data-font", FONTS.some(x => x[0] === FONT) ? FONT : "jakarta");
 applyFont();
+// 12- or 24-hour times: Theme page -> "Clock" (this device), else config.js clock: "12" | "24", else "auto" (the device's language decides)
+let CLOCK = ""; try { CLOCK = localStorage.getItem("dashClock") || ""; } catch (_) {}
+if (!/^(auto|12|24)$/.test(CLOCK)) CLOCK = /^(12|24)$/.test(String(CONFIG.clock)) ? String(CONFIG.clock) : "auto";
+const CLK12 = () => CLOCK === "12" || (CLOCK !== "24" && !!new Intl.DateTimeFormat([], { hour: "numeric" }).resolvedOptions().hour12);
+const tmo = o => Object.assign(o, CLK12() ? { hour12: true } : { hourCycle: "h23" });   // add to the options of any toLocale*String that shows an hour
 applyPal();
 let PAL_SEEN = palMode(); const palTick = () => { if (PAL.mode !== "sun" && PAL.mode !== "time") return; const m = palMode(); if (m !== PAL_SEEN) { PAL_SEEN = m; themeFx(applyPal); if (curPg() === "theme") drawPalette(); } };
 setInterval(palTick, 20000); document.addEventListener("visibilitychange", () => { if (!document.hidden) palTick(); });
@@ -2391,7 +2396,7 @@ function drawEvents(gs, map, fin) {
   if (!$("#eerr")) { const e = document.createElement("div"); e.id = "eerr"; e.style.cssText = "color:var(--heat);font-size:12px;margin:6px 2px;empty-cells:hide"; $("#elg").after(e); }
   $("#elg").innerHTML = CONFIG.calendars.map((c, i) => '<span><i style="--c:' + CALCOL[i % CALCOL.length] + '"></i>' + esc(calName(c)) + '</span>').join("");
   const today = dk(new Date()), rows = mrows(), g = $("#cg");
-  const tm = v => v.t.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }).replace(" ", "").toLowerCase();
+  const tm = v => v.t.toLocaleTimeString([], tmo({ hour: "numeric", minute: "2-digit" })).replace(" ", "").toLowerCase();
   const srt = l => l.sort((a, b) => (b.ad - a.ad) || (a.t - b.t));
   let h = "";
   if (isMobile()) {   // phones: agenda list instead of a month grid
@@ -3086,7 +3091,7 @@ let infT = 0;
 function lsInfo(id, el) {
   const s = states[id]; if (!s) return; const t = Date.parse(s.last_changed || s.last_updated || ""); if (!t) return;
   let b = $("#linf"); if (!b) { document.body.insertAdjacentHTML("beforeend", '<div id="linf"></div>'); b = $("#linf"); b.onclick = () => b.classList.remove("show"); }
-  const dt = new Date(t), p2 = n => ("0" + n).slice(-2), when = p2(dt.getDate()) + "/" + p2(dt.getMonth() + 1) + "/" + dt.getFullYear() + " " + p2(dt.getHours()) + ":" + p2(dt.getMinutes());
+  const dt = new Date(t), p2 = n => ("0" + n).slice(-2), when = p2(dt.getDate()) + "/" + p2(dt.getMonth() + 1) + "/" + dt.getFullYear() + " " + dt.toLocaleTimeString([], tmo({ hour: CLK12() ? "numeric" : "2-digit", minute: "2-digit" }));
   b.innerHTML = '<b>' + esc(s.attributes.friendly_name || fname(id)) + '</b><span>' + lastVerb(id, el) + " " + agoFull(Date.now() - t) + '</span><small>' + when + '</small>';
   b.classList.add("show"); clearTimeout(infT); infT = setTimeout(() => b.classList.remove("show"), 6000);
 }
@@ -3271,7 +3276,7 @@ function loadFcH() {
 }
 const CARD = d => ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"][Math.round(d / 22.5) % 16];
 // ----- summary lines worked out from the hourly forecast (replaces the template sensors) -----
-const wxWhen = x => { const t = new Date(x.datetime), td = t.toDateString() === new Date().toDateString(); return (td ? "today" : t.toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" })) + " at " + t.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }).replace(" ", " ").replace(/ /, " "); };
+const wxWhen = x => { const t = new Date(x.datetime), td = t.toDateString() === new Date().toDateString(); return (td ? "today" : t.toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" })) + " at " + t.toLocaleTimeString([], tmo({ hour: "numeric", minute: "2-digit" })).replace(" ", " ").replace(/ /, " "); };
 const wxLine = t => t ? '<div class="sm" style="margin-top:6px">' + esc(t) + '</div>' : "";
 function wxBeaufort(kmh) { const T = [[1, "Calm"], [6, "Light air"], [12, "Light breeze"], [20, "Gentle breeze"], [29, "Moderate breeze"], [39, "Fresh breeze"], [50, "Strong breeze"], [62, "Near gale"], [75, "Gale"], [89, "Strong gale"], [103, "Storm"], [118, "Violent storm"]]; let r = "Hurricane"; for (let i = 0; i < T.length; i++) if (kmh < T[i][0]) { r = T[i][1]; break; } return r; }
 function wxSumWind(d, wu) {
@@ -3417,7 +3422,7 @@ function tempInner(a) {
   return L1 + st + hsw('<div class="hsc"><svg viewBox="0 0 ' + W + " " + (H + 16) + '" style="display:block;width:' + W + 'px;height:' + (H + 16) + 'px;color:var(--ink)">' + g + '</svg></div>') + '<div class="sm" style="margin-top:4px">Next ' + d.length + ' hours · scroll sideways · blue = rain</div>';
 }
 const fcStats = r => '<div class="wg" style="margin:10px 0 14px">' + r.map(x => '<div class="ws"><span class="lbl">' + x[0] + '</span><b>' + x[1] + '</b></div>').join("") + '</div>';
-const hr = x => new Date(x.datetime).toLocaleTimeString([], { hour: "numeric" }).replace(" ", "").toLowerCase();
+const hr = x => new Date(x.datetime).toLocaleTimeString([], tmo({ hour: "numeric" })).replace(" ", "").toLowerCase();
 function fcPanel(a, wu) {
   const sl = [tempInner(a), windInner(a, wu), rainInner(a), uvInner(a)];
   return '<div class="pn pg fcp">' + hsw('<div class="chips tabs fct">' + FCT.map((t, i) => '<button class="chip' + (i === fcTab ? " on" : "") + '" data-ft="' + i + '">' + mdi(t[1]) + '<span>' + t[0] + '</span></button>').join("") + '</div>') + '<div class="fcs">' + sl.map(x => '<div class="fcl">' + x + '</div>').join("") + '</div></div>';
@@ -3451,14 +3456,14 @@ function drawWeather() {
 
 function volcHtml() {
   return (CONFIG.volcanoes || []).filter(e => parseFloat(sv(e)) > 0).map(e => {
-    const v = states[e].attributes, t = v.feed_last_update ? new Date(v.feed_last_update).toLocaleString([], { day: "numeric", month: "long", hour: "numeric", minute: "2-digit" }) : "";
+    const v = states[e].attributes, t = v.feed_last_update ? new Date(v.feed_last_update).toLocaleString([], tmo({ day: "numeric", month: "long", hour: "numeric", minute: "2-digit" })) : "";
     return '<div class="alert v" data-go="#hazards" style="--qc:' + (HZ_VAL[Math.max(0, Math.min(5, Math.round(parseFloat(sv(e)) || 0)))] || HZ_VAL[1])[1] + '"><div class="lbl">' + mdi("volcano") + ' ' + esc(v.friendly_name || e) + '</div><b>' + esc(v.activity || "No warnings") + '</b><div>' + t + ' · GeoNet</div></div>';
   });
 }
 function quakeHtml() {   // Weather page + notifications: real quakes within hazards.alertKm (default 100 km) in the last 24 h; the rest live on the Hazards page
   const km = +((CONFIG.hazards || {}).alertKm) || hzFocus(), mn = hzMin();
   const q = Object.keys(states).map(k => states[k]).filter(x => x.entity_id.indexOf("geo_location.") === 0 && x.attributes.source === "geonetnz_quakes" && x.attributes.quality !== "deleted" && parseFloat(x.state) <= km && (+x.attributes.magnitude || 0) >= mn && x.attributes.time && Date.now() - new Date(x.attributes.time).getTime() < 864e5).sort((x, y) => new Date(y.attributes.time) - new Date(x.attributes.time));
-  return q.slice(0, 2).map(x => { const a = x.attributes, M = hzMag(+a.magnitude || 0); return '<div class="alert q" data-go="#hazards" style="--qc:' + M[1] + '"><div class="lbl">' + mdi("alert-circle") + ' Earthquake · ' + M[2] + '</div><b>Magnitude ' + f1(a.magnitude) + ' · ' + Math.round(parseFloat(x.state)) + ' km away</b><div>' + esc(a.locality || "") + (a.mmi != null && a.mmi !== "" ? " · MMI " + a.mmi + " " + hzMMI(+a.mmi).toLowerCase() + " shaking" : "") + ' · ' + new Date(a.time).toLocaleString([], { weekday: "short", hour: "numeric", minute: "2-digit" }) + '</div></div>'; }).join("");
+  return q.slice(0, 2).map(x => { const a = x.attributes, M = hzMag(+a.magnitude || 0); return '<div class="alert q" data-go="#hazards" style="--qc:' + M[1] + '"><div class="lbl">' + mdi("alert-circle") + ' Earthquake · ' + M[2] + '</div><b>Magnitude ' + f1(a.magnitude) + ' · ' + Math.round(parseFloat(x.state)) + ' km away</b><div>' + esc(a.locality || "") + (a.mmi != null && a.mmi !== "" ? " · MMI " + a.mmi + " " + hzMMI(+a.mmi).toLowerCase() + " shaking" : "") + ' · ' + new Date(a.time).toLocaleString([], tmo({ weekday: "short", hour: "numeric", minute: "2-digit" })) + '</div></div>'; }).join("");
 }
 
 // ---------- irrigation ----------
@@ -3846,7 +3851,7 @@ function pbList(c) {
   txGo(l, pb.tx || 0, true); pb.tx = 0;   // same slide / fade the rest of the dashboard uses
   pbThumbs(c);
 }
-const pbClock = t => { const p = t.split(":").map(Number), h = p[0] % 12 || 12; return h + ":" + ("0" + p[1]).slice(-2) + (p.length > 2 ? ":" + ("0" + p[2]).slice(-2) : "") + " " + (p[0] < 12 ? "am" : "pm"); };
+const pbClock = t => { const p = t.split(":").map(Number), h = p[0] % 12 || 12; if (!CLK12()) return p.map(n => ("0" + n).slice(-2)).join(":"); return h + ":" + ("0" + p[1]).slice(-2) + (p.length > 2 ? ":" + ("0" + p[2]).slice(-2) : "") + " " + (p[0] < 12 ? "am" : "pm"); };
 const pbDay = t => { const m = /(\d{4})[\/.-](\d{1,2})[\/.-](\d{1,2})/.exec(String(t)); if (!m) return pbT(t); const d = new Date(+m[1], +m[2] - 1, +m[3]), n = new Date(), a = new Date(n.getFullYear(), n.getMonth(), n.getDate()), df = Math.round((a - d) / 864e5); return (df === 0 ? "Today · " : df === 1 ? "Yesterday · " : "") + d.toLocaleDateString([], { weekday: "short", day: "numeric", month: "short", year: "numeric" }); };
 // preview pictures: use HA's thumbnail when it sends one, otherwise grab one frame from each clip as it scrolls into view (one at a time, remembered until the page is reloaded)
 function pbThumbs(c) {
@@ -3950,7 +3955,7 @@ function dtItems() {
   });
   return out.sort((a, b) => b.ts - a.ts);
 }
-const dtWhen = ts => { const d = new Date(ts), n = new Date(), df = Math.round((new Date(n.getFullYear(), n.getMonth(), n.getDate()) - new Date(d.getFullYear(), d.getMonth(), d.getDate())) / 864e5), tm = d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }).replace(" ", "").toLowerCase(); return (df === 0 ? "Today" : df === 1 ? "Yesterday" : d.toLocaleDateString([], { weekday: "short", day: "numeric", month: "short" })) + " · " + tm; };
+const dtWhen = ts => { const d = new Date(ts), n = new Date(), df = Math.round((new Date(n.getFullYear(), n.getMonth(), n.getDate()) - new Date(d.getFullYear(), d.getMonth(), d.getDate())) / 864e5), tm = d.toLocaleTimeString([], tmo({ hour: "numeric", minute: "2-digit" })).replace(" ", "").toLowerCase(); return (df === 0 ? "Today" : df === 1 ? "Yesterday" : d.toLocaleDateString([], { weekday: "short", day: "numeric", month: "short" })) + " · " + tm; };
 function dtDraw(soft) {
   const P = $("#dtp"); if (!P) return; if (!dtCams().length || CONFIG.detections === false) { P.style.display = "none"; return; } P.style.display = "";
   const all = dtItems(), tyOn = k => DT.types[k], vis = all.filter(x => (DT.cam === "all" || x.cam === DT.cam) && x.p.tags.some(t => tyOn(t)));
@@ -4039,7 +4044,7 @@ const hzRad = () => +((CONFIG.hazards || {}).radius) || 200;   // the GeoNet fee
 const hzFocus = () => Math.min(hzRad(), +((CONFIG.hazards || {}).focusKm) || 100);   // what the page prioritises (inner ring, full colour, alerts)
 const hzMin = () => +((CONFIG.hazards || {}).minMag) || 0;   // quakes below this magnitude are left out
 const hzAgo = t => { const s = (Date.now() - t) / 1000, p = (n, u) => n + " " + u + (n === 1 ? "" : "s") + " ago"; return !t ? "" : s < 90 ? "just now" : s < 3600 ? p(Math.round(s / 60), "min") : s < 86400 ? p(Math.round(s / 3600), "hour") : p(Math.round(s / 86400), "day"); };
-const hzWhen = t => t ? new Date(t).toLocaleString([], { weekday: "short", day: "numeric", month: "short", hour: "numeric", minute: "2-digit" }) : "--";
+const hzWhen = t => t ? new Date(t).toLocaleString([], tmo({ weekday: "short", day: "numeric", month: "short", hour: "numeric", minute: "2-digit" })) : "--";
 function hzData() {
   const S = Object.keys(states).map(k => states[k]);
   const q = S.filter(x => x.entity_id.indexOf("geo_location.") === 0 && x.attributes.source === "geonetnz_quakes" && x.attributes.latitude != null).map(x => { const a = x.attributes; return { id: x.entity_id, k: "q", lat: +a.latitude, lon: +a.longitude, m: +a.magnitude || 0, mmi: a.mmi != null && a.mmi !== "" ? +a.mmi : null, depth: a.depth, dist: parseFloat(x.state), t: a.time ? new Date(a.time).getTime() : 0, name: a.locality || a.friendly_name || "Earthquake", ext: a.external_id || "", del: a.quality === "deleted", ql: a.quality || "" }; }).filter(q => q.m >= hzMin()).sort((a, b) => b.t - a.t);
@@ -4180,6 +4185,7 @@ function drawPalette() {
     sec("Font", '<div class="stg">' + FONTS.map(x => '<button class="eb fnb' + (FONT === x[0] ? " sel" : "") + '" data-font="' + x[0] + '" style="font-family:' + x[3] + '"><b>22.5°</b><span>' + x[1] + '</span><small>' + x[2] + '</small></button>').join("") + '</div>') +
     sec("Mode", '<div class="seg" style="margin-top:12px;flex-wrap:wrap">' + [["dark", "DARK"], ["light", "LIGHT"], ["auto", "FOLLOW DEVICE"], ["sun", "FOLLOW SUN"], ["time", "SCHEDULE"]].map(x => '<button class="eb' + (PAL.mode === x[0] ? " on" : "") + '" data-mode="' + x[0] + '">' + x[1] + '</button>').join("") + '</div>' +
       (PAL.mode === "time" ? '<div class="lbl" style="margin-top:12px;text-transform:none;letter-spacing:0;display:flex;gap:10px;align-items:center;flex-wrap:wrap">Dark from <input type="time" data-tm="from" value="' + esc(PAL.from || "18:00") + '"> until <input type="time" data-tm="to" value="' + esc(PAL.to || "06:00") + '"></div>' : "") + (PAL.mode === "sun" ? '<div class="lbl" style="margin-top:12px;text-transform:none;letter-spacing:0">Dark from sunset to sunrise, from <b>sun.sun</b> in Home Assistant' + (states["sun.sun"] ? "" : " (not found, using 6am–7pm)") + '. Saved on this device only.</div>' : "")) +
+    sec("Clock", '<div class="seg" style="margin-top:12px">' + [["auto", "DEVICE"], ["12", "12-HOUR"], ["24", "24-HOUR"]].map(x => '<button class="eb' + (CLOCK === x[0] ? " on" : "") + '" data-clock="' + x[0] + '">' + x[1] + '</button>').join("") + '</div><div class="lbl" style="margin-top:10px;text-transform:none;letter-spacing:0">How times are shown on this dashboard. DEVICE follows the language of this phone or tablet. Saved on this device only.</div>') +
     (brandOn() ? sec("Start-up logo", '<div class="seg" style="margin-top:12px">' + [["on", "LOGO + INTRO"], ["load", "WHILE LOADING ONLY"], ["off", "OFF"]].map(x => '<button class="eb' + (logoPref() === x[0] ? " on" : "") + '" data-logo="' + x[0] + '">' + x[1] + '</button>').join("") + '</div><div class="lbl" style="margin-top:10px;text-transform:none;letter-spacing:0">Applies the next time the dashboard starts. Saved on this device only.</div>') : "") +
     (ME.admin ? accSec(sec) : "") +
     (AUTH && !AUTH.borrowed && !CONFIG.token ? sec("Account", '<div style="margin-top:12px"><button class="eb" data-signout="1">SIGN OUT OF THIS DEVICE</button><span class="lbl" style="margin-left:14px">Signed in on this device only</span></div>') : "") +
@@ -4199,6 +4205,8 @@ $("#theme").onclick = e => {
   const ac = e.target.closest("[data-acc]"); if (ac) { accClick(ac); return; }
   if (fn) { themeDip(() => { FONT = fn.dataset.font; try { localStorage.setItem("dashFont", FONT); } catch (_) {} applyFont(); drawPalette(); }); return; }
   if (sy) { themeDip(() => { STYLE = sy.dataset.style; try { localStorage.setItem("dashStyle", STYLE); } catch (_) {} applyStyle(); drawPalette(); }); return; }
+  const ck = e.target.closest("button[data-clock]");
+  if (ck) { CLOCK = ck.dataset.clock; try { localStorage.setItem("dashClock", CLOCK); } catch (_) {} tick(); drawPalette(); queueHome(); return; }
   const lg = e.target.closest("button[data-logo]");
   if (lg) { try { localStorage.setItem("dashLogo", lg.dataset.logo); } catch (_) {} drawPalette(); return; }
   const so = e.target.closest("[data-signout]");
@@ -5274,7 +5282,7 @@ function pbStrip(P, items, filter) {
   const L = []; items.forEach((x, i) => { const p = P[i]; if (!p || x.can_expand || (filter !== "all" && p.tags.indexOf(filter) < 0)) return; const t = p.time.split(":").map(Number); L.push({ i: i, s: t[0] * 3600 + t[1] * 60 + (t[2] || 0), len: p.secs, tags: p.tags }); });
   if (L.length < 2) return "";
   let lo = Math.floor(Math.min.apply(0, L.map(x => x.s)) / 3600) * 3600, hi = Math.ceil(Math.max.apply(0, L.map(x => x.s + x.len)) / 3600) * 3600; if (hi - lo < 4 * 3600) hi = Math.min(86400, lo + 4 * 3600); if (hi - lo < 4 * 3600) lo = hi - 4 * 3600;
-  const hr = s => { const h = Math.round(s / 3600) % 24; return (h % 12 || 12) + (h < 12 ? "am" : "pm"); }, ty = a => a.indexOf("Person") > -1 && a.indexOf("Vehicle") > -1 ? "pv" : a.indexOf("Person") > -1 ? "person" : a.indexOf("Vehicle") > -1 ? "vehicle" : a.indexOf("Animal") > -1 ? "animal" : "motion", used = {};
+  const hr = s => { const h = Math.round(s / 3600) % 24; return CLK12() ? (h % 12 || 12) + (h < 12 ? "am" : "pm") : ("0" + h).slice(-2) + ":00"; }, ty = a => a.indexOf("Person") > -1 && a.indexOf("Vehicle") > -1 ? "pv" : a.indexOf("Person") > -1 ? "person" : a.indexOf("Vehicle") > -1 ? "vehicle" : a.indexOf("Animal") > -1 ? "animal" : "motion", used = {};
   const segs = L.map(x => { const k = ty(x.tags); used[k] = 1; return '<i class="pbs ' + k + '" data-si="' + x.i + '" style="left:' + ((x.s - lo) / (hi - lo) * 100).toFixed(2) + '%;width:' + Math.max(1.2, x.len / (hi - lo) * 100).toFixed(2) + '%" title="' + esc(pbClock(Math.floor(x.s / 3600) + ":" + ("0" + Math.floor(x.s % 3600 / 60)).slice(-2))) + '"></i>'; }).join("");
   const lg = [["person", "Person"], ["vehicle", "Car"], ["animal", "Animal"], ["motion", "Other"]].filter(a => used[a[0]] || (a[0] === "person" && used.pv) || (a[0] === "vehicle" && used.pv)).map(a => '<span class="' + a[0] + '">' + a[1] + '</span>').join("");
   return '<div class="pbtl"><div class="pbtr">' + segs + '</div><div class="pbax"><span>' + hr(lo) + '</span><span>' + hr((lo + hi) / 2) + '</span><span>' + hr(hi) + '</span></div><div class="pblg">' + lg + '</div></div>';
@@ -5364,7 +5372,7 @@ function enDraw() {
     h += '<div class="pn pg"><div class="eh"><div><div class="lbl">Consumption overview</div><div class="h2" style="margin-top:4px">' + fm(total) + ' kWh' + (en.devH ? ' <span class="enc">· ' + mc(dev.reduce((a, x) => a + (x.cost || 0), 0)) + '</span>' : '') + '</div></div><div class="seg" style="margin-left:auto"><button class="eb' + (en.mode === "bar" ? " on" : "") + '" data-em="bar">' + mdi("chart-bar") + '</button><button class="eb' + (en.mode === "pie" ? " on" : "") + '" data-em="pie">' + mdi("chart-pie") + '</button></div></div>' + ov + '</div>';
 
     if (CS) {
-      const hf = x => { const f = k => (k % 12 || 12) + (k % 24 < 12 ? "am" : "pm"); return f(x) + "–" + f(x + 1); }, rows = [], pn = ({ day: "yesterday", week: "last week", month: "last month", year: "last year" })[en.r], pl = en.o === 0 ? pn : "the previous " + en.r, part = sp.e > Date.now() && en.o === 0 ? " so far" : "";
+      const hf = x => { const f = k => CLK12() ? (k % 12 || 12) + (k % 24 < 12 ? "am" : "pm") : ("0" + k % 24).slice(-2) + ":00"; return f(x) + "–" + f(x + 1); }, rows = [], pn = ({ day: "yesterday", week: "last week", month: "last month", year: "last year" })[en.r], pl = en.o === 0 ? pn : "the previous " + en.r, part = sp.e > Date.now() && en.o === 0 ? " so far" : "";
       if (en.prev === undefined) rows.push(["Vs " + pl, "…", "Calculating…", ""]);
       else if (en.prev) {
         let pk = 0, pc = 0; Object.keys(en.prev).forEach(t => { const v = en.prev[t]; pk += v; pc += v * enRate(new Date(+t).getHours()); });
@@ -5489,7 +5497,7 @@ function batTick() {
 }
 function tick() {
   const n = new Date(), h = n.getHours();
-  $("#clk").textContent = n.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
+  $("#clk").textContent = n.toLocaleTimeString([], tmo({ hour: CLK12() ? "numeric" : "2-digit", minute: "2-digit" }));
   batTick();
   $("#dt").textContent = n.toLocaleDateString([], { weekday: "long", day: "numeric", month: "long" });
   $("#gr").textContent = (h < 12 ? "Morning" : h < 18 ? "Afternoon" : "Evening") + (userName ? ", " + userName : userKnown ? "" : CONFIG.name ? ", " + CONFIG.name : "") + "!";

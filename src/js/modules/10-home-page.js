@@ -69,7 +69,7 @@ function drawEvents(gs, map, fin) {
   if (!$("#eerr")) { const e = document.createElement("div"); e.id = "eerr"; e.style.cssText = "color:var(--heat);font-size:12px;margin:6px 2px;empty-cells:hide"; $("#elg").after(e); }
   $("#elg").innerHTML = CONFIG.calendars.map((c, i) => '<span><i style="--c:' + CALCOL[i % CALCOL.length] + '"></i>' + esc(calName(c)) + '</span>').join("");
   const today = dk(new Date()), rows = mrows(), g = $("#cg");
-  const tm = v => v.t.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }).replace(" ", "").toLowerCase();
+  const tm = v => v.t.toLocaleTimeString([], tmo({ hour: "numeric", minute: "2-digit" })).replace(" ", "").toLowerCase();
   const srt = l => l.sort((a, b) => (b.ad - a.ad) || (a.t - b.t));
   let h = "";
   if (isMobile()) {   // phones: agenda list instead of a month grid

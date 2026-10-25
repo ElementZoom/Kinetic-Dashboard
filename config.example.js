@@ -59,6 +59,7 @@ window.DASH_CONFIG = {
   weatherFx: { speed: 0.5 },
   mobileNav: "drawer",               // phones: "drawer" | "tabs"
   tileStyle: "line",                 // "line" | "edge" | "dot" | "text"
+  clock: "auto",                     // times: "auto" (the device's language decides) | "12" | "24". Each device can change it on the Theme page
   calNames: { "calendar.alex": "Alex", "calendar.sam": "Sam" },
   outside: "",
   weather: "weather.home",

@@ -12,7 +12,7 @@ const hzRad = () => +((CONFIG.hazards || {}).radius) || 200;   // the GeoNet fee
 const hzFocus = () => Math.min(hzRad(), +((CONFIG.hazards || {}).focusKm) || 100);   // what the page prioritises (inner ring, full colour, alerts)
 const hzMin = () => +((CONFIG.hazards || {}).minMag) || 0;   // quakes below this magnitude are left out
 const hzAgo = t => { const s = (Date.now() - t) / 1000, p = (n, u) => n + " " + u + (n === 1 ? "" : "s") + " ago"; return !t ? "" : s < 90 ? "just now" : s < 3600 ? p(Math.round(s / 60), "min") : s < 86400 ? p(Math.round(s / 3600), "hour") : p(Math.round(s / 86400), "day"); };
-const hzWhen = t => t ? new Date(t).toLocaleString([], { weekday: "short", day: "numeric", month: "short", hour: "numeric", minute: "2-digit" }) : "--";
+const hzWhen = t => t ? new Date(t).toLocaleString([], tmo({ weekday: "short", day: "numeric", month: "short", hour: "numeric", minute: "2-digit" })) : "--";
 function hzData() {
   const S = Object.keys(states).map(k => states[k]);
   const q = S.filter(x => x.entity_id.indexOf("geo_location.") === 0 && x.attributes.source === "geonetnz_quakes" && x.attributes.latitude != null).map(x => { const a = x.attributes; return { id: x.entity_id, k: "q", lat: +a.latitude, lon: +a.longitude, m: +a.magnitude || 0, mmi: a.mmi != null && a.mmi !== "" ? +a.mmi : null, depth: a.depth, dist: parseFloat(x.state), t: a.time ? new Date(a.time).getTime() : 0, name: a.locality || a.friendly_name || "Earthquake", ext: a.external_id || "", del: a.quality === "deleted", ql: a.quality || "" }; }).filter(q => q.m >= hzMin()).sort((a, b) => b.t - a.t);

@@ -6,7 +6,7 @@ function loadFcH() {
 }
 const CARD = d => ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"][Math.round(d / 22.5) % 16];
 // ----- summary lines worked out from the hourly forecast (replaces the template sensors) -----
-const wxWhen = x => { const t = new Date(x.datetime), td = t.toDateString() === new Date().toDateString(); return (td ? "today" : t.toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" })) + " at " + t.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }).replace(" ", " ").replace(/ /, " "); };
+const wxWhen = x => { const t = new Date(x.datetime), td = t.toDateString() === new Date().toDateString(); return (td ? "today" : t.toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" })) + " at " + t.toLocaleTimeString([], tmo({ hour: "numeric", minute: "2-digit" })).replace(" ", " ").replace(/ /, " "); };
 const wxLine = t => t ? '<div class="sm" style="margin-top:6px">' + esc(t) + '</div>' : "";
 function wxBeaufort(kmh) { const T = [[1, "Calm"], [6, "Light air"], [12, "Light breeze"], [20, "Gentle breeze"], [29, "Moderate breeze"], [39, "Fresh breeze"], [50, "Strong breeze"], [62, "Near gale"], [75, "Gale"], [89, "Strong gale"], [103, "Storm"], [118, "Violent storm"]]; let r = "Hurricane"; for (let i = 0; i < T.length; i++) if (kmh < T[i][0]) { r = T[i][1]; break; } return r; }
 function wxSumWind(d, wu) {
@@ -152,7 +152,7 @@ function tempInner(a) {
   return L1 + st + hsw('<div class="hsc"><svg viewBox="0 0 ' + W + " " + (H + 16) + '" style="display:block;width:' + W + 'px;height:' + (H + 16) + 'px;color:var(--ink)">' + g + '</svg></div>') + '<div class="sm" style="margin-top:4px">Next ' + d.length + ' hours · scroll sideways · blue = rain</div>';
 }
 const fcStats = r => '<div class="wg" style="margin:10px 0 14px">' + r.map(x => '<div class="ws"><span class="lbl">' + x[0] + '</span><b>' + x[1] + '</b></div>').join("") + '</div>';
-const hr = x => new Date(x.datetime).toLocaleTimeString([], { hour: "numeric" }).replace(" ", "").toLowerCase();
+const hr = x => new Date(x.datetime).toLocaleTimeString([], tmo({ hour: "numeric" })).replace(" ", "").toLowerCase();
 function fcPanel(a, wu) {
   const sl = [tempInner(a), windInner(a, wu), rainInner(a), uvInner(a)];
   return '<div class="pn pg fcp">' + hsw('<div class="chips tabs fct">' + FCT.map((t, i) => '<button class="chip' + (i === fcTab ? " on" : "") + '" data-ft="' + i + '">' + mdi(t[1]) + '<span>' + t[0] + '</span></button>').join("") + '</div>') + '<div class="fcs">' + sl.map(x => '<div class="fcl">' + x + '</div>').join("") + '</div></div>';
@@ -186,13 +186,13 @@ function drawWeather() {
 
 function volcHtml() {
   return (CONFIG.volcanoes || []).filter(e => parseFloat(sv(e)) > 0).map(e => {
-    const v = states[e].attributes, t = v.feed_last_update ? new Date(v.feed_last_update).toLocaleString([], { day: "numeric", month: "long", hour: "numeric", minute: "2-digit" }) : "";
+    const v = states[e].attributes, t = v.feed_last_update ? new Date(v.feed_last_update).toLocaleString([], tmo({ day: "numeric", month: "long", hour: "numeric", minute: "2-digit" })) : "";
     return '<div class="alert v" data-go="#hazards" style="--qc:' + (HZ_VAL[Math.max(0, Math.min(5, Math.round(parseFloat(sv(e)) || 0)))] || HZ_VAL[1])[1] + '"><div class="lbl">' + mdi("volcano") + ' ' + esc(v.friendly_name || e) + '</div><b>' + esc(v.activity || "No warnings") + '</b><div>' + t + ' · GeoNet</div></div>';
   });
 }
 function quakeHtml() {   // Weather page + notifications: real quakes within hazards.alertKm (default 100 km) in the last 24 h; the rest live on the Hazards page
   const km = +((CONFIG.hazards || {}).alertKm) || hzFocus(), mn = hzMin();
   const q = Object.keys(states).map(k => states[k]).filter(x => x.entity_id.indexOf("geo_location.") === 0 && x.attributes.source === "geonetnz_quakes" && x.attributes.quality !== "deleted" && parseFloat(x.state) <= km && (+x.attributes.magnitude || 0) >= mn && x.attributes.time && Date.now() - new Date(x.attributes.time).getTime() < 864e5).sort((x, y) => new Date(y.attributes.time) - new Date(x.attributes.time));
-  return q.slice(0, 2).map(x => { const a = x.attributes, M = hzMag(+a.magnitude || 0); return '<div class="alert q" data-go="#hazards" style="--qc:' + M[1] + '"><div class="lbl">' + mdi("alert-circle") + ' Earthquake · ' + M[2] + '</div><b>Magnitude ' + f1(a.magnitude) + ' · ' + Math.round(parseFloat(x.state)) + ' km away</b><div>' + esc(a.locality || "") + (a.mmi != null && a.mmi !== "" ? " · MMI " + a.mmi + " " + hzMMI(+a.mmi).toLowerCase() + " shaking" : "") + ' · ' + new Date(a.time).toLocaleString([], { weekday: "short", hour: "numeric", minute: "2-digit" }) + '</div></div>'; }).join("");
+  return q.slice(0, 2).map(x => { const a = x.attributes, M = hzMag(+a.magnitude || 0); return '<div class="alert q" data-go="#hazards" style="--qc:' + M[1] + '"><div class="lbl">' + mdi("alert-circle") + ' Earthquake · ' + M[2] + '</div><b>Magnitude ' + f1(a.magnitude) + ' · ' + Math.round(parseFloat(x.state)) + ' km away</b><div>' + esc(a.locality || "") + (a.mmi != null && a.mmi !== "" ? " · MMI " + a.mmi + " " + hzMMI(+a.mmi).toLowerCase() + " shaking" : "") + ' · ' + new Date(a.time).toLocaleString([], tmo({ weekday: "short", hour: "numeric", minute: "2-digit" })) + '</div></div>'; }).join("");
 }
 

@@ -4,6 +4,11 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
+## 1.11.1 - 2026-10-25
+
+### Fixed
+- **Fast cars on recordings:** a car crossing the picture in a second or two was often not boxed. The model did see it, but whole-picture looks (the only ones that find cars) were crowded out by close-ups on the moving spot, and a car had to travel a fair distance before it showed. With Vehicle tagged, the whole picture is now looked at straight away and again every fraction of a second while something moves, and a car the model is sure of that has movement under it is shown after one look.
+
 ## 1.11.0 - 2026-10-25
 
 This release rolls up the work since 1.6.8 (the small versions in between, 1.6.8.1 to 1.10.1, were never published on their own).

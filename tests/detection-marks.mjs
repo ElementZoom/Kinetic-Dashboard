@@ -135,6 +135,11 @@ if (fs.existsSync(path.join(MK, "models/yolox_s.onnx"))) { CFG = `detectAI: { en
   const fb = await run("one", ["Person"], LA, { from: 2.5, to: 5, hook: async () => {} }); ok("lookahead: runs on a clip that plays", fb.S.length > 3);
 }
 
+// --- a fast car (clip "car": a car crossing in 1.8 s, optional asset): it is boxed while it passes, not only after it has gone
+if (fs.existsSync(path.join(MK, "clips/car.webm"))) { const r = await run("car", ["Vehicle"], AI, { from: 0.6, to: 3.4, every: 80 }), inC = r.S.filter(s => s.t >= 1.3 && s.t <= 2.8);
+  ok("a fast car: boxed at least twice while it crosses", inC.filter(s => s.boxes.some(b => b.kind === "vehicle")).length >= 2, inC.map(s => s.boxes.length));
+  ok("a fast car: no box before it comes", r.S.filter(s => s.t < 1).every(s => s.boxes.length === 0)); }
+
 await browser.close(); server.close();
 if (errors.length) problems.push("page errors: " + errors.join(" | "));
 if (problems.length) { console.error("FAIL:\n- " + problems.join("\n- ")); process.exit(1); }

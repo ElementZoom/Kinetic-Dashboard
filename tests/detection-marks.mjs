@@ -81,7 +81,7 @@ const AI = `detectAI: { engine: "yolox", model: "/local/yolox_tiny.onnx", ort: "
 { const o = await run("one", ["Person"], AI, { from: 2.4 }); const hits = o.S.filter(s => person(s).some(b => near(b, truth("one", s.t)[0]))).length;
   ok("YOLOX: the walking person is boxed and the box sits on them", hits >= o.S.length * .7, { hits, of: o.S.length });
   ok("YOLOX: never more than one person box for one person", o.S.every(s => person(s).length <= 1), o.S.map(s => person(s).length));
-  ok("the debug chip says which version runs and how long a look takes", /^v\S+ · AI \d+ms$/.test(o.last.dbg), o.last.dbg);
+  ok("the debug chip says which version runs and how long a look takes", /^v\S+ · AI \d+ms · 416$/.test(o.last.dbg), o.last.dbg);
   const n = await run("none", ["Person"], AI, { from: 2.4 }); ok("YOLOX: an empty scene gets no boxes", n.S.every(s => s.boxes.length === 0)); ok("YOLOX: it did run", /AI \d+ms/.test(n.last.dbg), n.last.dbg);
   const wr = await run("one", ["Vehicle"], AI, { from: 2.4 }); ok("YOLOX: a clip tagged only Vehicle does not box the person", wr.S.every(s => s.boxes.length === 0)); }
 
@@ -95,6 +95,16 @@ const AI = `detectAI: { engine: "yolox", model: "/local/yolox_tiny.onnx", ort: "
     await wait(2500); const a = bx(); await wait(1500); return { t, a, b: bx() }; });
   const T = truth("one", o.t)[0]; ok("paused: one box, on the person", o.a.length === 1 && near(o.a[0], T, 45, 45), { box: o.a, truth: T });
   ok("paused: the box stays where it is", o.b.length === 1 && Math.abs(o.b[0].x - o.a[0].x) < 3, { a: o.a, b: o.b }); await ctx.close(); }
+
+// --- a bigger model: yolox_s.onnx takes 640, whatever size: says in config.js (the model file wins); the debug chip shows the size
+if (fs.existsSync(path.join(MK, "models/yolox_s.onnx"))) { CFG = `detectAI: { engine: "yolox", model: "/local/yolox_s.onnx", ort: "/ort/ort.wasm.min.js", size: 416, debug: true }`; const ctx = await browser.newContext({ viewport: { width: 900, height: 600 } }), p = await ctx.newPage(); p.on("pageerror", e => errors.push(String(e)));
+  await p.goto(`http://127.0.0.1:${server.address().port}/dash.html`); await p.waitForTimeout(700);
+  const o = await p.evaluate(async () => { const wait = ms => new Promise(r => setTimeout(r, ms)); mkAiLoad(); for (let i = 0; i < 600 && MKAI.st === 1; i++) await wait(100);
+    const v = document.createElement("video"); v.muted = true; v.src = "/clips/one.webm"; document.body.appendChild(v); await v.play(); while (v.currentTime < 3) await wait(30); v.pause(); await wait(200);
+    const c = document.createElement("canvas"); c.width = 640; c.height = 360; c.getContext("2d").drawImage(v, 0, 0, 640, 360); const r = MKAI.st === 2 ? await MKAI.m.detect(c, 8, .3) : [];
+    return { st: MKAI.st, size: MKAI.size, err: MKAI.err, people: r.filter(x => x.class === "person").map(x => ({ x: x.bbox[0], y: x.bbox[1], w: x.bbox[2], h: x.bbox[3] })), t: v.currentTime }; });
+  ok("yolox_s: loads with size 416 in config.js", o.st === 2, o); ok("yolox_s: the model file decides the size (640)", o.size === 640, o);
+  ok("yolox_s: finds the person on the picture", o.people.length === 1 && near(o.people[0], truth("one", o.t)[0], 25, 25), { o: o.people, truth: truth("one", o.t)[0] }); await ctx.close(); }
 
 // --- the recogniser cannot load: back to the movement boxes
 { const o = await run("one", ["Person"], `detectAI: { engine: "yolox", model: "/local/missing.onnx", ort: "/ort/ort.wasm.min.js", debug: true }`, { from: 3.4 }); const hits = o.S.filter(s => person(s).some(b => iou(b, truth("one", s.t)[0]) > .25)).length;

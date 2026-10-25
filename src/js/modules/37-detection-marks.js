@@ -2,7 +2,7 @@
 // Needs no extra software: the picture is compared with the one a moment ago, and a box follows whatever changed. It only runs for clips the camera tagged Person / Vehicle / Animal, so wind and shadows in plain "Motion" clips are left alone.
 // config.js: detectMark: "brackets" (default) | "box" | "glow" | false
 // config.js: detectAI: true  adds a small object-detection model (TensorFlow.js COCO-SSD, loaded from the internet the first time; nothing is sent anywhere, the picture is only looked at on this device). The movement only says where to look; the model decides what is a person / car / animal, so shadows and light changes stop counting. Needs internet on the viewing device, otherwise the movement boxes are used.
-//   detectAI: { engine: "yolox", model: "/local/yolox_tiny.onnx" }  uses a YOLOX model (more exact, Apache-2.0, file hosted by you; onnxruntime-web is loaded from the internet). size: 416 (nano, tiny) or 640 (s and bigger)
+//   detectAI: { engine: "yolox", model: "/local/yolox_tiny.onnx" }  uses a YOLOX model (more exact, Apache-2.0, file hosted by you; onnxruntime-web is loaded from the internet). yolox_s.onnx finds smaller / further people but is slower (about 4x tiny); the picture size comes from the model file (416 for nano and tiny, 640 for s)
 //   detectAI: { base: "mobilenet_v2" }  (bigger, more exact)   or   { model: "https://…/model.json", tf: "https://…/tf.min.js", coco: "https://…/coco-ssd.min.js" } to host the files yourself
 const mkStyle = () => { const m = CONFIG.detectMark; return m === false ? "" : m === "box" || m === "glow" ? m : "brackets"; };
 const MKN = { Person: "Person", Vehicle: "Car", Animal: "Animal" };
@@ -90,7 +90,8 @@ function mkAiLoad() {
   const js = u => new Promise((ok, no) => { const s = document.createElement("script"); s.src = u; s.onload = ok; s.onerror = () => no(new Error(u)); document.head.appendChild(s); });
   if (a.engine === "yolox" || /\.onnx(\?|$)/.test(a.model || "")) {
     const ou = a.ort || "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.27.0/dist/" + (a.gpu ? "ort.webgpu.min.js" : "ort.wasm.min.js"), S = a.size || 416;   // gpu: true = the phone's graphics chip does the work (WebGPU), and the processor if it can't
-    js(ou).then(() => { const ort = window.ort; ort.env.wasm.wasmPaths = ou.replace(/[^/]*$/, ""); ort.env.wasm.numThreads = Math.min(4, navigator.hardwareConcurrency || 2); return ort.InferenceSession.create(a.model || "/local/yolox_tiny.onnx", { executionProviders: a.gpu ? ["webgpu", "wasm"] : ["wasm"], graphOptimizationLevel: "all" }).then(se => { MKAI.m = mkYolox(ort, se, S); MKAI.size = S; MKAI.st = 2; }); }).catch(e => { MKAI.st = -1; MKAI.err = String(e && e.message || e).slice(0, 60); });
+    js(ou).then(() => { const ort = window.ort; ort.env.wasm.wasmPaths = ou.replace(/[^/]*$/, ""); ort.env.wasm.numThreads = Math.min(4, navigator.hardwareConcurrency || 2); return ort.InferenceSession.create(a.model || "/local/yolox_tiny.onnx", { executionProviders: a.gpu ? ["webgpu", "wasm"] : ["wasm"], graphOptimizationLevel: "all" }).then(se => { const sh = ((se.inputMetadata || [])[0] || {}).shape || [], S2 = sh[2] > 0 && sh[2] === sh[3] ? sh[2] : S; MKAI.m = mkYolox(ort, se, S2); MKAI.size = S2; MKAI.st = 2; }); })   // the model file says what picture size it takes (tiny / nano 416, s and bigger 640): that wins over size: in config.js
+.catch(e => { MKAI.st = -1; MKAI.err = String(e && e.message || e).slice(0, 60); });
     return;
   }
   js(a.tf || "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js").then(() => js(a.coco || "https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js"))
@@ -139,7 +140,7 @@ function mkLink(el, d) {   // which moving spot is this person / car standing on
 }
 function mkDbg(el) {   // detectAI: { debug: true } (or ?mkdebug in the address) shows what the boxes come from and which version runs, to tell why a box looks wrong
   const a = mkAiCfg(); if (!(a && a.debug) && !/mkdebug/.test(location.search + location.hash)) return; let c = el.querySelector(":scope>.mkd"); if (!c) { c = document.createElement("div"); c.className = "mkd"; el.appendChild(c); }
-  c.textContent = "v" + (window.DASH_VER || "?") + " · " + (!a ? "no detectAI in config.js: movement only" : MKAI.st === 2 ? "AI " + Math.round(MKAI.ms || 0) + "ms" : MKAI.st === 1 ? "AI loading" : "movement only (" + (MKAI.err || "AI not started") + ")");
+  c.textContent = "v" + (window.DASH_VER || "?") + " · " + (!a ? "no detectAI in config.js: movement only" : MKAI.st === 2 ? "AI " + Math.round(MKAI.ms || 0) + "ms · " + (MKAI.size || "") : MKAI.st === 1 ? "AI loading" : "movement only (" + (MKAI.err || "AI not started") + ")");
 }
 function mkAiRun(el) {
   el._mkAiT = 0; if (el.isConnected) mkDbg(el); if (!el.isConnected || !mkAiOn()) return; const v = el._mkv; el._mkAiT = setTimeout(() => mkAiRun(el), 100);

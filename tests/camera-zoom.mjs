@@ -39,8 +39,9 @@ async function run() {
       pv("pointerdown", 1, 150, 100); pv("pointerdown", 2, 250, 100); pv("pointermove", 2, 350, 100); await wait(30);
       const z = { zoomed: h.classList.contains("zm"), s: Math.round(+(h.style.getPropertyValue("--zs") || 1) * 10) / 10, scaled: getComputedStyle(v).transform !== "none" };
       pv("pointerup", 1, 150, 100); pv("pointerup", 2, 350, 100); await wait(500); czReset(h);
-      pv("pointerdown", 1, 150, 290); pv("pointerdown", 2, 250, 290); pv("pointermove", 2, 350, 290); await wait(30);   // over the play bar: left to the video's own controls
-      z.playBar = h.classList.contains("zm") ? 1 : 0; pv("pointerup", 1, 0, 0); pv("pointerup", 2, 0, 0);
+      const bar = h.querySelector(".zbar"), pb = (t, id, x, y) => (bar || v).dispatchEvent(new PointerEvent(t, { pointerId: id, pointerType: "touch", clientX: x, clientY: y, bubbles: true, cancelable: true }));
+      pb("pointerdown", 1, 150, 290); pb("pointerdown", 2, 250, 290); pb("pointermove", 2, 350, 290); await wait(30);   // over the player's own play bar (seek line, sound, full screen): the bar keeps its touches
+      z.playBar = (bar ? 0 : 9) + (h.classList.contains("zm") ? 1 : 0); pb("pointerup", 1, 0, 0); pb("pointerup", 2, 0, 0);
       v.setAttribute("src", "/other.mp4"); v.dispatchEvent(new Event("loadstart")); z.newClip = h.classList.contains("zm") ? 0 : 1;
       r.players[cls] = z; h.remove();
     }

@@ -1816,7 +1816,7 @@ body.ly-open .mlay.hasly .ar{flex:1;max-height:none;min-height:0}
 // (notification tap such as #view/driveway, #security ...), not the return from the login, and the device has not asked for reduced motion.
 window.brandLogo = function () { var L = window.DASH_LOGO, B = (window.DASH_CONFIG || {}).brand; return L && L.svg ? { svg: L.svg, lockup: !!L.lockup } : B && B.mark ? { svg: B.mark, lockup: false } : null; };   // brand-logo.js wins over brand.mark in config.js
 window.brandMark = function (s) { var g = window.brandLogo(); if (!g) return ""; return g.svg.replace(/\bid="([\w-]+)"/g, 'id="$1' + s + '"').replace(/url\(#([\w-]+)\)/g, 'url(#$1' + s + ')'); };
-window.DASH_VER = "1.11.1";   // the one place to change the version
+window.DASH_VER = "1.11.2";   // the one place to change the version
 (function () { try {
   var B = (window.DASH_CONFIG || {}).brand, el = document.getElementById("bootld"), r = document.documentElement, lp = "on";
   try { lp = localStorage.getItem("dashLogo") || "on"; } catch (e) {}   // Theme page -> "Start-up logo": on | load (no intro) | off (plain spinner, as before)
@@ -5216,8 +5216,8 @@ function mkAiRun(el) {
   if (!el.classList.contains("mkon") || MKAI.st !== 2) return;
   el._mk.classList.add("ai"); const now = Date.now(); mkKeep(el, d => now - d.t < 3500 || v.paused && d.pp === v.currentTime); const la = !!el._mkLaOk; if (!v.paused && !la) mkFollow(el);
   const hold = v.paused && !v.seeking, done = hold && el._mkPD === v.currentTime;   // paused: the box stays on the person (no moving on at its old speed, no timing out) once the look at this very picture is done
-  const L = el._mkD.filter(d => { if (done) return d.pp === v.currentTime; const lk = d.trk && d.trk.ttl > 0; return (hold ? now - d.t < 4000 : now - d.t < (d.miss >= 1 ? 500 : lk ? 1300 : 900)) && (d.n >= 2 || d.score >= .7 || d.pz)   // seen twice, or very sure, before it is shown
-    && (d.kind === "Vehicle" ? d.pz || lk && (d.mv > Math.max(.04, .6 * Math.max(d.w, d.h * .56)) || d.score >= .65 && d.trk.w * d.trk.h > .15 * d.w * d.h) : d.pz || lk || d.mv > .02 || now - d.t0 < 2000); }).sort((a, b) => b.score - a.score);
+  const L = el._mkD.filter(d => { if (done) return d.pp === v.currentTime; const lk = d.trk && d.trk.ttl > 0; return (hold ? now - d.t < 4000 : now - d.t < (d.miss >= 1 ? 500 : lk ? 1300 : 900)) && (d.n >= 2 || d.score >= .7 || d.pz || d.kind === "Vehicle" && lk)   // seen twice, or very sure, before it is shown
+    && (d.kind === "Vehicle" ? d.pz || lk && (d.mv > Math.max(.04, .6 * Math.max(d.w, d.h * .56)) || d.score >= .6 && d.trk.w * d.trk.h > .15 * d.w * d.h) : d.pz || lk || d.mv > .02 || now - d.t0 < 2000); }).sort((a, b) => b.score - a.score);
   // a car only counts once it has really travelled; a "person" that never moves and has nothing moving under it is a post or a bush
   let P; if (la) {   // lookahead: the picture the model looks at is ahead of the one shown, so each box is read off its own track at the time being shown
     const m = v.currentTime, ta = el._mkv2.currentTime; L.forEach(d => { if (d.hs && d.hs.length) { if (d.vOn == null) d.vOn = d.v0; d.vOff = Math.min(ta, d.hs[d.hs.length - 1][0] + (d.miss >= 1 ? .25 : .7)); } });

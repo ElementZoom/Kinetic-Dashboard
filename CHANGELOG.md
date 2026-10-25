@@ -4,6 +4,11 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
+## 1.11.2 - 2026-10-25
+
+### Fixed
+- **Cars boxed sooner:** a car with movement under it is shown after its first look (it used to wait for a second look or a very sure first one), and a blurry car the model is 60% sure of counts.
+
 ## 1.11.1 - 2026-10-25
 
 ### Fixed

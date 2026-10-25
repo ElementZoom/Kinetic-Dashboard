@@ -14,20 +14,20 @@ function mkKind(types, ar, area, prev) {   // which of the camera's tags a box i
 }
 const mkSmall = (oth, ar, per) => per && !(ar > 1.5 && oth.length > 1) ? "Person" : oth.length > 1 && ar > 1.2 ? oth.filter(t => t !== "Person")[0] || "Person" : oth[0];
 function mkAttach(el, tags) {   // el = .pbv or .dtv; call each time a clip is loaded
-  const v = el && el.querySelector("video"), st = mkStyle(); if (!v) return;
-  el._mkTags = (tags || []).filter(t => MKN[t]); el._mkv = v; el.dataset.mk = st; el._mkTok = (el._mkTok || 0) + 1; el._mkAiBusy = 0; el._mkD = []; el._mkPT = -1;
+  const v = el && el.querySelector("video:not(.mkw)"), st = mkStyle(); if (!v) return;
+  el._mkTags = (tags || []).filter(t => MKN[t]); el._mkv = v; el.dataset.mk = st; el._mkTok = (el._mkTok || 0) + 1; el._mkAiBusy = 0; el._mkD = []; el._mkPT = -1; el._mkLaOff = 0; el._mkLaBad = 0; el._mkLaOk = 0;
   mkClear(el); const on = st && el._mkTags.length; el.classList.toggle("mkon", !!on);
-  if (!on) { if (el._mkg) el._mkg.innerHTML = ""; return; }
+  if (!on) { if (el._mkg) el._mkg.innerHTML = ""; mkLaSync(el); return; }
   if (!el._mk) { el._mk = document.createElement("div"); el._mk.className = "mkl"; el._mkg = document.createElement("div"); el._mkg.className = "mkg"; el.append(el._mk, el._mkg); ["seeked", "emptied", "loadstart", "ended"].forEach(n => v.addEventListener(n, () => mkClear(el))); }
   el._mkg.innerHTML = st === "glow" ? el._mkTags.map(t => '<span class="' + t.toLowerCase() + '">' + MKN[t] + '</span>').join("") : "";
   if (!el._mkT) el._mkT = setTimeout(() => mkTick(el), 200);
   mkDbg(el);
   if (mkAiOn()) { mkAiLoad(); if (!el._mkAiT) el._mkAiT = setTimeout(() => mkAiRun(el), 300); }
 }
-function mkClear(el) { el._mkS = null; el._mkB = []; el._mkD = []; el._mkPD = -1; el._mkTok = (el._mkTok || 0) + 1; if (el._mk) el._mk.innerHTML = ""; }
+function mkClear(el) { el._mkS = null; el._mkB = []; el._mkD = []; el._mkG = []; el._mkPD = -1; el._mkTok = (el._mkTok || 0) + 1; if (el._mk) el._mk.innerHTML = ""; }
 function mkTick(el) {
   el._mkT = 0; if (!el.isConnected) return;
-  const v = el._mkv; el._mkT = setTimeout(() => mkTick(el), 130);
+  const v = mkAv(el); el._mkT = setTimeout(() => mkTick(el), 130);
   if (!el.classList.contains("mkon") || !v.getAttribute("src") || v.paused || v.ended || v.seeking || v.readyState < 2 || !v.videoWidth || document.hidden) return;
   try { mkStep(el, v); } catch (e) { el.classList.remove("mkon"); mkClear(el); }   // a picture the page may not read (other web address without permission): the labels stay, the boxes are off
 }
@@ -114,19 +114,19 @@ async function mkAiJob(el, v, B, paused) {   // B = a moving spot to look at clo
   const vw = v.videoWidth, vh = v.videoHeight, tok = el._mkTok; let sx = 0, sy = 0, sw = vw, sh = vh, cw = !MKAI.size || MKAI.size === 300 ? 640 : MKAI.size, ch = Math.round(cw * vh / vw);
   if (B) { const m = Math.min(vw, vh), cs = Math.min(m, Math.max(Math.max(B.w * vw, B.h * vh) * 2.2, m * .3)); sw = sh = cs; sx = Math.max(0, Math.min(vw - cs, (B.x + B.w / 2) * vw - cs / 2)); sy = Math.max(0, Math.min(vh - cs, (B.y + B.h / 2) * vh - cs / 2)); cw = ch = MKAI.size || 300; B.aiT = Date.now(); }   // a close-up of the spot: small people become big enough to recognise
   const ac = el._mkAc || (el._mkAc = document.createElement("canvas")); ac.width = cw; ac.height = ch; ac.getContext("2d").drawImage(v, sx, sy, sw, sh, 0, 0, cw, ch);
-  const pos = v.currentTime, snap = (el._mkB || []).filter(b => b.ttl > 0).map(b => ({ b: b, cx: b.x + b.w / 2, cy: b.y + b.h / 2 })), t0 = Date.now(), res = await MKAI.m.detect(ac, 8, .3), now = Date.now(); MKAI.ms = now - t0; if (tok !== el._mkTok) return;
+  const la = v !== el._mkv, pos = v.currentTime, snap = (el._mkB || []).filter(b => b.ttl > 0).map(b => ({ b: b, cx: b.x + b.w / 2, cy: b.y + b.h / 2 })), t0 = Date.now(), res = await MKAI.m.detect(ac, 8, .3), now = Date.now(); MKAI.ms = now - t0; if (tok !== el._mkTok) return;
   MKAI.slow = now - t0 > (mkAiCfg().maxMs || 1500) ? MKAI.slow + 1 : 0; if (MKAI.slow >= 3) { MKAI.st = -1; MKAI.err = "too slow, " + (now - t0) + "ms"; el._mkD = []; return; }   // this device is too slow for it: back to the movement boxes
   const D = el._mkD || (el._mkD = []), cr = { x: sx / vw, y: sy / vh, w: sw / vw, h: sh / vh }, hit = new Set(), got = [];
   res.forEach(r => { const kind = MKC[r.class]; if (!kind || el._mkTags.indexOf(kind) < 0 || r.score < .4 || (kind === "Vehicle" && B)) return;   // a close-up cuts a car in half: cars are only taken from looks at the whole picture
     const g = { x: (sx + r.bbox[0] * sw / cw) / vw, y: (sy + r.bbox[1] * sh / ch) / vh, w: r.bbox[2] * sw / cw / vw, h: r.bbox[3] * sh / ch / vh, kind: kind, score: r.score };
-    if (mkAiOk(kind, r.score, g.h * vh / (g.w * vw), paused || mkMoved(el, g), paused, !!B)) { g.rc = [g.x + g.w / 2, g.y + g.h / 2]; g.tl = mkShift(g, snap) ? now : t0; got.push(g); } });   // a bush, a pole or a house front the model was only half sure about is not let through
+    if (mkAiOk(kind, r.score, g.h * vh / (g.w * vw), paused || mkMoved(el, g), paused, !!B)) { g.rc = [g.x + g.w / 2, g.y + g.h / 2]; g.tl = la ? pos * 1000 : mkShift(g, snap) ? now : t0; got.push(g); } });   // a bush, a pole or a house front the model was only half sure about is not let through
   got.sort((a, b) => b.score - a.score); for (let i = got.length - 1; i >= 0; i--) if (got.some((o, j) => j < i && mkIou(o, got[i]) > .5)) got.splice(i, 1);   // one thing is one box, whatever the model first thought it was
   got.forEach(g => { let best = null, bs = .2; D.forEach(d => { if (hit.has(d) || d.kind !== g.kind) return;   // the same person as an earlier look: overlapping, or close to where they should be by now (a quick walker or a slow device moves further than a box between two looks)
       const dt = d.vx != null ? Math.max(0, Math.min(.8, (g.tl - d.pt) / 1000)) : 0, dist = Math.hypot(d.x + d.w / 2 + (d.vx || 0) * dt - g.x - g.w / 2, d.y + d.h / 2 + (d.vy || 0) * dt - g.y - g.h / 2), reach = d.vx != null ? .06 : Math.max(.06, 1.1 * d.w), q = Math.max(mkIou(d, g), dist < reach ? .25 + .1 * (1 - dist / reach) : 0); if (q > bs) { bs = q; best = d; } });
     if (best) { const cx = g.x + g.w / 2, cy = g.y + g.h / 2; if (best.px != null && g.tl - best.pt > 60) { const dt = (g.tl - best.pt) / 1000, vx = Math.max(-1.2, Math.min(1.2, (cx - best.px) / dt)), vy = Math.max(-1.2, Math.min(1.2, (cy - best.py) / dt)); best.vx = best.vx == null ? vx : best.vx * .4 + vx * .6; best.vy = best.vy == null ? vy : best.vy * .4 + vy * .6; } best.px = cx; best.py = cy; best.pt = g.tl; best.tl = g.tl;   // how fast it goes, from the last two looks
-      ["x", "y", "w", "h"].forEach(k => best[k] += (g[k] - best[k]) * .8); best.t = now; best.miss = 0; best.n = (best.n || 1) + 1; best.score += (g.score - best.score) * .5; hit.add(best); best.mv = Math.max(best.mv || 0, Math.hypot(g.rc[0] - best.c0[0], g.rc[1] - best.c0[1])); } else { g.px = g.x + g.w / 2; g.py = g.y + g.h / 2; g.pt = g.tl; g.t = now; g.t0 = now; g.n = paused ? 2 : 1; g.pz = paused; g.miss = 0; g.c0 = [g.x + g.w / 2, g.y + g.h / 2]; g.mv = 0; D.push(g); hit.add(g); } });
+      ["x", "y", "w", "h"].forEach(k => best[k] += (g[k] - best[k]) * .8); best.t = now; best.miss = 0; if (la) mkHist(best, pos); else best.hs = null; best.n = (best.n || 1) + 1; best.score += (g.score - best.score) * .5; hit.add(best); best.mv = Math.max(best.mv || 0, Math.hypot(g.rc[0] - best.c0[0], g.rc[1] - best.c0[1])); } else { g.px = g.x + g.w / 2; g.py = g.y + g.h / 2; g.pt = g.tl; g.t = now; g.t0 = now; g.hs = la ? [[pos, g.x, g.y, g.w, g.h]] : null; g.v0 = pos; g.n = paused ? 2 : 1; g.pz = paused; g.miss = 0; g.c0 = [g.x + g.w / 2, g.y + g.h / 2]; g.mv = 0; D.push(g); hit.add(g); } });
   D.forEach(d => { if (hit.has(d)) return; const cx = d.x + d.w / 2, cy = d.y + d.h / 2; if (!B || (cx > cr.x && cx < cr.x + cr.w && cy > cr.y && cy < cr.y + cr.h)) d.miss = (d.miss || 0) + 1; });   // looked where it was and it is not there
-  hit.forEach(d => mkLink(el, d)); el._mkD = D.filter(d => d.miss < 2 && now - d.t < 3500 || paused && hit.has(d));
+  hit.forEach(d => mkLink(el, d)); mkKeep(el, d => d.miss < 2 && now - d.t < 3500 || paused && hit.has(d));
   if (paused && !B) { D.forEach(d => { d.pp = hit.has(d) ? pos : null; }); el._mkPD = pos; }   // a paused picture: what the look found at this very spot stays shown, exactly where it was found
   if (B) { const near = got.some(g => { const cx = g.x + g.w / 2, cy = g.y + g.h / 2; return cx > B.x - B.w * .5 && cx < B.x + B.w * 1.5 && cy > B.y - B.h * .5 && cy < B.y + B.h * 1.5; }); B.miss = near ? 0 : (B.miss || 0) + 1; if (B.miss >= 2) B.badT = now; }   // movement with nothing in it (a shadow, light): not looked at again for a few seconds
 }
@@ -142,24 +142,57 @@ function mkDbg(el) {   // detectAI: { debug: true } (or ?mkdebug in the address)
   const a = mkAiCfg(); if (!(a && a.debug) && !/mkdebug/.test(location.search + location.hash)) return; let c = el.querySelector(":scope>.mkd"); if (!c) { c = document.createElement("div"); c.className = "mkd"; el.appendChild(c); }
   c.textContent = "v" + (window.DASH_VER || "?") + " · " + (!a ? "no detectAI in config.js: movement only" : MKAI.st === 2 ? "AI " + Math.round(MKAI.ms || 0) + "ms · " + (MKAI.size || "") : MKAI.st === 1 ? "AI loading" : "movement only (" + (MKAI.err || "AI not started") + ")");
 }
+const mkLaCfg = () => { const a = mkAiCfg(), l = a && a.lookahead; return l ? Math.max(.3, Math.min(2, l === true ? .8 : +l || .8)) : 0; };
+const mkAv = el => el._mkLaOk && el._mkv2 ? el._mkv2 : el._mkv;   // the picture the movement and the model look at: with lookahead a hidden second copy of the recording that runs a little ahead
+function mkLaSync(el) {   // detectAI: { lookahead: 0.8 }: recordings only. The second copy plays that many seconds ahead, so a box is ready before the shown picture reaches the person
+  const v = el._mkv, L = mkLaCfg(), now = Date.now(), live = v && el.classList.contains("mkon") && L && mkAiOn() && !el._mkLaOff && v.getAttribute("src") && v.readyState > 0 && isFinite(v.duration);
+  if (!live) { if (el._mkw) { el._mkw.remove(); el._mkw = el._mkv2 = null; } if (el._mkLaOk) { el._mkLaOk = 0; el._mkS = null; el._mkB = []; } return; }
+  let w = el._mkv2; if (!w) { const bx = document.createElement("div"); bx.className = "mklv"; w = document.createElement("video"); w.className = "mkw"; w.muted = true; w.playsInline = true; w.setAttribute("playsinline", ""); w.preload = "auto"; if (v.crossOrigin) w.crossOrigin = v.crossOrigin; bx.appendChild(w); el.appendChild(bx); el._mkw = bx; el._mkv2 = w; }
+  const src = v.getAttribute("src"); if (w.getAttribute("src") !== src) { w.src = src; el._mkLaOk = 0; }
+  let ok = 0;
+  if (v.paused || v.seeking || v.ended) { if (!w.paused) w.pause(); el._mkLaBad = 0; }
+  else {
+    const tg = Math.min(v.currentTime + L, Math.max(0, w.duration - .1 || 0)), err = w.currentTime - tg;
+    if (w.paused && !w.ended) w.play().catch(() => {});
+    if (!w.seeking && (Math.abs(err) > .5 || w.ended)) w.currentTime = tg; else w.playbackRate = Math.max(.1, v.playbackRate * Math.max(.92, Math.min(1.08, 1 - err * .5)));
+    ok = w.readyState >= 2 && !w.seeking && !w.paused && !w.ended && Math.abs(err) < 1 && isFinite(w.duration) && v.currentTime + L < w.duration - .1 ? 1 : 0;
+    if (!ok && v.currentTime + L < w.duration - .1) { if (!el._mkLaBad) el._mkLaBad = now; if (now - el._mkLaBad > 4000) { el._mkLaOff = 1; MKAI.err = MKAI.err || "lookahead off"; } } else el._mkLaBad = 0;
+  }
+  if (ok !== (el._mkLaOk || 0)) { el._mkLaOk = ok; el._mkS = null; el._mkB = []; }
+}
+function mkHist(d, vt) { const h = d.hs || (d.hs = []); while (h.length && h[h.length - 1][0] >= vt) h.pop(); h.push([vt, d.x, d.y, d.w, d.h]); if (h.length > 10) h.shift(); }
+function mkKeep(el, fn) { const D = el._mkD || [], keep = D.filter(fn), m = el._mkv ? el._mkv.currentTime : 0; if (el._mkv2) { const G = (el._mkG || []).filter(g => g.vOff != null && m < g.vOff + .5); D.forEach(d => { if (keep.indexOf(d) < 0 && d.vOn != null && G.indexOf(d) < 0) G.push(d); }); el._mkG = G.slice(-8); } el._mkD = keep; }   // a box that leaves the list while it is still due on the shown picture stays until then
+function mkLaPos(d, m) {   // where the box is at media time m: between two looks it is drawn on the line between them, after the last one it goes on at the speed of the last two
+  const h = d.hs, n = h ? h.length : 0, P = r => ({ x: r[1], y: r[2], w: r[3], h: r[4] }); if (!n) return null; if (m <= h[0][0]) return P(h[0]);
+  for (let i = 0; i < n - 1; i++) if (m < h[i + 1][0]) { const f = (m - h[i][0]) / (h[i + 1][0] - h[i][0]), a = h[i], b = h[i + 1]; return { x: a[1] + (b[1] - a[1]) * f, y: a[2] + (b[2] - a[2]) * f, w: a[3] + (b[3] - a[3]) * f, h: a[4] + (b[4] - a[4]) * f }; }
+  const l = h[n - 1], p = h[n - 2], e = m - l[0]; if (e > .9) return null; if (!p || l[0] - p[0] < .05) return P(l);
+  const dt = l[0] - p[0], vx = Math.max(-1.2, Math.min(1.2, (l[1] - p[1]) / dt)), vy = Math.max(-1.2, Math.min(1.2, (l[2] - p[2]) / dt)), k = Math.min(e, .7);
+  return { x: Math.max(0, Math.min(1 - l[3], l[1] + vx * k)), y: Math.max(0, Math.min(1 - l[4], l[2] + vy * k)), w: l[3], h: l[4] };
+}
 function mkAiRun(el) {
-  el._mkAiT = 0; if (el.isConnected) mkDbg(el); if (!el.isConnected || !mkAiOn()) return; const v = el._mkv; el._mkAiT = setTimeout(() => mkAiRun(el), 100);
+  el._mkAiT = 0; if (el.isConnected) mkDbg(el); if (!el.isConnected || !mkAiOn()) { if (el.isConnected) mkLaSync(el); return; } const v = el._mkv; el._mkAiT = setTimeout(() => mkAiRun(el), 100); mkLaSync(el);
   if (MKAI.st === 1) { mkAiLoad(); return; }
   if (!el.classList.contains("mkon") || MKAI.st !== 2) return;
-  el._mk.classList.add("ai"); const now = Date.now(); el._mkD = (el._mkD || []).filter(d => now - d.t < 3500 || v.paused && d.pp === v.currentTime); if (!v.paused) mkFollow(el);
+  el._mk.classList.add("ai"); const now = Date.now(); mkKeep(el, d => now - d.t < 3500 || v.paused && d.pp === v.currentTime); const la = !!el._mkLaOk; if (!v.paused && !la) mkFollow(el);
   const hold = v.paused && !v.seeking, done = hold && el._mkPD === v.currentTime;   // paused: the box stays on the person (no moving on at its old speed, no timing out) once the look at this very picture is done
   const L = el._mkD.filter(d => { if (done) return d.pp === v.currentTime; const lk = d.trk && d.trk.ttl > 0; return (hold ? now - d.t < 4000 : now - d.t < (d.miss >= 1 ? 500 : lk ? 1300 : 900)) && (d.n >= 2 || d.score >= .7 || d.pz)   // seen twice, or very sure, before it is shown
-    && (d.kind === "Vehicle" ? d.pz || lk && d.mv > Math.max(.04, .6 * Math.max(d.w, d.h * .56)) : d.pz || lk || d.mv > .02 || now - d.t0 < 2000); }).sort((a, b) => b.score - a.score); L.forEach((d, i) => { if (d.kind === "Vehicle" && L.some(p => p.kind === "Person" && p.x + p.w / 2 > d.x && p.x + p.w / 2 < d.x + d.w && p.y + p.h / 2 > d.y && p.y + p.h / 2 < d.y + d.h && d.w * d.h < 5 * p.w * p.h)) d.hide = 1; else d.hide = 0; });   // a "car" hardly bigger than the person standing in it is that person's shadow
+    && (d.kind === "Vehicle" ? d.pz || lk && d.mv > Math.max(.04, .6 * Math.max(d.w, d.h * .56)) : d.pz || lk || d.mv > .02 || now - d.t0 < 2000); }).sort((a, b) => b.score - a.score);
   // a car only counts once it has really travelled; a "person" that never moves and has nothing moving under it is a post or a bush
-  mkDraw(el, v, L.filter((d, i) => !d.hide && !L.some((o, j) => j < i && mkIou(o, d) > .5)).sort((a, b) => b.w * b.h - a.w * a.h).slice(0, 4).map(d => { const q = hold ? [0, 0] : mkPred(d, now); return Object.assign({}, d, { x: Math.max(0, Math.min(1 - d.w, d.x + q[0])), y: Math.max(0, Math.min(1 - d.h, d.y + q[1])) }); }));
-  if (el._mkAiBusy || !v.getAttribute("src") || v.ended || v.seeking || v.readyState < 2 || !v.videoWidth || document.hidden) return;
+  let P; if (la) {   // lookahead: the picture the model looks at is ahead of the one shown, so each box is read off its own track at the time being shown
+    const m = v.currentTime, ta = el._mkv2.currentTime; L.forEach(d => { if (d.hs && d.hs.length) { if (d.vOn == null) d.vOn = d.v0; d.vOff = Math.min(ta, d.hs[d.hs.length - 1][0] + (d.miss >= 1 ? .25 : .7)); } });
+    P = []; el._mkD.concat(el._mkG || []).forEach(d => { if (d.vOn == null || m < d.vOn - .1 || m > d.vOff + .15 || P.some(o => o.d === d)) return; const q = mkLaPos(d, m); if (q) P.push(Object.assign({ d: d }, d, q)); });
+    P.sort((a, b) => b.score - a.score);
+  } else P = L.map(d => { const q = hold ? [0, 0] : mkPred(d, now); return Object.assign({}, d, { x: Math.max(0, Math.min(1 - d.w, d.x + q[0])), y: Math.max(0, Math.min(1 - d.h, d.y + q[1])) }); });
+  mkDraw(el, v, P.filter((d, i) => !(d.kind === "Vehicle" && P.some(p => p.kind === "Person" && p.x + p.w / 2 > d.x && p.x + p.w / 2 < d.x + d.w && p.y + p.h / 2 > d.y && p.y + p.h / 2 < d.y + d.h && d.w * d.h < 5 * p.w * p.h)) && !P.some((o, j) => j < i && mkIou(o, d) > .5)).sort((a, b) => b.w * b.h - a.w * a.h).slice(0, 4));   // a "car" hardly bigger than the person standing in it is that person's shadow
+  const a = mkAv(el);
+  if (el._mkAiBusy || !a.getAttribute("src") || a.ended || a.seeking || a.readyState < 2 || !a.videoWidth || document.hidden) return;
   let job = null;
   if (!v.paused) {
     const L = (el._mkB || []).filter(b => b.age >= 1 && now - (b.aiT || 0) > 120 && !(b.miss >= 2 && now - (b.badT || 0) < 5000)).sort((a, b) => (a.aiT || 0) - (b.aiT || 0));
     L.forEach(b => { if (b.miss >= 2) b.miss = 1; }); if (L.length) job = { b: L[0] }; else if (now - (el._mkFull || 0) > 2000) job = {};
   } else if (el._mkPT !== v.currentTime) { el._mkPT = v.currentTime; job = {}; }
   if (!job) return; if (!job.b) el._mkFull = now; el._mkAiBusy = 1;
-  mkAiJob(el, v, job.b, v.paused).catch(() => { MKAI.slow += 1; if (MKAI.slow >= 3) MKAI.st = -1; }).then(() => { el._mkAiBusy = 0; if (el._mkAiT) { clearTimeout(el._mkAiT); el._mkAiT = setTimeout(() => mkAiRun(el), 15); } });
+  mkAiJob(el, a, job.b, v.paused).catch(() => { MKAI.slow += 1; if (MKAI.slow >= 3) MKAI.st = -1; }).then(() => { el._mkAiBusy = 0; if (el._mkAiT) { clearTimeout(el._mkAiT); el._mkAiT = setTimeout(() => mkAiRun(el), 15); } });
 }
 function mkDraw(el, v, B) {
   const o = el._mk, W = v.offsetWidth, Hh = v.offsetHeight, r = v.videoWidth / v.videoHeight; if (!o || !W || !Hh) return;

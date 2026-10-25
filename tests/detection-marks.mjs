@@ -110,6 +110,31 @@ if (fs.existsSync(path.join(MK, "models/yolox_s.onnx"))) { CFG = `detectAI: { en
 { const o = await run("one", ["Person"], `detectAI: { engine: "yolox", model: "/local/missing.onnx", ort: "/ort/ort.wasm.min.js", debug: true }`, { from: 3.4 }); const hits = o.S.filter(s => person(s).some(b => iou(b, truth("one", s.t)[0]) > .25)).length;
   ok("no model file: the chip says movement only", /movement only/.test(o.last.dbg), o.last.dbg); ok("no model file: the movement boxes take over", hits >= o.S.length * .5, { hits, of: o.S.length }); }
 
+// --- lookahead (detectAI.lookahead): a hidden second copy of the recording runs ahead, so the boxes are ready before the shown picture gets there
+{ const LA = AI.replace("debug: true", "debug: true, lookahead: 0.8"), err = (S, clip) => S.filter(s => s.boxes.length).map(s => { const T = truth(clip, s.t); return Math.min(...s.boxes.map(b => Math.hypot(b.x + b.w / 2 - T[0].x - T[0].w / 2, b.y + b.h / 2 - T[0].y - T[0].h / 2))); }).sort((a, b) => a - b);
+  const d = await run("one", ["Person"], AI, { from: 1.5, to: 5 }), l = await run("one", ["Person"], LA, { from: 1.5, to: 5, hook: async (p, o) => { o.w = await p.evaluate(() => ({ has: !!window.__h._mkv2, ok: window.__h._mkLaOk, kids: window.__h.querySelectorAll("video").length })); } });
+  const ed = err(d.S, "one"), el = err(l.S, "one"), md = ed[ed.length >> 1], ml = el[el.length >> 1]; console.log("lookahead: median error direct", md, "lookahead", ml, "frames", ed.length, el.length, l.w);
+  ok("lookahead: the second copy exists and runs", l.S.some(s => /AI/.test(s.dbg)), l.last.dbg);
+  ok("lookahead: boxes are shown for most of the walk", el.length >= l.S.length * .6, { shown: el.length, of: l.S.length });
+  ok("lookahead: boxes sit closer to the person than without", ml < md * .8 || ml < 25, { direct: md, ahead: ml });
+  ok("lookahead: never two boxes on one person", l.S.every(s => person(s).length <= 1), l.S.filter(s => person(s).length > 1).length);
+  const t2 = await run("two", ["Person"], LA, { from: 1.5, to: 5 }); ok("lookahead: two people (the model sees the wide patch as two), at most three boxes", t2.S.every(s => person(s).length <= 3), t2.S.filter(s => person(s).length > 3).length);
+  const e0 = await run("none", ["Person"], LA, { from: 1.5, to: 4 }); ok("lookahead: an empty scene stays empty", e0.S.every(s => s.boxes.length === 0));
+  // pause in the middle, then play on: the box is on the paused picture, and boxes come back soon after play
+  CFG = LA; const ctx = await browser.newContext({ viewport: { width: 900, height: 600 } }), p = await ctx.newPage(); p.on("pageerror", e => errors.push(String(e)));
+  await p.goto(`http://127.0.0.1:${server.address().port}/dash.html`); await p.waitForTimeout(700);
+  const o = await p.evaluate(async () => { document.documentElement.classList.remove("boot"); const lg = document.getElementById("lg"); if (lg) lg.hidden = true; const wait = ms => new Promise(r => setTimeout(r, ms));
+    const h = document.createElement("div"); h.className = "pbv has"; h.style.cssText = "position:fixed;left:10px;top:10px;width:640px;height:360px;z-index:99999;background:#000"; h.innerHTML = '<video muted playsinline style="width:100%;height:100%"></video>'; document.body.appendChild(h);
+    const v = h.firstChild; v.muted = true; mkAiLoad(); for (let i = 0; i < 400 && MKAI.st === 1; i++) await wait(100); v.src = "/clips/one.webm"; await v.play(); mkAttach(h, ["Person"]);
+    const bx = () => [...h.querySelectorAll(".mkl .mkb")].map(n => ({ x: parseFloat(n.style.left), y: parseFloat(n.style.top), w: parseFloat(n.style.width), h: parseFloat(n.style.height) }));
+    while (v.currentTime < 2.5 && !v.ended) await wait(50); v.pause(); const t = v.currentTime; await wait(2500); const a = bx(), w1 = h._mkv2 ? h._mkv2.paused : null; v.play(); const t1 = Date.now(); let back = -1; for (let i = 0; i < 100 && v.currentTime < 5.5; i++) { await wait(100); if (bx().length) { back = Date.now() - t1; break; } }
+    return { t, a, w1, back, ok: h._mkLaOk }; });
+  const T = truth("one", o.t)[0]; ok("lookahead: paused, one box, on the person", o.a.length === 1 && near(o.a[0], T, 45, 45), { box: o.a, truth: T }); ok("lookahead: the second copy waits while paused", o.w1 === true, o.w1);
+  ok("lookahead: boxes are back within 2.5 s of play", o.back >= 0 && o.back < 2500, o); await ctx.close();
+  // the second copy cannot be made: back to the plain mode, still boxes
+  const fb = await run("one", ["Person"], LA, { from: 2.5, to: 5, hook: async () => {} }); ok("lookahead: runs on a clip that plays", fb.S.length > 3);
+}
+
 await browser.close(); server.close();
 if (errors.length) problems.push("page errors: " + errors.join(" | "));
 if (problems.length) { console.error("FAIL:\n- " + problems.join("\n- ")); process.exit(1); }

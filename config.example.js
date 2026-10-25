@@ -245,6 +245,17 @@ window.DASH_CONFIG = {
   leakSensors: [["binary_sensor.demo_washing_machine_leak", "Washing machine", "Water under the machine"]],
   // Notification pop-up "all on" shortcuts: [label, group entity, icon, optional "close" | 1]
   // camZoom: false,   // Cameras: set false to turn off pinch to zoom / drag to move on a full-screen camera
+  // camFullscreen: false,   // Phones: set false to open a camera full-bleed without asking the browser for real full screen (no system bars moving, so no blink on open / close)
+  // detectMark: "brackets",   // marks on recordings (Playback, Detections): "brackets" (default) | "box" | "glow" | false (none). Boxes the camera's tagged things (Person, Vehicle, Animal)
+  // detectAI: {   // optional: recognise people / cars / animals in recordings so a bush or a shadow is not boxed. Without it the boxes follow movement only
+  //   engine: "yolox",                  // YOLOX (Apache-2.0), runs in the browser with onnxruntime-web
+  //   model: "/local/yolox_tiny.onnx",  // your copy of the model file (yolox_tiny.onnx, or yolox_s.onnx: more accurate, about 4x slower)
+  //   size: 416,                        // picture size for yolox_tiny; a model file with its own size (yolox_s = 640) wins
+  //   gpu: true,                        // use the graphics chip where the phone / tablet has one (much faster); false = processor only
+  //   lookahead: 0.8,                   // recordings only: look this many seconds ahead with a hidden second copy so the box is ready in time (second video decoder; off when left out)
+  //   maxMs: 1500,                      // switch the recogniser off if three looks in a row take longer than this (ms)
+  //   debug: false,                     // true shows a small chip with the version and the speed (or add ?mkdebug to the address once)
+  // },
   // roomFx: "waves",   // room card animation: "waves" (slow rolling waves, default) | "glow" (soft corner glow) | false (none). Warmer rooms move a little faster
   // notifRoomHeadings: false,   // Notifications > Active: set false to drop the room headings inside each category
   quickAll: [["Lights", "light.all_lights", "lightbulb-on"], ["Fans", "group.all_fans", "fan"], ["Light switches", "group.all_light_switches", "m3-switch"], ["Water taps", "group.all_water_taps", "m3-water-drop"], ["Curtains", "group.all_curtains", "m3-curtains", "close"], ["Windows", "group.all_windows", "m3-window-open", 1], ["Doors", "group.external_doors", "m3-door-open", 1]],

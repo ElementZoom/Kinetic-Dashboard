@@ -4,6 +4,15 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
+## 1.11.0 - 2026-10-25
+
+### Added
+- **Lookahead for the detection boxes (recordings only, off by default):** `detectAI: { lookahead: 0.8 }` plays a hidden second copy of the recording a little ahead of the one you watch, so the model has already found the person by the time the picture gets there and the box no longer trails behind a walking person. A paused recording still looks at the exact picture shown. It needs a second video decoder, so it is opt-in; if the second copy cannot keep up (a few seconds), it switches itself off and the boxes work as before.
+- **Bigger YOLOX models:** the picture size is now read from the model file, so `yolox_s.onnx` (more accurate, about 4x slower) runs at its own 640 whatever `size:` says in config.js. The debug chip shows the size.
+
+### Tests
+- New checks for the camera page with `camFullscreen: false`, and for the lookahead.
+
 ## 1.10.1 - 2026-10-25
 
 ### Fixed

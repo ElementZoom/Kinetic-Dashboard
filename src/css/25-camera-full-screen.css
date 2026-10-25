@@ -217,3 +217,4 @@ html:not(#x) .zc:fullscreen>video,html:not(#x) .zc.zfull>video{position:static!i
 html:not(#x) #vw .cam.vf.pb .vh>.px,html:not(#x) #vw .cam.pb .px{display:none!important}
 html:not(#x) #vw .cam.vf.pb:not(.ls) .vh{display:contents}html:not(#x) #vw .cam.vf.pb:not(.ls) .vh::before,html:not(#x) #vw .cam.vf.pb:not(.ls) .vh::after{display:none}
 html:not(#x) #vw .cam.vf.pb:not(.ls) .vh>.cx{position:absolute!important;top:calc(var(--pbh,68px) / 2 - 22px)!important;right:14px!important;left:auto!important;bottom:auto!important;margin:0!important;z-index:6}
+.mklv{position:absolute;left:0;top:0;width:2px;height:2px;overflow:hidden;opacity:.01;pointer-events:none}.mklv video{width:2px;height:2px}

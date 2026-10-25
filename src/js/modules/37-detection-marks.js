@@ -24,7 +24,7 @@ function mkAttach(el, tags) {   // el = .pbv or .dtv; call each time a clip is l
   mkDbg(el);
   if (mkAiOn()) { mkAiLoad(); if (!el._mkAiT) el._mkAiT = setTimeout(() => mkAiRun(el), 300); }
 }
-function mkClear(el) { el._mkS = null; el._mkB = []; el._mkD = []; el._mkTok = (el._mkTok || 0) + 1; if (el._mk) el._mk.innerHTML = ""; }
+function mkClear(el) { el._mkS = null; el._mkB = []; el._mkD = []; el._mkPD = -1; el._mkTok = (el._mkTok || 0) + 1; if (el._mk) el._mk.innerHTML = ""; }
 function mkTick(el) {
   el._mkT = 0; if (!el.isConnected) return;
   const v = el._mkv; el._mkT = setTimeout(() => mkTick(el), 130);
@@ -113,18 +113,20 @@ async function mkAiJob(el, v, B, paused) {   // B = a moving spot to look at clo
   const vw = v.videoWidth, vh = v.videoHeight, tok = el._mkTok; let sx = 0, sy = 0, sw = vw, sh = vh, cw = !MKAI.size || MKAI.size === 300 ? 640 : MKAI.size, ch = Math.round(cw * vh / vw);
   if (B) { const m = Math.min(vw, vh), cs = Math.min(m, Math.max(Math.max(B.w * vw, B.h * vh) * 2.2, m * .3)); sw = sh = cs; sx = Math.max(0, Math.min(vw - cs, (B.x + B.w / 2) * vw - cs / 2)); sy = Math.max(0, Math.min(vh - cs, (B.y + B.h / 2) * vh - cs / 2)); cw = ch = MKAI.size || 300; B.aiT = Date.now(); }   // a close-up of the spot: small people become big enough to recognise
   const ac = el._mkAc || (el._mkAc = document.createElement("canvas")); ac.width = cw; ac.height = ch; ac.getContext("2d").drawImage(v, sx, sy, sw, sh, 0, 0, cw, ch);
-  const snap = (el._mkB || []).filter(b => b.ttl > 0).map(b => ({ b: b, cx: b.x + b.w / 2, cy: b.y + b.h / 2 })), t0 = Date.now(), res = await MKAI.m.detect(ac, 8, .3), now = Date.now(); MKAI.ms = now - t0; if (tok !== el._mkTok) return;
+  const pos = v.currentTime, snap = (el._mkB || []).filter(b => b.ttl > 0).map(b => ({ b: b, cx: b.x + b.w / 2, cy: b.y + b.h / 2 })), t0 = Date.now(), res = await MKAI.m.detect(ac, 8, .3), now = Date.now(); MKAI.ms = now - t0; if (tok !== el._mkTok) return;
   MKAI.slow = now - t0 > (mkAiCfg().maxMs || 1500) ? MKAI.slow + 1 : 0; if (MKAI.slow >= 3) { MKAI.st = -1; MKAI.err = "too slow, " + (now - t0) + "ms"; el._mkD = []; return; }   // this device is too slow for it: back to the movement boxes
   const D = el._mkD || (el._mkD = []), cr = { x: sx / vw, y: sy / vh, w: sw / vw, h: sh / vh }, hit = new Set(), got = [];
   res.forEach(r => { const kind = MKC[r.class]; if (!kind || el._mkTags.indexOf(kind) < 0 || r.score < .4 || (kind === "Vehicle" && B)) return;   // a close-up cuts a car in half: cars are only taken from looks at the whole picture
     const g = { x: (sx + r.bbox[0] * sw / cw) / vw, y: (sy + r.bbox[1] * sh / ch) / vh, w: r.bbox[2] * sw / cw / vw, h: r.bbox[3] * sh / ch / vh, kind: kind, score: r.score };
     if (mkAiOk(kind, r.score, g.h * vh / (g.w * vw), paused || mkMoved(el, g), paused, !!B)) { g.rc = [g.x + g.w / 2, g.y + g.h / 2]; g.tl = mkShift(g, snap) ? now : t0; got.push(g); } });   // a bush, a pole or a house front the model was only half sure about is not let through
   got.sort((a, b) => b.score - a.score); for (let i = got.length - 1; i >= 0; i--) if (got.some((o, j) => j < i && mkIou(o, got[i]) > .5)) got.splice(i, 1);   // one thing is one box, whatever the model first thought it was
-  got.forEach(g => { let best = null, bs = .2; D.forEach(d => { if (hit.has(d) || d.kind !== g.kind) return; const q = Math.max(mkIou(d, g), Math.hypot(d.x + d.w / 2 - g.x - g.w / 2, d.y + d.h / 2 - g.y - g.h / 2) < .06 ? .25 : 0); if (q > bs) { bs = q; best = d; } });
+  got.forEach(g => { let best = null, bs = .2; D.forEach(d => { if (hit.has(d) || d.kind !== g.kind) return;   // the same person as an earlier look: overlapping, or close to where they should be by now (a quick walker or a slow device moves further than a box between two looks)
+      const dt = d.vx != null ? Math.max(0, Math.min(.8, (g.tl - d.pt) / 1000)) : 0, dist = Math.hypot(d.x + d.w / 2 + (d.vx || 0) * dt - g.x - g.w / 2, d.y + d.h / 2 + (d.vy || 0) * dt - g.y - g.h / 2), reach = d.vx != null ? .06 : Math.max(.06, 1.1 * d.w), q = Math.max(mkIou(d, g), dist < reach ? .25 + .1 * (1 - dist / reach) : 0); if (q > bs) { bs = q; best = d; } });
     if (best) { const cx = g.x + g.w / 2, cy = g.y + g.h / 2; if (best.px != null && g.tl - best.pt > 60) { const dt = (g.tl - best.pt) / 1000, vx = Math.max(-1.2, Math.min(1.2, (cx - best.px) / dt)), vy = Math.max(-1.2, Math.min(1.2, (cy - best.py) / dt)); best.vx = best.vx == null ? vx : best.vx * .4 + vx * .6; best.vy = best.vy == null ? vy : best.vy * .4 + vy * .6; } best.px = cx; best.py = cy; best.pt = g.tl; best.tl = g.tl;   // how fast it goes, from the last two looks
       ["x", "y", "w", "h"].forEach(k => best[k] += (g[k] - best[k]) * .8); best.t = now; best.miss = 0; best.n = (best.n || 1) + 1; best.score += (g.score - best.score) * .5; hit.add(best); best.mv = Math.max(best.mv || 0, Math.hypot(g.rc[0] - best.c0[0], g.rc[1] - best.c0[1])); } else { g.px = g.x + g.w / 2; g.py = g.y + g.h / 2; g.pt = g.tl; g.t = now; g.t0 = now; g.n = paused ? 2 : 1; g.pz = paused; g.miss = 0; g.c0 = [g.x + g.w / 2, g.y + g.h / 2]; g.mv = 0; D.push(g); hit.add(g); } });
   D.forEach(d => { if (hit.has(d)) return; const cx = d.x + d.w / 2, cy = d.y + d.h / 2; if (!B || (cx > cr.x && cx < cr.x + cr.w && cy > cr.y && cy < cr.y + cr.h)) d.miss = (d.miss || 0) + 1; });   // looked where it was and it is not there
-  hit.forEach(d => mkLink(el, d)); el._mkD = D.filter(d => d.miss < 2 && now - d.t < 3500);
+  hit.forEach(d => mkLink(el, d)); el._mkD = D.filter(d => d.miss < 2 && now - d.t < 3500 || paused && hit.has(d));
+  if (paused && !B) { D.forEach(d => { d.pp = hit.has(d) ? pos : null; }); el._mkPD = pos; }   // a paused picture: what the look found at this very spot stays shown, exactly where it was found
   if (B) { const near = got.some(g => { const cx = g.x + g.w / 2, cy = g.y + g.h / 2; return cx > B.x - B.w * .5 && cx < B.x + B.w * 1.5 && cy > B.y - B.h * .5 && cy < B.y + B.h * 1.5; }); B.miss = near ? 0 : (B.miss || 0) + 1; if (B.miss >= 2) B.badT = now; }   // movement with nothing in it (a shadow, light): not looked at again for a few seconds
 }
 const mkPred = (d, now) => { if (d.vx == null) return [0, 0]; const t = Math.min(now - (d.tl || d.t), 700) / 1000; return [d.vx * t, d.vy * t]; };   // the box goes on at the speed it had since the last look, so it is where the person is now and not where they were
@@ -143,11 +145,12 @@ function mkAiRun(el) {
   el._mkAiT = 0; if (el.isConnected) mkDbg(el); if (!el.isConnected || !mkAiOn()) return; const v = el._mkv; el._mkAiT = setTimeout(() => mkAiRun(el), 100);
   if (MKAI.st === 1) { mkAiLoad(); return; }
   if (!el.classList.contains("mkon") || MKAI.st !== 2) return;
-  el._mk.classList.add("ai"); const now = Date.now(); el._mkD = (el._mkD || []).filter(d => now - d.t < 3500); if (!v.paused) mkFollow(el);
-  const L = el._mkD.filter(d => { const lk = d.trk && d.trk.ttl > 0; return now - d.t < (d.miss >= 1 ? 500 : lk ? 1300 : 900) && (d.n >= 2 || d.score >= .7 || d.pz)   // seen twice, or very sure, before it is shown
+  el._mk.classList.add("ai"); const now = Date.now(); el._mkD = (el._mkD || []).filter(d => now - d.t < 3500 || v.paused && d.pp === v.currentTime); if (!v.paused) mkFollow(el);
+  const hold = v.paused && !v.seeking, done = hold && el._mkPD === v.currentTime;   // paused: the box stays on the person (no moving on at its old speed, no timing out) once the look at this very picture is done
+  const L = el._mkD.filter(d => { if (done) return d.pp === v.currentTime; const lk = d.trk && d.trk.ttl > 0; return (hold ? now - d.t < 4000 : now - d.t < (d.miss >= 1 ? 500 : lk ? 1300 : 900)) && (d.n >= 2 || d.score >= .7 || d.pz)   // seen twice, or very sure, before it is shown
     && (d.kind === "Vehicle" ? d.pz || lk && d.mv > Math.max(.04, .6 * Math.max(d.w, d.h * .56)) : d.pz || lk || d.mv > .02 || now - d.t0 < 2000); }).sort((a, b) => b.score - a.score); L.forEach((d, i) => { if (d.kind === "Vehicle" && L.some(p => p.kind === "Person" && p.x + p.w / 2 > d.x && p.x + p.w / 2 < d.x + d.w && p.y + p.h / 2 > d.y && p.y + p.h / 2 < d.y + d.h && d.w * d.h < 5 * p.w * p.h)) d.hide = 1; else d.hide = 0; });   // a "car" hardly bigger than the person standing in it is that person's shadow
   // a car only counts once it has really travelled; a "person" that never moves and has nothing moving under it is a post or a bush
-  mkDraw(el, v, L.filter((d, i) => !d.hide && !L.some((o, j) => j < i && mkIou(o, d) > .5)).sort((a, b) => b.w * b.h - a.w * a.h).slice(0, 4).map(d => { const q = mkPred(d, now); return Object.assign({}, d, { x: Math.max(0, Math.min(1 - d.w, d.x + q[0])), y: Math.max(0, Math.min(1 - d.h, d.y + q[1])) }); }));
+  mkDraw(el, v, L.filter((d, i) => !d.hide && !L.some((o, j) => j < i && mkIou(o, d) > .5)).sort((a, b) => b.w * b.h - a.w * a.h).slice(0, 4).map(d => { const q = hold ? [0, 0] : mkPred(d, now); return Object.assign({}, d, { x: Math.max(0, Math.min(1 - d.w, d.x + q[0])), y: Math.max(0, Math.min(1 - d.h, d.y + q[1])) }); }));
   if (el._mkAiBusy || !v.getAttribute("src") || v.ended || v.seeking || v.readyState < 2 || !v.videoWidth || document.hidden) return;
   let job = null;
   if (!v.paused) {
@@ -164,6 +167,18 @@ function mkDraw(el, v, B) {
   while (o.children.length > B.length) o.lastChild.remove();
   B.forEach((b, i) => { const n = o.children[i], k = b.kind;
     n.style.cssText = "left:" + (pl + b.x * pw) + "px;top:" + (pt + b.y * ph) + "px;width:" + b.w * pw + "px;height:" + b.h * ph + "px"; const cl = "mkb " + k.toLowerCase(); if (n.className !== cl) { n.className = cl; n.firstChild.textContent = MKN[k]; } });
+  mkLabels(el, o, B, pl, pt, pw, ph);
+}
+function mkLabels(el, o, B, pl, pt, pw, ph) {   // two people close together would wear their labels on top of each other, and a box at the top edge would push its label off the picture: each label takes the first free place (above, below, inside), left box first
+  if (el.dataset.mk === "glow") return;
+  const sv = n => parseFloat(el.style.getPropertyValue(n)) || 0, z = Math.max(1, sv("--zs") || 1), M = el._mkLw || (el._mkLw = {}), placed = [], G = 3, ow = o.offsetWidth, oh = o.offsetHeight;
+  const x0 = Math.max(pl, ow / 2 + (-ow / 2 - sv("--zx")) / z), x1 = Math.min(pl + pw, ow / 2 + (ow / 2 - sv("--zx")) / z), y0 = Math.max(pt, oh / 2 + (-oh / 2 - sv("--zy")) / z), y1 = Math.min(pt + ph, oh / 2 + (oh / 2 - sv("--zy")) / z);   // the part of the picture that shows (zoomed in, less of it does)
+  B.map((b, i) => i).sort((a, c) => B[a].x - B[c].x).forEach(i => {
+    const n = o.children[i], e = n && n.firstChild, b = B[i]; if (!e) return;
+    const lw = (M[b.kind] || (M[b.kind] = e.offsetWidth || 56)) / z, lh = (M.h || (M.h = e.offsetHeight || 19)) / z, bx = pl + b.x * pw, by = pt + b.y * ph, bw = b.w * pw, bh = b.h * ph;
+    const at = { aL: [bx - 2, by - 3 - lh], bL: [bx - 2, by + bh + 3], aR: [bx + bw + 2 - lw, by - 3 - lh], bR: [bx + bw + 2 - lw, by + bh + 3], iL: [bx + 4, by + 4], iR: [bx + bw - 4 - lw, by + 4] };
+    const free = k => { const x = at[k][0], y = at[k][1]; return x >= x0 - 1 && y >= y0 - 1 && x + lw <= x1 + 1 && y + lh <= y1 + 1 && !placed.some(r => x < r[0] + r[2] + G && r[0] < x + lw + G && y < r[1] + r[3] + G && r[1] < y + lh + G); };
+    const pick = [n.dataset.lb, "aL", "bL", "aR", "bR", "iL", "iR"].find(k => k && free(k)) || "iL"; placed.push([at[pick][0], at[pick][1], lw, lh]); n.dataset.lb = pick; });
 }
 // day strip above the list of clips: one coloured bar per clip, where it sits in the day; tap one to play it
 function pbStrip(P, items, filter) {

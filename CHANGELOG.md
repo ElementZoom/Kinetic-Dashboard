@@ -4,6 +4,17 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
+## 1.10.1 - 2026-10-25
+
+### Fixed
+- **Marks on a paused recording:** the box now stays on the person in the picture. It used to keep moving on at the person's walking speed and then disappear about a second after pausing.
+- **Two boxes on one person:** someone walking quickly (or a slow device, which looks less often) used to get a second box next to the first one for a moment. A new look is now matched to where the person should be by now, not only to where they were.
+
+## 1.10.0.2 - 2026-10-25
+
+### Fixed
+- **Labels on the marks:** two people standing close together no longer wear their labels on top of each other, and a box at the edge of the picture puts its label below or inside it instead of off the picture. Also when the picture is zoomed in.
+
 ## 1.10.0.1 - 2026-10-25
 
 ### Fixed

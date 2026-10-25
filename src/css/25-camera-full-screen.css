@@ -191,6 +191,10 @@ html:not(#x) .zc:fullscreen>video,html:not(#x) .zc.zfull>video{position:static!i
 .mkb{--k:#5eead4;position:absolute;transition:left .13s linear,top .13s linear,width .13s linear,height .13s linear}.mkb.vehicle{--k:#fbbf24}.mkb.animal{--k:#8be0ae}
 .mkb em{position:absolute;left:-2px;bottom:100%;margin-bottom:3px;font:600 11px var(--mono);font-style:normal;padding:2px 7px;border-radius:6px;background:var(--k);color:#111;white-space:nowrap;transform-origin:left bottom;transform:scale(calc(1/var(--zs,1)))}
 .mkl .mkb{--bw:calc(2px/var(--zs,1))}
+/* where a label sits: above (default), below, or inside the box; left or right aligned. mkLabels() picks the first free place so labels never cover each other or leave the picture */
+.mkb[data-lb=bL] em,.mkb[data-lb=bR] em{bottom:auto;top:100%;margin:3px 0 0;transform-origin:left top}
+.mkb[data-lb=aR] em,.mkb[data-lb=bR] em{left:auto;right:-2px}.mkb[data-lb=aR] em{transform-origin:right bottom}.mkb[data-lb=bR] em{transform-origin:right top}
+.mkb[data-lb=iL] em,.mkb[data-lb=iR] em{bottom:auto;top:4px;margin:0;transform-origin:left top}.mkb[data-lb=iL] em{left:4px}.mkb[data-lb=iR] em{left:auto;right:4px;transform-origin:right top}
 [data-mk=brackets] .mkb{background:linear-gradient(var(--k),var(--k)) 0 0/14px var(--bw),linear-gradient(var(--k),var(--k)) 0 0/var(--bw) 14px,linear-gradient(var(--k),var(--k)) 100% 0/14px var(--bw),linear-gradient(var(--k),var(--k)) 100% 0/var(--bw) 14px,linear-gradient(var(--k),var(--k)) 0 100%/14px var(--bw),linear-gradient(var(--k),var(--k)) 0 100%/var(--bw) 14px,linear-gradient(var(--k),var(--k)) 100% 100%/14px var(--bw),linear-gradient(var(--k),var(--k)) 100% 100%/var(--bw) 14px;background-repeat:no-repeat}
 [data-mk=box] .mkb{border:var(--bw) solid var(--k);border-radius:8px;box-shadow:0 0 12px var(--k),inset 0 0 10px color-mix(in srgb,var(--k) 35%,transparent)}
 [data-mk=glow] .mkb{border-radius:50%;background:radial-gradient(closest-side,color-mix(in srgb,var(--k) 45%,transparent),transparent);transform:scale(1.25)}[data-mk=glow] .mkb em{display:none}

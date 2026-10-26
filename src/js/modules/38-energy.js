@@ -40,15 +40,17 @@ function enBars(bk, sp, vals, col, FS, mob, fm) {
 function enGridIds(P) { const o = []; const walk = (x, d) => { if (!x || typeof x !== "object" || d > 4) return; Object.keys(x).forEach(k => { if (k === "stat_energy_from" && typeof x[k] === "string" && x[k]) o.push(x[k]); else walk(x[k], d + 1); }); }; ((P || {}).energy_sources || []).forEach(x => { if (x.type === "grid") walk(x, 0); }); return o.filter((v, i) => o.indexOf(v) === i); }
 function loadEnergy() {
   if (en.busy || !ws || ws.readyState !== 1) return; en.busy = true; setTimeout(() => { en.busy = false; }, 15000);
-  send({ type: "energy/get_prefs" }, (P, raw) => {   // read every time, so a source added in Home Assistant shows up without reloading
+  const lt = en.lt = (en.lt || 0) + 1;   // a newer request (date changed again) makes the older answers stale
+  send({ type: "energy/get_prefs" }, (P, raw) => {
+    if (lt !== en.lt) return;   // read every time, so a source added in Home Assistant shows up without reloading
     if (!P) { en.busy = false; en.err = "Energy isn’t configured: " + (raw && raw.error ? raw.error.message : "no response"); en.data = {}; drawEnergy(); return; }
     en.prefs = P; en.err = ""; en.data = {}; en.key = en.r + en.o; en.prev = undefined;
     const sp = enSpan(), gid = enGridIds(P); en.gridIds = gid; enExtra(sp);
     if (!gid.length) { en.busy = false; en.grid = null; en.err = "Home Assistant’s Energy settings have no grid electricity set up (Settings > Dashboards > Energy > Electricity grid)."; drawEnergy(); return; }
     en.grid = undefined; drawEnergy();
     { const ps = enSpan(en.o - 1), nw = Date.now(); let pe = ps.e; if (sp.e > nw) pe = new Date(+ps.s + (nw - sp.s));
-      send({ type: "recorder/statistics_during_period", start_time: ps.s.toISOString(), end_time: ps.e.toISOString(), statistic_ids: gid, period: "hour", types: ["change"] }, g => { const m = {}; Object.keys(g || {}).forEach(k => g[k].forEach(x => { const t = +new Date(x.start); if (t <= +pe) m[t] = (m[t] || 0) + (x.change || 0); })); en.prev = g ? m : null; drawEnergy(); }); }
-    send({ type: "recorder/statistics_during_period", start_time: sp.s.toISOString(), end_time: sp.e.toISOString(), statistic_ids: gid, period: "hour", types: ["change"] }, g => { en.busy = false; en.grid = g ? enSum(g) : null; drawEnergy(); });
+      send({ type: "recorder/statistics_during_period", start_time: ps.s.toISOString(), end_time: ps.e.toISOString(), statistic_ids: gid, period: "hour", types: ["change"] }, g => { if (lt !== en.lt) return; const m = {}; Object.keys(g || {}).forEach(k => g[k].forEach(x => { const t = +new Date(x.start); if (t <= +pe) m[t] = (m[t] || 0) + (x.change || 0); })); en.prev = g ? m : null; drawEnergy(); }); }
+    send({ type: "recorder/statistics_during_period", start_time: sp.s.toISOString(), end_time: sp.e.toISOString(), statistic_ids: gid, period: "hour", types: ["change"] }, g => { if (lt !== en.lt) return; en.busy = false; en.grid = g ? enSum(g) : null; drawEnergy(); });
   });
 }
 function enBuckets(sp) {
@@ -72,7 +74,8 @@ function enCost(sp) {   // grid import split into the tariff periods + daily cha
   }
   return { per: per, use: use, fixed: fixed, days: days, total: total, kwh: per.reduce((s, x) => s + x.kwh, 0), cols: cols, est: est, real: !!en.gridCost };
 }
-function drawEnergy() { enDraw(); const pg = $("#energy"); if (pg && pg.classList.contains("hold") && (en.data || en.err)) pgEnter(pg); }
+function drawEnergy() { if (en.anim && Date.now() < en.anim) { clearTimeout(en.at); en.at = setTimeout(drawEnergy, en.anim - Date.now() + 30); return; }   // late answers wait until the slide-in has finished, so they do not cut it off
+  enDraw(); const pg = $("#energy"); if (pg && pg.classList.contains("hold") && (en.data || en.err)) pgEnter(pg); }
 function enDraw() {
   const mob = isMobile(), FS = mob ? 15 : 12, sp = enSpan(), pg = $("#energy"), P = en.prefs;
   let h = '<div class="eh ehc" style="margin-bottom:14px"><div class="chips tabs">' + [["day", "DAY"], ["week", "WEEK"], ["month", CONFIG.billing ? "BILL" : "MONTH"], ["year", "YEAR"]].map(x => '<button class="chip' + (en.r === x[0] ? " on" : "") + '" data-er="' + x[0] + '">' + x[1] + '</button>').join("") + '</div><div class="seg" style="margin-left:auto"><button class="eb" data-eo="-1">' + mdi("chevron-left") + '</button><button class="eb" data-eo="0" style="min-width:210px">' + esc(sp.lab) + '</button><button class="eb" data-eo="1">' + mdi("chevron-right") + '</button></div></div>';
@@ -133,15 +136,15 @@ function enDraw() {
     h = h.slice(0, h0) + (hasGas && CS ? '<div class="ensw"><button class="' + (et === "e" ? "on" : "") + '" data-et="e">ELECTRICITY</button><button class="' + (et === "g" ? "on" : "") + '" data-et="g">GAS</button></div>' : "") + '<div class="ensl" data-t="' + et + '" data-n="' + (hasGas && CS ? 3 : 2) + '">' + h.slice(h0) + '</div>'; en.body = h.slice(h0);
   }
   pg.innerHTML = h;
-  if (en.tx != null && en.data && !pg.querySelector(".enold") && pg.querySelector(".ensl")) { const d = en.tx; en.tx = null; Array.prototype.slice.call(pg.querySelectorAll(".ensw,.ensl>.pn")).forEach((c, k) => { txGo(c, d, false); c.style.setProperty("--tx", d * 40 + "px"); c.style.setProperty("--ty", d ? "8px" : "18px"); c.style.animationDuration = ".7s"; c.style.animationDelay = k * 90 + "ms"; }); }
+  if (en.tx != null && en.data && !pg.querySelector(".enold") && pg.querySelector(".ensl")) { const d = en.tx, els = pg.querySelectorAll(".ensw,.ensl>.pn"); en.tx = null; if (!(window.matchMedia && matchMedia("(prefers-reduced-motion:reduce)").matches)) { els.forEach((c, k) => { c.style.setProperty("--tx", d * 30 + "px"); c.style.setProperty("--ty", d ? "6px" : "14px"); c.style.setProperty("--i", k); c.classList.add("enin"); }); en.anim = Date.now() + 700; setTimeout(() => els.forEach(c => c.classList.remove("enin")), 800); } }
 }
 $("#energy").onclick = e => {
-  const dt = e.target.closest("[data-et]"); if (dt) { en.tab = dt.dataset.et; drawEnergy(); return; }
+  const dt = e.target.closest("[data-et]"); if (dt) { en.tab = dt.dataset.et; en.anim = 0; drawEnergy(); return; }
   const r = e.target.closest("[data-er]"), o = e.target.closest("[data-eo]"), m = e.target.closest("[data-em]"), u = e.target.closest("[data-eu]");
-  if (u) { en.unit = u.dataset.eu; drawEnergy(); }
-  else if (r) { const ord = ["day", "week", "month", "year"]; en.tx = ord.indexOf(r.dataset.er) > ord.indexOf(en.r) ? 1 : -1; en.r = r.dataset.er; en.o = 0; en.data = null; drawEnergy(); loadEnergy(); }
-  else if (o) { en.tx = +o.dataset.eo === 0 ? 0 : (+o.dataset.eo > 0 ? 1 : -1); en.o = +o.dataset.eo === 0 ? 0 : en.o + +o.dataset.eo; en.data = null; drawEnergy(); loadEnergy(); }
-  else if (m) { en.mode = m.dataset.em; drawEnergy(); }
+  if (u) { en.unit = u.dataset.eu; en.anim = 0; drawEnergy(); }
+  else if (r) { const ord = ["day", "week", "month", "year"]; en.tx = ord.indexOf(r.dataset.er) > ord.indexOf(en.r) ? 1 : -1; en.r = r.dataset.er; en.o = 0; en.data = null; en.anim = 0; en.busy = false; drawEnergy(); loadEnergy(); }
+  else if (o) { en.tx = +o.dataset.eo === 0 ? 0 : (+o.dataset.eo > 0 ? 1 : -1); en.o = +o.dataset.eo === 0 ? 0 : en.o + +o.dataset.eo; en.data = null; en.anim = 0; en.busy = false; drawEnergy(); loadEnergy(); }
+  else if (m) { en.mode = m.dataset.em; en.anim = 0; drawEnergy(); }
 };
 setInterval(() => { if (curPg() === "energy") loadEnergy(); }, 5 * 60000);
 

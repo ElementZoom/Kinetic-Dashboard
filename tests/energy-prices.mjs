@@ -82,10 +82,15 @@ async function run(withCost, VP = { width: 1200, height: 1400 }) {
   const mid = await page.evaluate(() => ({ old: !!document.querySelector("#energy .enold"), cards: document.querySelectorAll("#energy .enold .ensl>.pn").length }));
   ok("changing the date: the old cards stay (dimmed) while the new data loads", mid.old && mid.cards >= 2);
   await page.waitForTimeout(900);
-  ok("changing the date: the new cards slide in (tx animation)", await page.evaluate(() => [...document.querySelectorAll("#energy .ensl>.pn")].some(c => c.classList.contains("tx"))));
+  ok("changing the date: the new cards slide in (enin animation)", await page.evaluate(() => [...document.querySelectorAll("#energy .ensl>.pn")].some(c => c.classList.contains("enin"))));
   await page.waitForTimeout(1500);
   const end = await page.evaluate(() => ({ old: !!document.querySelector("#energy .enold"), cards: document.querySelectorAll("#energy .ensl>.pn").length, seen: window.__seen.length }));
   ok("changing the date: the new cards replace them, with no Loading / Calculating text in between", !end.old && end.cards >= 2 && end.seen === 0);
+  // tapping again before the first answer arrives: the older answer must not be drawn for the new period
+  await page.evaluate(() => { window.__ph = 1; const real = window.send; window.send = (m, cb) => { if (m.type !== "recorder/statistics_during_period") return real(m, cb); const d = window.__ph === 1 ? 900 : 100; return real(m, (a, b) => setTimeout(() => cb(a, b), d)); }; });
+  await page.click('[data-eo="-1"]'); await page.waitForTimeout(100); await page.evaluate(() => { window.__ph = 2; }); await page.click('[data-eo="-1"]'); await page.waitForTimeout(2500);
+  const en2 = f => "day" + f.o; const fin = await page.evaluate(() => ({ lab: enSpan().lab, key: en.key, o: en.o, shown: document.querySelector('#energy [data-eo="0"]').innerText, old: !!document.querySelector("#energy .enold"), inSpan: Object.keys(en.grid || {}).length > 0 && Object.keys(en.grid).every(t => +t >= +enSpan().s && +t < +enSpan().e) }));
+  ok("tapping the date twice quickly ends on the second date, drawn with its own data: " + JSON.stringify(fin), fin.key === en2(fin) && !fin.old && fin.inSpan);
   ok("no page errors (date change)", errors.length === 0); await page.close();
 }
 await browser.close(); server.close();

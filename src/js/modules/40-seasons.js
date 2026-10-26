@@ -51,7 +51,7 @@ function sznApply() {
   const old = $("#szn"); if (old) old.remove(); if (s) { const l = document.createElement("div"); l.id = "szn"; l.innerHTML = s.build(innerWidth, innerHeight); document.body.appendChild(l); sznVis(); }
   if (curPg() === "theme") drawPalette();
 }
-const sznVis = () => { const l = $("#szn"); if (l) l.hidden = onSec() || onView(); };   // the camera pages are left alone
+const sznVis = () => { const l = $("#szn"); if (l) l.hidden = onSec() || onView() || onHome(); };   // pages with cameras are left alone (Home always has them running)
 let sznRs = 0; addEventListener("resize", () => { clearTimeout(sznRs); sznRs = setTimeout(() => { const c = SZN_CUR; SZN_CUR = "\0"; sznApply(); SZN_CUR = c; }, 300); });
 addEventListener("hashchange", sznVis); document.addEventListener("visibilitychange", () => { if (!document.hidden) sznApply(); });
 // ---- Theme page: Seasonal themes

@@ -1837,7 +1837,7 @@ html.camlive #szn *{animation-play-state:paused!important}
 // (notification tap such as #view/driveway, #security ...), not the return from the login, and the device has not asked for reduced motion.
 window.brandLogo = function () { var L = window.DASH_LOGO, B = (window.DASH_CONFIG || {}).brand; return L && L.svg ? { svg: L.svg, lockup: !!L.lockup } : B && B.mark ? { svg: B.mark, lockup: false } : null; };   // brand-logo.js wins over brand.mark in config.js
 window.brandMark = function (s) { var g = window.brandLogo(); if (!g) return ""; return g.svg.replace(/\bid="([\w-]+)"/g, 'id="$1' + s + '"').replace(/url\(#([\w-]+)\)/g, 'url(#$1' + s + ')'); };
-window.DASH_VER = "1.14.0";   // the one place to change the version
+window.DASH_VER = "1.14.0.1";   // the one place to change the version
 (function () { try {
   var B = (window.DASH_CONFIG || {}).brand, el = document.getElementById("bootld"), r = document.documentElement, lp = "on";
   try { lp = localStorage.getItem("dashLogo") || "on"; } catch (e) {}   // Theme page -> "Start-up logo": on | load (no intro) | off (plain spinner, as before)
@@ -5668,7 +5668,7 @@ function sznApply() {
   const old = $("#szn"); if (old) old.remove(); if (s) { const l = document.createElement("div"); l.id = "szn"; l.innerHTML = s.build(innerWidth, innerHeight); document.body.appendChild(l); sznVis(); }
   if (curPg() === "theme") drawPalette();
 }
-const sznVis = () => { const l = $("#szn"); if (l) l.hidden = onSec() || onView(); };   // the camera pages are left alone
+const sznVis = () => { const l = $("#szn"); if (l) l.hidden = onSec() || onView() || onHome(); };   // pages with cameras are left alone (Home always has them running)
 let sznRs = 0; addEventListener("resize", () => { clearTimeout(sznRs); sznRs = setTimeout(() => { const c = SZN_CUR; SZN_CUR = "\0"; sznApply(); SZN_CUR = c; }, 300); });
 addEventListener("hashchange", sznVis); document.addEventListener("visibilitychange", () => { if (!document.hidden) sznApply(); });
 // ---- Theme page: Seasonal themes

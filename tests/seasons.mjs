@@ -81,9 +81,10 @@ async function open(o = {}) {
 // 5. camera safety: hidden on camera pages, bits stop while a camera is live, reduced motion
 {
   const t = await open({ now: "2026-12-10T12:00:00", pref: "on" });
-  ok("layer visible on home", (await t.layer()).hid === false);
+  ok("layer hidden on home (cameras always run there)", (await t.layer()).hid === true);
+  await t.page.evaluate(() => { location.hash = "#rooms"; }); await t.page.waitForTimeout(250); ok("layer visible on a page without cameras", (await t.layer()).hid === false);
   for (const h of ["#security", "#view/driveway", "#camera/driveway"]) { await t.page.evaluate(h => { location.hash = h; }, h); await t.page.waitForTimeout(250); const l = await t.layer(); ok("layer hidden on " + h, l && l.hid === true); }
-  await t.page.evaluate(() => { location.hash = "#home"; }); await t.page.waitForTimeout(250); ok("layer back on home", (await t.layer()).hid === false);
+  await t.page.evaluate(() => { location.hash = "#climate"; }); await t.page.waitForTimeout(250); ok("layer back on climate", (await t.layer()).hid === false);
   await t.page.evaluate(() => document.documentElement.classList.add("camlive"));
   ok("falling bits hidden while a camera is live", await t.page.evaluate(() => { const f = document.querySelector("#szn .fx"); return f && getComputedStyle(f).display === "none"; }));
   ok("static decoration still shown while a camera is live", await t.page.evaluate(() => { const s = document.querySelector("#szn svg"); return s && getComputedStyle(s).display !== "none"; }));

@@ -1,10 +1,20 @@
 // ---------- energy ----------
 const EN_COL = ["#6bb8ff", "#8ff0c4", "#ffd166", "#ef476f", "#cdb4db", "#f78c6b", "#06d6a0", "#a2d2ff", "#ffafcc", "#b8f2e6"];
 let en = { r: "day", o: 0, prefs: null, data: null, mode: "bar", err: "", busy: false };
-function enSpan(oo) {  if (oo == null) oo = en.o;
+// billing cycles (config.js billing): a cycle starts on this day of the month, or on the exact dates listed in starts (a meter reading can move it)
+function enCyc(kind, oo, at) {
+  const B = (CONFIG.billing || {})[kind]; if (!B) return null;
+  const pdt = x => { const a = String(x).split("-"); return new Date(+a[0], +a[1] - 1, +a[2]); }, ov = {}; (B.starts || []).forEach(x => { const d = pdt(x); ov[d.getFullYear() + "-" + d.getMonth()] = d; });
+  const n = at || new Date(), t = new Date(n.getFullYear(), n.getMonth(), n.getDate()), L = [];
+  for (let y = n.getFullYear() - 4; y <= n.getFullYear() + 1; y++) for (let m = 0; m < 12; m++) L.push(ov[y + "-" + m] || new Date(y, m, B.day || 1));
+  L.sort((a, b) => a - b); let i = 0; while (i + 1 < L.length && L[i + 1] <= t) i++; i += oo;
+  return i >= 0 && i + 1 < L.length ? { s: L[i], e: L[i + 1] } : null;
+}
+function enSpan(oo, kind) {  if (oo == null) oo = en.o;
   const n = new Date(), s = new Date(n.getFullYear(), n.getMonth(), n.getDate()); let e, per, lab;
   if (en.r === "day") { s.setDate(s.getDate() + oo); e = new Date(s); e.setDate(e.getDate() + 1); per = "hour"; lab = s.toLocaleDateString([], { weekday: "long", day: "numeric", month: "long" }); }
   else if (en.r === "week") { s.setDate(s.getDate() - ((s.getDay() + 6) % 7) + oo * 7); e = new Date(s); e.setDate(e.getDate() + 7); per = "day"; const l = new Date(e - 864e5); lab = s.toLocaleDateString([], { day: "numeric", month: "short" }) + " – " + l.toLocaleDateString([], { day: "numeric", month: "short" }); }
+  else if (en.r === "month" && enCyc(kind || "electricity", oo)) { const c = enCyc(kind || "electricity", oo), l = new Date(+c.e - 864e5); per = "day"; lab = c.s.toLocaleDateString([], { day: "numeric", month: "short" }) + " – " + l.toLocaleDateString([], { day: "numeric", month: "short" }); return { s: c.s, e: c.e, per: per, lab: lab }; }
   else if (en.r === "month") { s.setDate(1); s.setMonth(s.getMonth() + oo); e = new Date(s); e.setMonth(e.getMonth() + 1); per = "day"; lab = s.toLocaleDateString([], { month: "long", year: "numeric" }); }
   else { s.setMonth(0, 1); s.setFullYear(s.getFullYear() + oo); e = new Date(s); e.setFullYear(e.getFullYear() + 1); per = "month"; lab = String(s.getFullYear()); }
   return { s: s, e: e, per: per, lab: lab };
@@ -13,14 +23,12 @@ const enSum = g => { const m = {}; Object.keys(g || {}).forEach(k => g[k].forEac
 // the real prices and gas that Home Assistant's Energy settings know about (for example from a power company's statistics)
 function enSrc() { const o = { gc: [], gu: [], gk: [] }; ((en.prefs || {}).energy_sources || []).forEach(x => { if (x.type === "grid") (x.flow_from || []).forEach(f => { if (f.stat_cost) o.gc.push(f.stat_cost); }); else if (x.type === "gas" && x.stat_energy_from) { o.gu.push(x.stat_energy_from); if (x.stat_cost) o.gk.push(x.stat_cost); } }); return o; }
 function enExtra(sp) {
-  const o = enSrc(), tk = en.tok = (en.tok || 0) + 1; en.gridCost = o.gc.length ? undefined : null; en.gas = o.gu.length ? undefined : null; en.gasCost = o.gk.length ? undefined : null;
-  const q = (ids, set) => { if (ids.length) send({ type: "recorder/statistics_during_period", start_time: sp.s.toISOString(), end_time: sp.e.toISOString(), statistic_ids: ids, period: "hour", types: ["change"] }, g => { if (tk !== en.tok) return; set(g ? enSum(g) : null); drawEnergy(); }); };
+  const o = enSrc(), gsp = enSpan(en.o, "gas"), tk = en.tok = (en.tok || 0) + 1; en.gridCost = o.gc.length ? undefined : null; en.gas = o.gu.length ? undefined : null; en.gasCost = o.gk.length ? undefined : null;
+  const q = (ids, set, w) => { w = w || sp; if (ids.length) send({ type: "recorder/statistics_during_period", start_time: w.s.toISOString(), end_time: w.e.toISOString(), statistic_ids: ids, period: "hour", types: ["change"] }, g => { if (tk !== en.tok) return; set(g ? enSum(g) : null); drawEnergy(); }); };
   if (o.gc.length) setTimeout(() => { if (tk === en.tok && en.gridCost === undefined) { en.gridCost = null; drawEnergy(); } }, 12000);   // no answer: fall back to the tariff
-  q(o.gc, m => { en.gridCost = m; }); q(o.gu, m => { en.gas = m; }); q(o.gk, m => { en.gasCost = m; });
+  q(o.gc, m => { en.gridCost = m; }); q(o.gu, m => { en.gas = m; }, gsp); q(o.gk, m => { en.gasCost = m; }, gsp);
   if (o.gu.length && !en.gasUnit) send({ type: "recorder/get_statistics_metadata", statistic_ids: o.gu }, r => { const m = r && r[0]; en.gasUnit = (m && (m.display_unit_of_measurement || m.statistics_unit_of_measurement || m.unit_of_measurement)) || "kWh"; drawEnergy(); });
 }
-// price of one kWh in the hour starting at t: what the power company charged when Home Assistant has it, the tariff in config.js otherwise
-const enRateAt = t => { const g = en.grid && en.grid[t], c = en.gridCost && en.gridCost[t]; return g > 0.0005 && c != null ? c / g : enRate(new Date(t).getHours()); };
 function enBars(bk, sp, vals, col, FS, mob, fm) {
   const mx = Math.max.apply(null, bk.map(b => vals[b] || 0).concat([0.001])), W = mob ? 420 : 700, H = mob ? 150 : 170, L = mob ? 50 : 46, B = mob ? 28 : 26, bw = (W - L) / bk.length; let g = "";
   for (let i = 0; i <= 2; i++) { const y = 8 + (H - B - 8) * (1 - i / 2); g += '<line x1="' + L + '" x2="' + W + '" y1="' + y + '" y2="' + y + '" stroke="currentColor" opacity=".12"/><text x="' + (L - 6) + '" y="' + (y + 4) + '" text-anchor="end" font-size="' + FS + '" fill="currentColor" opacity=".6">' + fm(mx * i / 2) + '</text>'; }
@@ -28,33 +36,20 @@ function enBars(bk, sp, vals, col, FS, mob, fm) {
     g += '<text x="' + (L + i * bw + bw / 2).toFixed(1) + '" y="' + (H - 7) + '" text-anchor="middle" font-size="' + FS + '" fill="currentColor" opacity=".6">' + (en.r === "day" ? (i % 3 === 0 ? d.getHours() : "") : en.r === "week" ? d.toLocaleDateString([], { weekday: "short" }) : en.r === "month" ? (i % 2 === 0 ? d.getDate() : "") : d.toLocaleDateString([], { month: "short" })) + '</text>'; });
   return '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;margin-top:8px;display:block">' + g + '</svg>';
 }
+// every grid import statistic Home Assistant's Energy settings know about (looked for in the whole grid source, so older and newer layouts both work)
+function enGridIds(P) { const o = []; const walk = (x, d) => { if (!x || typeof x !== "object" || d > 4) return; Object.keys(x).forEach(k => { if (k === "stat_energy_from" && typeof x[k] === "string" && x[k]) o.push(x[k]); else walk(x[k], d + 1); }); }; ((P || {}).energy_sources || []).forEach(x => { if (x.type === "grid") walk(x, 0); }); return o.filter((v, i) => o.indexOf(v) === i); }
 function loadEnergy() {
   if (en.busy || !ws || ws.readyState !== 1) return; en.busy = true; setTimeout(() => { en.busy = false; }, 15000);
-  const go = () => {
-    const sp = enSpan(), ids = en.prefs.device_consumption.map(d => d.stat_consumption); enExtra(sp);
-    if (!ids.length) { en.busy = false; en.data = {}; en.err = "No individual devices are set up in Home Assistant’s Energy settings."; drawEnergy(); return; }
-    send({ type: "recorder/statistics_during_period", start_time: sp.s.toISOString(), end_time: sp.e.toISOString(), statistic_ids: ids, period: sp.per, types: ["change"] }, (r, raw) => {
-      en.err = r ? "" : "Could not load statistics: " + (raw && raw.error ? raw.error.message : "no response"); en.data = r || {}; en.key = en.r + en.o;
-      const gs = (en.prefs.energy_sources || []).filter(x => x.type === "grid"); let gid = [];
-      gs.forEach(g => { (g.flow_from || []).forEach(f => { if (f.stat_energy_from) gid.push(f.stat_energy_from); }); if (g.stat_energy_from) gid.push(g.stat_energy_from); });   // (older Home Assistant versions keep the grid meter on the source itself)
-      en.gridSrc = gid.length ? "grid" : "devices"; if (!gid.length) gid = ids.slice(); en.gridIds = gid.slice();   // no grid meter in HA's Energy settings: price the tracked devices instead
-      en.grid = undefined;
-      en.devH = undefined; en.prev = undefined;
-      if (!gid.length || en.err) { en.busy = false; en.grid = null; drawEnergy(); return; }
-      { const ps = enSpan(en.o - 1), nw = Date.now(); let pe = ps.e; if (sp.e > nw) pe = new Date(+ps.s + (nw - sp.s));
-        send({ type: "recorder/statistics_during_period", start_time: ps.s.toISOString(), end_time: ps.e.toISOString(), statistic_ids: gid, period: "hour", types: ["change"] }, g => { const m = {}; Object.keys(g || {}).forEach(k => g[k].forEach(x => { const t = +new Date(x.start); if (t <= +pe) m[t] = (m[t] || 0) + (x.change || 0); })); en.prev = g ? m : null; drawEnergy(); }); }
-      drawEnergy();
-      const sumH = g => { const m = {}; Object.keys(g || {}).forEach(k => g[k].forEach(x => { const t = +new Date(x.start); m[t] = (m[t] || 0) + (x.change || 0); })); return m; };
-      // hourly per-device usage: needed to price each device and each bar (the rate depends on the hour)
-      send({ type: "recorder/statistics_during_period", start_time: sp.s.toISOString(), end_time: sp.e.toISOString(), statistic_ids: ids, period: "hour", types: ["change"] }, h => {
-        en.devH = h || null;
-        if (en.gridSrc === "devices") { en.busy = false; en.grid = h ? sumH(h) : null; drawEnergy(); return; }
-        drawEnergy();
-        send({ type: "recorder/statistics_during_period", start_time: sp.s.toISOString(), end_time: sp.e.toISOString(), statistic_ids: gid, period: "hour", types: ["change"] }, g => { en.busy = false; en.grid = g ? sumH(g) : null; drawEnergy(); });
-      });
-    });
-  };
-  if (en.prefs) go(); else send({ type: "energy/get_prefs" }, (r, raw) => { if (!r) { en.busy = false; en.err = "Energy isn’t configured: " + (raw && raw.error ? raw.error.message : "no response"); en.data = {}; drawEnergy(); return; } en.prefs = r; go(); });
+  send({ type: "energy/get_prefs" }, (P, raw) => {   // read every time, so a source added in Home Assistant shows up without reloading
+    if (!P) { en.busy = false; en.err = "Energy isn’t configured: " + (raw && raw.error ? raw.error.message : "no response"); en.data = {}; drawEnergy(); return; }
+    en.prefs = P; en.err = ""; en.data = {}; en.key = en.r + en.o; en.prev = undefined;
+    const sp = enSpan(), gid = enGridIds(P); en.gridIds = gid; enExtra(sp);
+    if (!gid.length) { en.busy = false; en.grid = null; en.err = "Home Assistant’s Energy settings have no grid electricity set up (Settings > Dashboards > Energy > Electricity grid)."; drawEnergy(); return; }
+    en.grid = undefined; drawEnergy();
+    { const ps = enSpan(en.o - 1), nw = Date.now(); let pe = ps.e; if (sp.e > nw) pe = new Date(+ps.s + (nw - sp.s));
+      send({ type: "recorder/statistics_during_period", start_time: ps.s.toISOString(), end_time: ps.e.toISOString(), statistic_ids: gid, period: "hour", types: ["change"] }, g => { const m = {}; Object.keys(g || {}).forEach(k => g[k].forEach(x => { const t = +new Date(x.start); if (t <= +pe) m[t] = (m[t] || 0) + (x.change || 0); })); en.prev = g ? m : null; drawEnergy(); }); }
+    send({ type: "recorder/statistics_during_period", start_time: sp.s.toISOString(), end_time: sp.e.toISOString(), statistic_ids: gid, period: "hour", types: ["change"] }, g => { en.busy = false; en.grid = g ? enSum(g) : null; drawEnergy(); });
+  });
 }
 function enBuckets(sp) {
   const o = [], d = new Date(sp.s);
@@ -69,47 +64,47 @@ function enCost(sp) {   // grid import split into the tariff periods + daily cha
   const per = T.periods.map(p => ({ p: p, kwh: 0, cost: 0 })), cols = {};
   let est = 0; Object.keys(m).forEach(t => { const d = new Date(+t), h = d.getHours(), k = per.filter(x => h >= x.p.from && h < x.p.to)[0]; if (!k) return; const real = en.gridCost && en.gridCost[t] != null && m[t] > 0.0005; if (!real && m[t] > 0.0005) est++; k.kwh += m[t]; k.cost += real ? en.gridCost[t] : m[t] * k.p.rate; const b = sp.per === "hour" ? +d : sp.per === "day" ? +new Date(d.getFullYear(), d.getMonth(), d.getDate()) : +new Date(d.getFullYear(), d.getMonth(), 1); (cols[b] = cols[b] || per.map(() => 0))[per.indexOf(k)] += m[t]; });
   let days = 0; const now = Date.now(); for (const d = new Date(sp.s); d < sp.e; d.setDate(d.getDate() + 1)) if (+d <= now) days++;
-  const use = per.reduce((s, x) => s + x.cost, 0), fixed = days * T.daily;
-  return { per: per, use: use, fixed: fixed, days: days, total: use + fixed, kwh: per.reduce((s, x) => s + x.kwh, 0), cols: cols, est: est, real: !!en.gridCost };
+  let use = per.reduce((s, x) => s + x.cost, 0), fixed = days * T.daily, total = use + fixed;
+  if (en.gridCost) {   // the power company's cost already holds the daily charge: show it as its own line, as the bill does, and the rest as usage on the paid hours
+    const seen = {}; Object.keys(m).forEach(t => { if (m[t] > 0.0005 || en.gridCost[t]) seen[ymd(new Date(+t))] = 1; }); days = Object.keys(seen).length;
+    total = use; fixed = Math.min(days * T.daily, total); const paid = per.filter(x => x.p.rate > 0), pk = paid.reduce((a, x) => a + x.kwh, 0);
+    per.forEach(x => { x.cost = x.p.rate > 0 && pk > 0 ? (total - fixed) * x.kwh / pk : 0; }); use = total - fixed;
+  }
+  return { per: per, use: use, fixed: fixed, days: days, total: total, kwh: per.reduce((s, x) => s + x.kwh, 0), cols: cols, est: est, real: !!en.gridCost };
 }
 function drawEnergy() { enDraw(); const pg = $("#energy"); if (pg && pg.classList.contains("hold") && (en.data || en.err)) pgEnter(pg); }
 function enDraw() {
-  const mob = isMobile(), FS = mob ? 15 : 12, sp = enSpan(), pg = $("#energy"), P = en.prefs, nm = id => { const d = P && P.device_consumption.filter(x => x.stat_consumption === id)[0]; return (d && d.name) || fname(id).replace(/ (energy|consumption|total)$/i, ""); };
-  let h = '<div class="eh ehc" style="margin-bottom:14px"><div class="chips tabs">' + [["day", "DAY"], ["week", "WEEK"], ["month", "MONTH"], ["year", "YEAR"]].map(x => '<button class="chip' + (en.r === x[0] ? " on" : "") + '" data-er="' + x[0] + '">' + x[1] + '</button>').join("") + '</div><div class="seg" style="margin-left:auto"><button class="eb" data-eo="-1">' + mdi("chevron-left") + '</button><button class="eb" data-eo="0" style="min-width:210px">' + esc(sp.lab) + '</button><button class="eb" data-eo="1">' + mdi("chevron-right") + '</button></div></div>';
+  const mob = isMobile(), FS = mob ? 15 : 12, sp = enSpan(), pg = $("#energy"), P = en.prefs;
+  let h = '<div class="eh ehc" style="margin-bottom:14px"><div class="chips tabs">' + [["day", "DAY"], ["week", "WEEK"], ["month", CONFIG.billing ? "BILL" : "MONTH"], ["year", "YEAR"]].map(x => '<button class="chip' + (en.r === x[0] ? " on" : "") + '" data-er="' + x[0] + '">' + x[1] + '</button>').join("") + '</div><div class="seg" style="margin-left:auto"><button class="eb" data-eo="-1">' + mdi("chevron-left") + '</button><button class="eb" data-eo="0" style="min-width:210px">' + esc(sp.lab) + '</button><button class="eb" data-eo="1">' + mdi("chevron-right") + '</button></div></div>';
   if (en.err) h += '<div class="pn lbl">' + esc(en.err) + '</div>';
   else if (!en.data || !P) h += '<div class="pn lbl">Loading…</div>';
   else {
-    const h0 = h.length, bk = enBuckets(sp), dev = P.device_consumption.map(d => { const id = d.stat_consumption, rows = en.data[id] || [], m = {}; rows.forEach(x => { m[+new Date(x.start)] = x.change || 0; }); return { id: id, n: nm(id), m: m, tot: rows.reduce((s, x) => s + (x.change || 0), 0) }; }).filter(x => x.tot > 0.0005).sort((a, b) => b.tot - a.tot);
-    dev.forEach((x, i) => { x.c = i < 9 ? EN_COL[i] : "#8a94a6"; x.cm = {}; x.cost = null; if (en.devH) { x.cost = 0; (en.devH[x.id] || []).forEach(r => { const t = +new Date(r.start), v = (r.change || 0) * enRateAt(t); x.cost += v; const b = enBk(sp, t); x.cm[b] = (x.cm[b] || 0) + v; }); } });
-    const TC = CONFIG.tariff || TARIFF_DEF, mc = v => TC.symbol + v.toFixed(2), cst = x => x.cost == null ? "" : ' <span class="enc">· ' + mc(x.cost) + '</span>', cu = en.unit === "cost" && !!en.devH, val = (x, b) => cu ? (x.cm[b] || 0) : (x.m[b] || 0);
-    const total = dev.reduce((s, x) => s + x.tot, 0), mx = dev.length ? dev[0].tot : 1, fm = v => v >= 100 ? v.toFixed(0) : v >= 10 ? v.toFixed(1) : v.toFixed(2);
-    let ov;
-    if (!dev.length) ov = '<div class="lbl" style="margin-top:12px">No consumption recorded in this period</div>';
-    else if (en.mode === "bar") ov = '<div class="enb">' + dev.map(x => '<div class="enr"><span class="enn">' + esc(x.n) + '</span><div class="enbar"><i style="width:' + Math.max(1.5, x.tot / mx * 100) + '%;background:' + x.c + '"></i></div><b>' + fm(x.tot) + ' kWh' + cst(x) + '</b></div>').join("") + '</div>';
-    else { let a0 = -Math.PI / 2, arcs = ""; dev.forEach(x => { const a1 = a0 + x.tot / total * 6.28318, big = a1 - a0 > Math.PI ? 1 : 0, R = 90, r0 = 56, c = (r, a) => (110 + r * Math.cos(a)).toFixed(2) + " " + (110 + r * Math.sin(a)).toFixed(2); arcs += dev.length === 1 ? '<circle cx="110" cy="110" r="73" fill="none" stroke="' + x.c + '" stroke-width="34"/>' : '<path d="M' + c(R, a0) + 'A' + R + ' ' + R + ' 0 ' + big + ' 1 ' + c(R, a1 - 0.0001) + 'L' + c(r0, a1 - 0.0001) + 'A' + r0 + ' ' + r0 + ' 0 ' + big + ' 0 ' + c(r0, a0) + 'Z" fill="' + x.c + '"><title>' + esc(x.n) + ' ' + fm(x.tot) + ' kWh</title></path>'; a0 = a1; });
-      ov = '<div class="enp"><svg viewBox="0 0 220 220" width="220" height="220">' + arcs + '<text x="110" y="108" text-anchor="middle" fill="currentColor" font-size="26" font-weight="300">' + fm(total) + '</text><text x="110" y="128" text-anchor="middle" fill="currentColor" opacity=".6" font-size="' + FS + '">kWh</text></svg><div class="enb" style="flex:1">' + dev.map(x => '<div class="enr"><i class="end" style="background:' + x.c + '"></i><span class="enn">' + esc(x.n) + '</span><b>' + fm(x.tot) + ' kWh' + cst(x) + '</b></div>').join("") + '</div></div>'; }
+    const h0 = h.length, bk = enBuckets(sp), fm = v => v >= 100 ? v.toFixed(0) : v >= 10 ? v.toFixed(1) : v.toFixed(2);
     const CS = enCost(sp), TT = CONFIG.tariff || TARIFF_DEF, mny = v => TT.symbol + v.toFixed(2);
     const GU = en.gasUnit || "kWh", sm = o => o ? Object.keys(o).reduce((a, k) => a + o[k], 0) : 0, gT = sm(en.gas), gC = en.gasCost ? sm(en.gasCost) : null, hasGas = en.gas && (gT > 0.0005 || gC > 0.005);
+    const gsp = enSpan(en.o, "gas"), gbk = enBuckets(gsp), gdays = (() => { const d = {}; Object.keys(en.gas || {}).forEach(t => { d[ymd(new Date(+t))] = 1; }); return Object.keys(d).length; })(), gD = (TT.gasDaily || 0) * gdays, gTot = (gC || 0) + gD, gdates = en.r === "month" && CONFIG.billing && CONFIG.billing.gas ? gsp.lab : "";
     let hgas = "", htot = "";
     if (hasGas) {
-      hgas = '<div class="pn pg"><div class="eh"><div><div class="lbl">Gas cost</div><div class="h2" style="margin-top:4px">' + (gC != null ? mny(gC) : "—") + '</div></div><div class="lbl ensub" style="margin-left:auto;text-align:right">' + fm(gT) + ' ' + esc(GU) + (gC != null && gT > 0.001 ? ' · ' + (gC / gT * 100).toFixed(1) + 'c per ' + esc(GU) : '') + '</div></div><div class="lbl" style="margin-top:14px">Usage · ' + esc(GU) + '</div>' + enBars(bk, sp, (() => { const v = {}; Object.keys(en.gas).forEach(t => { const b = enBk(sp, +t); v[b] = (v[b] || 0) + en.gas[t]; }); return v; })(), "#f78c6b", FS, mob, fm) + '</div>';
-      if (CS) htot = '<div class="pn pg"><div class="eh"><div><div class="lbl">Total energy cost</div><div class="h2" style="margin-top:4px">' + mny(CS.total + (gC || 0)) + '</div></div></div><div class="enb">' +
-        '<div class="enr"><i class="end" style="background:#6bb8ff"></i><span class="enn">Electricity</span><span class="lbl">' + fm(CS.kwh) + ' kWh · daily charge included</span><b>' + mny(CS.total) + '</b></div>' +
-        '<div class="enr"><i class="end" style="background:#f78c6b"></i><span class="enn">Gas</span><span class="lbl">' + fm(gT) + ' ' + esc(GU) + '</span><b>' + (gC != null ? mny(gC) : "—") + '</b></div></div></div>';
+      hgas = '<div class="pn pg"><div class="eh"><div><div class="lbl">Gas cost' + (gdates ? ' · ' + esc(gdates) : '') + '</div><div class="h2" style="margin-top:4px">' + (gC != null ? mny(gTot) : "—") + '</div></div><div class="lbl ensub" style="margin-left:auto;text-align:right">' + fm(gT) + ' ' + esc(GU) + '</div></div><div class="enb">' +
+        (gD > 0 ? '<div class="enr"><i class="end" style="background:#8a94a6"></i><span class="enn">Daily charge</span><span class="lbl">' + gdays + ' day' + (gdays === 1 ? "" : "s") + ' × ' + TT.symbol + TT.gasDaily.toFixed(3) + '</span><b>' + mny(gD) + '</b></div>' : '') +
+        '<div class="enr"><i class="end" style="background:#f78c6b"></i><span class="enn">Usage</span><span class="lbl">' + fm(gT) + ' ' + esc(GU) + (gC != null && gT > 0.001 ? ' × ' + (gC / gT * 100).toFixed(1) + 'c' : '') + '</span><b>' + (gC != null ? mny(gC) : "—") + '</b></div></div>' +
+        '<div class="lbl" style="margin-top:14px">Usage · ' + esc(GU) + '</div>' + enBars(gbk, gsp, (() => { const v = {}; Object.keys(en.gas).forEach(t => { const b = enBk(gsp, +t); v[b] = (v[b] || 0) + en.gas[t]; }); return v; })(), "#f78c6b", FS, mob, fm) + '</div>';
+      if (CS) htot = '<div class="pn pg"><div class="eh"><div><div class="lbl">Total energy cost</div><div class="h2" style="margin-top:4px">' + mny(CS.total + gTot) + '</div></div><div class="lbl ensub" style="margin-left:auto;text-align:right">excl. GST</div></div><div class="enb">' +
+        '<div class="enr"><i class="end" style="background:#6bb8ff"></i><span class="enn">Electricity</span><span class="lbl">' + fm(CS.kwh) + ' kWh' + (en.r === "month" && CONFIG.billing && CONFIG.billing.electricity ? ' · ' + esc(sp.lab) : '') + '</span><b>' + mny(CS.total) + '</b></div>' +
+        '<div class="enr"><i class="end" style="background:#f78c6b"></i><span class="enn">Gas</span><span class="lbl">' + fm(gT) + ' ' + esc(GU) + (gdates ? ' · ' + esc(gdates) : '') + '</span><b>' + (gC != null ? mny(gTot) : "—") + '</b></div></div></div>';
     }
     if (CS) {
       h += htot;
       const PC = ["#6bb8ff", "#8ff0c4", "#ffd166", "#ef476f"];
       h += '<div class="pn pg"><div class="eh"><div><div class="lbl">Electricity cost</div><div class="h2" style="margin-top:4px">' + mny(CS.total) + '</div></div><div class="lbl ensub" style="margin-left:auto;text-align:right">' + fm(CS.kwh) + ' kWh ' + (en.gridSrc === "devices" ? "from tracked devices" : "from the grid") + (CS.real && CS.est ? ' · ' + CS.est + ' h estimated' : '') + '</div></div><div class="lbl" style="margin:-4px 0 10px;text-transform:none;letter-spacing:0;opacity:.7">' + (en.gridSrc === "devices" ? "Home Assistant\u2019s Energy settings have no grid usage, so this is the tracked devices only." : "Source: " + esc((en.gridIds || []).join(", ")) + " \u00b7 " + Object.keys(en.grid || {}).length + " hours of data") + '</div><div class="enb">' +
         CS.per.map((x, i) => '<div class="enr"><i class="end" style="background:' + PC[i % 4] + '"></i><span class="enn">' + esc(x.p.name || "") + '</span><span class="lbl">' + fm(x.kwh) + ' kWh × ' + ((CS.real && x.kwh > 0.001 ? x.cost / x.kwh : x.p.rate) * 100).toFixed(1) + 'c</span><b>' + mny(x.cost) + '</b></div>').join("") +
-        '<div class="enr"><i class="end" style="background:#8a94a6"></i><span class="enn">Daily charge</span><span class="lbl">' + CS.days + ' day' + (CS.days === 1 ? "" : "s") + ' × ' + TT.symbol + TT.daily.toFixed(3) + '</span><b>' + mny(CS.fixed) + '</b></div></div>';
+        ('<div class="enr"><i class="end" style="background:#8a94a6"></i><span class="enn">Daily charge</span><span class="lbl">' + CS.days + ' day' + (CS.days === 1 ? "" : "s") + ' × ' + TT.symbol + TT.daily.toFixed(3) + '</span><b>' + mny(CS.fixed) + '</b></div></div>');
       const ks = Object.keys(CS.cols).map(Number), cm = Math.max.apply(null, bk.map(b => (CS.cols[b] || [0]).reduce((a, c) => a + c, 0)).concat([0.001])), W2 = mob ? 420 : 700, H2 = mob ? 150 : 170, L2 = mob ? 50 : 46, B2 = mob ? 28 : 26, bw2 = (W2 - L2) / bk.length; let g2 = '';
       for (let i = 0; i <= 2; i++) { const y = 8 + (H2 - B2 - 8) * (1 - i / 2); g2 += '<line x1="' + L2 + '" x2="' + W2 + '" y1="' + y + '" y2="' + y + '" stroke="currentColor" opacity=".12"/><text x="' + (L2 - 6) + '" y="' + (y + 4) + '" text-anchor="end" font-size="' + FS + '" fill="currentColor" opacity=".6">' + fm(cm * i / 2) + '</text>'; }
       bk.forEach((b, i) => { let y = H2 - B2; (CS.cols[b] || []).forEach((v, j) => { const hh = v / cm * (H2 - B2 - 8); if (hh > 0.3) g2 += '<rect x="' + (L2 + i * bw2 + bw2 * 0.12).toFixed(1) + '" y="' + (y - hh).toFixed(1) + '" width="' + (bw2 * 0.76).toFixed(1) + '" height="' + hh.toFixed(1) + '" rx="2" fill="' + PC[j % 4] + '"><title>' + esc(CS.per[j].p.name || "") + ' ' + fm(v) + ' kWh</title></rect>'; y -= hh; }); const d = new Date(b); g2 += '<text x="' + (L2 + i * bw2 + bw2 / 2).toFixed(1) + '" y="' + (H2 - 7) + '" text-anchor="middle" font-size="' + FS + '" fill="currentColor" opacity=".6">' + (en.r === "day" ? (i % 3 === 0 ? d.getHours() : "") : en.r === "week" ? d.toLocaleDateString([], { weekday: "short" }) : en.r === "month" ? (i % 2 === 0 ? d.getDate() : "") : d.toLocaleDateString([], { month: "short" })) + '</text>'; });
       h += '<div class="lbl" style="margin-top:14px">Usage · kWh</div><svg viewBox="0 0 ' + W2 + ' ' + H2 + '" style="width:100%;margin-top:8px;display:block">' + g2 + '</svg></div>';
     } else h += '<div class="pn lbl">' + (en.grid === undefined || en.gridCost === undefined ? "Calculating cost…" : "Electricity cost unavailable: no usage data came back for " + (en.gridSrc === "devices" ? "your tracked devices" : "the grid meter") + " in this period.") + '</div>';
     h += hgas;
-    h += '<div class="pn pg"><div class="eh"><div><div class="lbl">Consumption overview</div><div class="h2" style="margin-top:4px">' + fm(total) + ' kWh' + (en.devH ? ' <span class="enc">· ' + mc(dev.reduce((a, x) => a + (x.cost || 0), 0)) + '</span>' : '') + '</div></div><div class="seg" style="margin-left:auto"><button class="eb' + (en.mode === "bar" ? " on" : "") + '" data-em="bar">' + mdi("chart-bar") + '</button><button class="eb' + (en.mode === "pie" ? " on" : "") + '" data-em="pie">' + mdi("chart-pie") + '</button></div></div>' + ov + '</div>';
 
     if (CS) {
       const hf = x => { const f = k => CLK12() ? (k % 12 || 12) + (k % 24 < 12 ? "am" : "pm") : ("0" + k % 24).slice(-2) + ":00"; return f(x) + "–" + f(x + 1); }, rows = [], pn = ({ day: "yesterday", week: "last week", month: "last month", year: "last year" })[en.r], pl = en.o === 0 ? pn : "the previous " + en.r, part = sp.e > Date.now() && en.o === 0 ? " so far" : "";
@@ -121,12 +116,12 @@ function enDraw() {
         else rows.push(["Vs " + pl, "—", "No usage recorded in " + pl, ""]);
       }
       const hr = {}; Object.keys(en.grid || {}).forEach(t => { const k = new Date(+t).getHours(); hr[k] = (hr[k] || 0) + en.grid[t]; });
-      const pk = Object.keys(hr).sort((a, b) => hr[b] - hr[a])[0], tp = dev.length ? dev.slice().sort((a, b) => (b.cost || 0) - (a.cost || 0) || b.tot - a.tot)[0] : null, sumC = dev.reduce((a, x) => a + (x.cost || 0), 0);
-      if (pk != null && hr[pk] > 0.001) rows.push([en.r === "day" ? "Peak hour" : "Busiest hour of day", hf(+pk), fm(hr[pk]) + " kWh" + (en.r === "day" ? "" : " in total") + (tp ? " · biggest spender: " + tp.n + " (" + (sumC > 0.005 && tp.cost != null ? Math.round(tp.cost / sumC * 100) + "% of cost" : Math.round(tp.tot / total * 100) + "% of kWh") + ")" : ""), ""]);
+      const pk = Object.keys(hr).sort((a, b) => hr[b] - hr[a])[0];
+      if (pk != null && hr[pk] > 0.001) rows.push([en.r === "day" ? "Peak hour" : "Busiest hour of day", hf(+pk), fm(hr[pk]) + " kWh" + (en.r === "day" ? "" : " in total") + "", ""]);
       const fr = CS.per.filter(x => x.p.rate === 0), pd = CS.per.filter(x => x.p.rate > 0);
       if (fr.length && pd.length && CS.kwh > 0.001) {
-        const fk = fr.reduce((a, x) => a + x.kwh, 0), pt = dev.filter(x => x.cost > 0.005).sort((a, b) => b.cost - a.cost)[0], fn = fr.map(x => x.p.name || "").join("").replace(/^.*\((.*)\).*$/, "$1") || "free hours";
-        rows.push(["Free hours", Math.round(fk / CS.kwh * 100) + "% free", fm(fk) + " kWh used " + (fn === "free hours" ? fn : fn.replace(/–/, "to")) + (pt ? " · running " + pt.n + " there instead could save up to " + mny(pt.cost) : ""), "var(--mint)"]);
+        const fk = fr.reduce((a, x) => a + x.kwh, 0), fn = fr.map(x => x.p.name || "").join("").replace(/^.*\((.*)\).*$/, "$1") || "free hours";
+        rows.push(["Free hours", Math.round(fk / CS.kwh * 100) + "% free", fm(fk) + " kWh used " + (fn === "free hours" ? fn : fn.replace(/–/, "to")) + "", "var(--mint)"]);
       }
       if (rows.length) h += '<div class="pn pg enins"><div class="lbl">Insights</div><div class="eni">' + rows.map(r => '<div class="eil"><div class="lbl">' + esc(r[0]) + '</div><div class="eiv"' + (r[3] ? ' style="color:' + r[3] + '"' : '') + '>' + esc(r[1]) + '</div><div class="eic">' + esc(r[2]) + '</div></div>').join("") + '</div></div>';
     }

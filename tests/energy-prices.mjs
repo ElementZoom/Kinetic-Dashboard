@@ -5,7 +5,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const cfg = `window.DASH_CONFIG = { url: location.origin, token: "t", rooms: [{ id: "living", name: "Living", main: true }], tariff: { symbol: "$", daily: 2.687, periods: [{ from: 0, to: 21, rate: 0.364, name: "Charged" }, { from: 21, to: 24, rate: 0, name: "Free" }] } };`;
+const cfg = `window.DASH_CONFIG = { url: location.origin, token: "t", rooms: [{ id: "living", name: "Living", main: true }], billing: { electricity: { day: 14, starts: ["2026-09-12"] }, gas: { day: 10 } }, tariff: { symbol: "$", daily: 2.611, gasDaily: 1.832, periods: [{ from: 0, to: 21, rate: 0.364, name: "Charged" }, { from: 21, to: 24, rate: 0, name: "Free" }] } };`;
 const server = http.createServer((q, r) => { const u = q.url.split("?")[0]; if (u === "/config.js") { r.writeHead(200, { "content-type": "text/javascript" }); return r.end(cfg); } if (u !== "/dash.html") { r.writeHead(404); return r.end(); } r.writeHead(200, { "content-type": "text/html" }); r.end(fs.readFileSync(process.env.DASH_FILE || path.join(root, "dash.html"))); }).listen(0);
 await new Promise(r => server.once("listening", r));
 const url = `http://127.0.0.1:${server.address().port}/dash.html`;
@@ -38,17 +38,21 @@ async function run(withCost) {
   return { txt, errors, page };
 }
 { const { txt, errors, page } = await run(true);
-  ok("electricity total = real cost 8.40 + daily 2.687 = $11.09: " + txt.replace(/\s+/g, " ").slice(0, 400), /\$11\.09/.test(txt));
-  ok("gas cost $2.40 shown", /\$2\.40/.test(txt));
-  ok("total energy cost $13.49 shown", /\$13\.49/.test(txt));
-  ok("gas usage with its own unit (m³): " + txt.replace(/\s+/g, " ").slice(0, 700), /12(\.0)? m³/i.test(txt));
-  ok("actual rate shown (40.0c for the charged hours, 0.0c free)", /40\.0c/i.test(txt) && /0\.0c/i.test(txt));
-  ok("plug costed at the real hourly rate ($1.68, not the 36.4c tariff $1.53)", /\$1\.68/.test(txt) && !/\$1\.53/.test(txt));
+  ok("electricity = the real cost $8.40, with the daily charge shown as its own line $2.61: " + txt.replace(/\s+/g, " ").slice(0, 600), /\$8\.40/.test(txt) && /Daily charge/i.test(txt) && /\$2\.61/.test(txt) && !/\$11\.0/.test(txt));
+  ok("usage = total - daily charge over the paid kWh (5.79 / 21 kWh = 27.6c)", /27\.6c/i.test(txt) && /\$5\.79/.test(txt));
+  ok("gas = usage $2.40 + daily charge 1 day x 1.832 = $4.23", /\$4\.23/.test(txt) && /\$2\.40/.test(txt) && /\$1\.83/.test(txt));
+  ok("total energy cost $12.63 (excl. GST)", /\$12\.63/.test(txt) && /excl\. GST/i.test(txt));
+  ok("gas usage with its own unit (m³)", /12(\.0)? m³/i.test(txt));
+  ok("individual devices are gone from the page", !/Plug 1/.test(txt) && !/Consumption overview/i.test(txt) && !/biggest spender/i.test(txt));
+  ok("the grid statistic and its hours are named", /ext:elec_use/.test(txt) && /24 hours of data/i.test(txt));
   ok("with real prices, the vs-previous comparison is in kWh (not real vs estimated prices)", /kWh now vs/i.test(txt) && !/usage only/i.test(txt));
+  ok("the month tab is called BILL when billing cycles are set", /\bBILL\b/.test(txt) && !/\bMONTH\b/.test(txt));
+  const cy = await page.evaluate(() => { const at = new Date(2026, 9, 26), f = (k, o) => { const c = enCyc(k, o, at); return c ? ymd(c.s) + ">" + ymd(c.e) : null; }; return [f("electricity", 0), f("electricity", -1), f("electricity", -2), f("electricity", 1), f("gas", 0), f("gas", -1), f("gas", -3)]; });
+  ok("billing cycles (starts override, then the day of the month): " + JSON.stringify(cy), JSON.stringify(cy) === JSON.stringify(["2026-10-14>2026-11-14", "2026-09-12>2026-10-14", "2026-08-14>2026-09-12", "2026-11-14>2026-12-14", "2026-10-10>2026-11-10", "2026-09-10>2026-10-10", "2026-07-10>2026-08-10"]));
   if (process.env.SHOT) await page.screenshot({ path: process.env.SHOT, fullPage: true });
   ok("no page errors", errors.length === 0); await page.close(); }
 { const { txt, errors, page } = await run(false);
-  ok("no cost statistics: falls back to the tariff (24 x 0.364 for 21 h = $7.64 + 2.69 = $10.33)", /\$10\.33/.test(txt));
+  ok("no cost statistics: falls back to the tariff (21 x 0.364 = $7.64 + 1 day x 2.611 = $10.25)", /\$10\.25/.test(txt));
   ok("no cost statistics: gas still shows its usage", /12(\.0)? m³/i.test(txt));
   ok("no page errors (fallback)", errors.length === 0); await page.close(); }
 await browser.close(); server.close();

@@ -27,13 +27,18 @@ window.DASH_CONFIG = {
   name: "Alex",                      // greeting fallback, used when Home Assistant cannot tell us who is signed in
   noNameUsers: ["kiosk"],            // HA user names that get a plain "Evening!" with no name
   tariff: {                          // electricity price (Energy page)
-    symbol: "$", daily: 2.1,
+    symbol: "$", daily: 2.1,           // electricity daily charge per day. Home Assistant's grid cost from a power company usually already includes it; the page then shows it as its own line
+    // gasDaily: 1.8,                 // gas daily charge per day (Gas card). Home Assistant's gas cost usually does not include it
     periods: [
       { from: 0, to: 7, rate: 0.18, name: "Off-peak (midnight – 7am)" },
       { from: 7, to: 21, rate: 0.34, name: "Day (7am – 9pm)" },
       { from: 21, to: 24, rate: 0.18, name: "Off-peak (9pm – midnight)" }
     ]
   },
+  // billing: {                      // optional: the Energy page BILL tab follows your bill instead of the calendar month
+  //   electricity: { day: 14, starts: ["2026-09-12"] },   // a cycle starts on this day of the month; starts = exact first days for cycles a meter reading moved
+  //   gas: { day: 10 }              // gas can have its own cycle
+  // },
   hapticMs: 35,
   haptics: true,
   mobileLive: true,

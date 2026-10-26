@@ -5,7 +5,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const cfg = `window.DASH_CONFIG = { url: location.origin, token: "t", rooms: [{ id: "living", name: "Living", main: true }], billing: { electricity: { day: 14, starts: ["2026-09-12"] }, gas: { day: 10 } }, tariff: { symbol: "$", daily: 2.611, gasDaily: 1.832, periods: [{ from: 0, to: 21, rate: 0.364, name: "Charged" }, { from: 21, to: 24, rate: 0, name: "Free" }] } };`;
+const cfg = `window.DASH_CONFIG = { url: location.origin, token: "t", rooms: [{ id: "living", name: "Living", main: true }], gst: 0.15, billing: { electricity: { day: 14, starts: ["2026-09-12"] }, gas: { day: 10 } }, tariff: { symbol: "$", daily: 2.611, gasDaily: 1.832, periods: [{ from: 0, to: 21, rate: 0.364, name: "Charged" }, { from: 21, to: 24, rate: 0, name: "Free" }] } };`;
 const server = http.createServer((q, r) => { const u = q.url.split("?")[0]; if (u === "/config.js") { r.writeHead(200, { "content-type": "text/javascript" }); return r.end(cfg); } if (u !== "/dash.html") { r.writeHead(404); return r.end(); } r.writeHead(200, { "content-type": "text/html" }); r.end(fs.readFileSync(process.env.DASH_FILE || path.join(root, "dash.html"))); }).listen(0);
 await new Promise(r => server.once("listening", r));
 const url = `http://127.0.0.1:${server.address().port}/dash.html`;
@@ -41,7 +41,7 @@ async function run(withCost) {
   ok("electricity = the real cost $8.40, with the daily charge shown as its own line $2.61: " + txt.replace(/\s+/g, " ").slice(0, 600), /\$8\.40/.test(txt) && /Daily charge/i.test(txt) && /\$2\.61/.test(txt) && !/\$11\.0/.test(txt));
   ok("usage = total - daily charge over the paid kWh (5.79 / 21 kWh = 27.6c)", /27\.6c/i.test(txt) && /\$5\.79/.test(txt));
   ok("gas = usage $2.40 + daily charge 1 day x 1.832 = $4.23", /\$4\.23/.test(txt) && /\$2\.40/.test(txt) && /\$1\.83/.test(txt));
-  ok("total energy cost $12.63 (excl. GST)", /\$12\.63/.test(txt) && /excl\. GST/i.test(txt));
+  ok("total $12.63 excl. GST, GST 15% = $1.89, incl. $14.52: " + txt.replace(/\s+/g," ").slice(0,300), /\$14\.52/.test(txt) && /\$1\.89/.test(txt) && /\$12\.63/.test(txt) && /incl\. GST/i.test(txt) && /excl\. GST/i.test(txt));
   ok("gas usage with its own unit (m³)", /12(\.0)? m³/i.test(txt));
   ok("individual devices are gone from the page", !/Plug 1/.test(txt) && !/Consumption overview/i.test(txt) && !/biggest spender/i.test(txt));
   ok("the grid statistic and its hours are named", /ext:elec_use/.test(txt) && /24 hours of data/i.test(txt));

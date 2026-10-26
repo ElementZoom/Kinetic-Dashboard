@@ -35,6 +35,7 @@ window.DASH_CONFIG = {
       { from: 21, to: 24, rate: 0.18, name: "Off-peak (9pm – midnight)" }
     ]
   },
+  // gst: 0.15,                      // optional: adds GST to the Energy total (power company figures are excl. GST). NZ is 0.15
   // billing: {                      // optional: the Energy page BILL tab follows your bill instead of the calendar month
   //   electricity: { day: 14, starts: ["2026-09-12"] },   // a cycle starts on this day of the month; starts = exact first days for cycles a meter reading moved
   //   gas: { day: 10 }              // gas can have its own cycle

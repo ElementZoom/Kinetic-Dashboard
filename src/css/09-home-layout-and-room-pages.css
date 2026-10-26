@@ -115,6 +115,7 @@ html[data-style=minimal] .tl.cl.hv::before{animation:none}
 .cpanel .tl.dr.on{background:rgba(255,184,140,.2);border-color:#ffb88c;box-shadow:inset 0 0 0 1px #ffb88c}
 .cpanel .tl.dr.on .tn svg,.cpanel .tl.dr.on .ts2{color:#ffb88c;fill:#ffb88c}
 .cpanel .tl.dr.on .ts2::after{content:"  \00b7  TAP TO CLOSE"}
+.cpanel .tl.dr[data-arm] .ts2::after,.cpanel .tl.dr.on[data-arm] .ts2::after{content:none}   /* while it asks for the second tap the line reads TAP AGAIN TO OPEN · 3, nothing after it */
 /* room page garage door: same wide tile as in the camera panels */
 html:not(#x) #rv .tl.dr{grid-column:1/-1;display:block;padding:14px 16px 14px 64px;position:relative;border-radius:16px;white-space:nowrap;background:rgba(var(--w),.06);border:1px solid var(--line);box-shadow:none;min-height:0}
 html:not(#x) #rv .tl.dr .tn{display:block;position:static;font:500 15px var(--sans,inherit);letter-spacing:0;text-transform:none;color:var(--ink)}
@@ -124,6 +125,7 @@ html:not(#x) #rv .tl.dr .ts2::after{content:"  \00b7  TAP TO OPEN"}
 html:not(#x) #rv .tl.dr.on{background:rgba(255,184,140,.2);border-color:#ffb88c;box-shadow:inset 0 0 0 1px #ffb88c}
 html:not(#x) #rv .tl.dr.on .tn svg,html:not(#x) #rv .tl.dr.on .ts2{color:#ffb88c;fill:#ffb88c}
 html:not(#x) #rv .tl.dr.on .ts2::after{content:"  \00b7  TAP TO CLOSE"}
+html:not(#x) #rv .tl.dr[data-arm] .ts2::after,html:not(#x) #rv .tl.dr.on[data-arm] .ts2::after{content:none}
 html[data-mode=light]:not(#x) #rv .tl.dr .tn svg,html[data-mode=light]:not(#x) #rv .tl.dr .ts2{color:var(--mut);fill:var(--mut)}
 html[data-mode=light]:not(#x) #rv .tl.dr.on{background:rgba(240,140,80,.16);border-color:#e8935a;box-shadow:inset 0 0 0 1px #e8935a}
 html[data-mode=light]:not(#x) #rv .tl.dr.on .tn svg,html[data-mode=light]:not(#x) #rv .tl.dr.on .ts2{color:#d9803f;fill:#d9803f}

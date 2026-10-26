@@ -4,6 +4,11 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
+## 1.14.3 - 2026-10-27
+
+### Fixed
+- **Garage door confirm reads just "TAP AGAIN TO OPEN · 3".** In the garage panel and the room pop-up the line also kept its "· TAP TO OPEN" ending, so it ran past the tile ("TAP AGAIN TO OPEN · 1 · TAP TO…"). While the tile waits for the second tap only the message and the countdown show.
+
 ## 1.14.2 - 2026-10-27
 
 ### Fixed

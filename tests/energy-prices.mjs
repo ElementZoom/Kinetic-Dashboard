@@ -56,7 +56,7 @@ async function run(withCost, VP = { width: 1200, height: 1400 }) {
   ok("no cost statistics: gas still shows its usage", /12(\.0)? m³/i.test(txt));
   ok("no page errors (fallback)", errors.length === 0); await page.close(); }
 { // redesigned layout: three cards in one row on a tablet, one column with an Electricity / Gas switch on a phone
-  for (const [name, vp] of [["tablet", { width: 1180, height: 820 }], ["phone", { width: 390, height: 844 }]]) {
+  for (const [name, vp] of [["tablet", { width: 1400, height: 900 }], ["phone", { width: 390, height: 844 }]]) {
     const { page, errors } = await run(true, vp);
     const m = await page.evaluate(() => { const v = s => { const e = document.querySelector(s); if (!e) return null; const r = e.getBoundingClientRect(); return { x: r.x, y: r.y, w: r.width, h: r.height, shown: getComputedStyle(e).display !== "none" }; }; return { t: v('#energy [data-k="t"]'), e: v('#energy [data-k="e"]'), g: v('#energy [data-k="g"]'), sw: v(".ensw"), ins: v(".enins"), dots: !!document.querySelector(".endots"), sh: document.getElementById("energy").scrollHeight, ih: innerHeight }; });
     if (name === "tablet") { ok("tablet: Total, Electricity and Gas side by side", m.t && m.e && m.g && Math.abs(m.t.y - m.e.y) < 2 && Math.abs(m.e.y - m.g.y) < 2 && m.t.x < m.e.x && m.e.x < m.g.x); ok("tablet: the switch is hidden and insights sit below the cards", m.sw && !m.sw.shown && m.ins.y > m.t.y + m.t.h - 1); ok("tablet: fits without scrolling the page", m.sh <= m.ih + 2); }
@@ -66,6 +66,13 @@ async function run(withCost, VP = { width: 1200, height: 1400 }) {
       ok("phone: the switch shows the Gas card instead", g.e === "none" && g.g !== "none"); }
     ok("no page errors (" + name + ")", errors.length === 0); await page.close();
   }
+}
+{ // narrower tablet: Total on top, Electricity and Gas side by side, nothing sticking out of a card
+  const { page, errors } = await run(true, { width: 1112, height: 970 });
+  const r = await page.evaluate(() => { const cs = [...document.querySelectorAll("#energy .ensl>.pn")]; const bad = []; cs.forEach(c => { const cr = c.getBoundingClientRect(); c.querySelectorAll("*").forEach(e => { const r = e.getBoundingClientRect(); if (r.width && (r.right > cr.right + 1 || r.left < cr.left - 1)) bad.push(e.className || e.tagName); }); }); const t = document.querySelector('[data-k="t"]').getBoundingClientRect(), e = document.querySelector('[data-k="e"]').getBoundingClientRect(), g = document.querySelector('[data-k="g"]').getBoundingClientRect(); return { bad: bad.slice(0, 5), stacked: e.y > t.y + t.height - 1, side: Math.abs(e.y - g.y) < 2 }; });
+  ok("narrow tablet: Total on top, Electricity and Gas side by side", r.stacked && r.side); ok("narrow tablet: nothing overflows a card: " + r.bad.join(","), r.bad.length === 0); ok("no page errors (narrow tablet)", errors.length === 0); await page.close();
+  const ph = await run(true, { width: 360, height: 800 }); const pb = await ph.page.evaluate(() => { const bad = []; document.querySelectorAll("#energy .ensl>.pn").forEach(c => { if (getComputedStyle(c).display === "none") return; const cr = c.getBoundingClientRect(); c.querySelectorAll("*").forEach(e => { const r = e.getBoundingClientRect(); if (r.width && r.right > cr.right + 1) bad.push(e.className || e.tagName); }); }); return bad.slice(0, 5); });
+  ok("narrow phone: nothing overflows a card: " + pb.join(","), pb.length === 0); await ph.page.close();
 }
 await browser.close(); server.close();
 console.log(`energy prices: ${checks} checks`);

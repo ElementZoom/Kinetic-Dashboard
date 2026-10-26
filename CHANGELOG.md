@@ -4,6 +4,18 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
+## 1.14.2 - 2026-10-27
+
+### Fixed
+- **Artist tab no longer shows the wrong artist.** The lookup took the first music-looking Wikipedia page that merely mentioned the name (an awards page for Elevation Worship). The page title must now be the artist itself, or the artist with a "(band)" / "(singer)" style tag. If nothing matches it says so instead of guessing. The page with exactly that title is asked for first, so very famous artists are found even when a search would rank other pages above them. "Nothing found" is only remembered for 6 hours (a found artist for a month), so an old miss can't hide a fixed lookup. Lookups saved by the old version are dropped.
+- **Icons centred in round buttons.** The speaker mute buttons sat about 2.5 px low and the Lyrics button on the phone about 3 px high. An icon alone in a round button is now centred exactly, wherever the button is used.
+
+### Changed
+- **Artist tab looks more like a streaming app's artist page.** Under the name sits a short description taken from the Wikipedia text ("American Christian worship band") and a "Since 2006" chip when the text gives a start year. With no photo, the header is tinted from the album art colours instead of a plain grey letter.
+
+### Added
+- **Optional Deezer photo and fan count.** `artistInfo: { deezer: true }` also asks Deezer for the artist's photo (used before the Wikipedia one) and shows a "Deezer fans" chip. It is off by default; when on, the artist name is sent to Deezer as well as Wikipedia, and if Deezer can't be reached nothing changes. Spotify's own monthly listeners, top cities and verified badge are not available to outside apps, so they are not shown.
+
 ## 1.14.1 - 2026-10-27
 
 ### Fixed

@@ -65,7 +65,7 @@ await p.close();
 // ---- nothing found / offline
 p = await open(1200, 800, "none");
 await p.evaluate(() => { AI.tab = "artist"; LY.drawn = ""; lyrUpdate(); }); await p.waitForTimeout(500);
-eq("no match: says so, still shows the name and the Spotify link", await p.evaluate(() => [document.querySelector("#lyr .sm").textContent, document.querySelector("#lyr .arn b").textContent, document.querySelectorAll("#lyr .ara a").length, window.__wiki.length]), ["No artist info found for Demo Artist.", "Demo Artist", 1, 2]);   // the first name, then the whole text as a fallback
+eq("no match: says so, still shows the name and the Spotify link", await p.evaluate(() => [document.querySelector("#lyr .sm").textContent, document.querySelector("#lyr .arn b").textContent, document.querySelectorAll("#lyr .ara a").length, window.__wiki.length]), ["No artist info found for Demo Artist.", "Demo Artist", 1, 4]);   // the first name, then the whole text as a fallback
 await p.close();
 p = await open(1200, 800, "fail");
 await p.evaluate(() => { AI.tab = "artist"; LY.drawn = ""; lyrUpdate(); }); await p.waitForTimeout(500);
@@ -99,6 +99,33 @@ await p.evaluate(() => { npRender(); }); await p.waitForTimeout(400);
 eq("sheet: a redraw keeps you on the Artist page", await p.evaluate(() => document.querySelector("#npbody .nptx").textContent), "Artist");
 await p.click("#npbody .npdl span:first-child"); await p.waitForTimeout(900);
 eq("sheet: the labels page back to the player", await p.evaluate(() => document.querySelector("#npbody .nptx").textContent), "Now playing");
+await p.close();
+// ---- matching, facts and the optional Deezer lookup
+p = await open(1200, 800);
+eq("match: a page that only mentions the name is rejected", await p.evaluate(() => aiPick([{ title: "52nd Annual GMA Dove Awards", extract: "The ceremony honoured the band Elevation Worship and other musicians." }], "Elevation Worship")), undefined);
+eq("match: the artist's own page, or its (band) page, is taken", await p.evaluate(() => [aiPick([{ title: "Elevation Worship", extract: "Elevation Worship is a worship band." }], "Elevation Worship").title, aiPick([{ title: "Genesis (band)", extract: "Genesis were an English rock band." }, { title: "Genesis", extract: "Genesis is a book." }], "Genesis").title, aiPick([{ title: "Beyonce", extract: "Beyonce is a singer." }], "Beyoncé").title]), ["Elevation Worship", "Genesis (band)", "Beyonce"]);
+eq("match: another kind of page with the same name is rejected", await p.evaluate(() => aiPick([{ title: "Genesis (film)", extract: "A film about a band." }], "Genesis")), undefined);
+eq("facts: description and start year", await p.evaluate(() => aiFacts("Elevation Worship is an American Christian worship band from Charlotte, North Carolina. The band formed in 2006 as the music ministry of a church.")), { kind: "American Christian worship band", since: "2006" });
+await p.route("https://api.deezer.com/**", r => r.fulfill({ contentType: "text/javascript", body: new URL(r.request().url()).searchParams.get("callback") + '({"data":[{"name":"Someone Else","nb_fan":5,"picture_xl":"https://x.test/a.jpg"},{"name":"Demo Artist","nb_fan":1234567,"picture_xl":"https://cdn.test/dz.jpg","link":"https://www.deezer.com/artist/1"}]})' }));
+eq("deezer: the exact name is picked, with photo and fans", await p.evaluate(() => aiDeezer("Demo Artist")), { img: "https://cdn.test/dz.jpg", fans: 1234567, url: "https://www.deezer.com/artist/1" });
+eq("deezer: nothing is returned for a name that is not listed", await p.evaluate(() => aiDeezer("Nobody Here")), null);
+eq("deezer: off by default (no script tag added)", await p.evaluate(async () => { const n = document.querySelectorAll("script[src*=deezer]").length; await aiFetch("Demo Artist"); return document.querySelectorAll("script[src*=deezer]").length === n; }), true);
+await p.evaluate(() => { CONFIG.artistInfo = { enabled: true, deezer: true }; });
+eq("deezer: on, the photo and fans are added to the bio", await p.evaluate(async () => { const d = await aiFetch("Demo Artist"); return [!!d.bio, d.img, d.fans]; }), [true, "https://cdn.test/dz.jpg", 1234567]);
+eq("lookup: the exact-title page wins when a search would rank other pages first", await p.evaluate(async () => {
+  const bio = "Justin Drew Bieber is a Canadian singer and songwriter.";
+  window.fetch = u => { const j = x => Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve(x) });
+    if (/titles=/.test(u)) return j({ query: { pages: { 5: { title: "Justin Bieber", extract: bio, fullurl: "https://en.wikipedia.org/wiki/Justin_Bieber" }, "-1": { title: "Justin Bieber (band)", missing: "" } } } });
+    return j({ query: { pages: { 1: { index: 1, title: "Justin Bieber albums discography", extract: "This is the discography of the singer." } } } }); };
+  const d = await aiFetch("Justin Bieber"); return d && d.bio === bio;
+}), true);
+eq("lookup: falls back to the search when no page has that title", await p.evaluate(async () => {
+  window.fetch = u => { const j = x => Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve(x) });
+    if (/titles=/.test(u)) return j({ query: { pages: { "-1": { title: "Lowkey Duo", missing: "" } } } });
+    return j({ query: { pages: { 3: { index: 1, title: "Lowkey Duo", extract: "Lowkey Duo are a duo of musicians." } } } }); };
+  const d = await aiFetch("Lowkey Duo"); return d && /duo of musicians/.test(d.bio);
+}), true);
+eq("cache: an old 'nothing found' is looked up again, a recent one is not", await p.evaluate(() => { AI.cache = { "old one": { st: "none", d: null, t: Date.now() - 7 * 36e5 }, "new one": { st: "none", d: null, t: Date.now() - 36e5 } }; return [aiGet(["Old One"]).st, aiGet(["New One"]).st]; }), ["load", "none"]);
 await p.close();
 await browser.close(); server.close();
 if (errors.length) problems.push("JavaScript errors: " + errors.join(" | "));

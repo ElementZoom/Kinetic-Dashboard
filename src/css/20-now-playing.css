@@ -58,7 +58,7 @@ html.camls .vwx{display:none}
 /* phone: a compact player card; the lyrics open from an icon on the card as a sheet that slides up (no sideways pager, no scroll area inside the page) */
 .mvt{display:none!important}.mvs{display:contents}
 .mpc{position:relative}.mpc:not(.idle) .lbl{padding-right:48px}
-.mly{display:flex!important;position:absolute;top:10px;right:12px;width:40px;height:40px;z-index:1}
+.mly{display:flex!important;align-items:center;justify-content:center;position:absolute;top:10px;right:12px;width:40px;height:40px;z-index:1}
 .mpc:not(.idle) .mpa{flex-direction:row;text-align:left;gap:12px}
 .mpc:not(.idle) .mpa img,.mpc:not(.idle) .mpa .ph{width:76px;height:76px;aspect-ratio:auto;border-radius:14px}
 .mpc:not(.idle) .mpa b{font-size:17px}

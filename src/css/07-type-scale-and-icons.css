@@ -165,3 +165,4 @@ nav a.nset{margin-top:auto}
 
 @keyframes enold{to{opacity:.4}}#energy .enold{animation:enold .25s ease forwards;pointer-events:none}@media(prefers-reduced-motion:reduce){#energy .enold{animation:none;opacity:.4}}
 @keyframes enin{from{opacity:.4;transform:translate(var(--tx,0px),var(--ty,10px))}}#energy .enin{animation:enin .5s cubic-bezier(.2,.8,.2,1) backwards;animation-delay:calc(var(--i,0)*60ms)}@media(prefers-reduced-motion:reduce){#energy .enin{animation:none}}
+.rnd svg:only-child,.bi svg:only-child{display:block;margin:0 auto;vertical-align:baseline}   /* an icon alone in a round button sits dead centre (the text baseline used to push it down ~2.5 px) */

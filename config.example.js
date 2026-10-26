@@ -197,8 +197,8 @@ window.DASH_CONFIG = {
   lyricsFrom: ["media_player.spotify_alex"],
   // Media: an Artist tab beside the lyrics, and an Artist page in the Now Playing sheet (bio and photo from
   // Wikipedia; the artist name is sent there). enabled: false hides it; lang = Wikipedia language ("en", "de", "mi"
-  // ...)
-  artistInfo: { enabled: true, lang: "en" },
+  // ...). deezer: true also asks Deezer for a better photo and the fan count (the name is sent to Deezer too).
+  artistInfo: { enabled: true, lang: "en", deezer: false },
   media: ["media_player.demo_living_speaker", "media_player.demo_master_speaker"],
   playback: {   // camera recordings (media sources from the camera integration)
     "camera.demo_driveway": "media-source://reolink/RES|DEMO0000000000000000000001|0|main",

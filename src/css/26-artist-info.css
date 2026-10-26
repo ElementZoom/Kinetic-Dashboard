@@ -9,6 +9,8 @@ body.ly-open .mlay.hasly .ar{flex:1;max-height:none;min-height:0}
 .arh::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 35%,rgba(10,8,20,.8))}
 .arh.no::before{content:attr(data-i);position:absolute;right:22px;top:8px;font-size:120px;font-weight:600;line-height:1;color:rgba(255,255,255,.16)}
 .arh .arn{position:absolute;left:18px;right:18px;bottom:14px;z-index:1;color:#fff}.arh .arn small{display:block;font:600 11px var(--mono);letter-spacing:.14em;opacity:.92}.arh .arn b{display:block;font-size:34px;font-weight:500;line-height:1.1;overflow-wrap:anywhere}
+.arh .arn .ars{display:block;margin-top:3px;font-size:13px;opacity:.9}
+.arc{display:flex;gap:8px;flex-wrap:wrap}.arc span{padding:6px 12px;border-radius:99px;background:rgba(var(--w),.1);font-size:12px;color:var(--mut)}.arc b{font-weight:600;color:var(--ink)}
 .ara{display:flex;gap:10px;flex-wrap:wrap}.ara .eb{display:inline-flex;align-items:center;gap:8px;text-decoration:none}.ara .eb svg{width:16px;height:16px;fill:currentColor}
 .arb{font-size:14px;line-height:1.55;color:var(--ink);white-space:pre-line;margin-top:6px}.arb.cl{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
 .arm{border:0;background:none;color:var(--mint);font:600 12px var(--mono);letter-spacing:.1em;padding:8px 0 0;cursor:pointer}

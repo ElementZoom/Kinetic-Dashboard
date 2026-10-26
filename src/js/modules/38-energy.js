@@ -82,7 +82,8 @@ function enDraw() {
     const h0 = h.length, bk = enBuckets(sp), fm = v => v >= 100 ? v.toFixed(0) : v >= 10 ? v.toFixed(1) : v.toFixed(2);
     const CS = enCost(sp), TT = CONFIG.tariff || TARIFF_DEF, mny = v => TT.symbol + v.toFixed(2);
     const GU = en.gasUnit || "kWh", sm = o => o ? Object.keys(o).reduce((a, k) => a + o[k], 0) : 0, gT = sm(en.gas), gC = en.gasCost ? sm(en.gasCost) : null, hasGas = en.gas && (gT > 0.0005 || gC > 0.005);
-    const gsp = enSpan(en.o, "gas"), gbk = enBuckets(gsp), gdays = (() => { const d = {}; Object.keys(en.gas || {}).forEach(t => { d[ymd(new Date(+t))] = 1; }); return Object.keys(d).length; })(), gD = (TT.gasDaily || 0) * gdays, gTot = (gC || 0) + gD, gdates = en.r === "month" && CONFIG.billing && CONFIG.billing.gas ? gsp.lab : "";
+    // gas readings can arrive in lumps, so its daily charge counts the days that have passed, as the bill does
+    const gsp = enSpan(en.o, "gas"), gbk = enBuckets(gsp), gdays = (() => { let n = 0; const now = Date.now(); for (const d = new Date(gsp.s); d < gsp.e; d.setDate(d.getDate() + 1)) if (+d <= now) n++; return n; })(), gD = (TT.gasDaily || 0) * gdays, gTot = (gC || 0) + gD, gdates = en.r === "month" && CONFIG.billing && CONFIG.billing.gas ? gsp.lab : "";
     let hgas = "", htot = "";
     if (hasGas) {
       hgas = '<div class="pn pg"><div class="eh"><div><div class="lbl">Gas cost' + (gdates ? ' · ' + esc(gdates) : '') + '</div><div class="h2" style="margin-top:4px">' + (gC != null ? mny(gTot) : "—") + '</div></div><div class="lbl ensub" style="margin-left:auto;text-align:right">' + fm(gT) + ' ' + esc(GU) + '</div></div><div class="enb">' +

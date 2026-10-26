@@ -92,6 +92,7 @@ function drawEvents(gs, map, fin) {
   g.className = "cg"; g.style.setProperty("--rows", rows); g.innerHTML = h;
 }
 // ----- add / edit / delete events (Home Assistant calendar websocket API) -----
+const evSig = s => JSON.stringify([s.cal, s.title.trim(), s.ad, s.sd, s.ad ? "" : s.st, s.ed, s.ad ? "" : s.et, s.loc.trim(), s.note.trim(), s.rep, s.n, s.unit, s.days, s.until]);
 const evCanUpdate = c => { const x = states[c]; return !!x && ((+x.attributes.supported_features || 0) & 4) > 0; };
 const evWritable = () => CONFIG.calendars.filter(c => { const s = states[c]; return s && ((+s.attributes.supported_features || 0) & 1); });
 const p2 = n => ("0" + n).slice(-2), ymd = d => d.getFullYear() + "-" + p2(d.getMonth() + 1) + "-" + p2(d.getDate()), hm = d => p2(d.getHours()) + ":" + p2(d.getMinutes());
@@ -120,7 +121,7 @@ function evOpen(o) {   // o: {ev} to edit, or {date} to add
     const r = v.rrule || ""; if (r) { const f = (/FREQ=(\w+)/.exec(r) || [])[1]; st.rep = f ? f.toLowerCase() : ""; const iv = +(/INTERVAL=(\d+)/.exec(r) || [])[1] || 1; if (iv > 1 && st.rep) { st.unit = st.rep; st.n = iv; st.rep = "custom"; } const b = (/BYDAY=([A-Z,]+)/.exec(r) || [])[1]; if (b) st.days = b.split(","); const u = (/UNTIL=(\d{4})(\d{2})(\d{2})/.exec(r)); if (u) st.until = u[1] + "-" + u[2] + "-" + u[3]; }
     st.recur = !!(v.rrule || v.recurrence_id); st.noUid = !v.uid; st.src = e; if (st.recur && !evCanUpdate(st.cal)) st.scope = "following";
   } else { st.ed = st.sd; }
-  evS = st; evDraw(); document.body.classList.add("ev-open");
+  st.sig0 = evSig(st); evS = st; evDraw(); document.body.classList.add("ev-open");
 }
 function evClose() { $("#evq").classList.remove("on"); document.body.classList.remove("ev-open"); evS = null; }
 function evFreq(s) { return s.rep === "custom" ? s.unit : s.rep; }
@@ -151,6 +152,7 @@ function evRead() {   // keep what was typed when the sheet redraws
 }
 function evSave() {
   evRead(); const fin = () => { const k = evKey(evS.cal, evS.title); if (evS.key0 && evS.key0 !== k) delete EVCOL[evS.key0]; if (evS.col) EVCOL[k] = evS.col; else delete EVCOL[k]; evColSave(); }; const s = evS, m = t => { s.msg = t; $("#evmsg").textContent = t; };
+  if (s.edit && s.sig0 === evSig(s)) { fin(); evClose(); loadEvents(); return; }   // only the colour changed: the colour lives on this device (and in your Home Assistant user data), so the calendar is not touched
   if (!s.title.trim()) return m("Add a title first.");
   if (!s.sd || !s.ed) return m("Pick the dates.");
   const ev = { summary: s.title.trim() };
@@ -214,7 +216,7 @@ $("#evp").addEventListener("click", e => {
   else if (sc) { evS.scope = sc.dataset.sc; evDraw(); }
   else if (x) { const k = x.dataset.x; if (k === "close") evClose(); else if (k === "save") evSave(); else if (k === "del") evDelete(); else if (k === "dup") evDup(); }
 });
-$("#evp").addEventListener("change", e => { if (!evS) return; if (e.target.id === "evrp") { evRead(); evS.rep = e.target.value; if (evFreq(evS) === "weekly" && !evS.days.length) evS.days = [WD[(new Date(evS.sd + "T00:00").getDay() + 6) % 7]]; evDraw(); } else if (e.target.id === "evun2") { evRead(); if (evFreq(evS) === "weekly" && !evS.days.length) evS.days = [WD[(new Date(evS.sd + "T00:00").getDay() + 6) % 7]]; evDraw(); } else if (e.target.id === "evsd") { evRead(); if (evS.ed < evS.sd) evS.ed = evS.sd; evDraw(); } });
+$("#evp").addEventListener("change", e => { if (!evS) return; if (e.target.id === "evrp") { evRead(); evS.rep = e.target.value; if (evFreq(evS) === "weekly" && !evS.days.length) evS.days = [WD[(new Date(evS.sd + "T00:00").getDay() + 6) % 7]]; evDraw(); } else if (e.target.id === "evun2") { evRead(); if (evFreq(evS) === "weekly" && !evS.days.length) evS.days = [WD[(new Date(evS.sd + "T00:00").getDay() + 6) % 7]]; evDraw(); } else if (e.target.id === "evst") { const o = new Date(evS.sd + "T" + evS.st), d = evS.edit ? new Date(evS.ed + "T" + evS.et) - o : 0; evRead(); const n = new Date(new Date(evS.sd + "T" + evS.st).getTime() + (d > 0 ? d : 30 * 60000)); evS.ed = ymd(n); evS.et = hm(n); evDraw(); } else if (e.target.id === "evsd") { evRead(); if (evS.ed < evS.sd) evS.ed = evS.sd; evDraw(); } });
 $("#evb").onclick = evClose; document.addEventListener("keydown", e => { if (e.key === "Escape" && evS) evClose(); });
 $("#eadd").onclick = () => evOpen({});
 setInterval(evBtn, 2500);

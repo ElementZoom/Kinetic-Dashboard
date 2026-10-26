@@ -13,7 +13,14 @@ Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0
 - **Your logo gets a seasonal touch** (start-up screen and sign-in): a Santa hat, party hat, witch hat, hearts, the Matariki stars, a bunny, a diya or a lantern sits on the logo. It is placed by the logo's own size, so any logo works, and your logo file is not changed. It follows the same switch and ends with the season; on a cold start it appears a split second after the plain logo.
 - **config.js:** `seasonal: true` turns it on for every device that has not chosen; `seasons: { christmas: ["12-05", "12-26"], matariki: false, diwali: { 2031: "11-14" } }` moves a season's dates, switches one off, or adds a date for a year past the built-in table.
 
+### Changed
+- **Calendar: the end time follows the start time.** Picking a start time on a new event sets the end to 30 minutes later (rolling to the next day past midnight). When editing an event, moving the start moves the end with it and keeps the event's length.
+
+### Fixed
+- **Calendar: changing only an event's colour now saves.** The colour is kept on the device (and in your Home Assistant user data), so a colour-only change no longer goes to the calendar, where it could fail or, on a calendar that cannot update in place, add a duplicate.
+
 ### Tests
+- New checks for the calendar editor (`tests/event-editor.mjs`).
 - New checks for the dates of all eight seasons, the switch, config.js overrides, the palettes and decorations, the camera pages (`tests/seasons.mjs`).
 
 ## 1.13.0 - 2026-10-25

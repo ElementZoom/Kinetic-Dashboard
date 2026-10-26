@@ -22,6 +22,8 @@ await page.evaluate(() => { document.documentElement.classList.remove("boot"); c
 await page.waitForTimeout(900);
 const ir = await page.evaluate(() => { document.querySelector("#irrigation .zsx").classList.remove("col"); const w = document.querySelector("#irrigation .zsx .hsw"); if (!w) return null; const s = w.firstElementChild; s.style.maxWidth = "150px"; hsUpd(w); const a = w.classList.contains("more"); s.scrollLeft = 80; hsUpd(w); return { tabs: s.classList.contains("sctb"), right: a, left: w.classList.contains("moreL") }; });
 eq("irrigation zone tabs are wrapped; chevron right at first, left after scrolling", ir, { tabs: true, right: true, left: true });
+const lvl = await page.evaluate(() => { const w = document.querySelector("#irrigation .zsx .hsw"); if (!w) return null; w.classList.add("more", "moreL"); hsUpd(w); w.classList.add("more", "moreL"); const k = [...w.firstElementChild.children].map(c => c.getBoundingClientRect()); const mid = (Math.min(...k.map(r => r.top)) + Math.max(...k.map(r => r.bottom))) / 2; return [".hsm.r", ".hsm.l"].map(q => { const c = w.querySelector(q).getBoundingClientRect(); return Math.abs(c.top + c.height / 2 - mid) < 1; }); });
+eq("chevrons are level with the tabs, not with the padded wrapper", lvl, [true, true]);
 const html = await page.evaluate(() => {
   CONFIG.scenes = { groups: [["Living", "sofa", [0]], ["Bed", "bed-king", [0]], ["Bath", "water", [0]]], rc: ["#fff"], ri: ["sofa"], rooms: [{ n: "Dining" }], preset: [["Spring", [["a", "blossom"], ["b", "crocus"]]]], gradient: [["Fun", [["c", "festive_fun"]]]], imageDir: "/x/" };
   return scPanel(true);

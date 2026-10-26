@@ -36,7 +36,7 @@ body.vwm #vw.two{padding:8px;gap:8px}
 .hsw{position:relative}.hsm{display:none}
 .hsw.more,.hsw.moreL{--fl:0%;--fr:100%}.hsw.more{--fr:76%}.hsw.moreL{--fl:24%}
 .hsw.more>:first-child,.hsw.moreL>:first-child{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 var(--fl),#000 var(--fr),transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 var(--fl),#000 var(--fr),transparent 100%)}
-.hsw.more .hsm.r,.hsw.moreL .hsm.l{position:absolute;top:50%;margin-top:-14px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;color:var(--ink);pointer-events:none}
+.hsw.more .hsm.r,.hsw.moreL .hsm.l{position:absolute;top:var(--hsy,50%);margin-top:-14px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;color:var(--ink);pointer-events:none}
 .hsw.more .hsm.r{right:2px;animation:cpnudge 1.4s ease-in-out infinite}.hsw.moreL .hsm.l{left:2px;animation:cpnudgel 1.4s ease-in-out infinite}
 .hsm svg{width:26px;height:26px;fill:currentColor}
 @keyframes cpnudge{0%,100%{transform:translateX(-3px);opacity:.6}50%{transform:translateX(4px);opacity:1}}

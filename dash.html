@@ -1554,7 +1554,7 @@ body.vwm #vw.two{padding:8px;gap:8px}
 .hsw{position:relative}.hsm{display:none}
 .hsw.more,.hsw.moreL{--fl:0%;--fr:100%}.hsw.more{--fr:76%}.hsw.moreL{--fl:24%}
 .hsw.more>:first-child,.hsw.moreL>:first-child{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 var(--fl),#000 var(--fr),transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 var(--fl),#000 var(--fr),transparent 100%)}
-.hsw.more .hsm.r,.hsw.moreL .hsm.l{position:absolute;top:50%;margin-top:-14px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;color:var(--ink);pointer-events:none}
+.hsw.more .hsm.r,.hsw.moreL .hsm.l{position:absolute;top:var(--hsy,50%);margin-top:-14px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;color:var(--ink);pointer-events:none}
 .hsw.more .hsm.r{right:2px;animation:cpnudge 1.4s ease-in-out infinite}.hsw.moreL .hsm.l{left:2px;animation:cpnudgel 1.4s ease-in-out infinite}
 .hsm svg{width:26px;height:26px;fill:currentColor}
 @keyframes cpnudge{0%,100%{transform:translateX(-3px);opacity:.6}50%{transform:translateX(4px);opacity:1}}
@@ -1845,7 +1845,7 @@ html.camlive #szn *{animation-play-state:paused!important}
 // (notification tap such as #view/driveway, #security ...), not the return from the login, and the device has not asked for reduced motion.
 window.brandLogo = function () { var L = window.DASH_LOGO, B = (window.DASH_CONFIG || {}).brand; return L && L.svg ? { svg: L.svg, lockup: !!L.lockup } : B && B.mark ? { svg: B.mark, lockup: false } : null; };   // brand-logo.js wins over brand.mark in config.js
 window.brandMark = function (s) { var g = window.brandLogo(); if (!g) return ""; return g.svg.replace(/\bid="([\w-]+)"/g, 'id="$1' + s + '"').replace(/url\(#([\w-]+)\)/g, 'url(#$1' + s + ')'); };
-window.DASH_VER = "1.14.0";   // the one place to change the version
+window.DASH_VER = "1.14.1";   // the one place to change the version
 (function () { try {
   var B = (window.DASH_CONFIG || {}).brand, el = document.getElementById("bootld"), r = document.documentElement, lp = "on";
   try { lp = localStorage.getItem("dashLogo") || "on"; } catch (e) {}   // Theme page -> "Start-up logo": on | load (no intro) | off (plain spinner, as before)
@@ -2003,7 +2003,9 @@ const camList = () => onView() ? VWC : onSec() ? CONFIG.security : CONFIG.camera
 
 // A sideways-scrolling row (tabs, scene pictures) wrapped with hsw(): while more of it is hidden past an edge, that edge fades and a chevron nudges toward it.
 const hsw = h => '<div class="hsw">' + h + '<span class="hsm l" aria-hidden="true">' + mdi("chevron-left") + '</span><span class="hsm r" aria-hidden="true">' + mdi("chevron-right") + '</span></div>';
-function hsUpd(w) { const s = w.firstElementChild; if (!s) return; const o = s.scrollWidth > s.clientWidth + 4; w.classList.toggle("more", o && s.scrollLeft + s.clientWidth < s.scrollWidth - 4); w.classList.toggle("moreL", o && s.scrollLeft > 4); }
+/* the arrows sit level with the visible row, not the middle of the wrapper (tab rows carry extra padding for their shadow, so those two differ) */
+function hsMid(w, s) { const k = Array.prototype.filter.call(s.children, c => c.offsetHeight); if (!k.length) return; let a = 1e9, b = -1e9; k.forEach(c => { const r = c.getBoundingClientRect(); if (r.top < a) a = r.top; if (r.bottom > b) b = r.bottom; }); w.style.setProperty("--hsy", Math.round(((a + b) / 2 - w.getBoundingClientRect().top) * 10) / 10 + "px"); }
+function hsUpd(w) { const s = w.firstElementChild; if (!s) return; hsMid(w, s); const o = s.scrollWidth > s.clientWidth + 4; w.classList.toggle("more", o && s.scrollLeft + s.clientWidth < s.scrollWidth - 4); w.classList.toggle("moreL", o && s.scrollLeft > 4); }
 const hsAll = () => $$(".hsw").forEach(hsUpd);
 { let t = 0; const q = () => { clearTimeout(t); t = setTimeout(hsAll, 120); };
   document.addEventListener("scroll", e => { const w = e.target.parentNode; if (w && w.classList && w.classList.contains("hsw")) hsUpd(w); }, true);

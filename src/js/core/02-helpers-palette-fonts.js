@@ -79,7 +79,9 @@ const camList = () => onView() ? VWC : onSec() ? CONFIG.security : CONFIG.camera
 
 // A sideways-scrolling row (tabs, scene pictures) wrapped with hsw(): while more of it is hidden past an edge, that edge fades and a chevron nudges toward it.
 const hsw = h => '<div class="hsw">' + h + '<span class="hsm l" aria-hidden="true">' + mdi("chevron-left") + '</span><span class="hsm r" aria-hidden="true">' + mdi("chevron-right") + '</span></div>';
-function hsUpd(w) { const s = w.firstElementChild; if (!s) return; const o = s.scrollWidth > s.clientWidth + 4; w.classList.toggle("more", o && s.scrollLeft + s.clientWidth < s.scrollWidth - 4); w.classList.toggle("moreL", o && s.scrollLeft > 4); }
+/* the arrows sit level with the visible row, not the middle of the wrapper (tab rows carry extra padding for their shadow, so those two differ) */
+function hsMid(w, s) { const k = Array.prototype.filter.call(s.children, c => c.offsetHeight); if (!k.length) return; let a = 1e9, b = -1e9; k.forEach(c => { const r = c.getBoundingClientRect(); if (r.top < a) a = r.top; if (r.bottom > b) b = r.bottom; }); w.style.setProperty("--hsy", Math.round(((a + b) / 2 - w.getBoundingClientRect().top) * 10) / 10 + "px"); }
+function hsUpd(w) { const s = w.firstElementChild; if (!s) return; hsMid(w, s); const o = s.scrollWidth > s.clientWidth + 4; w.classList.toggle("more", o && s.scrollLeft + s.clientWidth < s.scrollWidth - 4); w.classList.toggle("moreL", o && s.scrollLeft > 4); }
 const hsAll = () => $$(".hsw").forEach(hsUpd);
 { let t = 0; const q = () => { clearTimeout(t); t = setTimeout(hsAll, 120); };
   document.addEventListener("scroll", e => { const w = e.target.parentNode; if (w && w.classList && w.classList.contains("hsw")) hsUpd(w); }, true);

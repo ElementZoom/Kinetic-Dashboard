@@ -4,6 +4,11 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
+## 1.14.1 - 2026-10-27
+
+### Fixed
+- **Scroll arrows on sideways tab rows are level with the tabs.** The little left and right arrows that show while more tabs are off screen (Weather forecast tabs, a room's climate tabs, Scenes and Irrigation tabs, Notifications tabs) sat about 3 px too low, because those rows carry extra padding for their shadow. The arrows now follow the middle of the visible tabs, whatever the row.
+
 ## 1.14.0 - 2026-10-26
 
 ### Added

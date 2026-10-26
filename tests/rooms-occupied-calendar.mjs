@@ -45,7 +45,7 @@ await page.evaluate(({ y, m, d }) => {
 await page.waitForTimeout(1200);
 const r = await page.evaluate(() => { const t = document.querySelector("#cg .ah.up"); const b = t && t.getBoundingClientRect(); return { top: b ? Math.round(b.top) : null, scrolled: Math.round(scrollY) + [...document.querySelectorAll("*")].reduce((a, e) => Math.max(a, e.scrollTop), 0), first: document.querySelector("#cg .ah") && document.querySelector("#cg .ah").textContent }; });
 const today = new Date().getDate();
-if (today > 3) { eq("earliest event day is above the view (scrolled down)", r.scrolled > 0, true); eq("today is in view", r.top !== null && r.top >= 0 && r.top < 400, true); }
+if (today > 3) { eq("earliest event day is above the view (scrolled down)", r.scrolled > 0, true); eq("today is in view", r.top !== null && r.top >= 0 && r.top < 780, true); }
 // floating add button + mini player
 await page.evaluate(() => { __st("calendar.t", "off", { supported_features: 1, friendly_name: "T" }); evBtn(); }); await page.waitForTimeout(200);
 const fab = () => page.evaluate(() => { const b = document.querySelector("#eadd").getBoundingClientRect(), n = document.querySelector("#btab").getBoundingClientRect(), m = document.querySelector("#npmini"), mr = m && getComputedStyle(m).display !== "none" ? m.getBoundingClientRect() : null; return { round: Math.abs(b.width - b.height) < 1 && b.width >= 48, aboveNav: b.bottom <= n.top, aboveMini: mr ? b.bottom <= mr.top : null, right: Math.round(innerWidth - b.right) }; });

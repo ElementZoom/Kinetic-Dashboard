@@ -119,6 +119,21 @@ async function open(o = {}) {
   ok("phone: no horizontal scroll with the layer", await t.page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
   await t.ctx.close();
 }
+// 8. brand logo: a seasonal touch on the start-up logo, gone when the season is off
+{
+  const mark = "<svg viewBox='0 0 440 140'><path class='r1' d='M195 143H298L423 268H379Z' fill='#9ab'/></svg>";
+  const t = await open({ config: `, brand: { name: "TEST", tag: "HOME", mark: "${mark}" }`, now: "2026-06-01T12:00:00" });
+  const n = () => t.page.evaluate(() => document.querySelectorAll("#bootld .bl .szb, .lgb .szb").length + (window.brandMark("t").match(/class="szb"/g) || []).length);
+  ok("no touch on the logo out of season", (await n()) === 0);
+  for (const id of ["christmas", "newyear", "halloween", "valentines", "matariki", "easter", "diwali", "cny"]) {
+    await t.page.evaluate(id => { SZN_PREV = id; SZN_CUR = "\0"; sznApply(); }, id);
+    const k = await t.page.evaluate(() => { const g = window.brandMark("t"); return { n: (g.match(/class="szb"/g) || []).length, bad: /NaN|undefined/.test(g), open: (g.match(/<svg/g) || []).length === (g.match(/<\/svg>/g) || []).length }; });
+    ok(`${id}: logo touch added (${k.n}) and well formed`, k.n >= 1 && !k.bad && k.open);
+  }
+  await t.page.evaluate(() => { SZN_PREV = ""; SZN_CUR = "\0"; sznApply(); });
+  ok("touch gone again after the season", (await n()) === 0);
+  await t.ctx.close();
+}
 await browser.close(); server.close();
 console.log(`seasons: ${checks} checks`);
 if (errors.length) { console.log("PAGE ERRORS:\n" + errors.join("\n")); process.exitCode = 1; }

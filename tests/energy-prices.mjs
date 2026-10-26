@@ -13,8 +13,8 @@ const { chromium } = await import("playwright");
 const browser = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});
 const problems = []; let checks = 0;
 const ok = (what, v) => { checks++; if (!v) problems.push(what); };
-async function run(withCost) {
-  const page = await browser.newPage({ viewport: { width: 1200, height: 1400 } }), errors = []; page.on("pageerror", e => errors.push(String(e)));
+async function run(withCost, VP = { width: 1200, height: 1400 }) {
+  const page = await browser.newPage({ viewport: VP }), errors = []; page.on("pageerror", e => errors.push(String(e)));
   await page.routeWebSocket(/api\/websocket/, ws => { ws.send(JSON.stringify({ type: "auth_required" })); ws.onMessage(raw => { const m = JSON.parse(raw); if (m.type === "auth") ws.send(JSON.stringify({ type: "auth_ok" })); else if (m.id) ws.send(JSON.stringify({ id: m.id, type: "result", success: true, result: m.type === "get_states" ? [] : null })); }); });
   await page.goto(url); await page.waitForTimeout(1200);
   await page.evaluate(withCost => {
@@ -55,6 +55,18 @@ async function run(withCost) {
   ok("no cost statistics: falls back to the tariff (21 x 0.364 = $7.64 + 1 day x 2.611 = $10.25)", /\$10\.25/.test(txt));
   ok("no cost statistics: gas still shows its usage", /12(\.0)? m³/i.test(txt));
   ok("no page errors (fallback)", errors.length === 0); await page.close(); }
+{ // redesigned layout: three cards in one row on a tablet, one column with an Electricity / Gas switch on a phone
+  for (const [name, vp] of [["tablet", { width: 1180, height: 820 }], ["phone", { width: 390, height: 844 }]]) {
+    const { page, errors } = await run(true, vp);
+    const m = await page.evaluate(() => { const v = s => { const e = document.querySelector(s); if (!e) return null; const r = e.getBoundingClientRect(); return { x: r.x, y: r.y, w: r.width, h: r.height, shown: getComputedStyle(e).display !== "none" }; }; return { t: v('#energy [data-k="t"]'), e: v('#energy [data-k="e"]'), g: v('#energy [data-k="g"]'), sw: v(".ensw"), ins: v(".enins"), dots: !!document.querySelector(".endots"), sh: document.getElementById("energy").scrollHeight, ih: innerHeight }; });
+    if (name === "tablet") { ok("tablet: Total, Electricity and Gas side by side", m.t && m.e && m.g && Math.abs(m.t.y - m.e.y) < 2 && Math.abs(m.e.y - m.g.y) < 2 && m.t.x < m.e.x && m.e.x < m.g.x); ok("tablet: the switch is hidden and insights sit below the cards", m.sw && !m.sw.shown && m.ins.y > m.t.y + m.t.h - 1); ok("tablet: fits without scrolling the page", m.sh <= m.ih + 2); }
+    else { ok("phone: one column, no slide dots", m.t && m.e && m.e.y > m.t.y + m.t.h - 1 && !m.dots); ok("phone: switch shows Electricity, Gas card hidden until chosen", m.sw && m.sw.shown && m.e.shown && !m.g.shown);
+      await page.click('[data-et="g"]'); await page.waitForTimeout(300);
+      const g = await page.evaluate(() => ({ e: getComputedStyle(document.querySelector('#energy [data-k="e"]')).display, g: getComputedStyle(document.querySelector('#energy [data-k="g"]')).display }));
+      ok("phone: the switch shows the Gas card instead", g.e === "none" && g.g !== "none"); }
+    ok("no page errors (" + name + ")", errors.length === 0); await page.close();
+  }
+}
 await browser.close(); server.close();
 console.log(`energy prices: ${checks} checks`);
 if (problems.length) { console.log("FAILED:\n - " + problems.join("\n - ")); process.exitCode = 1; } else console.log("ok");

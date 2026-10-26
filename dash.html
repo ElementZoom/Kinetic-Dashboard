@@ -1837,7 +1837,7 @@ html.camlive #szn *{animation-play-state:paused!important}
 // (notification tap such as #view/driveway, #security ...), not the return from the login, and the device has not asked for reduced motion.
 window.brandLogo = function () { var L = window.DASH_LOGO, B = (window.DASH_CONFIG || {}).brand; return L && L.svg ? { svg: L.svg, lockup: !!L.lockup } : B && B.mark ? { svg: B.mark, lockup: false } : null; };   // brand-logo.js wins over brand.mark in config.js
 window.brandMark = function (s) { var g = window.brandLogo(); if (!g) return ""; return g.svg.replace(/\bid="([\w-]+)"/g, 'id="$1' + s + '"').replace(/url\(#([\w-]+)\)/g, 'url(#$1' + s + ')'); };
-window.DASH_VER = "1.14.0.6";   // the one place to change the version
+window.DASH_VER = "1.14.0.7";   // the one place to change the version
 (function () { try {
   var B = (window.DASH_CONFIG || {}).brand, el = document.getElementById("bootld"), r = document.documentElement, lp = "on";
   try { lp = localStorage.getItem("dashLogo") || "on"; } catch (e) {}   // Theme page -> "Start-up logo": on | load (no intro) | off (plain spinner, as before)
@@ -5363,8 +5363,8 @@ function loadEnergy() {
     send({ type: "recorder/statistics_during_period", start_time: sp.s.toISOString(), end_time: sp.e.toISOString(), statistic_ids: ids, period: sp.per, types: ["change"] }, (r, raw) => {
       en.err = r ? "" : "Could not load statistics: " + (raw && raw.error ? raw.error.message : "no response"); en.data = r || {}; en.key = en.r + en.o;
       const gs = (en.prefs.energy_sources || []).filter(x => x.type === "grid"); let gid = [];
-      gs.forEach(g => (g.flow_from || []).forEach(f => { if (f.stat_energy_from) gid.push(f.stat_energy_from); }));
-      en.gridSrc = gid.length ? "grid" : "devices"; if (!gid.length) gid = ids.slice();   // no grid meter in HA's Energy settings: price the tracked devices instead
+      gs.forEach(g => { (g.flow_from || []).forEach(f => { if (f.stat_energy_from) gid.push(f.stat_energy_from); }); if (g.stat_energy_from) gid.push(g.stat_energy_from); });   // (older Home Assistant versions keep the grid meter on the source itself)
+      en.gridSrc = gid.length ? "grid" : "devices"; if (!gid.length) gid = ids.slice(); en.gridIds = gid.slice();   // no grid meter in HA's Energy settings: price the tracked devices instead
       en.grid = undefined;
       en.devH = undefined; en.prev = undefined;
       if (!gid.length || en.err) { en.busy = false; en.grid = null; drawEnergy(); return; }
@@ -5427,7 +5427,7 @@ function enDraw() {
     if (CS) {
       h += htot;
       const PC = ["#6bb8ff", "#8ff0c4", "#ffd166", "#ef476f"];
-      h += '<div class="pn pg"><div class="eh"><div><div class="lbl">Electricity cost</div><div class="h2" style="margin-top:4px">' + mny(CS.total) + '</div></div><div class="lbl ensub" style="margin-left:auto;text-align:right">' + fm(CS.kwh) + ' kWh ' + (en.gridSrc === "devices" ? "from tracked devices" : "from the grid") + (CS.real && CS.est ? ' · ' + CS.est + ' h estimated' : '') + '</div></div><div class="enb">' +
+      h += '<div class="pn pg"><div class="eh"><div><div class="lbl">Electricity cost</div><div class="h2" style="margin-top:4px">' + mny(CS.total) + '</div></div><div class="lbl ensub" style="margin-left:auto;text-align:right">' + fm(CS.kwh) + ' kWh ' + (en.gridSrc === "devices" ? "from tracked devices" : "from the grid") + (CS.real && CS.est ? ' · ' + CS.est + ' h estimated' : '') + '</div></div><div class="lbl" style="margin:-4px 0 10px;text-transform:none;letter-spacing:0;opacity:.7">' + (en.gridSrc === "devices" ? "Home Assistant\u2019s Energy settings have no grid usage, so this is the tracked devices only." : "Source: " + esc((en.gridIds || []).join(", ")) + " \u00b7 " + Object.keys(en.grid || {}).length + " hours of data") + '</div><div class="enb">' +
         CS.per.map((x, i) => '<div class="enr"><i class="end" style="background:' + PC[i % 4] + '"></i><span class="enn">' + esc(x.p.name || "") + '</span><span class="lbl">' + fm(x.kwh) + ' kWh × ' + ((CS.real && x.kwh > 0.001 ? x.cost / x.kwh : x.p.rate) * 100).toFixed(1) + 'c</span><b>' + mny(x.cost) + '</b></div>').join("") +
         '<div class="enr"><i class="end" style="background:#8a94a6"></i><span class="enn">Daily charge</span><span class="lbl">' + CS.days + ' day' + (CS.days === 1 ? "" : "s") + ' × ' + TT.symbol + TT.daily.toFixed(3) + '</span><b>' + mny(CS.fixed) + '</b></div></div>';
       const ks = Object.keys(CS.cols).map(Number), cm = Math.max.apply(null, bk.map(b => (CS.cols[b] || [0]).reduce((a, c) => a + c, 0)).concat([0.001])), W2 = mob ? 420 : 700, H2 = mob ? 150 : 170, L2 = mob ? 50 : 46, B2 = mob ? 28 : 26, bw2 = (W2 - L2) / bk.length; let g2 = '';

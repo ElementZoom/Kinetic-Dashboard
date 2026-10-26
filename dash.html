@@ -565,6 +565,8 @@ nav a.nset{margin-top:auto}
 #rv .bl,#np .bl{gap:8px}#rv .bl .bd,#np .bl .bd{flex:1 1 calc(50% - 4px);min-width:0;padding-right:10px}#rv .bd[data-k] .nm,#np .bd[data-k] .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}#rv .bd[data-k] span.st{display:none}
 }
 
+
+@keyframes enold{to{opacity:.4}}#energy .enold{animation:enold .25s ease forwards;pointer-events:none}@media(prefers-reduced-motion:reduce){#energy .enold{animation:none;opacity:.4}}
 /* touch: no blue tap box, no text selection on the UI */
 *{-webkit-tap-highlight-color:transparent}
 a,button,.tl,.rc,.cam,.chip,.eb,.card,.bd,.sc,.pbi,[data-e],[data-k]{-webkit-touch-callout:none;touch-action:manipulation}
@@ -1842,7 +1844,7 @@ html.camlive #szn *{animation-play-state:paused!important}
 // (notification tap such as #view/driveway, #security ...), not the return from the login, and the device has not asked for reduced motion.
 window.brandLogo = function () { var L = window.DASH_LOGO, B = (window.DASH_CONFIG || {}).brand; return L && L.svg ? { svg: L.svg, lockup: !!L.lockup } : B && B.mark ? { svg: B.mark, lockup: false } : null; };   // brand-logo.js wins over brand.mark in config.js
 window.brandMark = function (s) { var g = window.brandLogo(); if (!g) return ""; return g.svg.replace(/\bid="([\w-]+)"/g, 'id="$1' + s + '"').replace(/url\(#([\w-]+)\)/g, 'url(#$1' + s + ')'); };
-window.DASH_VER = "1.14.0.13";   // the one place to change the version
+window.DASH_VER = "1.14.0.14";   // the one place to change the version
 (function () { try {
   var B = (window.DASH_CONFIG || {}).brand, el = document.getElementById("bootld"), r = document.documentElement, lp = "on";
   try { lp = localStorage.getItem("dashLogo") || "on"; } catch (e) {}   // Theme page -> "Start-up logo": on | load (no intro) | off (plain spinner, as before)
@@ -5409,7 +5411,7 @@ function enDraw() {
   const mob = isMobile(), FS = mob ? 15 : 12, sp = enSpan(), pg = $("#energy"), P = en.prefs;
   let h = '<div class="eh ehc" style="margin-bottom:14px"><div class="chips tabs">' + [["day", "DAY"], ["week", "WEEK"], ["month", CONFIG.billing ? "BILL" : "MONTH"], ["year", "YEAR"]].map(x => '<button class="chip' + (en.r === x[0] ? " on" : "") + '" data-er="' + x[0] + '">' + x[1] + '</button>').join("") + '</div><div class="seg" style="margin-left:auto"><button class="eb" data-eo="-1">' + mdi("chevron-left") + '</button><button class="eb" data-eo="0" style="min-width:210px">' + esc(sp.lab) + '</button><button class="eb" data-eo="1">' + mdi("chevron-right") + '</button></div></div>';
   if (en.err) h += '<div class="pn lbl">' + esc(en.err) + '</div>';
-  else if (!en.data || !P) h += '<div class="pn lbl">Loading…</div>';
+  else if (!en.data || !P || en.grid === undefined || en.gridCost === undefined || en.gas === undefined || en.gasCost === undefined) h += en.body ? '<div class="enold">' + en.body + '</div>' : '<div class="pn lbl">' + (!en.data || !P ? "Loading…" : "Calculating cost…") + '</div>';   // the last page stays (dimmed) until the new one is ready, so changing the date does not blink
   else {
     const h0 = h.length, bk = enBuckets(sp), fm = v => v >= 100 ? v.toFixed(0) : v >= 10 ? v.toFixed(1) : v.toFixed(2);
     const CS = enCost(sp), TT = CONFIG.tariff || TARIFF_DEF, mny = v => TT.symbol + v.toFixed(2);
@@ -5462,10 +5464,10 @@ function enDraw() {
       if (rows.length) h += '<div class="pn pg enins"><div class="lbl">Insights</div><div class="eni">' + rows.map(r => '<div class="eil"><div class="lbl">' + esc(r[0]) + '</div><div class="eiv"' + (r[3] ? ' style="color:' + r[3] + '"' : '') + '>' + esc(r[1]) + '</div><div class="eic">' + esc(r[2]) + '</div></div>').join("") + '</div></div>';
     }
     const et = hasGas && CS ? (en.tab === "g" ? "g" : "e") : "e";
-    h = h.slice(0, h0) + (hasGas && CS ? '<div class="ensw"><button class="' + (et === "e" ? "on" : "") + '" data-et="e">ELECTRICITY</button><button class="' + (et === "g" ? "on" : "") + '" data-et="g">GAS</button></div>' : "") + '<div class="ensl" data-t="' + et + '" data-n="' + (hasGas && CS ? 3 : 2) + '">' + h.slice(h0) + '</div>';
+    h = h.slice(0, h0) + (hasGas && CS ? '<div class="ensw"><button class="' + (et === "e" ? "on" : "") + '" data-et="e">ELECTRICITY</button><button class="' + (et === "g" ? "on" : "") + '" data-et="g">GAS</button></div>' : "") + '<div class="ensl" data-t="' + et + '" data-n="' + (hasGas && CS ? 3 : 2) + '">' + h.slice(h0) + '</div>'; en.body = h.slice(h0);
   }
   pg.innerHTML = h;
-  if (en.tx != null && en.data) { const d = en.tx; en.tx = null; Array.prototype.slice.call(pg.children, 1).forEach((c, k) => { txGo(c, d, false); c.style.setProperty("--tx", d * 56 + "px"); c.style.setProperty("--ty", d ? "10px" : "22px"); c.style.animationDuration = ".9s"; c.style.animationDelay = k * 110 + "ms"; }); }
+  if (en.tx != null && en.data && !pg.querySelector(".enold") && pg.querySelector(".ensl")) { const d = en.tx; en.tx = null; Array.prototype.slice.call(pg.querySelectorAll(".ensw,.ensl>.pn")).forEach((c, k) => { txGo(c, d, false); c.style.setProperty("--tx", d * 40 + "px"); c.style.setProperty("--ty", d ? "8px" : "18px"); c.style.animationDuration = ".7s"; c.style.animationDelay = k * 90 + "ms"; }); }
 }
 $("#energy").onclick = e => {
   const dt = e.target.closest("[data-et]"); if (dt) { en.tab = dt.dataset.et; drawEnergy(); return; }

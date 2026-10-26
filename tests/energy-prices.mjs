@@ -74,6 +74,20 @@ async function run(withCost, VP = { width: 1200, height: 1400 }) {
   const ph = await run(true, { width: 360, height: 800 }); const pb = await ph.page.evaluate(() => { const bad = []; document.querySelectorAll("#energy .ensl>.pn").forEach(c => { if (getComputedStyle(c).display === "none") return; const cr = c.getBoundingClientRect(); c.querySelectorAll("*").forEach(e => { const r = e.getBoundingClientRect(); if (r.width && r.right > cr.right + 1) bad.push(e.className || e.tagName); }); }); return bad.slice(0, 5); });
   ok("narrow phone: nothing overflows a card: " + pb.join(","), pb.length === 0); await ph.page.close();
 }
+{ // changing the date keeps the old page (dimmed) until the new one is ready, then animates it in once, with no "Loading…" blink
+  const { page, errors } = await run(true, { width: 1400, height: 900 });
+  await page.evaluate(() => { const real = window.send; window.send = (m, cb) => m.type === "recorder/statistics_during_period" ? real(m, (a, b) => setTimeout(() => cb(a, b), 500)) : real(m, cb); });
+  await page.evaluate(() => { window.__seen = []; new MutationObserver(() => { const t = document.getElementById("energy").innerText; if (/Loading|Calculating/i.test(t)) window.__seen.push(t.slice(0, 40)); }).observe(document.getElementById("energy"), { childList: true, subtree: true }); });
+  await page.click('[data-eo="-1"]'); await page.waitForTimeout(200);
+  const mid = await page.evaluate(() => ({ old: !!document.querySelector("#energy .enold"), cards: document.querySelectorAll("#energy .enold .ensl>.pn").length }));
+  ok("changing the date: the old cards stay (dimmed) while the new data loads", mid.old && mid.cards >= 2);
+  await page.waitForTimeout(900);
+  ok("changing the date: the new cards slide in (tx animation)", await page.evaluate(() => [...document.querySelectorAll("#energy .ensl>.pn")].some(c => c.classList.contains("tx"))));
+  await page.waitForTimeout(1500);
+  const end = await page.evaluate(() => ({ old: !!document.querySelector("#energy .enold"), cards: document.querySelectorAll("#energy .ensl>.pn").length, seen: window.__seen.length }));
+  ok("changing the date: the new cards replace them, with no Loading / Calculating text in between", !end.old && end.cards >= 2 && end.seen === 0);
+  ok("no page errors (date change)", errors.length === 0); await page.close();
+}
 await browser.close(); server.close();
 console.log(`energy prices: ${checks} checks`);
 if (problems.length) { console.log("FAILED:\n - " + problems.join("\n - ")); process.exitCode = 1; } else console.log("ok");

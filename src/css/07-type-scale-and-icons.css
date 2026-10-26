@@ -162,3 +162,5 @@ nav a.nset{margin-top:auto}
 #rv .bl,#np .bl{gap:8px}#rv .bl .bd,#np .bl .bd{flex:1 1 calc(50% - 4px);min-width:0;padding-right:10px}#rv .bd[data-k] .nm,#np .bd[data-k] .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}#rv .bd[data-k] span.st{display:none}
 }
 
+
+@keyframes enold{to{opacity:.4}}#energy .enold{animation:enold .25s ease forwards;pointer-events:none}@media(prefers-reduced-motion:reduce){#energy .enold{animation:none;opacity:.4}}

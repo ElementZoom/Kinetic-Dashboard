@@ -4,6 +4,8 @@
 
 **Kinetic** is a fast, fluid dashboard for [Home Assistant](https://www.home-assistant.io) on phones, tablets and wall displays. It is **one HTML file** (`dash.html`) plus **one config file** (`config.js`). No build step to install it, no custom card, no integration, no YAML.
 
+**[Try the live demo](https://elementzoom.co.nz/demo/)**: the real dashboard running on a pretend house, guided tour or free play. Nothing in it controls a real home.
+
 > See [CHANGELOG.md](CHANGELOG.md) for what changed in each version.
 
 > `config.example.js` contains invented sample data only. Copy it to `config.js` and replace the entity ids with your own.
@@ -37,6 +39,35 @@ Mock-up screens with invented data and generated camera images.
 
 All pages are in [`docs/screenshots`](docs/screenshots) for both devices and both themes.
 
+### Energy
+Rebuilt around real power bills: Total, Electricity and Gas side by side on a tablet, one scrolling column on a phone. Real prices from Home Assistant's Energy settings when you have them, a daily-charge line, GST, and a **BILL** tab that follows your billing cycle instead of the calendar month.
+
+| Tablet, dark | Tablet, light |
+|---|---|
+| ![](docs/screenshots/tablet-dark-energy.png) | ![](docs/screenshots/tablet-light-energy.png) |
+
+| Phone, dark | Phone, light | Switching Electricity, Gas and periods |
+|---|---|---|
+| ![](docs/screenshots/phone-dark-energy.png) | ![](docs/screenshots/phone-light-energy.png) | ![](docs/animations/energy.gif) |
+
+### Media and artist info
+Synced lyrics and an **Artist** tab beside the player. The artist page has a photo header, a short description, a start year, links to Spotify and Wikipedia, and a bio (from Wikipedia, matched by exact title so you get the right artist). `artistInfo: { deezer: true }` adds a Deezer photo and fan count. On a phone Artist is a swipe page in the Now Playing sheet.
+
+| Tablet | Phone | In the Now Playing sheet |
+|---|---|---|
+| ![](docs/screenshots/tablet-dark-artist.png) | ![](docs/screenshots/phone-dark-artist.png) | ![](docs/animations/artist.gif) |
+
+Light: [tablet](docs/screenshots/tablet-light-artist.png), [phone](docs/screenshots/phone-light-artist.png).
+
+### Seasonal themes
+Eight seasons with their own colours and decorations: Christmas, New Year, Halloween, Valentine's, Matariki, Easter, Diwali and Chinese New Year. Switch them on per device on the Theme page (or `seasonal: true` in `config.js`) and they start and stop by themselves on the right dates. Cameras are left alone.
+
+![The eight seasons on the tablet Home page](docs/screenshots/seasons-tablet.png)
+
+![Christmas, Halloween, Matariki and Diwali](docs/animations/seasons.gif)
+
+Each season at full size is in [`docs/screenshots/seasons`](docs/screenshots/seasons).
+
 ### Four styles
 Pick a style on the Theme page. Each one works in dark and light, with any colour preset.
 
@@ -66,11 +97,16 @@ All four styles for Home, Rooms and Theme are in [`docs/screenshots/styles`](doc
 |---|---|---|
 | ![](docs/animations/garage.gif) | ![](docs/animations/irrigation.gif) | ![](docs/animations/rooms.gif) |
 
+| Energy | Artist info | Weather forecast tabs |
+|---|---|---|
+| ![](docs/animations/energy.gif) | ![](docs/animations/artist.gif) | ![](docs/animations/weather.gif) |
+
 ## Highlights
 **Look and feel**
 - Dark, light, follow device, **follow sun** (`sun.sun`) or a **time schedule**; colour presets; four styles (**Kinetic**, **Liquid Glass**, **Material**, **Minimal**); four font choices.
 - Smooth page, tab and filter transitions, floating bars and slide-up sheets on phones, respecting "reduce motion".
 - Weather-aware greeting card with animated weather.
+- **Seasonal themes** for eight festivals, with a seasonal touch on your logo; 12- or 24-hour clock on each device.
 
 **Home and rooms**
 - Home cards for status, cameras, rooms, heat pump and forecast, arranged per device.
@@ -83,7 +119,9 @@ All four styles for Home, Rooms and Theme are in [`docs/screenshots/styles`](doc
 - **Garage door alert**: a red frame and "GARAGE OPEN" band while the door is open, amber "OPENING" / "CLOSING" while it moves, without covering the buttons.
 - **Playback** of recordings in grid or list view, with person, vehicle and animal filters and previews from Home Assistant's saved detection snapshots.
 - **Recent detections** across all cameras, filterable by type, camera and time range.
-- Alarm panel and siren controls; a two-camera view that follows what is happening.
+- **Marks on recordings and live cameras**: the person, car or animal that moves is boxed (optional on-device recognition keeps shadows and bushes out).
+- Pinch to zoom on full-screen cameras and recordings.
+- Alarm panel and siren controls with buttons that glow by state; a two-camera view that follows what is happening.
 
 **People and access**
 - **Access panel** (admins only): choose per person which pages, rooms and Security features they see. Changes apply live.
@@ -95,7 +133,9 @@ All four styles for Home, Rooms and Theme are in [`docs/screenshots/styles`](doc
 - Water taps show the same rolling water as the Irrigation page. Anything with a running timer (taps, towel rails, fans) shows a live countdown.
 
 **More pages**
-- Climate, Energy, Irrigation (floating zone bar, duration buttons 5 minutes to 2 hours with a countdown, soil sensors, rain-skip hint), Media (Sonos grouping, synced lyrics, artist info from Wikipedia), Events, Vehicle, Hazards, Weather.
+- Climate, Irrigation (floating zone bar, duration buttons 5 minutes to 2 hours with a countdown, soil sensors, rain-skip hint), Scenes (original artwork for every light scene), Events (calendar with colours per event), Vehicle, Hazards, Weather.
+- **Energy** that matches a power bill: real prices, gas, GST, daily charges and a billing-cycle tab.
+- **Media**: Sonos grouping, synced lyrics, and artist info (Wikipedia, optional Deezer photo and fans).
 
 **Simple to run**
 - One engine, one config. Averages and groups are calculated for you, so no template sensors are needed.
@@ -121,6 +161,7 @@ Every page and pop-up has a link, so a Home Assistant notification, button or au
 
 ## Notes
 - Tested in a mock browser (Playwright with a fake Home Assistant) at phone and tablet sizes; always check on your own devices.
+- All screenshots and animations on this page come from the [live demo](https://elementzoom.co.nz/demo/)'s pretend house: invented names, entities and cameras.
 - Credits for icons, fonts and data sources are in [CREDITS.md](CREDITS.md).
 
 ## Licence

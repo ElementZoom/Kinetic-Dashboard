@@ -14,6 +14,8 @@ Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0
 - **config.js:** `seasonal: true` turns it on for every device that has not chosen; `seasons: { christmas: ["12-05", "12-26"], matariki: false, diwali: { 2031: "11-14" } }` moves a season's dates, switches one off, or adds a date for a year past the built-in table.
 
 ### Changed
+- **Energy: real prices.** When Home Assistant's Energy settings have a cost for the grid (for example the statistics a power company's integration imports), the Electricity cost uses what you were actually charged, hour by hour; the daily charge from `tariff` is still added on top. The rate shown for each period is the real one, each device (smart plug) is priced at the real rate of the hours it ran, and the comparison with the previous period is in kWh. Hours without a price yet use the `tariff` and the card says how many were estimated. Without a cost statistic everything works as before.
+- **Energy: Gas and Total energy cost.** A Gas card shows usage (in the unit Home Assistant has for it) and cost, with a chart, and a Total energy cost card adds electricity (daily charge included) and gas.
 - **Calendar: the end time follows the start time.** Picking a start time on a new event sets the end to 30 minutes later (rolling to the next day past midnight). When editing an event, moving the start moves the end with it and keeps the event's length.
 
 ### Fixed
@@ -21,7 +23,7 @@ Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0
 - **Calendar: changing only an event's colour now saves.** The colour is kept on the device (and in your Home Assistant user data), so a colour-only change no longer goes to the calendar, where it could fail or, on a calendar that cannot update in place, add a duplicate.
 
 ### Tests
-- New checks for the calendar editor (`tests/event-editor.mjs`).
+- New checks for the calendar editor (`tests/event-editor.mjs`) and the Energy prices, gas and totals (`tests/energy-prices.mjs`).
 - New checks for the dates of all eight seasons, the switch, config.js overrides, the palettes and decorations, the camera pages (`tests/seasons.mjs`).
 
 ## 1.13.0 - 2026-10-25

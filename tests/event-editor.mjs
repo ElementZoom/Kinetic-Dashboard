@@ -42,23 +42,44 @@ await set("evst", "10:00");
 eq("edit: the event keeps its 2 h length", [await val("eved"), await val("evet")], ["2026-11-10", "12:00"]);
 await page.evaluate(() => evClose());
 // colour only: no calendar call, colour kept
-await page.evaluate(() => { SENT.length = 0; delete EVCOL[evKey("calendar.t", "Dentist")]; });
+await page.evaluate(() => { SENT.length = 0; for (const k of Object.keys(EVCOL)) delete EVCOL[k]; });
 await page.evaluate(m => evOpen({ ev: m }), mk("Dentist"));
 await page.click('#evp button.csw[data-col="#ff6b6b"]');
 await page.click('#evp [data-x="save"]'); await page.waitForTimeout(300);
-const r = await page.evaluate(() => ({ sent: SENT.length, col: EVCOL[evKey("calendar.t", "Dentist")], closed: !evS, stored: JSON.parse(localStorage.dashEvCol || "{}")[evKey("calendar.t", "Dentist")] }));
+const r = await page.evaluate(() => ({ sent: SENT.length, col: EVCOL["u|calendar.t|u1"], closed: !evS, stored: JSON.parse(localStorage.dashEvCol || "{}")["u|calendar.t|u1"] }));
 eq("colour-only: the calendar is not called", r.sent, 0);
 eq("colour-only: colour saved and sheet closed", [r.col, r.closed, r.stored], ["#ff6b6b", true, "#ff6b6b"]);
 // changing the colour back to "Same as calendar"
 await page.evaluate(m => evOpen({ ev: m }), mk("Dentist"));
 await page.click('#evp button.auto'); await page.click('#evp [data-x="save"]'); await page.waitForTimeout(300);
-eq("colour-only: reset to calendar colour", await page.evaluate(() => [SENT.length, EVCOL[evKey("calendar.t", "Dentist")] || ""]), [0, ""]);
+eq("colour-only: reset to calendar colour", await page.evaluate(() => [SENT.length, EVCOL["u|calendar.t|u1"] || ""]), [0, ""]);
 // a real change still goes to the calendar, with its colour
 await page.evaluate(m => evOpen({ ev: m }), mk("Dentist"));
 await page.click('#evp button.csw[data-col="#6bb8ff"]'); await set("evt", "Dentist 2");
 await page.click('#evp [data-x="save"]'); await page.waitForTimeout(300);
-const r2 = await page.evaluate(() => ({ n: SENT.length, t: SENT[0] && SENT[0].type, s: SENT[0] && SENT[0].event.summary, col: EVCOL[evKey("calendar.t", "Dentist 2")] }));
-eq("real change: update sent, colour moves to the new title", [r2.n, r2.t, r2.s, r2.col], [1, "calendar/event/update", "Dentist 2", "#6bb8ff"]);
+const r2 = await page.evaluate(() => ({ n: SENT.length, t: SENT[0] && SENT[0].type, s: SENT[0] && SENT[0].event.summary, col: EVCOL["u|calendar.t|u1"] }));
+eq("real change: update sent, colour stays with the event", [r2.n, r2.t, r2.s, r2.col], [1, "calendar/event/update", "Dentist 2", "#6bb8ff"]);
+// two events with the same title keep their own colours
+await page.evaluate(() => { for (const k of Object.keys(EVCOL)) delete EVCOL[k]; SENT.length = 0; });
+const two = [mk("Iyla Per", { uid: "a1" }), mk("Iyla Per", { uid: "b2", start: { dateTime: new Date(2026, 10, 10, 13, 30).toISOString() }, end: { dateTime: new Date(2026, 10, 10, 14, 30).toISOString() } })].map(x => x.v);
+await page.evaluate(m => evOpen({ ev: m }), { cal: "calendar.t", v: two[0] });
+await page.click('#evp button.csw[data-col="#8ff0c4"]'); await page.click('#evp [data-x="save"]'); await page.waitForTimeout(300);
+eq("same-title events: only the one edited gets the colour", await page.evaluate(([a, b]) => [evColOf("calendar.t", a), evColOf("calendar.t", b)], two), ["#8ff0c4", ""]);
+await page.evaluate(m => evOpen({ ev: m }), { cal: "calendar.t", v: two[1] });
+eq("same-title events: the other still shows 'Same as calendar'", await page.evaluate(() => evS.col), "");
+await page.click('#evp button.csw[data-col="#ff8fc7"]'); await page.click('#evp [data-x="save"]'); await page.waitForTimeout(300);
+eq("same-title events: each keeps its own colour", await page.evaluate(([a, b]) => [evColOf("calendar.t", a), evColOf("calendar.t", b)], two), ["#8ff0c4", "#ff8fc7"]);
+// an older colour saved by title still shows, and can be reset for just one event
+await page.evaluate(([a, b]) => { for (const k of Object.keys(EVCOL)) delete EVCOL[k]; EVCOL[evKey("calendar.t", "Iyla Per")] = "#c79bff"; }, two);
+eq("older title colour still applies to both", await page.evaluate(([a, b]) => [evColOf("calendar.t", a), evColOf("calendar.t", b)], two), ["#c79bff", "#c79bff"]);
+await page.evaluate(m => evOpen({ ev: m }), { cal: "calendar.t", v: two[0] });
+await page.click('#evp button.auto'); await page.click('#evp [data-x="save"]'); await page.waitForTimeout(300);
+eq("reset one event only: the other keeps the older colour", await page.evaluate(([a, b]) => [evColOf("calendar.t", a), evColOf("calendar.t", b)], two), ["", "#c79bff"]);
+// a new event: colour chosen now is claimed by that event when the calendar lists it
+await page.evaluate(() => { for (const k of Object.keys(EVCOL)) delete EVCOL[k]; SENT.length = 0; evOpen({ date: "2026-11-10" }); });
+await set("evt", "Brand new"); await page.click('#evp button.csw[data-col="#6bb8ff"]'); await page.click('#evp [data-x="save"]'); await page.waitForTimeout(300);
+const nw = await page.evaluate(() => { const ev = SENT[0].event, v = { summary: "Brand new", uid: "n9", start: { dateTime: ev.dtstart }, end: { dateTime: ev.dtend } }; evPend("calendar.t", v); return [SENT[0].type, evColOf("calendar.t", v), Object.keys(EVCOL).filter(k => /Brand/i.test(k)).length]; });
+eq("new event: colour goes to that event once it is listed, not to the title", nw, ["calendar/event/create", "#6bb8ff", 0]);
 eq("no page errors", errors, []);
 await browser.close(); server.close();
 console.log(`event editor: ${checks} checks`);

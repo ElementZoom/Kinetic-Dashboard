@@ -17,6 +17,7 @@ Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0
 - **Calendar: the end time follows the start time.** Picking a start time on a new event sets the end to 30 minutes later (rolling to the next day past midnight). When editing an event, moving the start moves the end with it and keeps the event's length.
 
 ### Fixed
+- **Calendar: an event's colour belongs to that event, not to its title.** Two events with the same name can have different colours. Colours saved before still apply to every event with that title until you change one. A colour picked for a new event is attached to it as soon as the calendar lists it. Repeating events share one colour.
 - **Calendar: changing only an event's colour now saves.** The colour is kept on the device (and in your Home Assistant user data), so a colour-only change no longer goes to the calendar, where it could fail or, on a calendar that cannot update in place, add a duplicate.
 
 ### Tests

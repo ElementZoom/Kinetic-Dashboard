@@ -1837,7 +1837,7 @@ html.camlive #szn *{animation-play-state:paused!important}
 // (notification tap such as #view/driveway, #security ...), not the return from the login, and the device has not asked for reduced motion.
 window.brandLogo = function () { var L = window.DASH_LOGO, B = (window.DASH_CONFIG || {}).brand; return L && L.svg ? { svg: L.svg, lockup: !!L.lockup } : B && B.mark ? { svg: B.mark, lockup: false } : null; };   // brand-logo.js wins over brand.mark in config.js
 window.brandMark = function (s) { var g = window.brandLogo(); if (!g) return ""; return g.svg.replace(/\bid="([\w-]+)"/g, 'id="$1' + s + '"').replace(/url\(#([\w-]+)\)/g, 'url(#$1' + s + ')'); };
-window.DASH_VER = "1.14.0.4";   // the one place to change the version
+window.DASH_VER = "1.14.0.5";   // the one place to change the version
 (function () { try {
   var B = (window.DASH_CONFIG || {}).brand, el = document.getElementById("bootld"), r = document.documentElement, lp = "on";
   try { lp = localStorage.getItem("dashLogo") || "on"; } catch (e) {}   // Theme page -> "Start-up logo": on | load (no intro) | off (plain spinner, as before)
@@ -2389,6 +2389,14 @@ function drawFc() { $("#fc").innerHTML = fc.length ? fcCols(fc.slice(0, 10)) : "
 const EVPAL = ["#ff6b6b", "#ff9f7a", "#f0d36b", "#8ff0c4", "#4fd1c5", "#6bb8ff", "#8d7bff", "#c79bff", "#ff8fc7", "#b8c0cc"];
 let EVCOL = (() => { try { return JSON.parse(localStorage.dashEvCol || "{}") || {}; } catch (e) { return {}; } })(), evColSynced = false;
 const evKey = (cal, t) => cal + "|" + (t || "").trim().toLowerCase();
+const evUk = (c, v) => v && v.uid ? "u|" + c + "|" + v.uid : "";   // a colour belongs to the event itself (its id), not to its title; older title colours still apply to events that have none of their own
+let EVPEND = null;
+function evColOf(c, v) { const u = evUk(c, v); if (u && EVCOL[u] !== undefined) return EVCOL[u] === "-" ? "" : EVCOL[u]; return EVCOL[evKey(c, v.summary)] || ""; }
+function evPend(c, v) {   // a colour picked for an event that had no id yet: claim it as soon as the calendar lists that event
+  const p = EVPEND, u = evUk(c, v); if (!p || !u || p.cal !== c || (v.summary || "").trim().toLowerCase() !== p.t) return;
+  const ad = !v.start.dateTime, st = pd(v.start); if (ad ? ymd(st) !== p.start : st.getTime() !== new Date(p.start).getTime()) return;
+  EVCOL[u] = p.col; EVPEND = null; evColSave();
+}
 function evColSave() { try { localStorage.dashEvCol = JSON.stringify(EVCOL); } catch (e) {} send({ type: "frontend/set_user_data", key: "dash_evcol", value: EVCOL }); }
 function evColSync() { if (evColSynced) return; evColSynced = true; send({ type: "frontend/get_user_data", key: "dash_evcol" }, (r, m) => { const v = r && r.value; if (v && typeof v === "object") { EVCOL = Object.assign({}, v, EVCOL); try { localStorage.dashEvCol = JSON.stringify(EVCOL); } catch (e) {} loadEvents(); } }); }
 const CALCOL = ["#6bb8ff", "#ff9f7a", "#8ff0c4", "#f0d36b", "#c79bff", "#ff7a6b"];
@@ -2405,11 +2413,11 @@ function loadEvents() {
   const mk = cy + "-" + cm; if (evLast.k === mk) drawEvents(evLast.gs, evLast.map); else drawEvents(gs, map);   // same month: keep what is on screen until the new answer is in (no blink)
   Promise.all(CONFIG.calendars.map((c, i) => getToken().then(tk => fetch(CONFIG.url + "/api/calendars/" + c + q, { headers: { Authorization: "Bearer " + tk } }))
     .then(r => r.text().then(t => { let j = null; try { j = JSON.parse(t); } catch (x) {} if (!Array.isArray(j)) { const st = states[c]; throw new Error(r.status === 404 || !t ? (st ? "HTTP " + r.status + " (HA sent no events: the calendar may be unavailable or still loading)" : "no calendar with this id exists in Home Assistant") : (j && (j.message || j.error)) || ("HTTP " + r.status)); } return j; })).then(l => l.forEach(v => { try {
-      const s = pd(v.start), e = pd(v.end), ad = !v.start.dateTime;
+      evPend(c, v); const s = pd(v.start), e = pd(v.end), ad = !v.start.dateTime;
       const last = ad ? new Date(e.getFullYear(), e.getMonth(), e.getDate() - 1) : new Date(e.getFullYear(), e.getMonth(), e.getDate());
       let d = new Date(s.getFullYear(), s.getMonth(), s.getDate());
       for (let n = 0; n < 42 && d <= last; n++, d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1))
-        (map[dk(d)] = map[dk(d)] || []).push({ t: s, ad: ad, s: v.summary, c: EVCOL[evKey(c, v.summary)] || CALCOL[i % CALCOL.length], i: EVS.push({ v: v, cal: c, ci: i }) - 1 });
+        (map[dk(d)] = map[dk(d)] || []).push({ t: s, ad: ad, s: v.summary, c: evColOf(c, v) || CALCOL[i % CALCOL.length], i: EVS.push({ v: v, cal: c, ci: i }) - 1 });
     } catch (x) { evErr.push(calName(c) + ": skipped \"" + (v && v.summary || "?") + "\" (" + x.message + ")"); } })).catch(x => { evErr.push(calName(c) + ": " + x.message); }))).then(() => { if (tok === evTok) { evLast = { k: mk, gs: gs, map: map }; drawEvents(gs, map, true); const el = $("#eerr"); if (el) el.textContent = evErr.length ? evErr.join(" · ") + "  |  Calendars HA has: " + Object.keys(states).filter(k => k.indexOf("calendar.") === 0).join(", ") : ""; } });
 }
 function drawEvents(gs, map, fin) {
@@ -2465,7 +2473,7 @@ function evOpen(o) {   // o: {ev} to edit, or {date} to add
   let st = { edit: !!e, cal: e ? e.cal : (wr[0] || ""), title: "", ad: false, sd: o.date || ymd(new Date()), st: "09:00", ed: "", et: "10:00", loc: "", note: "", col: "", rep: "", n: 2, unit: "weekly", days: [], until: "", scope: "all", msg: "" };
   if (e) {
     const s0 = pd(v.start), e0 = pd(v.end), ad = !v.start.dateTime;
-    st.title = v.summary || ""; st.col = EVCOL[evKey(e.cal, v.summary)] || ""; st.key0 = evKey(e.cal, v.summary); st.ad = ad; st.sd = ymd(s0); st.loc = v.location || ""; st.note = v.description || "";
+    st.title = v.summary || ""; st.col = evColOf(e.cal, v); st.ad = ad; st.sd = ymd(s0); st.loc = v.location || ""; st.note = v.description || "";
     if (ad) st.ed = addDays(ymd(e0), -1); else { st.st = hm(s0); st.ed = ymd(e0); st.et = hm(e0); }
     const r = v.rrule || ""; if (r) { const f = (/FREQ=(\w+)/.exec(r) || [])[1]; st.rep = f ? f.toLowerCase() : ""; const iv = +(/INTERVAL=(\d+)/.exec(r) || [])[1] || 1; if (iv > 1 && st.rep) { st.unit = st.rep; st.n = iv; st.rep = "custom"; } const b = (/BYDAY=([A-Z,]+)/.exec(r) || [])[1]; if (b) st.days = b.split(","); const u = (/UNTIL=(\d{4})(\d{2})(\d{2})/.exec(r)); if (u) st.until = u[1] + "-" + u[2] + "-" + u[3]; }
     st.recur = !!(v.rrule || v.recurrence_id); st.noUid = !v.uid; st.src = e; if (st.recur && !evCanUpdate(st.cal)) st.scope = "following";
@@ -2500,8 +2508,12 @@ function evRead() {   // keep what was typed when the sheet redraws
   if (g("evlc") != null) s.loc = g("evlc"); if (g("evnt") != null) s.note = g("evnt"); if (g("evun") != null) s.until = g("evun"); if (g("evn") != null) s.n = Math.max(1, Math.min(99, parseInt(g("evn"), 10) || 1)); if (g("evun2")) s.unit = g("evun2");
 }
 function evSave() {
-  evRead(); const fin = () => { const k = evKey(evS.cal, evS.title); if (evS.key0 && evS.key0 !== k) delete EVCOL[evS.key0]; if (evS.col) EVCOL[k] = evS.col; else delete EVCOL[k]; evColSave(); }; const s = evS, m = t => { s.msg = t; $("#evmsg").textContent = t; };
-  if (s.edit && s.sig0 === evSig(s)) { fin(); evClose(); loadEvents(); return; }   // only the colour changed: the colour lives on this device (and in your Home Assistant user data), so the calendar is not touched
+  evRead(); const fin = (ev, again) => {   // colour: kept for this one event (by its id); a re-created event (new, or on a calendar that cannot update in place) gets it once the calendar lists it
+    const s = evS, t = s.title.trim(), tk = evKey(s.cal, t), old = evUk(s.cal, (s.src || {}).v);
+    if (again) { if (old) delete EVCOL[old]; EVPEND = s.col && ev ? { cal: s.cal, t: t.toLowerCase(), start: ev.dtstart, col: s.col } : null; }
+    else if (old) { if (s.col) EVCOL[old] = s.col; else if (EVCOL[tk]) EVCOL[old] = "-"; else delete EVCOL[old]; }
+    evColSave(); }; const s = evS, m = t => { s.msg = t; $("#evmsg").textContent = t; };
+  if (s.edit && s.sig0 === evSig(s)) { fin(null, false); evClose(); loadEvents(); return; }   // only the colour changed: the colour lives on this device (and in your Home Assistant user data), so the calendar is not touched
   if (!s.title.trim()) return m("Add a title first.");
   if (!s.sd || !s.ed) return m("Pick the dates.");
   const ev = { summary: s.title.trim() };
@@ -2523,14 +2535,14 @@ function evSave() {
       if (m2 && m2.success === false) { reset(); return m((m2.error && m2.error.message) || "Couldn't save."); }
       send(Object.assign({ type: "calendar/event/delete", entity_id: s.cal }, evTarget()), (r2, m3) => {
         if (m3 && m3.success === false) { evClose(); loadEvents(); alert("The updated event was added, but the old one couldn't be removed. Please delete the old copy."); return; }
-        fin(); evClose(); loadEvents(); setTimeout(loadEvents, 3000);
+        fin(ev, true); evClose(); loadEvents(); setTimeout(loadEvents, 3000);
       });
     });
   }
   const msg = { type: "calendar/event/" + (s.edit ? "update" : "create"), entity_id: s.cal, event: ev };
   if (s.edit) Object.assign(msg, evTarget());
   b.disabled = true; b.textContent = "Saving…";
-  send(msg, (r, m2) => { if (m2 && m2.success === false) { b.disabled = false; b.textContent = s.edit ? "Save" : "Add event"; return m((m2.error && m2.error.message) || "Couldn't save."); } fin(); evClose(); loadEvents(); setTimeout(loadEvents, 3000); });
+  send(msg, (r, m2) => { if (m2 && m2.success === false) { b.disabled = false; b.textContent = s.edit ? "Save" : "Add event"; return m((m2.error && m2.error.message) || "Couldn't save."); } fin(ev, !s.edit); evClose(); loadEvents(); setTimeout(loadEvents, 3000); });
 }
 function evTarget() {
   const s = evS, v = (s.src || {}).v || {}, o = { uid: v.uid };

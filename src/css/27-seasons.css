@@ -4,7 +4,7 @@
 #szn[hidden]{display:none}
 #szn i,#szn svg{position:absolute;display:block;pointer-events:none}
 #szn i{font-style:normal}
-html.camlive #szn .fx{display:none}
+html.camlive #szn .fx,#szn.cams .fx{display:none}
 html.camlive #szn *{animation-play-state:paused!important}
 @media(prefers-reduced-motion:reduce){#szn .fx{display:none}#szn *{animation:none!important}}
 @keyframes sznFall{from{transform:translate3d(0,-8vh,0) rotate(0)}to{transform:translate3d(var(--dx,0px),112vh,0) rotate(var(--r,0deg))}}

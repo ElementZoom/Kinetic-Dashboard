@@ -223,6 +223,13 @@ window.DASH_CONFIG = {
   // Irrigation zones. `zone` is the name your "start sprinkler" script expects (hyphens are sent as underscores).
   // `timer` = the Timer helper for that zone: its countdown shows on the Irrigation page and on the tap's tile in
   // the notifications pop-up.
+  waterRestrictionText: {   // wording shown on the Irrigation page for each water restriction level (0 = none).
+    0: "Use water sensibly.",   // The level itself comes from input_select.water_restriction_level (options: No Water
+    1: "Sprinklers 6-8am & 6-8pm only.",   // Restriction, Water Level 1 ... Water Level 4)
+    2: "Alternate day. Sprinklers 6-8am & 6-8pm.",
+    3: "Sprinklers banned. Hand watering only, alternate days 6-8am & 6-8pm.",
+    4: "Total outdoor watering ban. Essential indoor use only."
+  },
   irrigation: [
     {
       name: "Driveway", zone: "driveway", switch: "switch.demo_driveway_tap",

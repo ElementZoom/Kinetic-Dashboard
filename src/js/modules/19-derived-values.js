@@ -3,13 +3,17 @@ const avgOf = ids => { const v = ids.map(x => parseFloat(rawSv(x))).filter(x => 
 const fx = v => v == null ? null : v.toFixed(1);
 // Low batteries: Battery Notes makes one "Battery+" sensor per device (sensor.<device>_battery_plus). The Notifications pop-up and the low-battery count both read these, listing any below derived.batteryBelow (%, 61 if not set)
 const lowBatt = () => { const th = CONFIG.derived.batteryBelow != null ? +CONFIG.derived.batteryBelow : 61; return Object.keys(states).filter(k => /^sensor\..*battery_plus$/.test(k) && parseFloat(states[k].state) < th).sort((x, y) => states[x].state - states[y].state); };
-const wLevel = () => { const on = x => states["input_boolean." + x] && states["input_boolean." + x].state === "on"; for (let i = 4; i >= 1; i--) if (on("water_level_" + i)) return i; return on("no_water_restriction") ? 0 : -1; };
+const wLevel = () => {   // 0 = no restriction, 1-4 = level, -1 = unknown. input_select.water_restriction_level first (options "No Water Restriction", "Water Level 1".."Water Level 4"); the older input_boolean.no_water_restriction / water_level_1..4 helpers still work
+  const s = states["input_select.water_restriction_level"];
+  if (s) { const m = /^Water Level (\d)$/.exec(s.state); return m ? +m[1] : (s.state === "No Water Restriction" ? 0 : -1); }
+  const on = x => states["input_boolean." + x] && states["input_boolean." + x].state === "on"; for (let i = 4; i >= 1; i--) if (on("water_level_" + i)) return i; return on("no_water_restriction") ? 0 : -1;
+};
 const VIRT = {
   "sensor.house_average_temperature": () => fx(avgOf(CONFIG.derived.houseTemps)),
   "sensor.mbr_curtain_action": () => { const c = (CONFIG.entities.mbrCurtains || []).map(x => states[x] && states[x].state); return c.some(x => x === "open" || x === "opening") ? "Close Curtains" : c.length && c.every(x => x === "closed") ? "Open Curtains" : "Curtains"; },
   "sensor.laundry_time_remaining_friendly": () => { const sec = parseInt(rawSv(E("laundryRemaining"))) || 0; if (!sec) return "Done"; const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60); return h > 0 ? h + "h " + m + "m" : m + "m"; },
   "sensor.current_water_restriction": () => { const l = wLevel(); return l === 0 ? "No Water Restriction" : l > 0 ? "Water Level " + l : "Unknown"; },
-  "sensor.current_water_restriction_description": () => { const l = wLevel(); return l === 0 ? "Use water sensibly." : l > 0 ? rawSv("input_text.water_restrictions_level_" + l) : "Unknown"; },
+  "sensor.current_water_restriction_description": () => { const l = wLevel(), t = CONFIG.waterRestrictionText || {}; return l === 0 ? (t[0] || "Use water sensibly.") : l > 0 ? (t[l] || rawSv("input_text.water_restrictions_level_" + l) || "") : "Unknown"; },   // wording from config.js waterRestrictionText, else the older input_text helpers
   "sensor.low_battery_count": () => lowBatt().length
 };
 Object.keys(CONFIG.derived.soil).forEach(z => { VIRT["sensor.average_" + z + "_soil_moisture"] = () => fx(avgOf(CONFIG.derived.soil[z].moisture)); VIRT["sensor.average_" + z + "_soil_temperature"] = () => fx(avgOf(CONFIG.derived.soil[z].temp)); });

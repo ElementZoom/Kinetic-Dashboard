@@ -1850,7 +1850,7 @@ html.camlive #szn *{animation-play-state:paused!important}
 // (notification tap such as #view/driveway, #security ...), not the return from the login, and the device has not asked for reduced motion.
 window.brandLogo = function () { var L = window.DASH_LOGO, B = (window.DASH_CONFIG || {}).brand; return L && L.svg ? { svg: L.svg, lockup: !!L.lockup } : B && B.mark ? { svg: B.mark, lockup: false } : null; };   // brand-logo.js wins over brand.mark in config.js
 window.brandMark = function (s) { var g = window.brandLogo(); if (!g) return ""; return g.svg.replace(/\bid="([\w-]+)"/g, 'id="$1' + s + '"').replace(/url\(#([\w-]+)\)/g, 'url(#$1' + s + ')'); };
-window.DASH_VER = "1.14.3";   // the one place to change the version
+window.DASH_VER = "1.14.4";   // the one place to change the version
 (function () { try {
   var B = (window.DASH_CONFIG || {}).brand, el = document.getElementById("bootld"), r = document.documentElement, lp = "on";
   try { lp = localStorage.getItem("dashLogo") || "on"; } catch (e) {}   // Theme page -> "Start-up logo": on | load (no intro) | off (plain spinner, as before)
@@ -3254,13 +3254,17 @@ const avgOf = ids => { const v = ids.map(x => parseFloat(rawSv(x))).filter(x => 
 const fx = v => v == null ? null : v.toFixed(1);
 // Low batteries: Battery Notes makes one "Battery+" sensor per device (sensor.<device>_battery_plus). The Notifications pop-up and the low-battery count both read these, listing any below derived.batteryBelow (%, 61 if not set)
 const lowBatt = () => { const th = CONFIG.derived.batteryBelow != null ? +CONFIG.derived.batteryBelow : 61; return Object.keys(states).filter(k => /^sensor\..*battery_plus$/.test(k) && parseFloat(states[k].state) < th).sort((x, y) => states[x].state - states[y].state); };
-const wLevel = () => { const on = x => states["input_boolean." + x] && states["input_boolean." + x].state === "on"; for (let i = 4; i >= 1; i--) if (on("water_level_" + i)) return i; return on("no_water_restriction") ? 0 : -1; };
+const wLevel = () => {   // 0 = no restriction, 1-4 = level, -1 = unknown. input_select.water_restriction_level first (options "No Water Restriction", "Water Level 1".."Water Level 4"); the older input_boolean.no_water_restriction / water_level_1..4 helpers still work
+  const s = states["input_select.water_restriction_level"];
+  if (s) { const m = /^Water Level (\d)$/.exec(s.state); return m ? +m[1] : (s.state === "No Water Restriction" ? 0 : -1); }
+  const on = x => states["input_boolean." + x] && states["input_boolean." + x].state === "on"; for (let i = 4; i >= 1; i--) if (on("water_level_" + i)) return i; return on("no_water_restriction") ? 0 : -1;
+};
 const VIRT = {
   "sensor.house_average_temperature": () => fx(avgOf(CONFIG.derived.houseTemps)),
   "sensor.mbr_curtain_action": () => { const c = (CONFIG.entities.mbrCurtains || []).map(x => states[x] && states[x].state); return c.some(x => x === "open" || x === "opening") ? "Close Curtains" : c.length && c.every(x => x === "closed") ? "Open Curtains" : "Curtains"; },
   "sensor.laundry_time_remaining_friendly": () => { const sec = parseInt(rawSv(E("laundryRemaining"))) || 0; if (!sec) return "Done"; const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60); return h > 0 ? h + "h " + m + "m" : m + "m"; },
   "sensor.current_water_restriction": () => { const l = wLevel(); return l === 0 ? "No Water Restriction" : l > 0 ? "Water Level " + l : "Unknown"; },
-  "sensor.current_water_restriction_description": () => { const l = wLevel(); return l === 0 ? "Use water sensibly." : l > 0 ? rawSv("input_text.water_restrictions_level_" + l) : "Unknown"; },
+  "sensor.current_water_restriction_description": () => { const l = wLevel(), t = CONFIG.waterRestrictionText || {}; return l === 0 ? (t[0] || "Use water sensibly.") : l > 0 ? (t[l] || rawSv("input_text.water_restrictions_level_" + l) || "") : "Unknown"; },   // wording from config.js waterRestrictionText, else the older input_text helpers
   "sensor.low_battery_count": () => lowBatt().length
 };
 Object.keys(CONFIG.derived.soil).forEach(z => { VIRT["sensor.average_" + z + "_soil_moisture"] = () => fx(avgOf(CONFIG.derived.soil[z].moisture)); VIRT["sensor.average_" + z + "_soil_temperature"] = () => fx(avgOf(CONFIG.derived.soil[z].temp)); });
@@ -5461,12 +5465,12 @@ function enDraw() {
     const GR = +CONFIG.gst || 0, subT = CS ? Math.round((CS.total + (hasGas ? gTot : 0)) * 100) / 100 : 0, gstA = Math.round(subT * GR * 100) / 100, gx = GR ? "excl. GST" : "";   // gst: 0.15 in config.js adds GST to the total (the power company's figures are excl. GST)
     if (CS) htot = '<div class="pn pg entot" data-k="t"><div class="eh"><div><div class="lbl">Total energy cost</div><div class="h2" style="margin-top:4px">' + mny(subT + gstA) + '</div></div><div class="lbl ensub" style="margin-left:auto;text-align:right">' + (GR ? "incl. GST" : "") + '</div></div>' + (subT > 0 ? '<div class="enseg"><i style="flex:' + CS.total + ';background:#6bb8ff"></i>' + (hasGas && gTot > 0 ? '<i style="flex:' + gTot + ';background:#f78c6b"></i>' : '') + (gstA > 0 ? '<i style="flex:' + gstA + ';background:#8a94a6"></i>' : '') + '</div>' : '') + '<div class="enb">' +
       '<div class="enr"><i class="end" style="background:#6bb8ff"></i><span class="enn">Electricity</span><span class="lbl">' + fm(CS.kwh) + ' kWh</span><b>' + mny(CS.total) + '</b></div>' + (en.r === "month" && CONFIG.billing && CONFIG.billing.electricity ? '<div class="lbl ensd">' + esc(sp.lab) + '</div>' : '') +
-      (hasGas ? '<div class="enr"><i class="end" style="background:#f78c6b"></i><span class="enn">Gas</span><span class="lbl">' + fm(gT) + ' ' + esc(GU) + '</span><b>' + (gC != null ? mny(gTot) : "—") + '</b></div>' + (gdates ? '<div class="lbl ensd">' + esc(gdates) + '</div>' : '') : '') +
+      (hasGas ? '<div class="enr"><i class="end" style="background:#f78c6b"></i><span class="enn">Gas</span><span class="lbl">' + fm(gT) + ' ' + esc(GU) + '</span><b>' + (gC != null ? mny(gTot) : "-") + '</b></div>' + (gdates ? '<div class="lbl ensd">' + esc(gdates) + '</div>' : '') : '') +
       (GR ? '<div class="enr"><i class="end" style="background:#8a94a6"></i><span class="enn">GST</span><span class="lbl">' + (GR * 100).toFixed(GR * 100 % 1 ? 1 : 0) + '% of ' + mny(subT) + '</span><b>' + mny(gstA) + '</b></div>' : '') + '</div>' + (en.r !== "day" && subT > 0 ? '<div class="lbl enavg">Average per day ' + mny((subT + gstA) / Math.max(1, Math.ceil((Math.min(sp.e, Date.now()) - sp.s) / 864e5))) + '</div>' : '') + '</div>';
     if (hasGas) {
-      hgas = '<div class="pn pg" data-k="g"><div class="eh"><div><div class="lbl">Gas cost' + (gdates ? ' · ' + esc(gdates) : '') + '</div><div class="h2" style="margin-top:4px">' + (gC != null ? mny(gTot) : "—") + '</div></div><div class="lbl ensub" style="margin-left:auto;text-align:right">' + fm(gT) + ' ' + esc(GU) + (GR ? ' · excl. GST' : '') + '</div></div><div class="enb">' +
+      hgas = '<div class="pn pg" data-k="g"><div class="eh"><div><div class="lbl">Gas cost' + (gdates ? ' · ' + esc(gdates) : '') + '</div><div class="h2" style="margin-top:4px">' + (gC != null ? mny(gTot) : "-") + '</div></div><div class="lbl ensub" style="margin-left:auto;text-align:right">' + fm(gT) + ' ' + esc(GU) + (GR ? ' · excl. GST' : '') + '</div></div><div class="enb">' +
         (gD > 0 ? '<div class="enr"><i class="end" style="background:#8a94a6"></i><span class="enn">Daily charge</span><span class="lbl">' + gdays + ' day' + (gdays === 1 ? "" : "s") + ' × ' + TT.symbol + TT.gasDaily.toFixed(3) + '</span><b>' + mny(gD) + '</b></div>' : '') +
-        '<div class="enr"><i class="end" style="background:#f78c6b"></i><span class="enn">Usage</span><span class="lbl">' + fm(gT) + ' ' + esc(GU) + (gC != null && gT > 0.001 ? ' × ' + (gC / gT * 100).toFixed(1) + 'c' : '') + '</span><b>' + (gC != null ? mny(gC) : "—") + '</b></div></div>' +
+        '<div class="enr"><i class="end" style="background:#f78c6b"></i><span class="enn">Usage</span><span class="lbl">' + fm(gT) + ' ' + esc(GU) + (gC != null && gT > 0.001 ? ' × ' + (gC / gT * 100).toFixed(1) + 'c' : '') + '</span><b>' + (gC != null ? mny(gC) : "-") + '</b></div></div>' +
         (en.r === "day" ? '<div class="lbl" style="margin:12px 0 -6px;text-transform:none;letter-spacing:0;opacity:.7">Gas readings arrive in lumps, so a single day\u2019s bars are approximate.</div>' : '') + '<div class="lbl" style="margin-top:14px">Usage · ' + esc(GU) + '</div>' + enBars(gbk, gsp, (() => { const v = {}; Object.keys(en.gas).forEach(t => { const b = enBk(gsp, +t); v[b] = (v[b] || 0) + en.gas[t]; }); return v; })(), "#f78c6b", FS, mob, fm) + '</div>';
     }
     if (CS) {
@@ -5489,7 +5493,7 @@ function enDraw() {
         let pk = 0, pc = 0; Object.keys(en.prev).forEach(t => { const v = en.prev[t]; pk += v; pc += v * enRate(new Date(+t).getHours()); });
         const useC = !CS.real && pc > 0.005, cur = useC ? CS.use : CS.kwh, prv = useC ? pc : pk, f2 = v => useC ? mny(v) : fm(v) + " kWh";
         if (prv > 0.005) { const d = cur - prv, pc2 = d / prv * 100, up = d > 0.0005; rows.push(["Vs " + pl, (Math.abs(pc2) < 0.5 ? "≈ same" : (up ? "↑ " : "↓ ") + Math.abs(pc2).toFixed(0) + "%"), f2(cur) + " now vs " + f2(prv) + " at this point" + (part ? "" : "") + (CS.real ? "" : " · usage only"), Math.abs(pc2) < 0.5 ? "" : up ? "var(--heat)" : "var(--mint)"]); }
-        else rows.push(["Vs " + pl, "—", "No usage recorded in " + pl, ""]);
+        else rows.push(["Vs " + pl, "-", "No usage recorded in " + pl, ""]);
       }
       const hr = {}; Object.keys(en.grid || {}).forEach(t => { const k = new Date(+t).getHours(); hr[k] = (hr[k] || 0) + en.grid[t]; });
       const pk = Object.keys(hr).sort((a, b) => hr[b] - hr[a])[0];

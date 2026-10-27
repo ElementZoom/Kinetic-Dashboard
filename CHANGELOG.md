@@ -4,6 +4,12 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
+## 1.14.4 - 2026-10-28
+
+### Changed
+- **Water restriction level can come from one `input_select`.** `input_select.water_restriction_level` (options `No Water Restriction`, `Water Level 1` to `Water Level 4`) is read first; the older `input_boolean` helpers still work when the select does not exist. The wording for each level is `waterRestrictionText` in config.js (`0` = no restriction, `1` to `4`), so it no longer needs four text helpers; without it the older `input_text` helpers are used.
+- A missing gas or Vs-last-period figure on the Energy page shows a plain hyphen (`-`) instead of a long dash.
+
 ## 1.14.3 - 2026-10-27
 
 ### Fixed

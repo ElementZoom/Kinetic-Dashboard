@@ -45,8 +45,10 @@ Every page and pop-up has a link, so a Home Assistant notification, button or au
 | `#camera/<name>` or `#view/<name>` | Any camera in `security`, full screen. `<name>` is the camera name in lowercase with dashes: `#camera/side-gate`, `#camera/patio`, `#camera/backyard` |
 | `#security/detections` | The Detections tab of Security |
 | `#rooms/<room id>` | One room, using the `id` from `house:` (`living`, `master`, `kids`, `office`, `laundry`, `garage`, `driveway`, `patio`) |
-| `#rooms/<room id>/doors` | That room, scrolled to its doors and windows |
-| `#weather/temp` `#weather/wind` `#weather/rain` `#weather/uv` | Weather page on that forecast tab, scrolled to it (`#weather/cloud` is the same tab as `uv`) |
+| `#rooms/<room id>/doors` | That room, scrolled to its doors and windows (on a phone, its Doors & windows tab) |
+| `#weather/temp` `#weather/wind` `#weather/rain` `#weather/uv` | Weather page on that forecast tab, scrolled to it; on a phone the Forecast tab opens (`#weather/cloud` is the same tab as `uv`) |
+| `#weather/pollen` | Weather page at the Pollen card (on a phone, the Pollen tab) |
+| `#hazards/earthquakes` `#hazards/volcanoes` | Hazards page on that tab (`#hazards` opens the map) |
 | `#notifications` `#active` `#batteries` | The Notifications pop-up on its Alerts, Active or Batteries tab |
 | `#active/<section>` | Notifications on Active, scrolled to a section: `lights`, `fans`, `light-switches`, `water-taps`, `curtains`, `windows`, `doors`, `appliances`, `laundry`, `towel-heating` |
 | `#arm/home` `#arm/away` `#arm/night` `#disarm` | Sends that command to the alarm panel, then returns to Home |

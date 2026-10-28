@@ -1,0 +1,34 @@
+/* Home: today's schedule (tablet strip under the cameras, phone card under the greeting) */
+#sch{cursor:pointer;position:relative;box-sizing:border-box;padding:0 40px 0 14px;min-height:46px;display:flex;align-items:center;border-radius:18px;border:1px solid rgba(var(--mint-rgb),.5);background:rgba(var(--mint-rgb),.09)}
+#sch[hidden]{display:none!important}
+#sch .sch-l{display:flex;align-items:center;gap:8px;min-width:0;flex:1;overflow:hidden;white-space:nowrap}
+#sch .sch-l>.lbl{color:var(--mint);margin-right:4px;flex:none}
+#sch .sch-m{display:none}
+#sch .sch-c{display:inline-flex;align-items:center;gap:8px;flex:none;border-radius:99px;padding:6px 13px;border:1px solid var(--line);background:rgba(var(--w),.05);font-size:13px;color:var(--ink)}
+#sch .sch-c i{width:8px;height:8px;border-radius:50%;background:var(--c);flex:none}
+#sch .sch-c small{font:600 11px var(--mono);color:var(--mut);letter-spacing:.04em}
+#sch .sch-c.nx{border-color:rgba(var(--mint-rgb),.7);background:rgba(var(--mint-rgb),.16)}
+#sch .sch-n{font:600 11px var(--mono);color:var(--mut);flex:none;margin-left:2px}
+#sch .sch-g{position:absolute;right:12px;top:0;bottom:0;display:flex;align-items:center;color:var(--mut)}#sch .sch-g svg{width:20px;height:20px;fill:currentColor;display:block}
+.camcol{display:flex;flex-direction:column;gap:14px;min-width:0}
+@media(min-width:761px){.hm .camcol{grid-column:1;grid-row:1}.hm .camcol .cams{flex:1;align-content:start}}
+#sch{margin-bottom:0}   /* #sch is also a .sch (the scenes/zone header row, margin-bottom 14px): the Today card must not add that to the gap the layout already gives it */
+@media(max-width:760px){
+  .camcol{display:contents}
+  #sch{display:block;padding:14px 16px;min-height:0;border-radius:var(--r,22px)}
+  #sch .sch-l{display:none}#sch .sch-m{display:flex;flex-direction:column;gap:6px}
+  #sch .sch-h{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;padding-right:22px}#sch .sch-h b{color:var(--mint)}
+  #sch .sch-r{display:flex;align-items:center;gap:10px;border-radius:12px;padding:9px 12px;background:rgba(var(--w),.06);border-left:3px solid var(--c);font-size:14px}
+  #sch .sch-r small{font:600 11px var(--mono);color:var(--mut);min-width:58px}#sch .sch-r span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #sch .sch-r.nx{background:rgba(var(--mint-rgb),.14);box-shadow:inset 0 0 0 1px rgba(var(--mint-rgb),.55)}#sch .sch-r.nx span{font-weight:600}
+  #sch .sch-r em{margin-left:auto;font:600 10px var(--mono);font-style:normal;color:var(--mint);letter-spacing:.06em;flex:none;text-transform:uppercase}
+  #sch .sch-x{padding:2px 4px}
+  #sch .sch-g{top:12px;bottom:auto;right:12px;height:22px}
+}
+html[data-mode=light] #sch .sch-l>.lbl,html[data-mode=light] #sch .sch-h b,html[data-mode=light] #sch .sch-r em{color:#17703d}
+html[data-mode=light] #sch{border-color:rgba(23,112,61,.45)}
+
+.enchp.on b{color:#8ff0c4}html[data-mode=light] .enchp.on b{color:#0b7a50}
+.secw{display:none}
+@media(max-width:760px){.secw{display:block}#roomspg:has(#rv[style*="none"]) .secw{display:none!important}}
+.secw .chips.tabs{margin-bottom:calc(14px - var(--tb))}

@@ -1,7 +1,6 @@
 /* tablet / desktop Home: cameras + climate column on top, the six rooms spread underneath */
 @media(min-width:761px){
 .hm .left{display:contents}
-.hm .cams{grid-column:1;grid-row:1}
 .hm .side{grid-column:2;grid-row:1}
 .hm #rooms.rooms{grid-column:1/-1;grid-row:2;grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:12px}
 #mini{display:grid;grid-template-columns:auto 1fr;gap:4px 22px;align-items:center}

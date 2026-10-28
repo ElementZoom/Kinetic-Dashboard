@@ -35,6 +35,10 @@
 <!-- @include css/25-camera-full-screen.css -->
 <!-- @include css/26-artist-info.css -->
 <!-- @include css/27-seasons.css -->
+<!-- @include css/28-pollen.css -->
+<!-- @include css/29-today-schedule.css -->
+<!-- @include css/29-setup-check.css -->
+<!-- @include css/30-motion.css -->
 </style>
 </head>
 <body>
@@ -42,19 +46,19 @@
 <div id="bd"></div>
 <nav>
   <div class="t" id="outs">--°C</div>
-  <a href="#home" class="on">HOME</a><a href="#rooms">ROOMS</a><a href="#climate">CLIMATE</a><a href="#security">SECURITY</a><a href="#weather">WEATHER</a><a href="#energy">ENERGY</a><a href="#irrigation">IRRIGATION</a><a href="#scenes">SCENES</a><a href="#media">MEDIA</a><a href="#events">EVENTS</a><a href="#vehicle">VEHICLE</a><a href="#hazards">HAZARDS</a><a href="#theme">THEME</a><a href="/config/dashboard" id="navset" class="nset">SETTINGS</a>
+  <a href="#home" class="on">HOME</a><a href="#rooms">ROOMS</a><a href="#climate">CLIMATE</a><a href="#security">SECURITY</a><a href="#weather">WEATHER</a><a href="#energy">ENERGY</a><a href="#irrigation">IRRIGATION</a><a href="#scenes">SCENES</a><a href="#media">MEDIA</a><a href="#events">EVENTS</a><a href="#vehicle">VEHICLE</a><a href="#hazards">HAZARDS</a><a href="#theme">THEME</a><a href="#admin">ADMIN</a><a href="/config/dashboard" id="navset" class="nset">SETTINGS</a>
 </nav>
 <div id="btab"><a href="#home" data-i2="n-home"><span>Home</span></a><a href="#rooms" data-i2="n-rooms"><span>Rooms</span></a><a href="#scenes" data-i2="n-scenes"><span>Scenes</span></a><a href="#security" data-i2="n-cam"><span>Camera</span></a><button id="bmore" data-i2="n-more"><span>More</span></button></div>
 <div id="npmini" class="npoff"></div><div id="npfab"></div>
 <div id="npsheet"><div class="npbk" data-np="close"></div><div class="pn npb" id="npbody"></div></div>
-<div id="mshe"><a href="#climate" data-i2="n-climate"><span>Climate</span></a><a href="#weather" data-i2="n-weather"><span>Weather</span></a><a href="#energy" data-i2="n-energy"><span>Energy</span></a><a href="#irrigation" data-i2="n-irr"><span>Irrigation</span></a><a href="#media" data-i2="music-note"><span>Media</span></a><a href="#events" data-i2="n-events"><span>Events</span></a><a href="#vehicle" data-i2="v-car"><span>Vehicle</span></a><a href="#hazards" data-i2="volcano"><span>Hazards</span></a><a href="#theme" data-i2="n-palette"><span>Theme</span></a><a href="/config/dashboard" id="navset2" data-i2="n-set"><span>Settings</span></a></div>
+<div id="mshe"><a href="#climate" data-i2="n-climate"><span>Climate</span></a><a href="#weather" data-i2="n-weather"><span>Weather</span></a><a href="#energy" data-i2="n-energy"><span>Energy</span></a><a href="#irrigation" data-i2="n-irr"><span>Irrigation</span></a><a href="#media" data-i2="music-note"><span>Media</span></a><a href="#events" data-i2="n-events"><span>Events</span></a><a href="#vehicle" data-i2="v-car"><span>Vehicle</span></a><a href="#hazards" data-i2="volcano"><span>Hazards</span></a><a href="#theme" data-i2="n-palette"><span>Theme</span></a><a href="#admin" data-i2="n-admin"><span>Admin</span></a><a href="/config/dashboard" id="navset2" data-i2="n-set"><span>Settings</span></a></div>
 <div class="main">
   <header><button id="hb" aria-label="Menu" data-i="menu"></button><h1 id="ttl">Home</h1><div id="hnp" class="npoff"></div><div class="hr"><button id="al" class="al s-x" data-i="shield-outline"></button><span id="st" class="bad">CONNECTING</span><span id="bat" hidden></span><div id="hc" role="button" aria-label="Notifications"><i id="nacc"></i><span id="clk">--:--</span></div></div></header>
 
   <div id="home" class="page on">
     <div class="pn hs"><canvas id="wfx"></canvas><b id="gr"></b><span id="dt" class="lbl"></span><span id="wchip" class="wch">--</span><span id="wwind" class="wch"></span><span id="whl" class="lbl">--</span></div>
     <div class="hm">
-      <div class="left"><div class="cams" id="cams"></div><div class="rooms" id="rooms"></div></div>
+      <div class="left"><div class="camcol"><div class="cams" id="cams"></div><div class="pn sch" id="sch" hidden></div></div><div class="rooms" id="rooms"></div></div>
       <div class="side">
         <div class="pn" id="mini"><div class="lbl">Heat pump</div>
           <div class="mrow"><div id="mid"><span class="lbl">Indoor</span><b id="mi">--</b></div><div id="mod"><span class="lbl">Outdoor</span><b id="mo">--</b></div></div>
@@ -81,13 +85,14 @@
   <div id="media" class="page"><div class="eh" style="margin-bottom:14px"><b class="pt">Speakers</b><span class="mph"><a class="eb ic" id="mpsp" href="spotify://home" aria-label="Open Spotify" data-i2="spotify"><span>OPEN SPOTIFY</span></a><button class="eb ic" id="mpgrp" data-mp="join" aria-label="Group speakers" data-i2="speaker-multiple" hidden><span>GROUP SPEAKERS</span></button></span></div><div class="mlay"><div id="mp"></div><div id="lyr" class="pn" style="display:none"></div></div><div class="mdt"><i class="on" data-pg="0"></i><i data-pg="1"></i></div></div>
 
   <div id="theme" class="page"></div>
+  <div id="admin" class="page"></div>
   <div id="vehicle" class="page"></div>
   <div id="hazards" class="page"></div>
 
   <div id="climate" class="page"><div id="gsum" class="pn"></div><div id="grid"></div><div class="dots" id="gdots"></div></div>
 
   <div id="events" class="page">
-    <div class="eh"><button class="eb" id="ep" data-i="chevron-left"></button><h2 id="et"></h2><button class="eb" id="en" data-i="chevron-right"></button><button class="eb" id="etd">TODAY</button><button class="eb" id="eadd" aria-label="Add event" style="display:none">+ ADD EVENT</button><div class="lg" id="elg"></div></div>
+    <div class="eh"><button class="eb" id="ep" data-i="chevron-left"></button><h2 id="et"></h2><button class="eb" id="en" data-i="chevron-right"></button><button class="eb" id="etd">TODAY</button><button class="eb" id="esrch" aria-label="Search events" data-i="magnify"></button><input type="search" id="esq" class="esq" placeholder="Search all events" autocomplete="off" aria-label="Search all events"><button class="eb" id="eadd" aria-label="Add event" style="display:none">+</button><div class="lg" id="elg"></div></div>
     <div class="cg" id="cg"></div>
   </div>
 </div>
@@ -113,6 +118,7 @@
 <!-- @include js/modules/08-target-stepper.js -->
 <!-- @include js/modules/09-climate-page.js -->
 <!-- @include js/modules/10-home-page.js -->
+<!-- @include js/modules/10-today-schedule.js -->
 <!-- @include js/modules/11-haptics.js -->
 <!-- @include js/modules/12-init.js -->
 <!-- @include js/modules/13-rooms.js -->
@@ -122,6 +128,8 @@
 <!-- @include js/modules/17-alarm.js -->
 <!-- @include js/modules/18-house-groups.js -->
 <!-- @include js/modules/19-derived-values.js -->
+<!-- @include js/modules/19-pollen.js -->
+<!-- @include js/modules/19-weather-extra.js -->
 <!-- @include js/modules/20-weather.js -->
 <!-- @include js/modules/21-irrigation.js -->
 <!-- @include js/modules/22-vehicle.js -->
@@ -133,6 +141,9 @@
 <!-- @include js/modules/28-hazards.js -->
 <!-- @include js/modules/29-palette-page.js -->
 <!-- @include js/modules/30-access-page.js -->
+<!-- @include js/modules/30-setup-check.js -->
+<!-- @include js/modules/31-section-pills.js -->
+<!-- @include js/modules/30-admin-page.js -->
 <!-- @include js/modules/31-home-weather-shortcuts.js -->
 <!-- @include js/modules/32-notifications-popup.js -->
 <!-- @include js/modules/33-media.js -->

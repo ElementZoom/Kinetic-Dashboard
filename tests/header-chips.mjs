@@ -1,0 +1,34 @@
+// Tablet header strip: with the player showing the 2nd alert chip is icon only; 3+ conditions are one named chip with a +N badge.   Run:  node tests/header-chips.mjs
+import http from "node:http";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const cfg = `window.DASH_CONFIG = { url: location.origin, token: "tok", rooms: [{ id: "living", name: "Living", main: true }], notifTimers: [], leakSensors: ["binary_sensor.leak"], media: ["media_player.a"], weather: "weather.home" };`;
+const server = http.createServer((q, r) => { const u = q.url.split("?")[0]; if (u === "/config.js") { r.writeHead(200, { "content-type": "text/javascript" }); return r.end(cfg); }
+  if (u !== "/dash.html") { r.writeHead(404); return r.end(); } r.writeHead(200, { "content-type": "text/html" }); r.end(fs.readFileSync(path.join(root, "dash.html"))); }).listen(0);
+await new Promise(r => server.once("listening", r));
+const { chromium } = await import("playwright");
+const browser = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});
+const problems = [], errors = []; let checks = 0;
+const eq = (what, got, want) => { checks++; if (JSON.stringify(got) !== JSON.stringify(want)) problems.push(`${what}: got ${JSON.stringify(got)}, wanted ${JSON.stringify(want)}`); };
+const page = await (await browser.newContext({ viewport: { width: 1280, height: 800 } })).newPage();
+page.on("pageerror", e => errors.push(String(e).slice(0, 300)));
+await page.routeWebSocket(/api\/websocket/, ws => { ws.send(JSON.stringify({ type: "auth_required" })); ws.onMessage(raw => { const m = JSON.parse(raw); if (m.type === "auth") ws.send(JSON.stringify({ type: "auth_ok" })); else if (m.id) ws.send(JSON.stringify({ id: m.id, type: "result", success: true, result: m.type === "get_states" ? [] : null })); }); });
+await page.goto(`http://127.0.0.1:${server.address().port}/dash.html#weather`); await page.waitForTimeout(1500);
+await page.evaluate(() => { document.documentElement.classList.remove("boot"); const l = document.getElementById("lg"); if (l) l.hidden = true; });
+const S = (id, st, a) => page.evaluate(([i, s, a]) => { states[i] = { entity_id: i, state: s, attributes: Object.assign({ friendly_name: i }, a || {}) }; }, [id, st, a]);
+const refresh = async () => { await page.evaluate(() => { drawNotif(); npRender(); }); await page.waitForTimeout(400); };
+const info = () => page.evaluate(() => { const n = document.querySelector("#nacc"), v = c => getComputedStyle(c).display !== "none" && c.getBoundingClientRect().width > 0;
+  return { chips: [...n.querySelectorAll(".nai")].filter(v).map(c => [c.dataset.k, getComputedStyle(c.querySelector(".nal")).display !== "none"]), badge: getComputedStyle(n, "::after").content, player: !document.querySelector("#hnp").classList.contains("npoff") }; });
+await S("binary_sensor.leak", "on"); await S("sensor.a_battery_plus", "10"); await refresh();
+let r = await info(); eq("no player: both chips show their names", r.chips, [["leak", true], ["battery", true]]); eq("no player: nothing playing", r.player, false);
+await S("media_player.a", "playing", { friendly_name: "Living", media_title: "Song", media_artist: "Artist", media_duration: 200, media_position: 10, media_position_updated_at: new Date().toISOString() }); await refresh();
+r = await info(); eq("player showing", r.player, true); eq("player: first chip keeps its name, second is icon only", r.chips, [["leak", true], ["battery", false]]);
+await S("sensor.a_battery_plus", "80"); await refresh(); r = await info(); eq("one condition: one named chip", r.chips, [["leak", true]]);
+await S("sensor.a_battery_plus", "10"); await S("weather.home", "sunny", {}); await S("binary_sensor.leak", "on");
+await page.evaluate(() => { CONFIG.pollen = { risk: "sensor.pol" }; states["sensor.pol"] = { entity_id: "sensor.pol", state: "High", attributes: {} }; }); await refresh();
+r = await info(); eq("three conditions: one named chip", r.chips, [["leak", true]]); eq("three conditions: +N badge counts the rest", r.badge, '"+2"');
+eq("no page errors", errors, []);
+await browser.close(); server.close();
+if (problems.length) { console.log("FAIL\n" + problems.join("\n")); process.exit(1); } console.log(`header-chips: ${checks} checks passed`);

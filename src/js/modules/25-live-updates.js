@@ -1,6 +1,6 @@
 // ---------- live updates for the new pages ----------
 const REL = {
-  weather: rxj(/^(weather\.|geo_location\.)/, (CONFIG.relevance || {}).weather),
+  weather: rxj(/^(weather\.|geo_location\.|sun\.sun$)/, [(CONFIG.relevance || {}).weather, polRx()].filter(Boolean).join("|")),
   irrigation: rxj(/(water_tap|sprinkler|soil|water_restriction|water_level)/, (CONFIG.relevance || {}).irrigation),
   scenes: rxj(/(dynamic_scene|gradient_scene)/, (CONFIG.relevance || {}).scenes),
   media: /^media_player\./,

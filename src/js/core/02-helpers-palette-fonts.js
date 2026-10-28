@@ -82,7 +82,9 @@ const hsw = h => '<div class="hsw">' + h + '<span class="hsm l" aria-hidden="tru
 /* the arrows sit level with the visible row, not the middle of the wrapper (tab rows carry extra padding for their shadow, so those two differ) */
 function hsMid(w, s) { const k = Array.prototype.filter.call(s.children, c => c.offsetHeight); if (!k.length) return; let a = 1e9, b = -1e9; k.forEach(c => { const r = c.getBoundingClientRect(); if (r.top < a) a = r.top; if (r.bottom > b) b = r.bottom; }); w.style.setProperty("--hsy", Math.round(((a + b) / 2 - w.getBoundingClientRect().top) * 10) / 10 + "px"); }
 function hsUpd(w) { const s = w.firstElementChild; if (!s) return; hsMid(w, s); const o = s.scrollWidth > s.clientWidth + 4; w.classList.toggle("more", o && s.scrollLeft + s.clientWidth < s.scrollWidth - 4); w.classList.toggle("moreL", o && s.scrollLeft > 4); }
-const hsAll = () => $$(".hsw").forEach(hsUpd);
+const hsRO = typeof ResizeObserver === "function" ? new ResizeObserver(es => es.forEach(e => { const w = e.target.closest(".hsw"); if (w) hsUpd(w); })) : null, hsSeen = new WeakSet();
+const hsObs = w => { if (!hsRO || hsSeen.has(w)) return; hsSeen.add(w); const s = w.firstElementChild; if (!s) return; hsRO.observe(s); Array.prototype.forEach.call(s.children, c => hsRO.observe(c)); };   // a row that was laid out while hidden or still sliding in gets its edge arrows as soon as it has a size
+const hsAll = () => $$(".hsw").forEach(w => { hsObs(w); hsUpd(w); });
 { let t = 0; const q = () => { clearTimeout(t); t = setTimeout(hsAll, 120); };
   document.addEventListener("scroll", e => { const w = e.target.parentNode; if (w && w.classList && w.classList.contains("hsw")) hsUpd(w); }, true);
   new MutationObserver(q).observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ["class"] });

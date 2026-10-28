@@ -30,7 +30,7 @@
   #scenes .sct .srl{display:grid;grid-template-columns:1fr 1fr;gap:6px}#irrigation .zsx .srl{display:grid;grid-template-columns:1fr 1fr;gap:6px}#scenes .sct .sr{margin:0;padding:6px 8px;min-height:0;gap:8px}#irrigation .zsx .sr{margin:0;padding:6px 8px;min-height:0;gap:8px}#scenes .sct .sr .sbd{width:28px;height:28px;border-radius:9px}#irrigation .zsx .sr .sbd{width:28px;height:28px;border-radius:9px}#scenes .sct .sr .sbd svg{width:16px;height:16px}#irrigation .zsx .sr .sbd svg{width:16px;height:16px}#scenes .sct .sr b{font-size:13px}#irrigation .zsx .sr b{font-size:13px}#scenes .sct .sr .ts2{font-size:9px;padding:2px 6px}#irrigation .zsx .sr .ts2{font-size:9px;padding:2px 6px}
   #scenes .sct .sr.stp{margin-top:8px}#irrigation .zsx .sr.stp{margin-top:8px}#scenes .sct .mv{margin:4px 0}#irrigation .zsx .mv{margin:4px 0}
 }
-@keyframes thIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes thIn{from{opacity:0}to{opacity:1}}
 .scsm{display:none}@media(max-width:760px){.scsm{display:block}}
 /* colour roles that must stay readable in both modes (checked with tests/login/contrast.js, WCAG AA) */
 #vw,.cam.fs{--bg:var(--d-bg,#06141b);--bg2:var(--d-bg2,#0e3a42);--ink:var(--d-ink,#eaf1fb);--ink-rgb:var(--d-ink-rgb,234,241,251);--w:255,255,255;--mut:rgba(var(--d-ink-rgb,234,241,251),.64);--line:rgba(255,255,255,.12);color-scheme:dark;color:var(--ink)}

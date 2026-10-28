@@ -76,6 +76,14 @@ function enCost(sp) {   // grid import split into the tariff periods + daily cha
 }
 function drawEnergy() { if (en.anim && Date.now() < en.anim) { clearTimeout(en.at); en.at = setTimeout(drawEnergy, en.anim - Date.now() + 30); return; }   // late answers wait until the slide-in has finished, so they do not cut it off
   enDraw(); const pg = $("#energy"); if (pg && pg.classList.contains("hold") && (en.data || en.err)) pgEnter(pg); }
+function enCheapLine(T) {   // tariff hint: which hours are cheapest, and whether now is one of them (only when the tariff has more than one rate)
+  const P = T.periods.filter(p => p.to > p.from); if (P.length < 2) return "";
+  const lo = Math.min.apply(null, P.map(p => p.rate)), hi = Math.max.apply(null, P.map(p => p.rate)); if (lo === hi) return "";
+  const hr = h => h === 0 || h === 24 ? "midnight" : h === 12 ? "noon" : (h % 12 || 12) + (h < 12 ? "am" : "pm"), cheap = P.filter(p => p.rate === lo), now = new Date().getHours(), inNow = cheap.some(p => now >= p.from && now < p.to);
+  const nx = cheap.map(p => p.from > now ? p.from : p.from + 24).sort((a, b) => a - b)[0], cur = cheap.filter(p => now >= p.from && now < p.to)[0];
+  const rt = v => v === 0 ? "free" : T.symbol + v.toFixed(3) + "/kWh";
+  return '<div class="lbl enchp' + (inNow ? ' on' : '') + '" style="margin-top:10px;text-transform:none;letter-spacing:0">Cheapest: <b>' + cheap.map(p => hr(p.from) + " – " + hr(p.to)).join(", ") + '</b> (' + rt(lo) + ') · ' + (inNow ? "cheap rate now, until " + hr(cur.to) : "next at " + hr(nx % 24)) + '</div>';
+}
 function enDraw() {
   const mob = isMobile(), FS = mob ? 15 : 12, sp = enSpan(), pg = $("#energy"), P = en.prefs;
   let h = '<div class="eh ehc" style="margin-bottom:14px"><div class="chips tabs">' + [["day", "DAY"], ["week", "WEEK"], ["month", CONFIG.billing ? "BILL" : "MONTH"], ["year", "YEAR"]].map(x => '<button class="chip' + (en.r === x[0] ? " on" : "") + '" data-er="' + x[0] + '">' + x[1] + '</button>').join("") + '</div><div class="seg" style="margin-left:auto"><button class="eb" data-eo="-1">' + mdi("chevron-left") + '</button><button class="eb" data-eo="0" style="min-width:210px">' + esc(sp.lab) + '</button><button class="eb" data-eo="1">' + mdi("chevron-right") + '</button></div></div>';
@@ -104,7 +112,7 @@ function enDraw() {
       const PC = ["#6bb8ff", "#8ff0c4", "#ffd166", "#ef476f"];
       h += '<div class="pn pg" data-k="e"><div class="eh"><div><div class="lbl">Electricity cost</div><div class="h2" style="margin-top:4px">' + mny(CS.total) + '</div></div><div class="lbl ensub" style="margin-left:auto;text-align:right">' + fm(CS.kwh) + ' kWh ' + (en.gridSrc === "devices" ? "from tracked devices" : "from the grid") + (CS.real && CS.est ? ' · ' + CS.est + ' h estimated' : '') + (GR ? ' · excl. GST' : '') + '</div></div><div class="lbl ensrc" style="margin:-4px 0 10px;text-transform:none;letter-spacing:0;opacity:.7">' + (en.gridSrc === "devices" ? "Home Assistant\u2019s Energy settings have no grid usage, so this is the tracked devices only." : "Source: " + esc((en.gridIds || []).join(", ")) + " \u00b7 " + Object.keys(en.grid || {}).length + " hours of data") + '</div><div class="enb">' +
         CS.per.map((x, i) => '<div class="enr"><i class="end" style="background:' + PC[i % 4] + '"></i><span class="enn">' + esc(x.p.name || "") + '</span><span class="lbl">' + fm(x.kwh) + ' kWh × ' + ((CS.real && x.kwh > 0.001 ? x.cost / x.kwh : x.p.rate) * 100).toFixed(1) + 'c</span><b>' + mny(x.cost) + '</b></div>').join("") +
-        ('<div class="enr"><i class="end" style="background:#8a94a6"></i><span class="enn">Daily charge</span><span class="lbl">' + CS.days + ' day' + (CS.days === 1 ? "" : "s") + ' × ' + TT.symbol + TT.daily.toFixed(3) + '</span><b>' + mny(CS.fixed) + '</b></div></div>');
+        ('<div class="enr"><i class="end" style="background:#8a94a6"></i><span class="enn">Daily charge</span><span class="lbl">' + CS.days + ' day' + (CS.days === 1 ? "" : "s") + ' × ' + TT.symbol + TT.daily.toFixed(3) + '</span><b>' + mny(CS.fixed) + '</b></div>' + (en.r === "day" ? enCheapLine(TT) : '') + '</div>');
       const ks = Object.keys(CS.cols).map(Number), cm = Math.max.apply(null, bk.map(b => (CS.cols[b] || [0]).reduce((a, c) => a + c, 0)).concat([0.001])), W2 = mob ? 420 : 360, H2 = mob ? 150 : 140, L2 = mob ? 50 : 42, B2 = mob ? 28 : 26, bw2 = (W2 - L2) / bk.length; let g2 = '';
       for (let i = 0; i <= 2; i++) { const y = 8 + (H2 - B2 - 8) * (1 - i / 2); g2 += '<line x1="' + L2 + '" x2="' + W2 + '" y1="' + y + '" y2="' + y + '" stroke="currentColor" opacity=".12"/><text x="' + (L2 - 6) + '" y="' + (y + 4) + '" text-anchor="end" font-size="' + FS + '" fill="currentColor" opacity=".6">' + fm(cm * i / 2) + '</text>'; }
       bk.forEach((b, i) => { let y = H2 - B2; (CS.cols[b] || []).forEach((v, j) => { const hh = v / cm * (H2 - B2 - 8); if (hh > 0.3) g2 += '<rect x="' + (L2 + i * bw2 + bw2 * 0.12).toFixed(1) + '" y="' + (y - hh).toFixed(1) + '" width="' + (bw2 * 0.76).toFixed(1) + '" height="' + hh.toFixed(1) + '" rx="2" fill="' + PC[j % 4] + '"><title>' + esc(CS.per[j].p.name || "") + ' ' + fm(v) + ' kWh</title></rect>'; y -= hh; }); const d = new Date(b); g2 += '<text x="' + (L2 + i * bw2 + bw2 / 2).toFixed(1) + '" y="' + (H2 - 7) + '" text-anchor="middle" font-size="' + FS + '" fill="currentColor" opacity=".6">' + (en.r === "day" ? (i % 3 === 0 ? d.getHours() : "") : en.r === "week" ? d.toLocaleDateString([], { weekday: "short" }) : en.r === "month" ? (i % 2 === 0 ? d.getDate() : "") : d.toLocaleDateString([], { month: "short" })) + '</text>'; });
@@ -178,9 +186,9 @@ function route() {
     if (h0 && !PAGE_ON(h0) && h0 !== "home") { location.replace("#" + (PAGE_ON("home") ? "home" : lp)); return; }
     if ((!h0 || h0 === "home") && !PAGE_ON("home")) { location.replace("#" + lp); return; }
     if (h0 === "security" && /^#security\/detections/.test(location.hash) && !ruSec("detections")) { location.replace("#security"); return; } }
-  const h = location.hash.slice(1).split("/"), k = h[0] === "camera" ? "view" : h[0], p = ["climate", "events", "rooms", "security", "weather", "energy", "irrigation", "scenes", "media", "theme", "vehicle", "hazards", "view"].indexOf(k) > -1 ? k : "home", pg = p === "rooms" ? "roomspg" : p;
+  const h = location.hash.slice(1).split("/"), k = h[0] === "camera" ? "view" : h[0], p = ["climate", "events", "rooms", "security", "weather", "energy", "irrigation", "scenes", "media", "theme", "vehicle", "hazards", "admin", "view"].indexOf(k) > -1 ? k : "home", pg = p === "rooms" ? "roomspg" : p;
   $("#vw").className = p === "view" ? $("#vw").className : ""; document.body.classList.toggle("vwb", p === "view"); if (p === "view") vwFull(); else vwFullOff(); if (p !== "view") document.querySelectorAll("#vw .cam.ls, #vw .cam.nfs").forEach(e => camLandOff(e, true));
-  ["home", "climate", "events", "roomspg", "security", "weather", "energy", "irrigation", "scenes", "media", "theme", "vehicle", "hazards"].forEach(x => $("#" + x).classList.toggle("on", x === pg));
+  ["home", "climate", "events", "roomspg", "security", "weather", "energy", "irrigation", "scenes", "media", "theme", "vehicle", "hazards", "admin"].forEach(x => $("#" + x).classList.toggle("on", x === pg));
   { const t = $("#ttl"), back = p === "home" || !PAGE_ON("home") ? "" : p === "rooms" && h[1] ? "#rooms" : p === "view" ? (VW.back && VW.back !== location.hash ? VW.back : "#home") : "#home";   // phone: the page title is the back button (room -> Rooms, any other page -> Home)
     t.innerHTML = (back ? '<svg class="tbc" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>' : "") + "<span>" + p.charAt(0).toUpperCase() + p.slice(1) + "</span>"; t.dataset.back = back; t.classList.toggle("bk", !!back); }
   { const el = $("#" + pg); if (el && el !== lastPg && bootDone) { if (pg === "energy" && !en.data) pgHold(el, 900); else pgEnter(el); } lastPg = el; if (el) lazyIn(el); }
@@ -188,20 +196,22 @@ function route() {
   document.body.classList.remove("more-open");
   { const inMore = $$("#mshe a").some(a => a.getAttribute("href") === "#" + p); $$("#btab a, #mshe a").forEach(a => a.classList.toggle("on", a.getAttribute("href") === "#" + p)); $("#bmore").classList.toggle("on", inMore); }
   if (p !== "rooms") rEnter = true; onRooms = p === "rooms"; if (!onRooms) { curRoom = null; $("#cpp").classList.remove("on"); }
-  stopCams(); if (p === "home") { applyLayout(); queueHome(); }
+  stopCams(); if (p === "home") { applyLayout(); queueHome(); schLoad(); schDraw(); }
   if (p === "home" || (p === "security" && h[1] !== "detections") || p === "view") startCams();
   if (p === "events") { if (!evWasOn) evJump = true; loadEvents(); } evWasOn = p === "events";
   if (onRooms) {
-    if (h[1]) { const was = curRoom && curRoom.id === h[1]; drawRoom(h[1]); if (!was) txGo($("#rv"), 1, true);
+    if (h[1]) { const was = curRoom && curRoom.id === h[1]; if (h[2] === "doors") SECP.want = { page: "roomspg", q: '[data-sec="doors"]' }; drawRoom(h[1]); if (!was) txGo($("#rv"), 1, true);
       if (h[2] === "doors") [120, 700, 1800].forEach(ms => setTimeout(() => { if (curRoom && curRoom.id === h[1] && location.hash.split("/")[2] === "doors") { const t = $('#rv [data-sec="doors"]'); if (t) { t.scrollIntoView({ block: "center", behavior: ms > 120 ? "auto" : "smooth" }); if (ms === 120) { t.classList.add("flash"); setTimeout(() => t.classList.remove("flash"), 1800); } } } }, ms)); }   // #rooms/<room>/doors scrolls to that room's Doors & windows panel   // list -> room slides in from the right
     else { const was = !!curRoom; drawRooms(); if (was) txGo($("#rl"), -1, true); }   // room -> list slides back from the left
   }
   if (p !== "security") secPrev = "";
   if (p === "security") secTab(h[1] === "detections" && dtCams().length && CONFIG.detections !== false && ruSec("detections") ? "det" : "live");
-  if (p === "weather") {   // #weather/wind | rain | uv opens that forecast tab and scrolls to it
+  if (p === "weather") {   // #weather/wind | rain | uv opens that forecast tab and scrolls to it, #weather/pollen scrolls to the Pollen card
     const ti = { temp: 0, wind: 1, rain: 2, uv: 3, cloud: 3 }[h[1]];
     if (ti != null) fcTab = ti;
+    if (h[1] === "pollen") SECP.want = { page: "weather", q: "#wxpol" }; else if (ti != null) SECP.want = { page: "weather", q: ".fcp" };   // phones: open the tab that holds that card
     drawWeather();
+    if (h[1] === "pollen") [60, 1500].forEach(ms => setTimeout(() => { if (curPg() === "weather") { const f = $("#wxpol"); if (f) f.scrollIntoView({ block: "start" }); } }, ms));   // #weather/pollen scrolls to the Pollen card
     if (ti != null) [60, 1500].forEach(ms => setTimeout(() => { if (curPg() === "weather") { fcSync(); const f = $("#wx .fcp"); if (f) f.scrollIntoView({ block: "start" }); } }, ms));
   }
   if (p === "energy") { if (en.key !== en.r + en.o) en.data = null; drawEnergy(); loadEnergy(); }   // same period as last time: show it straight away and refresh quietly
@@ -211,9 +221,10 @@ function route() {
   if (p === "scenes") { scSheet = false; $("#scenes").classList.remove("scop"); drawScenes(); }
   if (p === "media") drawMedia();
   if (p === "theme") drawPalette();
+  if (p === "admin") drawAdmin();
   npSheet = false; npRender();
   if (p === "vehicle") drawVehicle();
-  if (p === "hazards") { HZ.vb = null; HZ.slide = 0; HZ.view = HZ.view || (states["zone.home"] ? "home" : "ni"); requestAnimationFrame(drawHaz); }
+  if (p === "hazards") { HZ.vb = null; HZ.tab = { earthquakes: "quake", quakes: "quake", volcanoes: "volc", volcano: "volc" }[h[1]] || "map"; HZ.view = HZ.view || (states["zone.home"] ? "home" : "ni"); requestAnimationFrame(drawHaz); }
   if (h[0] === "disarm") alarmLink("disarm"); else if (h[0] === "arm") alarmLink("arm_" + (h[1] || "away"));
   if (h[0] === "notifications" || h[0] === "active" || h[0] === "batteries") { npTab = h[0] === "active" ? "active" : h[0] === "batteries" ? "batteries" : "alerts"; npGo = h[0] === "active" && h[1] ? { s: h[1], t: Date.now() } : null; document.body.classList.add("np-open"); drawNotif(); }
 }

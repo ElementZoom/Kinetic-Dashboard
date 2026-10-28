@@ -4,9 +4,9 @@
 html[data-mode=light] :where(.pn,.card,.cd,.ws,.pk,.zf,.rc,.tl,.bd,header){background:rgba(255,255,255,.72);box-shadow:0 1px 4px rgba(0,0,0,.08)}
 .alert.v,.alert.q{color:#fff}.alert.v .lbl,.alert.q .lbl{color:rgba(255,255,255,.8)}.cam{color:#eaf1fb}
 /* notifications + media */
-#npop{display:block;visibility:hidden;pointer-events:none;position:fixed;inset:0;z-index:70;transition:visibility 0s .32s}body.np-open #npop{visibility:visible;pointer-events:auto;transition:none}
+#npop{display:block;visibility:hidden;pointer-events:none;position:fixed;inset:0;z-index:70;transition:visibility 0s .36s}body.np-open #npop{visibility:visible;pointer-events:auto;transition:none}
 #nbd{position:absolute;inset:0;background:rgba(0,0,0,.55);opacity:0;transition:opacity .3s ease}body.np-open #nbd{opacity:1}
-#np{opacity:0;transform:translateY(22px) scale(.97);transition:transform .32s cubic-bezier(.2,.85,.3,1),opacity .25s ease}body.np-open #np{opacity:1;transform:none}
+#np{transform:translateY(calc(-100% - 20px));transition:transform .36s cubic-bezier(.2,.85,.3,1)}body.np-open #np{transform:none}@media(min-width:761px){#np{transform:translateX(calc(100% + 20px))}body.np-open #np{transform:none}}   /* phone: slides down from the top (it opens from the alerts up there); tablet: slides in from the right */
 #np .gone{opacity:0!important;transform:scale(.8)!important;transition:opacity .22s ease,transform .3s cubic-bezier(.4,0,.2,1)!important;pointer-events:none}
 #np{position:absolute;top:10px;right:10px;bottom:10px;width:min(500px,calc(100vw - 20px));overflow:auto;padding:18px 18px 28px;border-radius:24px;background:linear-gradient(160deg,var(--bg2),var(--bg));border:1px solid var(--line);box-shadow:0 10px 40px rgba(0,0,0,.45)}
 #np .nh{display:flex;align-items:center;gap:12px;padding:0 4px}#np .nh>div{flex:1;min-width:0}#np .nh h3{font-size:22px;font-weight:400;margin:4px 0 0}   /* same header as the Automations pop-up: small label, title, DONE */

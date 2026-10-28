@@ -134,3 +134,6 @@ html[data-style] #npmini{background-color:var(--bg)}
 .mph{display:flex;gap:10px;align-items:center;margin-left:auto}
 .eb.ic{display:inline-flex;align-items:center;gap:8px;text-decoration:none}
 @media(max-width:760px){.eb.ic span{display:none}.eb.ic{width:44px;height:44px;padding:0;justify-content:center;border-radius:50%}.eb.ic svg{width:22px;height:22px}}
+
+#npbody .lbl .npq{margin-left:auto;margin-right:10px;flex:none}#npbody .lbl .npq.on{background:var(--mint);color:var(--bg)}#npbody .lbl .npq.on svg{fill:currentColor}
+#npbody .lbl .npq.off{opacity:.35}

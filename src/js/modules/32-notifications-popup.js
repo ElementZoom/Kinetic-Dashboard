@@ -14,7 +14,7 @@ function notif(full) {
   let n = 0, h = "", bh = "", nb = 0, hasB = false;
   const sec = (t, b) => { if (full && b) h += '<div class="lbl np2">' + t + '</div>' + b; };
   const grid = a => a.length ? '<div class="tg3">' + a.map(tileHtml).join("") + '</div>' : "";
-  const al = volcHtml().concat(quakeHtml() || []); n += al.length; sec("Alerts", al.join(""));
+  const al = volcHtml().concat(quakeHtml() || []), pa = polAlert(); if (pa) al.push(pa); n += al.length; sec("Alerts", al.join(""));
   const dr = doorsOpen();
   if (dr) { n++; sec("Doors", '<div class="alert q"><b>' + (dr.length || 1) + ' open</b><div>' + dr.map(x => esc(fname(x))).join(" · ") + '</div></div>'); }
   const LK = LEAKS().filter(x => isOn(x[0])), W2 = (CONFIG.alerts || []).filter(x => isOn(x[0]));   // leak sensors first, as red cards
@@ -36,7 +36,7 @@ function notif(full) {
   return { n: n - (hasB ? 1 : 0), all: n, nb: nb, html: h, bh: bh };
 }
 // header strip: normally a glowing bar while something is waiting; it turns into an icon for the conditions below. Priority when several are true:
-// water leak, then weather warning, then garage door open, then a door open, then water on, then laundry running, then towel heating. The top one shows and a small "+n" says how many more there are.
+// water leak, then weather warning, then garage door open, then a door open, then water on, then pollen (from the level set by pollen.alertFrom), then laundry running, then towel heating. The top one shows and a small "+n" says how many more there are.
 const LEAKS = () => (CONFIG.leakSensors || []).map(x => { x = [].concat(x); return [x[0], x[1] || fname(x[0]), x[2] || "Water detected"]; });   // config leakSensors: ["binary_sensor.x"] or [["binary_sensor.x", "Washing machine", "Water under the machine"]]
 const laundryOn = () => sv(E("laundryState")) === "Run";   // laundry running (the washer integration reports "Run"; "Delay Run" = waiting for its delayed start)
 const towelsOn = () => { const g = E("towelGroup"); return !!g && members(g).some(x => x !== g && isOn(x)); };
@@ -48,10 +48,12 @@ const NSK = [
   ["garage", "garage-open-variant", "Garage door open", () => Object.keys(galCfg()).some(k => { const c = galCfg()[k], s = c && c.sensor && states[c.sensor]; return !!s && (s.state === "on") !== !!c.invert; })],
   ["door", "door-open", "Door open", () => !!doorsOpen()],
   ["water", "m3-water-drop", "Water on", () => Object.keys(states).some(k => /^switch\..*water_tap$/.test(k) && states[k].state === "on") || (CONFIG.irrigation || []).some(z => z.switch && states[z.switch] && states[z.switch].state === "on")],
+  ["battery", "battery-low", "Low battery", () => lowBattChip().length > 0],   // under 20 % by default (derived.batteryAlertBelow)
+  ["pollen", "pollen", "Pollen", polOn],   // below a leak, a warning, the garage, a door and water on; the chip adds the level
   ["laundry", "washing-machine", "Laundry running", laundryOn],
   ["towel", "radiator", "Towel heating on", towelsOn]
 ];
-const nskRel = id => LEAKS().some(x => x[0] === id) || id === E("weatherWarnings") || id === E("doorsGroup") || id === E("laundryState") || id === E("laundryRemaining") || id === E("towelGroup") || members(E("towelGroup")).includes(id) || members(E("doorsGroup")).includes(id) || /^switch\..*water_tap$/.test(id) || Object.keys(galCfg()).some(k => (galCfg()[k] || {}).sensor === id) || (CONFIG.irrigation || []).some(z => z.switch === id);
+const nskRel = id => polRel(id) || /^sensor\..*battery_plus$/.test(id) || LEAKS().some(x => x[0] === id) || id === E("weatherWarnings") || id === E("doorsGroup") || id === E("laundryState") || id === E("laundryRemaining") || id === E("towelGroup") || members(E("towelGroup")).includes(id) || members(E("doorsGroup")).includes(id) || /^switch\..*water_tap$/.test(id) || Object.keys(galCfg()).some(k => (galCfg()[k] || {}).sensor === id) || (CONFIG.irrigation || []).some(z => z.switch === id);
 let npTab = "alerts";
 const ACTC = CONFIG.quickAll || [];
 
@@ -130,8 +132,13 @@ function drawNotif() {
   if (open && $$("#np input[type=range], #np .tl").some(r => r._d && r._d > Date.now())) { clearTimeout(npht); npht = setTimeout(drawNotif, 400); return; }
   const r = notif(open);
   const ks = NSK.filter(k => k[3]()), top = ks[0], nacc = $("#nacc");   // the strip turns into the icon of the most urgent condition
-  if ((nacc.dataset.k || "") !== (top ? top[0] : "")) { if (top) nacc.dataset.k = top[0]; else nacc.removeAttribute("data-k"); nacc.innerHTML = top ? (top[0] === "laundry" ? DRUM : mdi(top[1])) : ""; }
+  // each condition is a .nai (icon + name): a phone shows just the top icon, a tablet shows the name as a chip, and a wide screen shows the two most urgent chips
+  const pn = polNow(), nai = (k, c) => '<span class="nai' + c + '" data-k="' + k[0] + '"' + (k[0] === "pollen" && pn ? ' style="--nk:' + pn.col + '"' : "") + '>' + (k[0] === "laundry" ? DRUM : mdi(k[1])) + '<b class="nal">' + esc(k[0] === "pollen" && pn ? "Pollen · " + pn.name : k[0] === "battery" && lowBattChip().length > 1 ? lowBattChip().length + " low batteries" : k[2]) + '</b></span>';
+  const sig = ks.slice(0, 2).map((k, i) => nai(k, i ? " nai2" : "")).join("");
+  if ((nacc.dataset.k || "") !== (top ? top[0] : "") || nacc._sig !== sig) { nacc._sig = sig; if (top) nacc.dataset.k = top[0]; else nacc.removeAttribute("data-k"); nacc.innerHTML = sig; if (top && top[0] === "pollen" && pn) nacc.style.setProperty("--nk", pn.col); else nacc.style.removeProperty("--nk"); }
+  nacc.dataset.n = ks.length;   // 3+ conditions: one chip + "+N" (see 28-pollen.css)
   if (ks.length > 1) nacc.dataset.more = "+" + (ks.length - 1); else nacc.removeAttribute("data-more");
+  if (ks.length > 2) nacc.dataset.more2 = "+" + (ks.length - 2); else if (ks.length > 1) nacc.dataset.more2 = ""; else nacc.removeAttribute("data-more2");
   nacc.classList.toggle("on", !!r.all || !!top);
   $("#hc").title = ks.length ? ks.map(k => k[2]).join(" · ") + (r.all ? " · " : "") + (r.all ? r.all + " notification" + (r.all > 1 ? "s" : "") : "") : r.all ? r.all + " notification" + (r.all > 1 ? "s" : "") : "Notifications";
   if (!open) { npCamStop(); return; }

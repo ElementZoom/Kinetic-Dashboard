@@ -2,6 +2,7 @@
 const avgOf = ids => { const v = ids.map(x => parseFloat(rawSv(x))).filter(x => !isNaN(x)); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null; };
 const fx = v => v == null ? null : v.toFixed(1);
 // Low batteries: Battery Notes makes one "Battery+" sensor per device (sensor.<device>_battery_plus). The Notifications pop-up and the low-battery count both read these, listing any below derived.batteryBelow (%, 61 if not set)
+const lowBattChip = () => { const th = CONFIG.derived.batteryAlertBelow != null ? +CONFIG.derived.batteryAlertBelow : 20; return th > 0 ? lowBatt().filter(k => parseFloat(states[k].state) < th) : []; };   // strip chip: only the really low ones (default under 20 %), the Batteries tab still lists everything under batteryBelow
 const lowBatt = () => { const th = CONFIG.derived.batteryBelow != null ? +CONFIG.derived.batteryBelow : 61; return Object.keys(states).filter(k => /^sensor\..*battery_plus$/.test(k) && parseFloat(states[k].state) < th).sort((x, y) => states[x].state - states[y].state); };
 const wLevel = () => {   // 0 = no restriction, 1-4 = level, -1 = unknown. input_select.water_restriction_level first (options "No Water Restriction", "Water Level 1".."Water Level 4"); the older input_boolean.no_water_restriction / water_level_1..4 helpers still work
   const s = states["input_select.water_restriction_level"];

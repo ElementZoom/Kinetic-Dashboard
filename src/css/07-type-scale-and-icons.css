@@ -34,7 +34,7 @@ button,input,select,textarea{font-family:inherit}
 
 .nb,.sct .mv{margin:8px 0}.sct .mv span{width:auto;min-width:100px;display:flex;align-items:center;gap:6px}.sct .mv span svg{width:18px;height:18px;fill:currentColor}.sct .mv b{min-width:34px;text-align:right;font-weight:500}
 @media(max-width:760px){.sch{cursor:pointer}.schc{display:grid;margin-left:auto;transition:transform .25s}.sct.col .scb{display:none}.sct.col .sch{margin-bottom:0}.sct:not(.col) .schc{transform:rotate(180deg)}}
-@keyframes pbgi{from{opacity:0}}@keyframes pbgo{to{opacity:0}}@keyframes ppi{from{opacity:0;transform:translateY(18px) scale(.94)}}@keyframes ppo{to{opacity:0;transform:translateY(12px) scale(.96)}}
+@keyframes pbgi{from{opacity:0}}@keyframes pbgo{to{opacity:0}}@keyframes ppi{from{opacity:0}}@keyframes ppo{to{opacity:0}}
 #kp,#sp{animation:pbgi .2s ease both}#kp.opening>.kpb,#sp>.spb{animation:ppi .3s cubic-bezier(.2,.85,.3,1) both}
 #kp.out,#sp.out{animation:pbgo .2s ease both}#kp.out>.kpb,#sp.out>.spb{animation:ppo .2s ease both}
 #vw.on{animation:pbgi .28s ease both}
@@ -47,7 +47,7 @@ button,input,select,textarea{font-family:inherit}
 .wch svg{width:1.2em;height:1.2em;fill:currentColor;vertical-align:-.22em}
 .enc{font-weight:500;opacity:.75;margin-left:2px}.enb{display:flex;flex-direction:column;gap:10px;margin-top:14px}.enr{display:flex;align-items:center;gap:12px;font-size:14px}.enr .enn{flex:0 0 190px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.enr b{margin-left:auto;font-weight:500;min-width:84px;text-align:right}.enbar{flex:1;height:12px;border-radius:6px;background:rgba(var(--w),.08);overflow:hidden}.enbar i{display:block;height:100%;border-radius:6px}
 @media(max-width:760px){
-#energy .ensl{display:flex;flex-direction:column;gap:12px}
+#energy .ensl{display:flex;flex-direction:column;gap:14px}
 #energy .ensl>.pn{box-sizing:border-box;min-width:0;margin:0;padding:16px 16px 14px}
 #energy .ensl[data-t="e"]>[data-k="g"],#energy .ensl[data-t="g"]>[data-k="e"]{display:none}
 #energy .ensl .h2{font-size:30px;font-weight:300;line-height:1.1;overflow-wrap:anywhere}#energy .ensl .lbl{font-size:12px}
@@ -57,7 +57,7 @@ button,input,select,textarea{font-family:inherit}
 #energy .eni{grid-template-columns:1fr 1fr;gap:10px}#energy .eil{padding:11px 12px}#energy .eiv{font-size:22px}
 }
 .ensw{display:none}.enseg{display:flex;height:10px;border-radius:6px;overflow:hidden;gap:2px;margin-top:14px}.enseg i{display:block;min-width:3px}.enavg{margin-top:12px}
-@media(max-width:760px){.ensw{display:flex;background:rgba(var(--w),.06);border-radius:14px;padding:3px;margin-bottom:12px}.ensw button{flex:1;padding:10px 6px;border:0;border-radius:11px;background:none;color:var(--ink);opacity:.7;font:inherit;font-size:12px;letter-spacing:.1em}.ensw button.on{background:rgba(var(--w),.16);opacity:1}}
+@media(max-width:760px){.ensw{display:flex;background:rgba(var(--w),.06);border-radius:14px;padding:3px;margin-bottom:14px}.ensw button{flex:1;padding:10px 6px;border:0;border-radius:11px;background:none;color:var(--ink);opacity:.7;font:inherit;font-size:12px;letter-spacing:.1em}.ensw button.on{background:rgba(var(--w),.16);opacity:1}}
 @media(min-width:761px){#energy .ensl{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:stretch}#energy .ensl[data-n="2"]{grid-template-columns:repeat(2,minmax(0,1fr))}#energy .ensl>.pn{margin:0;min-width:0}#energy .ensl .enr .enn{flex-basis:70px}#energy .ensl .enr{flex-wrap:wrap;row-gap:0}#energy .ensl .enr>.lbl{font-size:11px;text-align:right;flex:0 1 auto;min-width:0;margin-left:auto}#energy .ensl .enr b{margin-left:0}#energy .ensl .enn{flex:1 1 70px}#energy .ensl .enr{font-size:13px;gap:8px}#energy .ensl .enr b{min-width:56px}#energy .ensl .h2{font-size:26px}#energy .ensub{margin-left:0!important;text-align:left!important;flex:1 0 100%;font-size:10px;margin-top:2px}#energy .ensl .eh{flex-wrap:wrap}#energy .ensrc{overflow-wrap:anywhere;margin:6px 0 10px!important}}
 @media(min-width:761px) and (max-width:1280px){#energy .ensl:not([data-n="2"]){grid-template-columns:repeat(2,minmax(0,1fr))}#energy .ensl>.entot{grid-column:1/-1}.enins .eni{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
 .ensd{margin:-6px 0 0 24px;opacity:.7;text-transform:none;letter-spacing:0}
@@ -126,8 +126,24 @@ html[data-mode=light] .rooms2 .rc{background:rgba(255,255,255,.72)}
 /* the strip as an icon: weather warning (amber), garage door open (coral), a door open (yellow), water on (blue); "+n" when more than one is true */
 #nacc[data-k]{position:relative;width:26px;height:26px;border-radius:0;background:none;box-shadow:none;color:var(--nk);display:flex;align-items:center;justify-content:center;animation:nkglow 2.2s ease-in-out infinite}
 #nacc[data-k] svg{width:26px;height:26px;fill:currentColor}
-#nacc[data-k=leak]{--nk:#ff4d5e}#nacc[data-k=warn]{--nk:#ffb04a}#nacc[data-k=garage]{--nk:#ff7a6b}#nacc[data-k=door]{--nk:#ffc857}#nacc[data-k=laundry]{--nk:#8fa8ff}#nacc[data-k=towel]{--nk:#ff9f43}#nacc[data-k=water]{--nk:#5cc8ff}
+#nacc .nai{display:flex;align-items:center;justify-content:center;color:var(--nk)}#nacc .nai2,#nacc .nal{display:none}   /* phone: only the top icon */
+#nacc[data-k=leak],#nacc .nai[data-k=leak]{--nk:#ff4d5e}#nacc[data-k=warn],#nacc .nai[data-k=warn]{--nk:#ffb04a}#nacc[data-k=garage],#nacc .nai[data-k=garage]{--nk:#ff7a6b}#nacc[data-k=door],#nacc .nai[data-k=door]{--nk:#ffc857}#nacc[data-k=laundry],#nacc .nai[data-k=laundry]{--nk:#8fa8ff}#nacc[data-k=towel],#nacc .nai[data-k=towel]{--nk:#ff9f43}#nacc[data-k=water],#nacc .nai[data-k=water]{--nk:#5cc8ff}#nacc[data-k=battery],#nacc .nai[data-k=battery]{--nk:#c8e04a}#nacc[data-k=pollen]{--nk:#f2c261}
 #nacc[data-more]:not([data-more=""])::after{content:attr(data-more);position:absolute;top:-8px;right:-11px;min-width:16px;height:16px;box-sizing:border-box;padding:0 4px;border-radius:8px;background:var(--nk);color:#10161c;font:700 10px/16px var(--mono);text-align:center}
+/* tablet and wider: each condition is a glowing chip with its name (and the pollen level); a wide screen shows the two most urgent, "+n" counts the rest */
+@media(min-width:761px){
+#nacc[data-k]{width:auto;height:auto;gap:8px;animation:none;filter:none}
+#nacc[data-k] .nai{display:inline-flex;gap:6px;padding:6px 13px 6px 8px;border-radius:99px;border:1px solid color-mix(in srgb,var(--nk) 65%,transparent);background:color-mix(in srgb,var(--nk) 14%,transparent);color:color-mix(in srgb,var(--nk) 62%,var(--ink));animation:nkglow 2.2s ease-in-out infinite}
+#nacc[data-k] .nai svg{width:20px;height:20px;fill:var(--nk)}
+#nacc[data-k] .nai.nai2{display:none}
+#nacc[data-k] .nal{display:inline;font:700 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+#nacc[data-more]:not([data-more=""])::after{right:-8px}
+}
+@media(min-width:1180px){
+#nacc[data-k] .nai.nai2{display:inline-flex}
+#nacc[data-more2=""]::after{display:none}
+#nacc[data-more2]:not([data-more2=""])::after{content:attr(data-more2)}
+}
+@media(min-width:761px) and (prefers-reduced-motion:reduce){#nacc[data-k] .nai{animation:none;filter:drop-shadow(0 0 6px var(--nk))}}
 @keyframes nkglow{0%,100%{opacity:.6;filter:drop-shadow(0 0 2px var(--nk))}50%{opacity:1;filter:drop-shadow(0 0 8px var(--nk))}}
 @media(prefers-reduced-motion:reduce){#nacc[data-k]{animation:none;filter:drop-shadow(0 0 6px var(--nk))}}
 #gsum{display:none}

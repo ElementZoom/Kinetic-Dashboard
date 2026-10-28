@@ -1,0 +1,20 @@
+/* One motion language for pop-ups and sheets: from the bottom = slide up, from the side = slide in, from the middle = fade in.
+   Sheets move by transform only (no blur, scale or fade) so they stay smooth on phones. */
+:root{--sheet-ease:cubic-bezier(.2,.85,.3,1)}
+@keyframes shUp{from{transform:translateY(102%)}}
+@keyframes shDown{to{transform:translateY(102%)}}
+@keyframes fdIn{from{opacity:0}}
+@keyframes fdOut{to{opacity:0}}
+/* the More menu above the tab bar */
+@media(max-width:760px){
+  #mshe{display:grid!important;visibility:hidden;pointer-events:none;transform:translateY(calc(100% + var(--dock) + 24px));transition:transform .36s var(--sheet-ease),visibility 0s .36s}
+  body.more-open #mshe{visibility:visible;pointer-events:auto;transform:none;transition:transform .36s var(--sheet-ease)}
+  body.vwb #mshe{display:none!important}
+}
+/* the lyrics sheet on the Media page */
+body.ly-open .mlay #lyr{animation:shUp .36s var(--sheet-ease) both}
+body.ly-open.ly-out .mlay #lyr{animation:shDown .3s ease both}
+body.ly-open::after{animation:fdIn .3s ease both}
+body.ly-open.ly-out::after{animation:fdOut .3s ease both}
+/* the detection viewer: fades in, no blur */
+#dtm{-webkit-backdrop-filter:none;backdrop-filter:none}#dtm.on{animation:fdIn .25s ease both}

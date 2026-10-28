@@ -55,10 +55,12 @@ window.DASH_CONFIG = {
   hapticMs: 35,
   haptics: true,
   mobileLive: true,
-  layout: {
+  layout: {   // order of the Home cards. "schedule" (today's events, from `calendars`) goes after the cameras / greeting by itself; list it to put it elsewhere
     tablet: ["status", "cams", "rooms", "heatpump", "forecast"],
     mobile: ["status", "nowplaying", "heatpump", "forecast"]
   },
+  frostBelow: 2,   // Weather page: show a Frost advisory when the hourly low is at or under this (°C)
+  schedule: true,   // false = no "Today" strip / card on Home (it only shows while something is still to come today)
   icons: {   // per-entity icon overrides
     "switch.demo_kitchen_led": "hue-lightstrip",
     "switch.demo_table_light": "countertop"
@@ -167,7 +169,8 @@ window.DASH_CONFIG = {
     },
     // Notifications > Batteries lists the Battery Notes "Battery+" sensors (sensor.<device>_battery_plus) below
     // this percentage, and the low-battery count uses the same list
-    batteryBelow: 25,
+    batteryBelow: 25,   // the Notifications "Batteries" tab lists devices under this %
+    batteryAlertBelow: 20,   // the clock strip shows a "Low battery" chip for devices under this % (0 = never)
     groups: {   // whole-house groups the dashboard builds itself
       "group.all_fans": ["fan.demo_bathroom_fan", "fan.demo_laundry_fan"],
       "group.all_curtains": ["cover.demo_master_curtain_left", "cover.demo_master_curtain_right"],
@@ -223,6 +226,9 @@ window.DASH_CONFIG = {
   // Irrigation zones. `zone` is the name your "start sprinkler" script expects (hyphens are sent as underscores).
   // `timer` = the Timer helper for that zone: its countdown shows on the Irrigation page and on the tap's tile in
   // the notifications pop-up.
+  // Pollen (Google Pollen through Home Assistant's "pollenlevels" integration). Only risk is needed; alertFrom is the level where the
+  // strip beside the clock and the Alerts list start to show it ("low" ... "very high", false = never).
+  pollen: { risk: "sensor.demo_pollen_risk", top: "sensor.demo_pollen_top", plants: "sensor.demo_pollen_plants", grass: "sensor.demo_pollen_grass", alertFrom: "moderate" },
   waterRestrictionText: {   // wording shown on the Irrigation page for each water restriction level (0 = none).
     0: "Use water sensibly.",   // The level itself comes from input_select.water_restriction_level (options: No Water
     1: "Sprinklers 6-8am & 6-8pm only.",   // Restriction, Water Level 1 ... Water Level 4)
@@ -415,7 +421,7 @@ window.DASH_CONFIG = {
     access: "input_text.dashboard_access"
   },
   volcanoes: [],                         // alert-level sensors, e.g. ["sensor.volcano_name"]
-  hazards: { radius: 200, focusKm: 100, minMag: 4 },
+  hazards: { radius: 200, focusKm: 100, minMag: 4, volcanoMinLevel: 2 },   // volcanoMinLevel: GeoNet level (0-5) from which a volcano shows in Alerts / Notifications; 2 = Moderate to heightened unrest
   siren: { flag: "input_boolean.demo_siren_toggle", script30: "demo_siren_30_seconds" },
   // Notification pop-up rows: [entity, title, text, optional tag]. tag "driveway", "garage", or any camera name
   // from the Security list (e.g. "road") also shows that camera, live, while the alert is on

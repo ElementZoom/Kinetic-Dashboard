@@ -99,6 +99,10 @@ await p.evaluate(() => { npRender(); }); await p.waitForTimeout(400);
 eq("sheet: a redraw keeps you on the Artist page", await p.evaluate(() => document.querySelector("#npbody .nptx").textContent), "Artist");
 await p.click("#npbody .npdl span:first-child"); await p.waitForTimeout(900);
 eq("sheet: the labels page back to the player", await p.evaluate(() => document.querySelector("#npbody .nptx").textContent), "Now playing");
+await p.click("#npbody .npq"); await p.waitForTimeout(900);
+eq("sheet: the lyrics button opens the Lyrics page and lights up", await p.evaluate(() => [document.querySelector("#npbody .nptx").textContent, document.querySelector("#npbody .npq").classList.contains("on"), !!document.querySelector("#npbody .shly")]), ["Lyrics", true, true]);
+await p.click("#npbody .npq"); await p.waitForTimeout(900);
+eq("sheet: pressing it again returns to the player", await p.evaluate(() => [document.querySelector("#npbody .nptx").textContent, document.querySelector("#npbody .npq").classList.contains("on")]), ["Now playing", false]);
 await p.close();
 // ---- matching, facts and the optional Deezer lookup
 p = await open(1200, 800);

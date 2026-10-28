@@ -58,8 +58,8 @@ function lyFoot() {
   const s = states[LY.ctl] || { state: "", attributes: {} }, a = s.attributes, pl = s.state === "playing";
   return '<div class="lyf"><span class="npart">' + mpArt(a, s.state, a.entity_picture) + '</span><div class="npi"><b>' + esc(a.media_title || "") + '</b><small>' + esc(a.media_artist || "") + '</small></div><button class="rnd on" data-mp="pp" data-e="' + LY.ctl + '">' + mdi(pl ? "pause" : "play") + '</button></div>';
 }
-const lyClose = () => document.body.classList.remove("ly-open");
-function lyOpen(ctl) { if (ctl) LY.sel = ctl; LY.open = true; try { localStorage.setItem("dashLyr", "1"); } catch (_) {} document.body.classList.add("ly-open"); LY.drawn = ""; lyrUpdate(); }
+const lyClose = () => { const b = document.body; if (!b.classList.contains("ly-open") || b.classList.contains("ly-out")) return; b.classList.add("ly-out"); setTimeout(() => b.classList.remove("ly-open", "ly-out"), 300); };   // slides back down before it goes
+function lyOpen(ctl) { if (ctl) LY.sel = ctl; LY.open = true; try { localStorage.setItem("dashLyr", "1"); } catch (_) {} document.body.classList.remove("ly-out"); document.body.classList.add("ly-open"); LY.drawn = ""; lyrUpdate(); }
 document.addEventListener("click", e => { if (e.target === document.body && document.body.classList.contains("ly-open")) lyClose(); });
 addEventListener("hashchange", lyClose);
 function lyrDraw(tr) {

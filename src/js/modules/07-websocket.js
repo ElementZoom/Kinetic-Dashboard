@@ -25,7 +25,7 @@ function setUser(u) {
   const none = (CONFIG.noNameUsers || []).some(x => [nm.toLowerCase(), pid.toLowerCase()].indexOf(String(x).toLowerCase()) > -1);
   userKnown = true; userName = none ? "" : nm;
   try { localStorage.setItem("dashUser", none ? "-" : nm); } catch (_) {}
-  ME = { id: String(u.id || ""), name: nm, pid: pid, admin: !!u.is_admin }; ruRefresh(); if (ME.admin && curPg() === "theme") drawPalette();
+  ME = { id: String(u.id || ""), name: nm, pid: pid, admin: !!u.is_admin }; try { localStorage.setItem("dashAdm", ME.admin ? "1" : "0"); } catch (_) {} ruRefresh(); if (curPg() === "admin") { if (ADMIN_ON()) drawAdmin(); else route(); }
   tick(); bootMark("u");
 }
 function identify() {
@@ -61,7 +61,7 @@ function openWs(tk) {
     else if (m.type === "auth_invalid") authBad();
     else if (m.type === "auth_ok") {
       setStatus(true); hideLogin();
-      send({ type: "get_states" }, list => { list.forEach(setState); palTick(); vGroups(); buildDep(); drawGsum(); if (cards[MAIN]) render(MAIN); if (!identDone) identify(); batTick(); tick(); bootMark("s"); queueNotif(); setTimeout(bootGo, 1400); if (camPage()) startCams(); if (onRooms) { if (curRoom) drawRoom(curRoom.id); else updRooms(); } });
+      send({ type: "get_states" }, list => { list.forEach(setState); palTick(); schLoad(); vGroups(); buildDep(); drawGsum(); if (cards[MAIN]) render(MAIN); if (!identDone) identify(); batTick(); tick(); bootMark("s"); queueNotif(); setTimeout(bootGo, 1400); if (camPage()) startCams(); if (onRooms) { if (curRoom) drawRoom(curRoom.id); else updRooms(); } });
       send({ type: "subscribe_events", event_type: "state_changed" });
       loadFc(); loadFcH(); evBtn(); if (curPg() === "energy") { en.busy = false; loadEnergy(); }
     } else if (m.type === "result" && pending[m.id]) { try { pending[m.id](m.result, m); } catch (x) {} delete pending[m.id]; }

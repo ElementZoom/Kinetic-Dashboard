@@ -13,7 +13,8 @@ const CONFIG = (() => {
   return Object.assign(d, u);
 })();
 let RU = null;   // the signed-in person's restrictions (CONFIG.users[<person id or HA name>]), or null = unrestricted
-const PAGE_ON = p => (!Array.isArray(CONFIG.pages) || CONFIG.pages.indexOf(p) > -1) && (!RU || !Array.isArray(RU.pages) || RU.pages.indexOf(p) > -1);   // CONFIG.pages = list of page ids to show; leave out = all pages
+const ADMIN_ON = () => !!(ME.admin || CONFIG.token);   // the Admin page (access levels, setup check) is for Home Assistant admins only (or a dashboard running on a long-lived token); ME is declared below, this runs later
+const PAGE_ON = p => p === "admin" ? ADMIN_ON() : (!Array.isArray(CONFIG.pages) || CONFIG.pages.indexOf(p) > -1) && (!RU || !Array.isArray(RU.pages) || RU.pages.indexOf(p) > -1);   // CONFIG.pages = list of page ids to show; leave out = all pages
 const E = k => (CONFIG.entities && CONFIG.entities[k]) || "unset." + k;   // named entity slots from config.js; a missing slot points at a nonexistent entity so that feature simply stays hidden
 const rxj = (base, extra) => new RegExp(base.source + (extra ? "|" + extra : ""));
 const ruSec = k => !(RU && RU.security && RU.security[k] === false);   // Security page parts a restricted person may use (alarm, detections, controls, playback)
@@ -22,6 +23,7 @@ const RU_ALL = ["home", "rooms", "climate", "security", "weather", "energy", "ir
 const RU_NAME = { home: "Home", rooms: "Rooms", climate: "Climate", security: "Security", weather: "Weather", energy: "Energy", irrigation: "Irrigation", scenes: "Scenes", media: "Media", events: "Events", vehicle: "Vehicle", hazards: "Hazards", theme: "Theme" };
 const RU_SEC = [["alarm", "Alarm"], ["controls", "Camera controls"], ["playback", "Playback"], ["detections", "Detections"]];
 let ME = { id: "", name: "", pid: "", admin: false };   // the signed-in Home Assistant user
+try { if (localStorage.getItem("dashAdm") === "1") ME.admin = true; } catch (_) {}   // remembered from the last visit so #admin survives a reload; identify() sets the real value
 // Who may see what is kept in ONE Home Assistant helper (entities.access, an input_text, 255 characters): "<first 8 characters of the user id>=<hex bit mask>", joined by commas.
 // Bits 0-12 = pages (RU_ALL order), bits 13-16 = Security parts (RU_SEC order). A person with an entry is restricted to what is switched on; a person without one is not (unless config.js has a rule for them).
 function accDecode(str) { const m = {}; String(str || "").split(",").forEach(x => { const q = x.split("="), n = parseInt(q[1], 16); if (q[0] && q[0].length >= 4 && n >= 0) m[q[0]] = n; }); return m; }
@@ -52,9 +54,9 @@ function ruApply(o) {   // hides what this person may not use; the engine also s
     if (!ruSec("playback")) css += ".px,.pbk{display:none!important}";
     if (!ruSec("controls")) css += ".snd,.mic{display:none!important}";   // sound and talk-back buttons go with the camera control tiles
   }
-  st.textContent = css; b.classList.toggle("ru", !!RU); b.classList.toggle("ru1", !!RU && left <= 1);
+  st.textContent = css; b.classList.toggle("adm", ADMIN_ON()); b.classList.toggle("ru", !!RU); b.classList.toggle("ru1", !!RU && left <= 1);
   try { localStorage.setItem("dashRuO", RU ? JSON.stringify(RU) : "-"); } catch (_) {}
 }
-function ruRefresh() { if (!identDone) return; const o = ruResolve(); if (JSON.stringify(o) !== JSON.stringify(RU)) { ruApply(o); route(); if (curPg() === "theme") drawPalette(); } else ruApply(o); }
+function ruRefresh() { if (!identDone) return; const o = ruResolve(); if (JSON.stringify(o) !== JSON.stringify(RU)) { ruApply(o); route(); if (curPg() === "theme") drawPalette(); if (curPg() === "admin") drawAdmin(); } else ruApply(o); }
 let userName = "", userKnown = false; try { const c = localStorage.getItem("dashUser"); if (c != null) { userKnown = true; userName = c === "-" ? "" : c; } } catch (_) {}
 try { const k = localStorage.getItem("dashRuO"); if (k && k !== "-") ruApply(JSON.parse(k)); } catch (_) {}

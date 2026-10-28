@@ -168,13 +168,16 @@ let wcI = 0, alI = 0;
 function drawWeather() {
   const w = states[W], a = w ? w.attributes : {}, cd = w ? (COND[w.state] || ["☁️", w.state]) : ["", ""], ot = sv(E("outdoorTemp"));
   const st = (l, v) => '<div class="ws"><span class="lbl">' + l + '</span><b>' + v + '</b></div>', n = (v, u) => v != null ? Math.round(v) + (u ? " " + u : "") : "--", wu = a.wind_speed_unit || "km/h";
+  wxPresLoad(); let fd;
   let h = '<div class="wcols"><div class="pn"><div class="lbl">Now · ' + cd[1] + '</div><div class="row" style="justify-content:flex-start;gap:20px;margin:10px 0 16px"><span class="big2">' + f1(ot != null ? ot : a.temperature) + '°</span><span class="wbig">' + wic(w && w.state) + '</span></div><div class="wg">' +
     st("Indoor", sv(CONFIG.indoor) != null ? f1(sv(CONFIG.indoor)) + "°" : "--") + st("Humidity", n(a.humidity, "%")) + st("Pressure", n(a.pressure, a.pressure_unit)) + st("Wind", n(a.wind_speed, wu)) + st("Gusts", n(a.wind_gust_speed, wu)) + st("UV", a.uv_index != null ? a.uv_index : "--") + st("Cloud", n(a.cloud_coverage, "%")) +
-    st("Rain now", fcH.length ? f1(+fcH[0].precipitation || 0) + " mm" : "--") + st("Air quality", esc(sv(E("airQuality")) || "--")) + '</div></div>' +
+    st("Rain now", fcH.length ? f1(+fcH[0].precipitation || 0) + " mm" : "--") + st("Air quality", esc(sv(E("airQuality")) || "--")) + ((fd = wxFeels(a, ot != null ? ot : a.temperature, wu))[0] != null ? st("Feels like", f1(fd[0]) + "°") : "") + (fd[1] != null ? st("Dew point", f1(fd[1]) + "°") : "") + (wxPresTrend(a) ? st("Pressure trend", wxPresTrend(a)) : (a.visibility != null ? st("Visibility", n(a.visibility, a.visibility_unit)) : "")) + '</div></div>' +
     '<div class="pn"><div class="lbl">Next 7 days</div>' + bentoHtml(fc.slice(0, 7)) + '</div></div><div class="dots wdots"><i data-wi="0"' + (wcI === 0 ? ' class="on"' : "") + '></i><i data-wi="1"' + (wcI === 1 ? ' class="on"' : "") + '></i></div>';
+  h += wxSunCard();
+  h += polCard();   // Pollen (config.js pollen), between the conditions and the forecast tabs
   h += fcPanel(a, wu);
   const wr = states[E("weatherWarnings")];
-  const AL = [];
+  const AL = [], fr = wxFrost(a); if (fr) AL.push(fr);
   if (wr && sv(E("weatherWarnings")) && wr.attributes.warnings) AL.push('<div class="alert w"><div class="lbl">Weather warning · MetService</div>' + esc(wr.attributes.warnings) + '</div>');
   AL.push.apply(AL, volcHtml()); AL.push.apply(AL, (quakeHtml() || "").split(/(?=<div class="alert q")/).filter(Boolean));
   if (alI >= AL.length) alI = 0;
@@ -184,15 +187,16 @@ function drawWeather() {
   const wc = $("#wx .wcols"); if (wc && wcI && wc.clientWidth) wc.scrollLeft = wcI * (wc.clientWidth + 12);
 }
 
-function volcHtml() {
-  return (CONFIG.volcanoes || []).filter(e => parseFloat(sv(e)) > 0).map(e => {
+function volcHtml() {   // Weather page + notifications: only at hazards.volcanoMinLevel (default 2, "Moderate to heightened unrest") or above; the Hazards page still lists every level
+  const lv = (CONFIG.hazards || {}).volcanoMinLevel, min = lv == null ? 2 : +lv;
+  return (CONFIG.volcanoes || []).filter(e => parseFloat(sv(e)) >= Math.max(1, min)).map(e => {
     const v = states[e].attributes, t = v.feed_last_update ? new Date(v.feed_last_update).toLocaleString([], tmo({ day: "numeric", month: "long", hour: "numeric", minute: "2-digit" })) : "";
-    return '<div class="alert v" data-go="#hazards" style="--qc:' + (HZ_VAL[Math.max(0, Math.min(5, Math.round(parseFloat(sv(e)) || 0)))] || HZ_VAL[1])[1] + '"><div class="lbl">' + mdi("volcano") + ' ' + esc(v.friendly_name || e) + '</div><b>' + esc(v.activity || "No warnings") + '</b><div>' + t + ' · GeoNet</div></div>';
+    return '<div class="alert v" data-go="#hazards/volcanoes" style="--qc:' + (HZ_VAL[Math.max(0, Math.min(5, Math.round(parseFloat(sv(e)) || 0)))] || HZ_VAL[1])[1] + '"><div class="lbl">' + mdi("volcano") + ' ' + esc(v.friendly_name || e) + '</div><b>' + esc(v.activity || "No warnings") + '</b><div>' + t + ' · GeoNet</div></div>';
   });
 }
 function quakeHtml() {   // Weather page + notifications: real quakes within hazards.alertKm (default 100 km) in the last 24 h; the rest live on the Hazards page
   const km = +((CONFIG.hazards || {}).alertKm) || hzFocus(), mn = hzMin();
   const q = Object.keys(states).map(k => states[k]).filter(x => x.entity_id.indexOf("geo_location.") === 0 && x.attributes.source === "geonetnz_quakes" && x.attributes.quality !== "deleted" && parseFloat(x.state) <= km && (+x.attributes.magnitude || 0) >= mn && x.attributes.time && Date.now() - new Date(x.attributes.time).getTime() < 864e5).sort((x, y) => new Date(y.attributes.time) - new Date(x.attributes.time));
-  return q.slice(0, 2).map(x => { const a = x.attributes, M = hzMag(+a.magnitude || 0); return '<div class="alert q" data-go="#hazards" style="--qc:' + M[1] + '"><div class="lbl">' + mdi("alert-circle") + ' Earthquake · ' + M[2] + '</div><b>Magnitude ' + f1(a.magnitude) + ' · ' + Math.round(parseFloat(x.state)) + ' km away</b><div>' + esc(a.locality || "") + (a.mmi != null && a.mmi !== "" ? " · MMI " + a.mmi + " " + hzMMI(+a.mmi).toLowerCase() + " shaking" : "") + ' · ' + new Date(a.time).toLocaleString([], tmo({ weekday: "short", hour: "numeric", minute: "2-digit" })) + '</div></div>'; }).join("");
+  return q.slice(0, 2).map(x => { const a = x.attributes, M = hzMag(+a.magnitude || 0); return '<div class="alert q" data-go="#hazards/earthquakes" style="--qc:' + M[1] + '"><div class="lbl">' + mdi("alert-circle") + ' Earthquake · ' + M[2] + '</div><b>Magnitude ' + f1(a.magnitude) + ' · ' + Math.round(parseFloat(x.state)) + ' km away</b><div>' + esc(a.locality || "") + (a.mmi != null && a.mmi !== "" ? " · MMI " + a.mmi + " " + hzMMI(+a.mmi).toLowerCase() + " shaking" : "") + ' · ' + new Date(a.time).toLocaleString([], tmo({ weekday: "short", hour: "numeric", minute: "2-digit" })) + '</div></div>'; }).join("");
 }
 

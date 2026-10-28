@@ -1,0 +1,39 @@
+/* pollen: the Pollen card on the Weather page */
+.pol{margin-bottom:14px}
+.polt{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.polh{font-size:34px;font-weight:500;line-height:1.15;margin:4px 0 2px;color:color-mix(in srgb,var(--pk) 70%,var(--ink))}
+.polsrc{flex:none;padding:6px 11px;border-radius:99px;border:1px solid var(--line);font:600 10.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}
+.polb{display:flex;gap:6px;margin:14px 0 6px}.polb i{flex:1;height:10px;border-radius:5px;background:rgba(var(--w),.14)}
+.polk{display:flex;justify-content:space-between;gap:4px;font-size:11px;color:var(--mut)}.polk span.on{color:color-mix(in srgb,var(--pk) 70%,var(--ink));font-weight:700}
+.polad{margin-top:14px}
+@media(max-width:760px){.polh{font-size:28px}.polsrc{display:none}.polk{font-size:10px}.polk span:nth-child(2),.polk span:nth-child(4){display:none}.polk span:first-child{margin-right:auto}.polk span:last-child{margin-left:auto}.polk span.on{display:inline}}
+
+/* tablet header squeeze (see 41-start.js): icon-only alarm pill and alert chips, then no volume slider, when the strip does not fit on one row */
+header.hcmp #al .at,header.hcmp #nacc .nal{display:none!important}
+header.hcmp #nacc .nai.nai2{display:none!important}
+header.hcmp2 .hnpv{display:none}
+/* tablet header, calmer by default: while the player is showing the second alert chip is icon only, and with three or more conditions the strip is one named chip with a +N badge */
+@media(min-width:761px){
+header:has(#hnp:not(.npoff)) #nacc .nai.nai2 .nal{display:none}
+header:has(#hnp:not(.npoff)) #nacc[data-k] .nai.nai2{padding:6px 8px}
+#nacc[data-n]:not([data-n="1"]):not([data-n="2"]) .nai.nai2{display:none!important}
+#nacc[data-n]:not([data-n="1"]):not([data-n="2"])[data-more]:not([data-more=""])::after{content:attr(data-more)}
+}
+
+/* light mode: the strip chips and the alarm pill use darker text so they read on a white header (the dark-mode colours were pale: amber ARMING was about 1.3:1) */
+html[data-mode=light] .al.s-wn{background:rgba(176,112,0,.14);color:#7a4b00;border-color:rgba(176,112,0,.5)}
+html[data-mode=light] .astate.s-wn{color:#8a5600}
+html[data-mode=light] .al.s-al{color:#a3211a}
+@media(min-width:761px){html[data-mode=light] #nacc[data-k] .nai{color:color-mix(in srgb,var(--nk) 30%,#15131a);border-color:color-mix(in srgb,var(--nk) 80%,transparent);background:color-mix(in srgb,var(--nk) 20%,transparent);animation-name:nkglowl}}
+html[data-mode=light] #nacc[data-k] .nai svg{fill:color-mix(in srgb,var(--nk) 72%,#000)}
+@keyframes nkglowl{0%,100%{opacity:.88;filter:drop-shadow(0 0 2px var(--nk))}50%{opacity:1;filter:drop-shadow(0 0 7px var(--nk))}}
+
+/* weather extras: frost advisory, sun and moon */
+.alert.fr{background:color-mix(in srgb,#8fd3ff 20%,#0f1620);color:#eaf6ff;border-left:5px solid #8fd3ff}.alert.fr .lbl{color:#bfe6ff}.alert.fr .lbl svg{fill:#bfe6ff;width:1.1em;height:1.1em;vertical-align:-.18em}
+html[data-mode=light] .alert.fr{background:#dff1fd;color:#0b3550;border-left-color:#2b8fcf}html[data-mode=light] .alert.fr .lbl{color:#0b4f7a}html[data-mode=light] .alert.fr .lbl svg{fill:#0b4f7a}
+#wxsun .lbl svg{width:1.1em;height:1.1em;fill:currentColor;vertical-align:-.18em}
+#wxsun .sunr{margin:12px 0 14px}.sunb{position:relative;height:6px;border-radius:6px;background:linear-gradient(90deg,#ffb35c,#ffe27a 50%,#ffb35c);opacity:.9}.sunb i{position:absolute;top:50%;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;background:#fff3c4;box-shadow:0 0 0 3px rgba(255,200,80,.45),0 0 14px 4px rgba(255,200,80,.6)}
+.sunl{display:flex;justify-content:space-between;align-items:baseline;margin-top:8px;font:600 12px var(--mono);color:var(--mut)}.sunl .sm{margin:0;text-align:center;flex:1}
+#wxsun .wg{grid-template-columns:repeat(5,minmax(0,1fr))}#wxsun .ws.moon b{display:flex;align-items:center;gap:10px;font-size:15px;line-height:1.2}#wxsun .ws.moon small{display:block;color:var(--mut);font-weight:400;font-size:12px}#wxsun .moon svg{flex:none;color:var(--ink)}
+@media(max-width:760px){#wxsun .wg{grid-template-columns:repeat(2,minmax(0,1fr))}#wxsun .ws.moon{grid-column:1/-1}}
+.ws .wtr{display:block;font:500 11px var(--mono);color:var(--mut);margin-top:3px;letter-spacing:.02em}

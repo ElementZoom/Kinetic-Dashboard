@@ -39,6 +39,7 @@ async function run(withCost, VP = { width: 1200, height: 1400 }) {
 }
 { const { txt, errors, page } = await run(true);
   ok("electricity = the real cost $8.40, with the daily charge shown as its own line $2.61: " + txt.replace(/\s+/g, " ").slice(0, 600), /\$8\.40/.test(txt) && /Daily charge/i.test(txt) && /\$2\.61/.test(txt) && !/\$11\.0/.test(txt));
+  ok("Cheapest-hours line on the day view (free 9pm - midnight)", /Cheapest:/i.test(txt) && /9pm/.test(txt));
   ok("usage = total - daily charge over the paid kWh (5.79 / 21 kWh = 27.6c)", /27\.6c/i.test(txt) && /\$5\.79/.test(txt));
   ok("gas = usage $2.40 + daily charge 1 day x 1.832 = $4.23", /\$4\.23/.test(txt) && /\$2\.40/.test(txt) && /\$1\.83/.test(txt));
   ok("total $12.63 excl. GST, GST 15% = $1.89, incl. $14.52: " + txt.replace(/\s+/g," ").slice(0,300), /\$14\.52/.test(txt) && /\$1\.89/.test(txt) && /\$12\.63/.test(txt) && /incl\. GST/i.test(txt) && /excl\. GST/i.test(txt));

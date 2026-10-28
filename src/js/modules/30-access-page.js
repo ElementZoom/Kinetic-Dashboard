@@ -3,7 +3,7 @@ const ACC = { users: null, t: 0, err: "", fold: {} };
 const accWrap = inner => '<div class="pn pg"><div class="lbl">Access</div>' + inner + '</div>';   // each person folds up and down (chevron after the name)
 function accLoad() {
   if (!ME.admin || (ACC.users && Date.now() - ACC.t < 30000) || ACC.busy) return; ACC.busy = true;
-  const fin = list => { ACC.busy = false; ACC.t = Date.now(); ACC.users = list; if (curPg() === "theme") drawPalette(); };
+  const fin = list => { ACC.busy = false; ACC.t = Date.now(); ACC.users = list; if (curPg() === "admin") drawAdmin(); };
   send({ type: "config/auth/list" }, r => {
     if (Array.isArray(r)) return fin(r.filter(u => !u.system_generated && u.is_active !== false && !u.is_owner && (u.group_ids || []).indexOf("system-admin") < 0).map(u => ({ id: u.id, name: u.name || u.username || "User" })));
     fin(Object.keys(states).filter(k => k.indexOf("person.") === 0 && states[k].attributes.user_id && states[k].attributes.user_id !== ME.id).map(k => ({ id: states[k].attributes.user_id, name: states[k].attributes.friendly_name || k.split(".")[1] })));   // no access to the user list: use the people linked to a login
@@ -37,6 +37,6 @@ function accClick(b) {
   const M = accMap(), k = b.dataset.u, v = +b.dataset.v, kind = b.dataset.acc;
   if (kind === "r") { if (M[k] != null) delete M[k]; else M[k] = 1 << RU_ALL.indexOf("home"); }   // a newly restricted person starts with Home only and no Security extras
   else { const n = M[k]; if (n == null) return; const nn = n ^ (1 << v); if ((v < 13 && !(nn & ((1 << 13) - 1))) || (v > 16 && accRooms().every((r, q) => accBit(nn, 17 + q)))) { b.classList.add("acc-no"); setTimeout(() => b.classList.remove("acc-no"), 600); return; } M[k] = nn; }   // at least one page stays on
-  if (!accSave(M)) { const l = $("#theme .acc-h"); if (l) { l.textContent = "The access list is full (about 14 people). Remove someone first."; } }
+  if (!accSave(M)) { const l = $("#admin .acc-h"); if (l) { l.textContent = "The access list is full (about 14 people). Remove someone first."; } }
 }
 

@@ -91,7 +91,7 @@ function npRender() {
     if (aiOn() && ga.media_artist) PG.push(["Artist", aiHtml(g.ctl)]);   // swipe pages: Now playing · Lyrics (when synced lyrics exist) · Artist
     { const ix = PG.map(x => x[0]).indexOf(npsName); npsPage = ix < 0 ? 0 : ix; npsName = PG[npsPage][0]; }
     const arOld = $("#npbody .ar"), arTop = arOld ? arOld.scrollTop : 0;
-    $("#npbody").innerHTML = '<div class="lbl"><span class="nptx">' + PG[npsPage][0] + '</span><button class="rnd s" data-np="close">' + mdi("close") + '</button></div>' +
+    $("#npbody").innerHTML = '<div class="lbl"><span class="nptx">' + PG[npsPage][0] + '</span>' + '<button class="rnd s npq' + (npsName === "Lyrics" ? " on" : "") + (sh ? "" : " off") + '" data-np="lyr" ' + (sh ? "" : 'aria-disabled="true" ') + 'aria-label="' + (!sh ? "No synced lyrics for this song" : npsName === "Lyrics" ? "Back to the player" : "Lyrics") + '">' + mdi("lyrics") + '</button>' + '<button class="rnd s" data-np="close">' + mdi("close") + '</button></div>' +
       (PG.length > 1 ? '<div class="nps" data-pn="' + PG.map(x => x[0]).join("|") + '">' + PG.map(x => '<div class="npg">' + x[1] + '</div>').join("") + '</div><div class="npdt">' + PG.map((x, i) => '<i data-npg="' + i + '"' + (i === npsPage ? ' class="on"' : "") + '></i>').join("") + '</div><div class="npdl">' + PG.map((x, i) => '<span data-npg="' + i + '"' + (i === npsPage ? ' class="on"' : "") + '>' + x[0] + '</span>').join("") + '</div>' : PG[0][1]);
     { const sl = $("#npbody .nps"); if (sl && npsPage) sl.scrollLeft = npsPage * npPw(sl); const ar = $("#npbody .ar"); if (ar && arTop) ar.scrollTop = arTop; }
   } else { clearTimeout(npbT); npbT = setTimeout(() => { if (!npSheet) $("#npbody").innerHTML = ""; }, 420); }
@@ -120,6 +120,7 @@ function npClick(e) {
   else if (k === "media") { if (npSheet) { npSheet = false; npRender(); } location.hash = "#media"; return; }
   else if (k === "sheet") npSheet = true;
   else if (k === "close") npSheet = false;
+  else if (k === "lyr") { if (!SL.lines) return; npsName = npsName === "Lyrics" ? "Now playing" : "Lyrics"; }
   npRender();
 }
 $("#npw").addEventListener("scroll", e => { const g = e.target; if (!g.classList || !g.classList.contains("nps") || !g.clientWidth) return; npHoldT = Date.now() + 700; const i = Math.round(g.scrollLeft / npPw(g)); npPage = i; $$("#npw .npdt i").forEach((d, k) => d.classList.toggle("on", k === i)); const t = $("#npw .nptx"); if (t) t.textContent = i ? "Lyrics" : "Now playing"; }, true);

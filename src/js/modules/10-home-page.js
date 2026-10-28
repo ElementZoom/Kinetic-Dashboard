@@ -56,7 +56,7 @@ const dk = d => d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "
 const pd = v => { if (v.dateTime) return new Date(v.dateTime); const p = v.date.split("-"); return new Date(+p[0], +p[1] - 1, +p[2]); };
 const calName = c => (CONFIG.calNames || {})[c] || (states[c] && states[c].attributes.friendly_name) || c.replace("calendar.", "").replace(/_/g, " ");
 const mrows = () => Math.ceil(((new Date(cy, cm, 1).getDay() + 6) % 7 + new Date(cy, cm + 1, 0).getDate()) / 7);
-let EVS = [], evLast = {};
+let EVS = [], evLast = {}, evSq = { on: false, all: null, busy: false, q: "" };
 function loadEvents() {
   EVS = []; evColSync(); const evErr = [];
   const gs = new Date(cy, cm, 1 - (new Date(cy, cm, 1).getDay() + 6) % 7), ge = new Date(gs.getFullYear(), gs.getMonth(), gs.getDate() + mrows() * 7), map = {}, tok = ++evTok;
@@ -72,6 +72,7 @@ function loadEvents() {
     } catch (x) { evErr.push(calName(c) + ": skipped \"" + (v && v.summary || "?") + "\" (" + x.message + ")"); } })).catch(x => { evErr.push(calName(c) + ": " + x.message); }))).then(() => { if (tok === evTok) { evLast = { k: mk, gs: gs, map: map }; drawEvents(gs, map, true); const el = $("#eerr"); if (el) el.textContent = evErr.length ? evErr.join(" · ") + "  |  Calendars HA has: " + Object.keys(states).filter(k => k.indexOf("calendar.") === 0).join(", ") : ""; } });
 }
 function drawEvents(gs, map, fin) {
+  if (evSq.on) return;   // while searching, the list shows the matches instead of the month
   $("#et").textContent = new Date(cy, cm, 1).toLocaleDateString([], { month: "long", year: "numeric" });
   evBtn();
   if (!$("#eerr")) { const e = document.createElement("div"); e.id = "eerr"; e.style.cssText = "color:var(--heat);font-size:12px;margin:6px 2px;empty-cells:hide"; $("#elg").after(e); }
@@ -242,9 +243,10 @@ $("#cg").addEventListener("click", e => {
 function shiftMonth(d) { txGo($("#cg"), d, false); evJump = true; cm += d; if (cm < 0) { cm = 11; cy--; } if (cm > 11) { cm = 0; cy++; } loadEvents(); }
 $("#ep").onclick = () => shiftMonth(-1); $("#en").onclick = () => shiftMonth(1);
 $("#etd").onclick = () => { evJump = true; cy = new Date().getFullYear(); cm = new Date().getMonth(); loadEvents(); };
-const HOME = { status: ".hs", cams: "#cams", rooms: "#rooms", heatpump: "#mini", nowplaying: "#npw", forecast: "#fcp" };
+const HOME = { status: ".hs", cams: "#cams", schedule: "#sch", rooms: "#rooms", heatpump: "#mini", nowplaying: "#npw", forecast: "#fcp" };
 const layout = () => {
   const L = ((CONFIG.layout || {})[isMobile() ? "mobile" : "tablet"] || Object.keys(HOME)).slice();
+  if (L.indexOf("schedule") < 0 && CONFIG.schedule !== false) { const i = isMobile() ? L.indexOf("status") : L.indexOf("cams"); if (i > -1) L.splice(i + 1, 0, "schedule"); }   // new card: sits after the greeting (phone) / the cameras (tablet) unless config.js places it
   if (!isMobile()) { const k = L.indexOf("nowplaying"); if (k > -1) L.splice(k, 1); return L; }
   if (L.indexOf("nowplaying") < 0) { const i = L.indexOf("heatpump") > -1 ? L.indexOf("heatpump") : L.indexOf("status"); L.splice(i + 1, 0, "nowplaying"); }
   return L;
@@ -322,3 +324,31 @@ function liveCam(c, up) {   // HA built-in WebRTC (go2rtc); falls back to snapsh
   });
 }
 
+
+// ----- search every event (a year back, two years ahead), from the magnifier next to Today
+function evSearchLoad() {
+  if (evSq.all || evSq.busy) return Promise.resolve(); evSq.busy = true;
+  const a = new Date(), s0 = new Date(a.getFullYear() - 1, a.getMonth(), a.getDate()), e0 = new Date(a.getFullYear() + 2, a.getMonth(), a.getDate()), q = "?start=" + encodeURIComponent(s0.toISOString()) + "&end=" + encodeURIComponent(e0.toISOString()), all = [];
+  return Promise.all(CONFIG.calendars.map((c, i) => getToken().then(tk => fetch(CONFIG.url + "/api/calendars/" + c + q, { headers: { Authorization: "Bearer " + tk } })).then(r => r.json()).then(j => { (Array.isArray(j) ? j : []).forEach(v => { if (v && v.start && v.end) all.push({ v: v, cal: c, ci: i }); }); }).catch(() => {})))
+    .then(() => { evSq.all = all; evSq.busy = false; });
+}
+function evSearchDraw() {
+  if (!evSq.on) return; const g = $("#cg"), q = evSq.q.trim().toLowerCase(); g.className = "cg ag evs"; g.style.removeProperty("--rows");
+  const msg = t => { g.innerHTML = '<div class="lbl" style="margin-top:18px">' + t + '</div>'; };
+  if (q.length < 2) return msg("Search every event, a year back and two years ahead");
+  if (!evSq.all) return msg("Searching…");
+  const hit = evSq.all.filter(x => [x.v.summary, x.v.description, x.v.location].join(" ").toLowerCase().indexOf(q) > -1).sort((a, b) => pd(a.v.start) - pd(b.v.start)).slice(0, 200);
+  EVS = hit; if (!hit.length) return msg("No events match \u201c" + esc(evSq.q.trim()) + "\u201d");
+  let h = '<div class="lbl" style="margin:6px 0 0">' + hit.length + (hit.length === 200 ? "+" : "") + ' match' + (hit.length === 1 ? "" : "es") + '</div>', last = "";
+  const today = dk(new Date());
+  hit.forEach((x, i) => { const st = pd(x.v.start), k = dk(st), ad = !x.v.start.dateTime;
+    if (k !== last) { last = k; h += '<div class="ah' + (k >= today ? " up" : "") + (k === today ? " t" : "") + '">' + st.toLocaleDateString([], { weekday: "short", day: "numeric", month: "short", year: "numeric" }).toUpperCase() + '</div>'; }
+    h += '<div class="ce" data-ev="' + i + '" style="--c:' + (evColOf(x.cal, x.v) || CALCOL[x.ci % CALCOL.length]) + '"><span class="mo">' + (ad ? "All day" : st.toLocaleTimeString([], tmo({ hour: "numeric", minute: "2-digit" })).replace(" ", "").toLowerCase()) + '</span> ' + esc(x.v.summary || "") + '</div>'; });
+  g.innerHTML = h; const f = g.querySelector(".ah.up"); if (f && !evSq.sc) { evSq.sc = 1; f.scrollIntoView({ block: "start" }); }
+}
+function evSearchToggle(on) {
+  evSq.on = on; evSq.sc = 0; $("#events").classList.toggle("srch", on); $("#esrch").innerHTML = mdi(on ? "close" : "magnify");
+  const q = $("#esq"); if (on) { evSq.all = null; evSearchLoad().then(evSearchDraw); evSearchDraw(); q.focus(); } else { evSq.q = ""; q.value = ""; EVS = []; loadEvents(); }
+}
+$("#esrch").onclick = () => evSearchToggle(!evSq.on);
+{ let t = 0; $("#esq").addEventListener("input", e => { evSq.q = e.target.value; clearTimeout(t); t = setTimeout(() => { evSq.sc = 0; evSearchDraw(); }, 200); }); }

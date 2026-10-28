@@ -17,7 +17,7 @@
 .imc .wg{display:flex;overflow-x:auto;gap:8px;padding:10px 10px 16px;margin:-10px -10px -12px;scrollbar-width:none;overscroll-behavior-x:contain}.imc .wg::-webkit-scrollbar{display:none}.imc .ws{flex:1 0 132px;white-space:nowrap}
 @media(max-width:760px){.rn12 .ws{padding:10px}.rn12 .ws b{font-size:17px}}
 .wrs .h3{margin:6px 0}
-@media(max-width:760px){.wrs{padding:10px 14px;margin-bottom:10px}.wrs>.lbl{margin-bottom:2px}.wrs .h3{margin:0;font-size:16px}.wrs .sm{font-size:12px;margin-top:1px}
+@media(max-width:760px){.wrs{padding:10px 14px;margin-bottom:14px}.wrs>.lbl{margin-bottom:2px}.wrs .h3{margin:0;font-size:16px}.wrs .sm{font-size:12px;margin-top:1px}
 .irc{align-items:flex-start}}
 @media(max-width:760px){.hs::after{top:18px;transform:rotate(45deg)}}
 .fcs{overflow-y:hidden}

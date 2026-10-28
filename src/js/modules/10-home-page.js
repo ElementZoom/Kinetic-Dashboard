@@ -71,9 +71,16 @@ function loadEvents() {
         (map[dk(d)] = map[dk(d)] || []).push({ t: s, ad: ad, s: v.summary, c: evColOf(c, v) || CALCOL[i % CALCOL.length], i: EVS.push({ v: v, cal: c, ci: i }) - 1 });
     } catch (x) { evErr.push(calName(c) + ": skipped \"" + (v && v.summary || "?") + "\" (" + x.message + ")"); } })).catch(x => { evErr.push(calName(c) + ": " + x.message); }))).then(() => { if (tok === evTok) { evLast = { k: mk, gs: gs, map: map }; drawEvents(gs, map, true); const el = $("#eerr"); if (el) el.textContent = evErr.length ? evErr.join(" · ") + "  |  Calendars HA has: " + Object.keys(states).filter(k => k.indexOf("calendar.") === 0).join(", ") : ""; } });
 }
+let evTy = null;
+function evTitle(y, m) {   // the month name, or its short form when the long one does not fit between the arrows (September on a narrow phone)
+  if (y != null) evTy = [y, m]; if (!evTy) return; const t = $("#et"), d = new Date(evTy[0], evTy[1], 1);
+  t.textContent = d.toLocaleDateString([], { month: "long", year: "numeric" });
+  if (t.clientWidth && t.scrollWidth > t.clientWidth + 1) t.textContent = d.toLocaleDateString([], { month: "short", year: "numeric" });
+}
+addEventListener("resize", () => evTitle());
 function drawEvents(gs, map, fin) {
   if (evSq.on) return;   // while searching, the list shows the matches instead of the month
-  $("#et").textContent = new Date(cy, cm, 1).toLocaleDateString([], { month: "long", year: "numeric" });
+  evTitle(cy, cm);
   evBtn();
   if (!$("#eerr")) { const e = document.createElement("div"); e.id = "eerr"; e.style.cssText = "color:var(--heat);font-size:12px;margin:6px 2px;empty-cells:hide"; $("#elg").after(e); }
   $("#elg").innerHTML = CONFIG.calendars.map((c, i) => '<span><i style="--c:' + CALCOL[i % CALCOL.length] + '"></i>' + esc(calName(c)) + '</span>').join("");

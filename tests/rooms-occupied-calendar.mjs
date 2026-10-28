@@ -37,8 +37,8 @@ eq("Occupied tab disappears when it empties", (await tabs()).map(x => x.replace(
 // calendar (phone): the agenda opens at today, earlier days stay above
 const days = await page.evaluate(() => { const n = new Date(), y = n.getFullYear(), m = n.getMonth(), d = n.getDate(); return { y, m, d }; });
 await page.evaluate(({ y, m, d }) => {
-  const iso = dd => new Date(y, m, dd, 9).toISOString();
-  window.EVT = []; for (let i = 1; i <= 28; i++) EVT.push({ summary: "Ev" + i, start: { dateTime: iso(i) }, end: { dateTime: iso(i) } });
+  const iso = dd => new Date(y, m, dd, 23, 59).toISOString();
+  window.EVT = []; for (let i = 1; i <= Math.max(28, d); i++) EVT.push({ summary: "Ev" + i, start: { dateTime: iso(i) }, end: { dateTime: iso(i) } });
   window.fetch = (u, o) => String(u).includes("/api/calendars/") ? Promise.resolve(new Response(JSON.stringify(EVT))) : Promise.reject(new Error("x"));
   location.hash = "#events";
 }, days);

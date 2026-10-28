@@ -1,0 +1,36 @@
+/* Alerts: bins card. Evening before pickup = reminder with steps; pickup day = quick check with the road camera. Config: bins (see config.example.js) */
+.bn{border-radius:18px;border:1px solid var(--line);background:rgba(var(--w),.06);overflow:hidden;margin-bottom:14px}
+.bn-h{display:flex;align-items:center;gap:12px;padding:14px 16px}
+.bn-i{display:flex;gap:6px;flex:none}
+.bn-b{--bc:var(--cool);width:36px;height:42px;border-radius:9px;display:flex;align-items:center;justify-content:center;background:color-mix(in srgb,var(--bc) 22%,transparent)}
+.bn-b[data-ic=recycle]{--bc:#f2c261}.bn-b[data-ic=trash-can]{--bc:var(--heat)}.bn-b[data-ic=leaf]{--bc:#6fd08c}
+.bn-b svg{width:22px;height:22px;fill:var(--bc);display:block}
+.bn-t{flex:1;min-width:0}.bn-t b{display:block;font-size:16px;line-height:1.3}.bn-t span{display:block;font-size:13px;color:var(--mut);line-height:1.4}
+.bn-tl{display:flex;align-items:flex-start;padding:2px 12px 0}
+.bn-s{display:flex;flex-direction:column;align-items:center;gap:5px;width:68px;flex:none;font-size:11px;color:var(--mut)}
+.bn-d{width:22px;height:22px;box-sizing:border-box;border-radius:50%;border:2px solid var(--line);display:flex;align-items:center;justify-content:center}
+.bn-d svg{width:14px;height:14px;fill:#06141b;display:block}
+.bn-s.done .bn-d{background:var(--mint);border-color:var(--mint)}
+.bn-s.cur{color:var(--ink)}.bn-s.cur .bn-d{border-color:var(--cool)}
+.bn-ln{flex:1;height:2px;margin-top:10px;background:var(--line)}.bn-ln.done{background:var(--mint)}
+.bn .snap.npcam{border-radius:0;margin:12px 0 0}.bn .npcam>.cam{border-radius:0}.bn .npcam,.bn .npcam .cam{clip-path:inset(0 round 0)!important}   /* the card clips the corners; the shared camera clip would round them inside it */
+.bn-btn{display:block;box-sizing:border-box;width:calc(100% - 32px);margin:12px 16px 14px;padding:12px;border-radius:12px;border:1px solid rgba(var(--mint-rgb),.5);background:rgba(var(--mint-rgb),.12);color:var(--mint);font:600 14px var(--sans);cursor:pointer}
+.bn-btn:active{filter:brightness(1.15)}
+#nacc[data-k=bins],#nacc .nai[data-k=bins]{--nk:#f2c261}
+html[data-mode=light] .bn{background:rgba(255,255,255,.72);box-shadow:0 1px 4px rgba(0,0,0,.08)}
+html[data-mode=light] .bn-btn{color:#0b6b45;border-color:#1f9d6a;background:rgba(31,157,106,.12)}
+/* Notifications > ACTIVITY tab: filter chips + a timeline of what changed (time on the left, icon on the line, text and picture on the right). Config: activity (see config.example.js) */
+.af-f{margin:14px 0 10px;overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none}.af-f::-webkit-scrollbar{display:none}.af-f .chip{flex:none}
+.af-l{border-radius:18px;border:1px solid var(--line);background:rgba(var(--w),.06);padding:6px 14px;margin-bottom:14px}
+.af-r{display:grid;grid-template-columns:44px 32px minmax(0,1fr);gap:10px;position:relative;padding:8px 0}
+.af-r::before{content:"";position:absolute;left:69px;top:0;bottom:0;width:2px;background:var(--line);border-radius:1px}
+.af-r:first-child::before{top:24px}.af-r:last-child::before{bottom:auto;height:24px;top:0}.af-r:first-child:last-child::before{display:none}
+.af-r.go{cursor:pointer}.af-r.go:active{opacity:.7}
+.af-tm{font-size:12px;color:var(--mut);text-align:right;padding-top:6px;white-space:nowrap}
+.af-i{--ac:var(--cool);width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;z-index:1;background:color-mix(in srgb,var(--ac) 22%,var(--bg))}
+.af-i svg{width:18px;height:18px;fill:var(--ac);display:block}
+.af-i.dng{--ac:#ff6b5e}.af-i.wrn{--ac:#ffc857}.af-i.ok{--ac:var(--mint)}.af-i.wat{--ac:#5cc8ff}.af-i.heat{--ac:#ff9f43}
+.af-t{min-width:0;padding-top:2px}.af-t b{display:block;font-size:14px;font-weight:600;line-height:1.3}.af-t span{display:block;font-size:12px;color:var(--mut);line-height:1.4}
+.af-th{position:relative;margin-top:6px;max-width:240px;aspect-ratio:16/9;border-radius:10px;overflow:hidden;background:rgba(var(--w),.08);cursor:pointer}.af-th img{width:100%;height:100%;object-fit:cover;display:block}
+.af-th b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.18)}.af-th b svg{width:30px;height:30px;fill:#fff;filter:drop-shadow(0 1px 3px rgba(0,0,0,.5))}.af-th:active{opacity:.8}
+html[data-mode=light] .af-l{background:rgba(255,255,255,.72);box-shadow:0 1px 4px rgba(0,0,0,.08)}

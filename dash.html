@@ -377,7 +377,7 @@ body.m-tabs .main{padding-bottom:72px}
 #events.srch :is(#ep,#en,#etd,#et,#elg,#eerr){display:none!important}#events.srch #esrch{order:2}#events.srch #eadd{order:3}
 @media(min-width:761px){#eadd{font-size:22px;font-weight:300;line-height:1;min-width:42px}}
 @media(max-width:760px){#events .eh{gap:8px;row-gap:6px}#events .eh h2{font-size:22px;min-width:0;flex:1;text-align:left}#events .eb{padding:9px 14px;font-size:12px}#events .lg{margin-left:0;width:100%;gap:12px;font-size:11px}}
-#events .eh h2{white-space:nowrap}
+#events .eh h2{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 #events .esq:focus{outline:none;border-color:var(--mint)}
 @media(max-width:760px){#events .eh h2{font-size:20px}#events .eb{padding:9px 12px}#events #esrch{min-width:40px}}
 /* phones: the month bar and legend stay put and only the agenda list scrolls (no overlay layer, so nothing bleeds through or flickers) */
@@ -1377,7 +1377,7 @@ body.ly-open .mlay.hasly .ly{font-size:20px;padding:8px 10px}body.ly-open .mlay.
 .npw .lbl{display:flex;align-items:center;gap:10px}.npmore,.npw .npmore{margin-left:auto;color:var(--mut);font:600 11px var(--mono);text-decoration:none}
 .npw .nph{display:flex;align-items:center;min-height:36px}.npw .npl{display:flex;align-items:center;gap:6px;border:0;background:transparent;color:var(--mut);font:700 11px var(--mono);letter-spacing:.16em;text-transform:uppercase;padding:8px 8px 8px 0;margin:0;cursor:pointer}.npw .npl svg{width:16px;height:16px;fill:currentColor;margin-left:-2px}.npw .npn{font-weight:600}
 .npw .npt2{margin:-4px -8px -4px auto;width:44px;height:44px;border:0;background:transparent;color:var(--mut);display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer}.npw .npt2 svg{width:22px;height:22px;fill:currentColor}
-.npw .nps{padding:0 10px 16px;margin:0 -10px -16px;scroll-padding-inline:10px;display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}.npw .nps::-webkit-scrollbar{display:none}.npw .npg{flex:0 0 100%;min-width:0;scroll-snap-align:start;scroll-snap-stop:always;box-sizing:border-box}
+.npw .nps{padding:0 10px 16px;margin:0 -10px -16px;scroll-padding-inline:10px;display:flex;gap:20px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}.npw .nps::-webkit-scrollbar{display:none}.npw .npg{flex:0 0 100%;min-width:0;scroll-snap-align:start;scroll-snap-stop:always;box-sizing:border-box}
 .npw .npr{margin-top:2px;cursor:default}.npw .npart{cursor:pointer}.npw .nps .npart{width:56px;height:56px;border-radius:12px}.npw .npi b{font-size:17px;font-weight:600}.npw .npi small{font-size:13px}
 .npw .npg>.mpb{margin-top:10px;height:3px}.npw>.mpb,.npw>.npr+.mpb{margin-top:8px;height:3px}
 .npw .nply{display:flex;flex-direction:column;justify-content:center;gap:4px;min-height:74px;padding:0 4px;box-sizing:border-box}.npw .nply div{font-size:14px;color:var(--mut);opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:18px}.npw .nply div.on{font-size:22px;font-weight:600;line-height:1.2;color:var(--mint);opacity:1;white-space:normal;max-height:2.4em;overflow:hidden}
@@ -1390,7 +1390,7 @@ body.ly-open .mlay.hasly .ly{font-size:20px;padding:8px 10px}body.ly-open .mlay.
 .npi{flex:1;min-width:0}.npi b{display:block;font-weight:500;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.npi small{display:block;color:var(--mut);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .npr .rnd,html[data-style] .npr .rnd{flex:none;box-sizing:border-box;width:44px;height:44px;min-width:44px;max-width:44px;padding:0;margin:0;display:inline-flex;align-items:center;justify-content:center;line-height:0;border-radius:50%}.npr .rnd svg{width:20px;height:20px;display:block;margin:0}.npch svg{width:20px;height:20px;fill:var(--mut)}
 .npw>.mpb{margin-top:10px;height:4px}.npr+.mpb{margin-top:10px}
-#npbody .nps{padding:0 10px 16px;margin:0 -10px -16px;scroll-padding-inline:10px;display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}#npbody .nps::-webkit-scrollbar{display:none}#npbody .npg{flex:0 0 100%;min-width:0;scroll-snap-align:start;scroll-snap-stop:always;box-sizing:border-box}
+#npbody .nps{padding:0 10px 16px;margin:0 -10px -16px;scroll-padding-inline:10px;display:flex;gap:20px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}#npbody .nps::-webkit-scrollbar{display:none}#npbody .npg{flex:0 0 100%;min-width:0;scroll-snap-align:start;scroll-snap-stop:always;box-sizing:border-box}
 #npbody .shly{height:100%;min-height:380px;display:flex;flex-direction:column;justify-content:center;gap:14px;text-align:center;padding:14px 6px;box-sizing:border-box}#npbody .shly div{font-size:19px;line-height:1.3;color:var(--mut)}#npbody .shly div.on{font-size:26px;font-weight:600;color:var(--ink)}
 #npbody .npdt{display:flex;justify-content:center;gap:8px;padding-top:12px}#npbody .npdt i{width:8px;height:8px;border-radius:8px;background:rgba(var(--ink-rgb),.25);cursor:pointer}#npbody .npdt i.on{width:22px;background:var(--mint)}
 .npx{display:flex;flex-direction:column;gap:12px;margin-top:14px}
@@ -1855,6 +1855,13 @@ html[data-mode=light] .alert.fr{background:#dff1fd;color:#0b3550;border-left-col
 #wxsun .wg{grid-template-columns:repeat(5,minmax(0,1fr))}#wxsun .ws.moon b{display:flex;align-items:center;gap:10px;font-size:15px;line-height:1.2}#wxsun .ws.moon small{display:block;color:var(--mut);font-weight:400;font-size:12px}#wxsun .moon svg{flex:none;color:var(--ink)}
 @media(max-width:760px){#wxsun .wg{grid-template-columns:repeat(2,minmax(0,1fr))}#wxsun .ws.moon{grid-column:1/-1}}
 .ws .wtr{display:block;font:500 11px var(--mono);color:var(--mut);margin-top:3px;letter-spacing:.02em}
+
+/* Weather on phones: the Sun and Moon and Pollen cards are at least 430px tall (the content spreads out instead of leaving a short card on an empty page); sunrise and sunset sit on one line, the daylight text on its own line below */
+@media(max-width:760px){
+#wxsun,#wxpol{min-height:430px;box-sizing:border-box}   /* the Now tab's two cards keep their own height (shorter than Pollen) so the dots clear the mini player */
+#wxsun{display:flex;flex-direction:column}#wxsun .wg{flex:1;grid-auto-rows:1fr;align-content:stretch}#wxsun .ws{display:flex;flex-direction:column;justify-content:center}
+.sunl{flex-wrap:wrap;row-gap:8px}.sunl .sm{order:3;flex:0 0 100%;font-size:13px}
+}
 /* Home: today's schedule (tablet strip under the cameras, phone card under the greeting) */
 #sch{cursor:pointer;position:relative;box-sizing:border-box;padding:0 40px 0 14px;min-height:46px;display:flex;align-items:center;border-radius:18px;border:1px solid rgba(var(--mint-rgb),.5);background:rgba(var(--mint-rgb),.09)}
 #sch[hidden]{display:none!important}
@@ -1927,6 +1934,42 @@ body.ly-open::after{animation:fdIn .3s ease both}
 body.ly-open.ly-out::after{animation:fdOut .3s ease both}
 /* the detection viewer: fades in, no blur */
 #dtm{-webkit-backdrop-filter:none;backdrop-filter:none}#dtm.on{animation:fdIn .25s ease both}
+/* Alerts: bins card. Evening before pickup = reminder with steps; pickup day = quick check with the road camera. Config: bins (see config.example.js) */
+.bn{border-radius:18px;border:1px solid var(--line);background:rgba(var(--w),.06);overflow:hidden;margin-bottom:14px}
+.bn-h{display:flex;align-items:center;gap:12px;padding:14px 16px}
+.bn-i{display:flex;gap:6px;flex:none}
+.bn-b{--bc:var(--cool);width:36px;height:42px;border-radius:9px;display:flex;align-items:center;justify-content:center;background:color-mix(in srgb,var(--bc) 22%,transparent)}
+.bn-b[data-ic=recycle]{--bc:#f2c261}.bn-b[data-ic=trash-can]{--bc:var(--heat)}.bn-b[data-ic=leaf]{--bc:#6fd08c}
+.bn-b svg{width:22px;height:22px;fill:var(--bc);display:block}
+.bn-t{flex:1;min-width:0}.bn-t b{display:block;font-size:16px;line-height:1.3}.bn-t span{display:block;font-size:13px;color:var(--mut);line-height:1.4}
+.bn-tl{display:flex;align-items:flex-start;padding:2px 12px 0}
+.bn-s{display:flex;flex-direction:column;align-items:center;gap:5px;width:68px;flex:none;font-size:11px;color:var(--mut)}
+.bn-d{width:22px;height:22px;box-sizing:border-box;border-radius:50%;border:2px solid var(--line);display:flex;align-items:center;justify-content:center}
+.bn-d svg{width:14px;height:14px;fill:#06141b;display:block}
+.bn-s.done .bn-d{background:var(--mint);border-color:var(--mint)}
+.bn-s.cur{color:var(--ink)}.bn-s.cur .bn-d{border-color:var(--cool)}
+.bn-ln{flex:1;height:2px;margin-top:10px;background:var(--line)}.bn-ln.done{background:var(--mint)}
+.bn .snap.npcam{border-radius:0;margin:12px 0 0}.bn .npcam>.cam{border-radius:0}.bn .npcam,.bn .npcam .cam{clip-path:inset(0 round 0)!important}   /* the card clips the corners; the shared camera clip would round them inside it */
+.bn-btn{display:block;box-sizing:border-box;width:calc(100% - 32px);margin:12px 16px 14px;padding:12px;border-radius:12px;border:1px solid rgba(var(--mint-rgb),.5);background:rgba(var(--mint-rgb),.12);color:var(--mint);font:600 14px var(--sans);cursor:pointer}
+.bn-btn:active{filter:brightness(1.15)}
+#nacc[data-k=bins],#nacc .nai[data-k=bins]{--nk:#f2c261}
+html[data-mode=light] .bn{background:rgba(255,255,255,.72);box-shadow:0 1px 4px rgba(0,0,0,.08)}
+html[data-mode=light] .bn-btn{color:#0b6b45;border-color:#1f9d6a;background:rgba(31,157,106,.12)}
+/* Notifications > ACTIVITY tab: filter chips + a timeline of what changed (time on the left, icon on the line, text and picture on the right). Config: activity (see config.example.js) */
+.af-f{margin:14px 0 10px;overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none}.af-f::-webkit-scrollbar{display:none}.af-f .chip{flex:none}
+.af-l{border-radius:18px;border:1px solid var(--line);background:rgba(var(--w),.06);padding:6px 14px;margin-bottom:14px}
+.af-r{display:grid;grid-template-columns:44px 32px minmax(0,1fr);gap:10px;position:relative;padding:8px 0}
+.af-r::before{content:"";position:absolute;left:69px;top:0;bottom:0;width:2px;background:var(--line);border-radius:1px}
+.af-r:first-child::before{top:24px}.af-r:last-child::before{bottom:auto;height:24px;top:0}.af-r:first-child:last-child::before{display:none}
+.af-r.go{cursor:pointer}.af-r.go:active{opacity:.7}
+.af-tm{font-size:12px;color:var(--mut);text-align:right;padding-top:6px;white-space:nowrap}
+.af-i{--ac:var(--cool);width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;z-index:1;background:color-mix(in srgb,var(--ac) 22%,var(--bg))}
+.af-i svg{width:18px;height:18px;fill:var(--ac);display:block}
+.af-i.dng{--ac:#ff6b5e}.af-i.wrn{--ac:#ffc857}.af-i.ok{--ac:var(--mint)}.af-i.wat{--ac:#5cc8ff}.af-i.heat{--ac:#ff9f43}
+.af-t{min-width:0;padding-top:2px}.af-t b{display:block;font-size:14px;font-weight:600;line-height:1.3}.af-t span{display:block;font-size:12px;color:var(--mut);line-height:1.4}
+.af-th{position:relative;margin-top:6px;max-width:240px;aspect-ratio:16/9;border-radius:10px;overflow:hidden;background:rgba(var(--w),.08);cursor:pointer}.af-th img{width:100%;height:100%;object-fit:cover;display:block}
+.af-th b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.18)}.af-th b svg{width:30px;height:30px;fill:#fff;filter:drop-shadow(0 1px 3px rgba(0,0,0,.5))}.af-th:active{opacity:.8}
+html[data-mode=light] .af-l{background:rgba(255,255,255,.72);box-shadow:0 1px 4px rgba(0,0,0,.08)}
 </style>
 </head>
 <body>
@@ -2413,7 +2456,7 @@ function openWs(tk) {
       send({ type: "subscribe_events", event_type: "state_changed" });
       loadFc(); loadFcH(); evBtn(); if (curPg() === "energy") { en.busy = false; loadEnergy(); }
     } else if (m.type === "result" && pending[m.id]) { try { pending[m.id](m.result, m); } catch (x) {} delete pending[m.id]; }
-    else if (m.type === "event") { if (m.event && m.event.event_type === "state_changed") skewSample(Date.now() - Date.parse(m.event.time_fired)); if (subs[m.id]) subs[m.id](m.event); else if (m.event.data && m.event.data.new_state) setState(m.event.data.new_state); }
+    else if (m.type === "event") { if (m.event && m.event.event_type === "state_changed") skewSample(Date.now() - Date.parse(m.event.time_fired)); if (subs[m.id]) subs[m.id](m.event); else if (m.event.data && m.event.data.new_state) { actNote(m.event.data); setState(m.event.data.new_state); } }
   };
   ws.onclose = () => { if (loginUp) return; setStatus(false); setTimeout(connect, 3000); };
 }
@@ -2587,9 +2630,16 @@ function loadEvents() {
         (map[dk(d)] = map[dk(d)] || []).push({ t: s, ad: ad, s: v.summary, c: evColOf(c, v) || CALCOL[i % CALCOL.length], i: EVS.push({ v: v, cal: c, ci: i }) - 1 });
     } catch (x) { evErr.push(calName(c) + ": skipped \"" + (v && v.summary || "?") + "\" (" + x.message + ")"); } })).catch(x => { evErr.push(calName(c) + ": " + x.message); }))).then(() => { if (tok === evTok) { evLast = { k: mk, gs: gs, map: map }; drawEvents(gs, map, true); const el = $("#eerr"); if (el) el.textContent = evErr.length ? evErr.join(" · ") + "  |  Calendars HA has: " + Object.keys(states).filter(k => k.indexOf("calendar.") === 0).join(", ") : ""; } });
 }
+let evTy = null;
+function evTitle(y, m) {   // the month name, or its short form when the long one does not fit between the arrows (September on a narrow phone)
+  if (y != null) evTy = [y, m]; if (!evTy) return; const t = $("#et"), d = new Date(evTy[0], evTy[1], 1);
+  t.textContent = d.toLocaleDateString([], { month: "long", year: "numeric" });
+  if (t.clientWidth && t.scrollWidth > t.clientWidth + 1) t.textContent = d.toLocaleDateString([], { month: "short", year: "numeric" });
+}
+addEventListener("resize", () => evTitle());
 function drawEvents(gs, map, fin) {
   if (evSq.on) return;   // while searching, the list shows the matches instead of the month
-  $("#et").textContent = new Date(cy, cm, 1).toLocaleDateString([], { month: "long", year: "numeric" });
+  evTitle(cy, cm);
   evBtn();
   if (!$("#eerr")) { const e = document.createElement("div"); e.id = "eerr"; e.style.cssText = "color:var(--heat);font-size:12px;margin:6px 2px;empty-cells:hide"; $("#elg").after(e); }
   $("#elg").innerHTML = CONFIG.calendars.map((c, i) => '<span><i style="--c:' + CALCOL[i % CALCOL.length] + '"></i>' + esc(calName(c)) + '</span>').join("");
@@ -4343,11 +4393,14 @@ function dtItems() {
   return out.sort((a, b) => b.ts - a.ts);
 }
 const dtWhen = ts => { const d = new Date(ts), n = new Date(), df = Math.round((new Date(n.getFullYear(), n.getMonth(), n.getDate()) - new Date(d.getFullYear(), d.getMonth(), d.getDate())) / 864e5), tm = d.toLocaleTimeString([], tmo({ hour: "numeric", minute: "2-digit" })).replace(" ", "").toLowerCase(); return (df === 0 ? "Today" : df === 1 ? "Yesterday" : d.toLocaleDateString([], { weekday: "short", day: "numeric", month: "short" })) + " · " + tm; };
+// the picture shown for a clip, the same everywhere (Security > Detections and Notifications > Activity): HA's own snapshot from when the detection began, else the frame cut from the clip, else the browse thumbnail
+function dtThumbUrl(x) { const su = DT.snapUrl[x.mc]; return su && Date.now() - su.t < 3000000 ? su.u : DT.th[x.mc] || (x.th ? (x.th.indexOf("/") === 0 ? CONFIG.url : "") + x.th : ""); }
+const dtWanted = () => location.hash === "#security/detections" || (document.body.classList.contains("np-open") && npTab === "activity");   // the loader runs for the Detections tab and for the Activity tab
 function dtDraw(soft) {
   const P = $("#dtp"); if (!P) return; if (!dtCams().length || CONFIG.detections === false) { P.style.display = "none"; return; } P.style.display = "";
   const all = dtItems(), tyOn = k => DT.types[k], vis = all.filter(x => (DT.cam === "all" || x.cam === DT.cam) && x.p.tags.some(t => tyOn(t)));
   const cnt = k => all.filter(x => x.p.tags.indexOf(k) > -1 && (DT.cam === "all" || x.cam === DT.cam)).length;
-  const body = vis.slice(0, DT.show).map((x, i) => { const su = DT.snapUrl[x.mc], th = su && Date.now() - su.t < 3000000 ? su.u : DT.th[x.mc] || (x.th ? (x.th.indexOf("/") === 0 ? CONFIG.url : "") + x.th : ""); return '<div class="dti" data-dt="play" data-k="' + esc(x.mc) + '" data-cam="' + esc(x.cam) + '" data-ts="' + x.ts + '" data-tg="' + esc(x.p.tags.join(",")) + '"><div class="pbth" data-dth="' + esc(x.mc) + '">' + (th ? '<img alt="" src="' + esc(th) + '">' : "") + '<b>' + mdi("play") + '</b><u>' + esc(x.p.len) + '</u></div><div class="pbx"><strong>' + esc(dtName(x.cam)) + '</strong><span>' + esc(dtWhen(x.ts)) + '</span><div>' + x.p.tags.map(t => '<i class="pbt2 ' + t.toLowerCase() + '">' + t + '</i>').join("") + '</div></div></div>'; }).join("");
+  const body = vis.slice(0, DT.show).map((x, i) => { const th = dtThumbUrl(x); return '<div class="dti" data-dt="play" data-k="' + esc(x.mc) + '" data-cam="' + esc(x.cam) + '" data-ts="' + x.ts + '" data-tg="' + esc(x.p.tags.join(",")) + '"><div class="pbth" data-dth="' + esc(x.mc) + '">' + (th ? '<img alt="" src="' + esc(th) + '">' : "") + '<b>' + mdi("play") + '</b><u>' + esc(x.p.len) + '</u></div><div class="pbx"><strong>' + esc(dtName(x.cam)) + '</strong><span>' + esc(dtWhen(x.ts)) + '</span><div>' + x.p.tags.map(t => '<i class="pbt2 ' + t.toLowerCase() + '">' + t + '</i>').join("") + '</div></div></div>'; }).join("");
   const loading = DT.busy ? '<div class="pbn">Looking through the recordings' + (DT.loaded ? " · " + DT.loaded : "") + '…</div>' : "";
   P.innerHTML = '<div class="lbl dthd">Recent detections<button class="eb" data-dt="refresh" aria-label="Refresh">' + mdi("refresh") + '</button></div>' +
     '<div class="pbc dtf">' + [["Person", "PERSON"], ["Vehicle", "VEHICLE"], ["Animal", "ANIMAL"], ["Motion", "OTHER MOTION"]].map(x => '<button class="chip' + (DT.types[x[0]] ? " on" : "") + '" data-dt="type" data-v="' + x[0] + '">' + x[1] + (all.length ? " · " + cnt(x[0]) : "") + '</button>').join("") + '</div>' +
@@ -4364,11 +4417,11 @@ function dtThumbs() {
   need.forEach(n => DT.io.observe(n));
 }
 function dtNext() {
-  if (location.hash !== "#security/detections") return;
+  if (!dtWanted()) return;
   while (DT.run < thPar() && DT.q.length) dtOne(DT.q.shift());
 }
 function dtOne(mc) {
-  const put = u => { const n = $$("[data-dth]", $("#dtp")).filter(x => x.dataset.dth === mc)[0]; if (n && !n.querySelector("img")) { const im = document.createElement("img"); im.alt = ""; im.src = u; n.insertBefore(im, n.firstChild); } };
+  const put = u => { const n = $$("[data-dth]", $("#dtp")).filter(x => x.dataset.dth === mc)[0]; if (n && !n.querySelector("img")) { const im = document.createElement("img"); im.alt = ""; im.src = u; n.insertBefore(im, n.firstChild); } if (typeof afThumbReady === "function") afThumbReady(mc); };
   const sid = DT.snapOf[mc];
   if (sid) {   // a picture HA saved at the time: just fetch it, nothing to decode
     const su = DT.snapUrl[mc]; if (su && Date.now() - su.t < 3000000) { put(su.u); return; }
@@ -4410,11 +4463,13 @@ $("#dtp").addEventListener("click", e => {
   else if (k === "range") { DT.range = +b.dataset.v; DT.show = 24; dtDraw(); txGo($("#dtp .dtg"), 0, true); dtLoad(); }
   else if (k === "more") { DT.show += 24; dtDraw(); }
   else if (k === "refresh") dtLoad(true);
-  else if (k === "play") {
-    const m = $("#dtm"), v = $("#dtm video"), mc = b.dataset.k; m.classList.add("on"); $("#dtm .dtt").textContent = dtName(b.dataset.cam) + " · " + dtWhen(+b.dataset.ts); $("#dtm .dte").textContent = "Loading…"; v.removeAttribute("src");
-    send({ type: "media_source/resolve_media", media_content_id: mc, expires: 3600 }, r => { if (!m.classList.contains("on")) return; if (!r || !r.url) { $("#dtm .dte").textContent = "Could not open this recording"; return; } $("#dtm .dte").textContent = ""; v.removeAttribute("crossorigin"); v.src = (r.url.indexOf("http") === 0 ? "" : CONFIG.url) + r.url; v.play().catch(() => {}); mkAttach($("#dtm .dtv"), (b.dataset.tg || "").split(",")); });
-  }
+  else if (k === "play") dtPlay(b.dataset.k, b.dataset.cam, +b.dataset.ts, (b.dataset.tg || "").split(","));
 });
+// open the viewer on one exact clip (Detections tab and Activity feed): fades in, resolves the recording, plays it, adds the detection marks
+function dtPlay(mc, cam, ts, tags) {
+  const m = $("#dtm"), v = $("#dtm video"); m.classList.add("on"); $("#dtm .dtt").textContent = dtName(cam) + " · " + dtWhen(ts); $("#dtm .dte").textContent = "Loading…"; v.removeAttribute("src");
+  send({ type: "media_source/resolve_media", media_content_id: mc, expires: 3600 }, r => { if (!m.classList.contains("on")) return; if (!r || !r.url) { $("#dtm .dte").textContent = "Could not open this recording"; return; } $("#dtm .dte").textContent = ""; v.removeAttribute("crossorigin"); v.src = (r.url.indexOf("http") === 0 ? "" : CONFIG.url) + r.url; v.play().catch(() => {}); mkAttach($("#dtm .dtv"), tags); });
+}
 $("#dtm video").onerror = () => { if ($("#dtm").classList.contains("on") && $("#dtm video").getAttribute("src")) $("#dtm .dte").textContent = "This browser can't play this recording"; };
 
 // ---------- hazards: GeoNet earthquakes + volcano alert levels on a New Zealand map ----------
@@ -4746,7 +4801,7 @@ function drawAdmin() {
 }
 $("#admin").addEventListener("click", e => { const ac = e.target.closest("[data-acc]"); if (ac) accClick(ac); });
 // ---------- Home weather shortcuts ----------
-[".hs", "#fcp"].forEach(q => { const x = $(q); x.style.cursor = "pointer"; x.onclick = () => { location.hash = "#weather"; }; });
+[[".hs", "#weather/now"], ["#fcp", "#weather/week"]].forEach(q => { const x = $(q[0]); x.style.cursor = "pointer"; x.onclick = () => { location.hash = q[1]; }; });   // the greeting opens the Now card, the Forecast card opens Next 7 days
 
 // ---------- notifications popup ----------
 const fname = id => (states[id] && states[id].attributes.friendly_name) || id.split(".")[1].replace(/_/g, " ");
@@ -4771,6 +4826,7 @@ function notif(full) {
   n += LK.length + W2.length; sec("Warnings", LK.map(x => '<div class="alert q"><div class="lbl">' + mdi("water-alert") + ' WATER LEAK</div><b>' + esc(x[1]) + '</b><div>' + esc(x[2]) + '</div></div>').join("") + grid(W2.map(x => npItem(x[0], { name: x[1], sub: x[2], confirm: /rubbish|recycle/.test(x[0]) }))));
   const wr = states[E("weatherWarnings")];
   if (wr && sv(E("weatherWarnings")) && wr.attributes.warnings) { n++; sec("Weather warning", '<div class="alert w">' + esc(wr.attributes.warnings) + '</div>'); }
+  const bc = binsCard(); if (bc) { n++; sec("Bins", bc); }   // 32-bins-activity.js
   // Cameras: live pictures (the same WebRTC streams as the Security page), mounted into these slots after the list is drawn. An alert's 4th value names the camera to show while it is on:
   // "driveway", "garage", or any camera by its name as shown on the Security page ("road", "right-walkway"). The garage also shows while its door sensor says it is opening / open.
   if (full) sec("Cameras", npCams().map(x => '<div class="snap npcam" data-vw="' + esc(x.key) + '" data-npc="' + esc(x.id) + '" data-name="' + esc(x.name) + '"></div>').join(""));
@@ -4786,7 +4842,7 @@ function notif(full) {
   return { n: n - (hasB ? 1 : 0), all: n, nb: nb, html: h, bh: bh };
 }
 // header strip: normally a glowing bar while something is waiting; it turns into an icon for the conditions below. Priority when several are true:
-// water leak, then weather warning, then garage door open, then a door open, then water on, then pollen (from the level set by pollen.alertFrom), then laundry running, then towel heating. The top one shows and a small "+n" says how many more there are.
+// water leak, then weather warning, then garage door open, then a door open, then water on, then bins not out yet, then pollen (from the level set by pollen.alertFrom), then laundry running, then towel heating. The top one shows and a small "+n" says how many more there are.
 const LEAKS = () => (CONFIG.leakSensors || []).map(x => { x = [].concat(x); return [x[0], x[1] || fname(x[0]), x[2] || "Water detected"]; });   // config leakSensors: ["binary_sensor.x"] or [["binary_sensor.x", "Washing machine", "Water under the machine"]]
 const laundryOn = () => sv(E("laundryState")) === "Run";   // laundry running (the washer integration reports "Run"; "Delay Run" = waiting for its delayed start)
 const towelsOn = () => { const g = E("towelGroup"); return !!g && members(g).some(x => x !== g && isOn(x)); };
@@ -4798,12 +4854,13 @@ const NSK = [
   ["garage", "garage-open-variant", "Garage door open", () => Object.keys(galCfg()).some(k => { const c = galCfg()[k], s = c && c.sensor && states[c.sensor]; return !!s && (s.state === "on") !== !!c.invert; })],
   ["door", "door-open", "Door open", () => !!doorsOpen()],
   ["water", "m3-water-drop", "Water on", () => Object.keys(states).some(k => /^switch\..*water_tap$/.test(k) && states[k].state === "on") || (CONFIG.irrigation || []).some(z => z.switch && states[z.switch] && states[z.switch].state === "on")],
+  ["bins", "recycle", "Bins out", binsWaiting],   // a bin is due and not out yet (config bins)
   ["battery", "battery-low", "Low battery", () => lowBattChip().length > 0],   // under 20 % by default (derived.batteryAlertBelow)
   ["pollen", "pollen", "Pollen", polOn],   // below a leak, a warning, the garage, a door and water on; the chip adds the level
   ["laundry", "washing-machine", "Laundry running", laundryOn],
   ["towel", "radiator", "Towel heating on", towelsOn]
 ];
-const nskRel = id => polRel(id) || /^sensor\..*battery_plus$/.test(id) || LEAKS().some(x => x[0] === id) || id === E("weatherWarnings") || id === E("doorsGroup") || id === E("laundryState") || id === E("laundryRemaining") || id === E("towelGroup") || members(E("towelGroup")).includes(id) || members(E("doorsGroup")).includes(id) || /^switch\..*water_tap$/.test(id) || Object.keys(galCfg()).some(k => (galCfg()[k] || {}).sensor === id) || (CONFIG.irrigation || []).some(z => z.switch === id);
+const nskRel = id => polRel(id) || binsIds().includes(id) || /^sensor\..*battery_plus$/.test(id) || LEAKS().some(x => x[0] === id) || id === E("weatherWarnings") || id === E("doorsGroup") || id === E("laundryState") || id === E("laundryRemaining") || id === E("towelGroup") || members(E("towelGroup")).includes(id) || members(E("doorsGroup")).includes(id) || /^switch\..*water_tap$/.test(id) || Object.keys(galCfg()).some(k => (galCfg()[k] || {}).sensor === id) || (CONFIG.irrigation || []).some(z => z.switch === id);
 let npTab = "alerts";
 const ACTC = CONFIG.quickAll || [];
 
@@ -4894,10 +4951,10 @@ function drawNotif() {
   if (!open) { npCamStop(); return; }
   const A = actList(), tot = A.reduce((s, x) => s + x.ids.length, 0);
   // the header and tabs are built once and only updated in place; the list below is only replaced when its HTML really changes, so nothing blinks on a state update
-  const np = $("#np"), tb = [["alerts", "ALERTS", r.n], ["active", "ACTIVE", tot], ["batteries", "BATTERIES", r.nb]]; let tc = false;
+  const np = $("#np"), tb = [["alerts", "ALERTS", r.n], ["active", "ACTIVE", tot], ["batteries", "BATTERIES", r.nb]].concat(afCfg() ? [["activity", "ACTIVITY", 0]] : []); let tc = false;
   if (!np.querySelector(".nptabs")) { tc = true; np.innerHTML = '<div class="nh"><div><div class="lbl">Home</div><h3>Notifications</h3></div><button class="eb" data-close="1">DONE</button></div>' + hsw('<div class="chips tabs nptabs">' + tb.map(t => '<button class="chip" data-npt="' + t[0] + '"></button>').join("") + '</div>') + '<div id="npc"></div>'; }
   np.querySelectorAll(".nptabs .chip").forEach((c, k) => { const tx = tb[k][1] + (tb[k][2] ? " · " + tb[k][2] : ""); if (c.textContent !== tx) { c.textContent = tx; tc = true; } c.classList.toggle("on", c.dataset.npt === npTab); });
-  const body = npLoading() ? '<div class="lbl" style="margin:14px 0">Loading…</div>' : npTab === "active" ? actHtml(A) : npTab === "batteries" ? (r.bh ? '<div class="lbl np2 il">' + mdi("battery-low") + 'Batteries · ' + r.nb + '</div>' + r.bh : '<div class="lbl" style="margin:14px 0">All batteries are fine</div>') : (r.n ? "" : '<div class="lbl" style="margin:14px 0">All clear</div>') + r.html, nc = $("#npc"), key = npTab + "|" + body.replace(/<em class="ldr">[^<]*<\/em>/g, '<em class="ldr"></em>');   // the remaining time is filled in below, so the minute ticking over does not redraw the list (and restart the drum)
+  const body = npLoading() ? '<div class="lbl" style="margin:14px 0">Loading…</div>' : npTab === "active" ? actHtml(A) : npTab === "activity" && afCfg() ? afHtml() : npTab === "batteries" ? (r.bh ? '<div class="lbl np2 il">' + mdi("battery-low") + 'Batteries · ' + r.nb + '</div>' + r.bh : '<div class="lbl" style="margin:14px 0">All batteries are fine</div>') : (r.n ? "" : '<div class="lbl" style="margin:14px 0">All clear</div>') + r.html, nc = $("#npc"), key = npTab + "|" + body.replace(/<em class="ldr">[^<]*<\/em>/g, '<em class="ldr"></em>');   // the remaining time is filled in below, so the minute ticking over does not redraw the list (and restart the drum)
   if (nc._k !== key) { nc._k = key; nc.innerHTML = body; }
   npGoRun(); npCamMount();
   $$("#npc .ldr").forEach(el => { const t = ldTime(); if (el.textContent !== t) el.textContent = t; });
@@ -4913,12 +4970,150 @@ $("#np").onclick = e => {
   if (e.target.closest("[data-close]")) { npClose(); return; }
   const tb = e.target.closest("[data-npt]"); if (tb) { npTab = tb.dataset.npt; drawNotif(); return; }
   const of = e.target.closest("[data-off]"); if (of) { const ids = actList()[+of.dataset.off].ids; const cl = actList()[+of.dataset.off].c[3] === "close"; if (ids.length) { if (!cl) npDismiss(ids); call(cl ? "cover" : "homeassistant", cl ? "close_cover" : "turn_off", ids); } return; }
+  const af = e.target.closest("[data-aff]"); if (af) { AF.filter = af.dataset.aff; drawNotif(); return; }
+  const bn = e.target.closest("[data-bn]"); if (bn) { binsTap(bn.dataset.bn); return; }
+  const ap = e.target.closest("[data-afp]"); if (ap) { dtPlay(ap.dataset.afp, ap.dataset.cam, +ap.dataset.ts, (ap.dataset.tg || "").split(",")); return; }   // Activity: the picture opens that exact clip
   const vw = e.target.closest("[data-vw]"); if (vw) { VW.back = /^#(view|camera|notifications|active|batteries)/.test(location.hash) ? "#home" : (location.hash || "#home"); location.hash = "#view/" + vw.dataset.vw; return; }
   const c = e.target.closest("[data-nt]");
   if (c) { if (c.dataset.sc) send({ type: "call_service", domain: "script", service: c.dataset.sc }); else call(c.dataset.nt.split(".")[0], "toggle", c.dataset.nt); return; }
   tapH(e);
 };
 
+// ---------- bins card (Alerts tab): the night before pickup a reminder with the Reminded > Bins out > Collected steps, on pickup day a quick check with the road camera ----------
+// config bins: { due: [[switch, "Recycling", "recycle"], [switch, "Rubbish", "trash-can"], [switch, "Garden", "leaf"]], out: "input_boolean.bins_out", camera: "road", eveningFrom: 16 }
+// a due switch is on from the evening before pickup until the bins are collected; "out" is on once the bins are at the kerb. "Collected" turns them all off.
+Object.assign(MDI, {"recycle":"M21.82,15.42L19.32,19.75C18.83,20.61 17.92,21.06 17,21H15V23L12.5,18.5L15,14V16H17.82L15.6,12.15L19.93,9.65L21.73,12.77C22.25,13.54 22.32,14.57 21.82,15.42M9.21,3.06H14.21C15.19,3.06 16.04,3.63 16.45,4.45L17.45,6.19L19.18,5.19L16.54,9.6L11.39,9.69L13.12,8.69L11.71,6.24L9.5,10.09L5.16,7.59L6.96,4.47C7.37,3.64 8.22,3.06 9.21,3.06M5.05,19.76L2.55,15.43C2.06,14.58 2.13,13.56 2.64,12.79L3.64,11.06L1.91,10.06L7.05,10.14L9.7,14.56L7.97,13.56L6.56,16H11V21H7.4C6.47,21.07 5.55,20.61 5.05,19.76Z","trash-can":"M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M9,8H11V17H9V8M13,8H15V17H13V8Z","leaf":"M17,8C8,10 5.9,16.17 3.82,21.34L5.71,22L6.66,19.7C7.14,19.87 7.64,20 8,20C19,20 22,3 22,3C21,5 14,5.25 9,6.25C4,7.25 2,11.5 2,13.5C2,15.5 3.75,17.25 3.75,17.25C7,8 17,8 17,8Z"});   // recycle / bin / leaf (Material Design Icons)
+function binsCfg() { const b = CONFIG.bins; return b && Array.isArray(b.due) && b.due.length ? b : null; }
+function binsDue() { const b = binsCfg(); return b ? b.due.filter(x => isOn(x[0])) : []; }
+function binsOut() { const b = binsCfg(); return !!(b && b.out && isOn(b.out)); }
+function binsIds() { const b = binsCfg(); return b ? b.due.map(x => x[0]).concat(b.out ? [b.out] : []) : []; }
+function binsEvening() { const f = (binsCfg() || {}).eveningFrom; return new Date().getHours() >= (typeof f === "number" ? f : 16); }   // from this hour the pickup is "tomorrow", before it "today"
+function binsWaiting() { return binsDue().length > 0 && !binsOut(); }   // something still has to go out: counts as an alert and shows in the header strip
+function binsCard() {
+  const b = binsCfg(), due = binsDue(); if (!b || !due.length) return "";
+  const out = binsOut(), eve = binsEvening(), nm = due.map(x => x[1]), list = nm.length > 1 ? nm.slice(0, -1).join(", ") + " and " + nm[nm.length - 1] : nm[0];
+  const ico = '<div class="bn-i">' + due.map(x => '<span class="bn-b" data-ic="' + esc(x[2] || "trash-can") + '">' + mdi(x[2] || "trash-can") + '</span>').join("") + '</div>';
+  const title = out ? "Bins are out" : eve ? "Bins out tonight" : "Bring the bins out", sub = esc(list) + " · " + (eve ? "pickup tomorrow" : out ? "waiting for pickup today" : "pickup today");
+  const step = (c, t) => '<div class="bn-s ' + c + '"><span class="bn-d">' + (c === "done" ? mdi("check") : "") + '</span>' + t + '</div>';
+  const tl = eve ? '<div class="bn-tl">' + step("done", "Reminded") + '<i class="bn-ln done"></i>' + step(out ? "done" : "cur", "Bins out") + '<i class="bn-ln' + (out ? " done" : "") + '"></i>' + step("", "Collected") + '</div>' : "";
+  const cam = !eve && b.camera ? npCamFor(b.camera) : null, cs = cam ? '<div class="snap npcam" data-vw="' + esc(cam.key) + '" data-npc="' + esc(cam.id) + '" data-name="' + esc(cam.name) + '"></div>' : "";
+  const btn = out && !eve ? '<button class="bn-btn" data-bn="done">Collected</button>' : !out && b.out ? '<button class="bn-btn" data-bn="out">Bins are out</button>' : !b.out ? '<button class="bn-btn" data-bn="done">Done</button>' : "";
+  return '<div class="bn' + (out ? " out" : "") + '"><div class="bn-h">' + ico + '<div class="bn-t"><b>' + title + '</b><span>' + sub + '</span></div></div>' + tl + cs + btn + '</div>';
+}
+function binsTap(k) {
+  const b = binsCfg(); if (!b) return;
+  if (k === "out" && b.out) call("input_boolean", "turn_on", b.out);
+  else call("homeassistant", "turn_off", binsIds());
+}
+// ---------- activity feed (notifications pop-up, ACTIVITY tab): camera person / vehicle sensors, doors and windows, water taps, towel rails and any extra entities, newest first ----------
+// config activity: { hours: 24, max: 150, merge: 120, include: "switch\\.(dyson|rice)", exclude: "", cameras: { "walkway": "right-walkway" } }  (activity: false hides the tab)
+// Layout: a timeline (time on the left, an icon on the line, the text and, for a person / vehicle, the picture from the matching recent-detections clip when config playback is set up).
+// Live events come from the state_changed stream; the past hours are read once from Home Assistant's logbook when the tab opens. Repeats of the same entity within "merge" seconds become one row with a count.
+const AF = { raw: [], filter: "all", loaded: 0, busy: 0, rx: {}, dt: [], req: {}, pt: 0 };
+const AFG = { all: null, cams: ["person", "vehicle"], doors: ["door", "window"], water: ["water"], sw: ["towel", "switch"] };
+const AFN = [["all", "All"], ["cams", "Cameras"], ["doors", "Doors"], ["water", "Water"], ["sw", "Switches"]];
+const afCfg = () => CONFIG.activity === false ? null : Object.assign({ hours: 24, max: 150, merge: 120 }, CONFIG.activity && typeof CONFIG.activity === "object" ? CONFIG.activity : {});
+const afRx = s => { if (!s) return null; if (!(s in AF.rx)) { try { AF.rx[s] = new RegExp(s); } catch (e) { AF.rx[s] = null; } } return AF.rx[s]; };
+function afKind(id) {
+  const c = afCfg(); if (!c) return null;
+  const ex = afRx(c.exclude); if (ex && ex.test(id)) return null;
+  const d = id.split(".")[0], a = (states[id] && states[id].attributes) || {};
+  if (d === "binary_sensor") {
+    if (/camera/.test(id) && /person/.test(id)) return "person";
+    if (/camera/.test(id) && /vehicle/.test(id)) return "vehicle";
+    if (a.device_class === "window") return "window";
+    if (a.device_class === "door" || a.device_class === "garage_door" || a.device_class === "opening") return "door";
+  }
+  if (d === "switch" && (/water_tap$/.test(id) || (CONFIG.irrigation || []).some(z => z.switch === id))) return "water";
+  if (d === "switch" && /towel/.test(id)) return "towel";
+  const inc = afRx(c.include); if (inc && inc.test(id)) return "switch";
+  return null;
+}
+const afCamOf = id => {   // the camera a person / vehicle sensor belongs to: config activity.cameras { "text in the sensor id": "camera name" }, else a camera whose name is in the sensor id (longest match wins)
+  const c = afCfg() || {}, m = c.cameras || {}, k = Object.keys(m).find(x => id.indexOf(x) > -1); if (k) return npCamFor(m[k]);
+  let best = null; CONFIG.security.concat(CONFIG.cameras).forEach(cm => { const s = slug(cm.name).replace(/-/g, "_"); if (id.indexOf(s) > -1 && (!best || s.length > best.s.length)) best = { s: s, c: cm }; });
+  return best ? { id: best.c.id, name: best.c.name, key: slug(best.c.name) } : null;
+};
+const afName = id => { const f = (states[id] && states[id].attributes.friendly_name) || id.split(".")[1].replace(/_/g, " "); return f.replace(/\b(contact|opening|detection|person|vehicle|sensor|crossline|entry|exit|camera|cameras)\b/gi, "").replace(/\s+/g, " ").trim() || f; };
+function afAdd(t, id, s) {   // one raw change: dedupe on entity + state + second (the logbook repeats what was already seen live)
+  const k = afKind(id); if (!k || (s !== "on" && s !== "off")) return;
+  if ((k === "person" || k === "vehicle") && s !== "on") return;
+  const key = id + "|" + s + "|" + Math.round(t / 1000); if (AF.raw.some(x => x.key === key)) return;
+  AF.raw.push({ t: t, id: id, s: s, k: k, key: key });
+  const c = afCfg(), lim = Date.now() - c.hours * 36e5; if (AF.raw.length > c.max * 4) AF.raw = AF.raw.filter(x => x.t > lim).sort((a, b) => b.t - a.t).slice(0, c.max * 4);
+}
+function actNote(d) {   // called for every state_changed event, before the state is stored
+  if (!d || !d.new_state || !afCfg()) return;
+  const o = d.old_state ? d.old_state.state : "", n = d.new_state.state;
+  if ((o !== "on" && o !== "off") || (n !== "on" && n !== "off") || o === n) return;
+  if (!states[d.entity_id]) states[d.entity_id] = d.new_state;   // so a brand-new entity can be classified
+  const before = AF.raw.length; afAdd(Date.now(), d.entity_id, n);
+  if (AF.raw.length !== before && document.body.classList.contains("np-open") && npTab === "activity") queueNotif();
+}
+function afLoad(force) {
+  const c = afCfg(); if (!c || AF.busy || (!force && Date.now() - AF.loaded < 3e5)) return;
+  const ids = Object.keys(states).filter(afKind); if (!ids.length) return;
+  AF.busy = 1; const end = new Date(), start = new Date(end.getTime() - c.hours * 36e5);
+  send({ type: "logbook/get_events", start_time: start.toISOString(), end_time: end.toISOString(), entity_ids: ids }, res => {
+    AF.busy = 0; AF.loaded = Date.now(); if (!Array.isArray(res)) return;
+    res.forEach(x => { const w = typeof x.when === "number" ? x.when * 1000 : Date.parse(x.when); if (w && x.entity_id && x.state) afAdd(w, x.entity_id, String(x.state)); });
+    if (document.body.classList.contains("np-open") && npTab === "activity") queueNotif();
+  });
+}
+function afList() {   // newest first, repeats merged, durations (open for / ran for) worked out from the on / off pairs
+  const c = afCfg(), now = Date.now(), lim = now - c.hours * 36e5, asc = AF.raw.filter(x => x.t > lim).sort((a, b) => a.t - b.t), on = {};
+  asc.forEach(x => { if (x.s === "on") { if (!on[x.id]) on[x.id] = x.t; } else { x.dur = on[x.id] ? x.t - on[x.id] : 0; delete on[x.id]; } });
+  const want = AFG[AF.filter], out = [], last = {};
+  asc.slice().reverse().forEach(x => {
+    if (want && want.indexOf(x.k) < 0) return;
+    const p = last[x.id + x.s]; if (p && p.first - x.t < c.merge * 1000) { p.n++; p.first = x.t; return; }
+    const it = { t: x.t, first: x.t, id: x.id, s: x.s, k: x.k, dur: x.dur || 0, n: 1 }; last[x.id + x.s] = it; out.push(it);
+  });
+  return out.slice(0, c.max);
+}
+const afDur = ms => { const m = Math.round(ms / 60000); return m < 1 ? Math.max(1, Math.round(ms / 1000)) + " sec" : m < 60 ? m + " min" : Math.floor(m / 60) + " hr" + (m % 60 ? " " + (m % 60) + " min" : ""); };
+const afWhen = t => Date.now() - t < 6e4 ? "now" : new Date(t).toLocaleTimeString([], tmo({ hour: "numeric", minute: "2-digit" })).replace(" ", "").toLowerCase();
+const afGroup = t => { const a = Date.now() - t, d0 = new Date(); d0.setHours(0, 0, 0, 0); return a < 36e5 ? "Last hour" : t >= d0.getTime() ? "Earlier today" : t >= d0.getTime() - 864e5 ? "Yesterday" : "Earlier"; };
+const afDtOn = () => CONFIG.detections !== false && typeof dtCams === "function" && dtCams().length > 0;
+function afClip(x, cam) {   // the recent-detections clip (same camera, same kind, within 90 s of the sensor) from the Security page's list, or null
+  if (!cam || !AF.dt.length) return null;
+  const tag = x.k === "vehicle" ? "Vehicle" : "Person"; let best = null;
+  AF.dt.forEach(d => { if (d.cam === cam.id && d.p && d.p.tags.indexOf(tag) > -1) { const df = Math.abs(d.ts - x.t); if (df < 9e4 && (!best || df < best.df)) best = { d: d, df: df }; } });
+  return best ? best.d : null;
+}
+function afThumb(d) {   // the same picture the Detections tab shows for that clip (dtThumbUrl); when there is none yet the shared loader fetches / cuts it
+  const u = dtThumbUrl(d);
+  const su = DT.snapUrl[d.mc], fresh = su && Date.now() - su.t < 3000000;
+  if (Date.now() - (AF.req[d.mc] || 0) > 3e6 && (DT.snapOf[d.mc] ? !fresh : !u && DT.th[d.mc] == null)) { AF.req[d.mc] = Date.now(); DT.q.push(d.mc); dtNext(); }   // same rule as the Detections tab (dtThumbs)
+  return u;
+}
+let afRt = 0;
+function afThumbReady() { clearTimeout(afRt); afRt = setTimeout(() => { if (document.body.classList.contains("np-open") && npTab === "activity") queueNotif(); }, 200); }   // called by the thumbnail loader (27-recent-detections.js)
+function afRow(x) {
+  const nm = afName(x.id), on = x.s === "on", cam = x.k === "person" || x.k === "vehicle" ? afCamOf(x.id) : null, rep = x.n > 1 ? " ×" + x.n : "";
+  const T = { person: ["account", "Person detected" + rep, cam ? cam.name : nm, "dng"], vehicle: ["car", "Vehicle detected" + rep, cam ? cam.name : nm, "dng"],
+    door: [on ? "door-open" : "m3-door-front", nm + (on ? " opened" : " closed") + rep, on ? "" : x.dur ? "Open for " + afDur(x.dur) : "", on ? "wrn" : "ok"],
+    window: [on ? "window-open-variant" : "m3-window-closed", nm + (on ? " opened" : " closed") + rep, on ? "" : x.dur ? "Open for " + afDur(x.dur) : "", on ? "wrn" : "ok"],
+    water: ["m3-water-drop", nm + (on ? " turned on" : " turned off") + rep, on ? "" : x.dur ? "Ran for " + afDur(x.dur) : "", on ? "wat" : "ok"],
+    towel: ["radiator", nm + (on ? " turned on" : " turned off") + rep, on ? "" : x.dur ? "On for " + afDur(x.dur) : "", on ? "heat" : "ok"],
+    switch: ["toggle-switch", nm + (on ? " turned on" : " turned off") + rep, on ? "" : x.dur ? "On for " + afDur(x.dur) : "", on ? "wat" : "ok"] }[x.k];
+  const d = cam ? afClip(x, cam) : null, th = d ? afThumb(d) : "";
+  const pic = d ? '<div class="af-th" data-afp="' + esc(d.mc) + '" data-cam="' + esc(d.cam) + '" data-ts="' + d.ts + '" data-tg="' + esc(d.p.tags.join(",")) + '">' + (th ? '<img src="' + esc(th) + '" alt="" loading="lazy">' : "") + '<b>' + mdi("play") + '</b></div>' : "";   // tap = play that exact clip, like the Detections tab
+  return '<div class="af-r' + (cam ? " go" : "") + '"' + (cam ? ' data-vw="' + esc(cam.key) + '"' : "") + '><span class="af-tm">' + afWhen(x.t) + '</span><span class="af-i ' + T[3] + '">' + mdi(T[0]) + '</span><div class="af-t"><b>' + esc(T[1]) + '</b>' + (T[2] ? '<span>' + esc(T[2]) + '</span>' : "") + pic + '</div></div>';
+}
+function afHtml() {
+  afLoad();
+  if (afDtOn()) {   // the clips the Security page lists: read once (and again after 10 minutes) so person / vehicle rows can show their picture
+    if (!DT.busy && Date.now() - DT.t0 > 6e5) dtLoad();
+    AF.dt = dtItems();
+    if (DT.busy) { clearTimeout(AF.pt); AF.pt = setTimeout(() => { if (document.body.classList.contains("np-open") && npTab === "activity") queueNotif(); }, 3000); }
+  } else AF.dt = [];
+  const L = afList(), chips = '<div class="chips af-f">' + AFN.map(n => '<button class="chip' + (AF.filter === n[0] ? " on" : "") + '" data-aff="' + n[0] + '">' + n[1] + '</button>').join("") + '</div>';
+  if (!L.length) return chips + '<div class="lbl" style="margin:14px 0">' + (AF.busy ? "Loading…" : "Nothing yet") + '</div>';
+  let g = "", h = ""; L.forEach(x => { const gn = afGroup(x.t); if (gn !== g) { if (g) h += '</div>'; g = gn; h += '<div class="lbl np2">' + gn + '</div><div class="af-l">'; } h += afRow(x); });
+  return chips + h + '</div>';
+}
+setInterval(() => { if (document.body.classList.contains("np-open") && npTab === "activity") queueNotif(); }, 30000);   // "3 min" ticks over
 // ---------- media (Sonos / Spotify) ----------
 // cover art: real picture, else CONFIG.mediaArt match by title (optional), else a generated waveform tile
 // ---------- dominant colour of the album art, used for the Now playing glow ----------
@@ -5025,7 +5220,7 @@ function tickMedia() {
 }
 
 // ---------- Now Playing (Home card · mobile mini player · bottom sheet) ----------
-const npPw = s => { const c = s.firstElementChild; return (c && c.offsetWidth) || s.clientWidth; };   // one page of the sideways pager (the scroller itself is 20 px wider, to leave room for the chips' shadow)
+const npPw = s => { const c = s.firstElementChild; return ((c && c.offsetWidth) || s.clientWidth) + (parseFloat(getComputedStyle(s).columnGap) || 0); };   // one step of the sideways pager: a page plus the 20 px gap (the scroller is 20 px wider than a page, to leave room for the chips' shadow, and the gap keeps the next page out of that margin)
 const fmtT = t => { t = Math.round(t); return Math.floor(t / 60) + ":" + ("0" + (t % 60)).slice(-2); };
 let npAnim = 0, npOpen = true, npSheet = false, npSeen = {}, npPage = 0, npHoldT = 0;   // npOpen = the Home card shows the player + lyrics pages (false = one slim row)
 try { npOpen = localStorage.getItem("dashNp") !== "0"; } catch (_) {}
@@ -5091,7 +5286,7 @@ function npRender() {
   const rowX = '<div class="npr"><div class="npart" data-np="media">' + c.art + '</div><div class="npi"><b>' + esc(c.title) + '</b><small>' + c.sub + '</small></div></div>';
   const ctl = '<div class="mpt npc">' + bt2("shuffle", mdi("shuffle-variant"), ga.shuffle) + bt2("prev", mdi("skip-previous")) + bt2("pp", mdi(gp ? "pause" : "play")) + bt2("next", mdi("skip-next")) + bt2("repeat", mdi(ga.repeat === "one" ? "repeat-once" : ga.repeat === "all" ? "repeat" : "repeat-off"), ga.repeat && ga.repeat !== "off") + '</div>';
   const aH = npAnim; npAnim = 0;
-  w.innerHTML = '<div class="nph"><button class="npl" data-np="media"><span class="nptx">' + (npPage ? "Lyrics" : "Now playing") + '</span>' + (act.length > 1 ? '<span class="npn">+' + (act.length - 1) + '</span>' : "") + mdi("chevron-right") + '</button><button class="npt2" data-np="tog" aria-label="' + (npOpen ? "Collapse" : "Expand") + '">' + mdi(npOpen ? "chevron-up" : "chevron-down") + '</button></div>' +
+  w.innerHTML = '<div class="nph"><button class="npl" data-np="tog" aria-label="' + (npOpen ? "Collapse" : "Expand") + '"><span class="nptx">' + (npPage ? "Lyrics" : "Now playing") + '</span>' + (act.length > 1 ? '<span class="npn">+' + (act.length - 1) + '</span>' : "") + mdi(npOpen ? "chevron-up" : "chevron-down") + '</button><button class="npt2" data-np="media" aria-label="Open Media">' + mdi("chevron-right") + '</button></div>' +
     (npOpen ? '<div class="nps"><div class="npg">' + rowX + c.prog + ctl + '</div>' + (hasLy ? '<div class="npg"><div class="nply">' + hlLn(HL.lines, hlIdx()) + '</div></div>' : "") + '</div>' + (hasLy ? '<div class="npdt"><i data-npg="0"' + (npPage ? "" : ' class="on"') + '></i><i data-npg="1"' + (npPage ? ' class="on"' : "") + '></i></div>' : "") : rowH + c.prog);
   { const sl = $(".nps", w); if (sl && npPage) sl.scrollLeft = npPage * npPw(sl); }
   if (aH && w.animate && !matchMedia("(prefers-reduced-motion:reduce)").matches) {   // smooth expand / collapse
@@ -6012,8 +6207,10 @@ function route() {
   if (p === "weather") {   // #weather/wind | rain | uv opens that forecast tab and scrolls to it, #weather/pollen scrolls to the Pollen card
     const ti = { temp: 0, wind: 1, rain: 2, uv: 3, cloud: 3 }[h[1]];
     if (ti != null) fcTab = ti;
-    if (h[1] === "pollen") SECP.want = { page: "weather", q: "#wxpol" }; else if (ti != null) SECP.want = { page: "weather", q: ".fcp" };   // phones: open the tab that holds that card
+    if (h[1] === "pollen") SECP.want = { page: "weather", q: "#wxpol" }; else if (ti != null) SECP.want = { page: "weather", q: ".fcp" };
+    const wk = h[1] === "now" || h[1] === "week"; if (wk) { wcI = h[1] === "week" ? 1 : 0; SECP.want = { page: "weather", q: ".wcols" }; }   // #weather/now = the Now card, #weather/week = the Next 7 days card (both on the Now tab)   // phones: open the tab that holds that card
     drawWeather();
+    if (wk) [0, 80, 400].forEach(ms => setTimeout(() => { const wc = $("#wx .wcols"); if (curPg() === "weather" && wc && wc.clientWidth) { wc.scrollLeft = wcI * (wc.clientWidth + 12); $$("#wx .wdots i").forEach((d, k) => d.classList.toggle("on", k === wcI)); } }, ms));
     if (h[1] === "pollen") [60, 1500].forEach(ms => setTimeout(() => { if (curPg() === "weather") { const f = $("#wxpol"); if (f) f.scrollIntoView({ block: "start" }); } }, ms));   // #weather/pollen scrolls to the Pollen card
     if (ti != null) [60, 1500].forEach(ms => setTimeout(() => { if (curPg() === "weather") { fcSync(); const f = $("#wx .fcp"); if (f) f.scrollIntoView({ block: "start" }); } }, ms));
   }

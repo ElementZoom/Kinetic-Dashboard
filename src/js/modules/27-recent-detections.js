@@ -45,11 +45,14 @@ function dtItems() {
   return out.sort((a, b) => b.ts - a.ts);
 }
 const dtWhen = ts => { const d = new Date(ts), n = new Date(), df = Math.round((new Date(n.getFullYear(), n.getMonth(), n.getDate()) - new Date(d.getFullYear(), d.getMonth(), d.getDate())) / 864e5), tm = d.toLocaleTimeString([], tmo({ hour: "numeric", minute: "2-digit" })).replace(" ", "").toLowerCase(); return (df === 0 ? "Today" : df === 1 ? "Yesterday" : d.toLocaleDateString([], { weekday: "short", day: "numeric", month: "short" })) + " · " + tm; };
+// the picture shown for a clip, the same everywhere (Security > Detections and Notifications > Activity): HA's own snapshot from when the detection began, else the frame cut from the clip, else the browse thumbnail
+function dtThumbUrl(x) { const su = DT.snapUrl[x.mc]; return su && Date.now() - su.t < 3000000 ? su.u : DT.th[x.mc] || (x.th ? (x.th.indexOf("/") === 0 ? CONFIG.url : "") + x.th : ""); }
+const dtWanted = () => location.hash === "#security/detections" || (document.body.classList.contains("np-open") && npTab === "activity");   // the loader runs for the Detections tab and for the Activity tab
 function dtDraw(soft) {
   const P = $("#dtp"); if (!P) return; if (!dtCams().length || CONFIG.detections === false) { P.style.display = "none"; return; } P.style.display = "";
   const all = dtItems(), tyOn = k => DT.types[k], vis = all.filter(x => (DT.cam === "all" || x.cam === DT.cam) && x.p.tags.some(t => tyOn(t)));
   const cnt = k => all.filter(x => x.p.tags.indexOf(k) > -1 && (DT.cam === "all" || x.cam === DT.cam)).length;
-  const body = vis.slice(0, DT.show).map((x, i) => { const su = DT.snapUrl[x.mc], th = su && Date.now() - su.t < 3000000 ? su.u : DT.th[x.mc] || (x.th ? (x.th.indexOf("/") === 0 ? CONFIG.url : "") + x.th : ""); return '<div class="dti" data-dt="play" data-k="' + esc(x.mc) + '" data-cam="' + esc(x.cam) + '" data-ts="' + x.ts + '" data-tg="' + esc(x.p.tags.join(",")) + '"><div class="pbth" data-dth="' + esc(x.mc) + '">' + (th ? '<img alt="" src="' + esc(th) + '">' : "") + '<b>' + mdi("play") + '</b><u>' + esc(x.p.len) + '</u></div><div class="pbx"><strong>' + esc(dtName(x.cam)) + '</strong><span>' + esc(dtWhen(x.ts)) + '</span><div>' + x.p.tags.map(t => '<i class="pbt2 ' + t.toLowerCase() + '">' + t + '</i>').join("") + '</div></div></div>'; }).join("");
+  const body = vis.slice(0, DT.show).map((x, i) => { const th = dtThumbUrl(x); return '<div class="dti" data-dt="play" data-k="' + esc(x.mc) + '" data-cam="' + esc(x.cam) + '" data-ts="' + x.ts + '" data-tg="' + esc(x.p.tags.join(",")) + '"><div class="pbth" data-dth="' + esc(x.mc) + '">' + (th ? '<img alt="" src="' + esc(th) + '">' : "") + '<b>' + mdi("play") + '</b><u>' + esc(x.p.len) + '</u></div><div class="pbx"><strong>' + esc(dtName(x.cam)) + '</strong><span>' + esc(dtWhen(x.ts)) + '</span><div>' + x.p.tags.map(t => '<i class="pbt2 ' + t.toLowerCase() + '">' + t + '</i>').join("") + '</div></div></div>'; }).join("");
   const loading = DT.busy ? '<div class="pbn">Looking through the recordings' + (DT.loaded ? " · " + DT.loaded : "") + '…</div>' : "";
   P.innerHTML = '<div class="lbl dthd">Recent detections<button class="eb" data-dt="refresh" aria-label="Refresh">' + mdi("refresh") + '</button></div>' +
     '<div class="pbc dtf">' + [["Person", "PERSON"], ["Vehicle", "VEHICLE"], ["Animal", "ANIMAL"], ["Motion", "OTHER MOTION"]].map(x => '<button class="chip' + (DT.types[x[0]] ? " on" : "") + '" data-dt="type" data-v="' + x[0] + '">' + x[1] + (all.length ? " · " + cnt(x[0]) : "") + '</button>').join("") + '</div>' +
@@ -66,11 +69,11 @@ function dtThumbs() {
   need.forEach(n => DT.io.observe(n));
 }
 function dtNext() {
-  if (location.hash !== "#security/detections") return;
+  if (!dtWanted()) return;
   while (DT.run < thPar() && DT.q.length) dtOne(DT.q.shift());
 }
 function dtOne(mc) {
-  const put = u => { const n = $$("[data-dth]", $("#dtp")).filter(x => x.dataset.dth === mc)[0]; if (n && !n.querySelector("img")) { const im = document.createElement("img"); im.alt = ""; im.src = u; n.insertBefore(im, n.firstChild); } };
+  const put = u => { const n = $$("[data-dth]", $("#dtp")).filter(x => x.dataset.dth === mc)[0]; if (n && !n.querySelector("img")) { const im = document.createElement("img"); im.alt = ""; im.src = u; n.insertBefore(im, n.firstChild); } if (typeof afThumbReady === "function") afThumbReady(mc); };
   const sid = DT.snapOf[mc];
   if (sid) {   // a picture HA saved at the time: just fetch it, nothing to decode
     const su = DT.snapUrl[mc]; if (su && Date.now() - su.t < 3000000) { put(su.u); return; }
@@ -112,10 +115,12 @@ $("#dtp").addEventListener("click", e => {
   else if (k === "range") { DT.range = +b.dataset.v; DT.show = 24; dtDraw(); txGo($("#dtp .dtg"), 0, true); dtLoad(); }
   else if (k === "more") { DT.show += 24; dtDraw(); }
   else if (k === "refresh") dtLoad(true);
-  else if (k === "play") {
-    const m = $("#dtm"), v = $("#dtm video"), mc = b.dataset.k; m.classList.add("on"); $("#dtm .dtt").textContent = dtName(b.dataset.cam) + " · " + dtWhen(+b.dataset.ts); $("#dtm .dte").textContent = "Loading…"; v.removeAttribute("src");
-    send({ type: "media_source/resolve_media", media_content_id: mc, expires: 3600 }, r => { if (!m.classList.contains("on")) return; if (!r || !r.url) { $("#dtm .dte").textContent = "Could not open this recording"; return; } $("#dtm .dte").textContent = ""; v.removeAttribute("crossorigin"); v.src = (r.url.indexOf("http") === 0 ? "" : CONFIG.url) + r.url; v.play().catch(() => {}); mkAttach($("#dtm .dtv"), (b.dataset.tg || "").split(",")); });
-  }
+  else if (k === "play") dtPlay(b.dataset.k, b.dataset.cam, +b.dataset.ts, (b.dataset.tg || "").split(","));
 });
+// open the viewer on one exact clip (Detections tab and Activity feed): fades in, resolves the recording, plays it, adds the detection marks
+function dtPlay(mc, cam, ts, tags) {
+  const m = $("#dtm"), v = $("#dtm video"); m.classList.add("on"); $("#dtm .dtt").textContent = dtName(cam) + " · " + dtWhen(ts); $("#dtm .dte").textContent = "Loading…"; v.removeAttribute("src");
+  send({ type: "media_source/resolve_media", media_content_id: mc, expires: 3600 }, r => { if (!m.classList.contains("on")) return; if (!r || !r.url) { $("#dtm .dte").textContent = "Could not open this recording"; return; } $("#dtm .dte").textContent = ""; v.removeAttribute("crossorigin"); v.src = (r.url.indexOf("http") === 0 ? "" : CONFIG.url) + r.url; v.play().catch(() => {}); mkAttach($("#dtm .dtv"), tags); });
+}
 $("#dtm video").onerror = () => { if ($("#dtm").classList.contains("on") && $("#dtm video").getAttribute("src")) $("#dtm .dte").textContent = "This browser can't play this recording"; };
 

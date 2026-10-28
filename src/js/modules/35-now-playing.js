@@ -1,5 +1,5 @@
 // ---------- Now Playing (Home card · mobile mini player · bottom sheet) ----------
-const npPw = s => { const c = s.firstElementChild; return (c && c.offsetWidth) || s.clientWidth; };   // one page of the sideways pager (the scroller itself is 20 px wider, to leave room for the chips' shadow)
+const npPw = s => { const c = s.firstElementChild; return ((c && c.offsetWidth) || s.clientWidth) + (parseFloat(getComputedStyle(s).columnGap) || 0); };   // one step of the sideways pager: a page plus the 20 px gap (the scroller is 20 px wider than a page, to leave room for the chips' shadow, and the gap keeps the next page out of that margin)
 const fmtT = t => { t = Math.round(t); return Math.floor(t / 60) + ":" + ("0" + (t % 60)).slice(-2); };
 let npAnim = 0, npOpen = true, npSheet = false, npSeen = {}, npPage = 0, npHoldT = 0;   // npOpen = the Home card shows the player + lyrics pages (false = one slim row)
 try { npOpen = localStorage.getItem("dashNp") !== "0"; } catch (_) {}
@@ -65,7 +65,7 @@ function npRender() {
   const rowX = '<div class="npr"><div class="npart" data-np="media">' + c.art + '</div><div class="npi"><b>' + esc(c.title) + '</b><small>' + c.sub + '</small></div></div>';
   const ctl = '<div class="mpt npc">' + bt2("shuffle", mdi("shuffle-variant"), ga.shuffle) + bt2("prev", mdi("skip-previous")) + bt2("pp", mdi(gp ? "pause" : "play")) + bt2("next", mdi("skip-next")) + bt2("repeat", mdi(ga.repeat === "one" ? "repeat-once" : ga.repeat === "all" ? "repeat" : "repeat-off"), ga.repeat && ga.repeat !== "off") + '</div>';
   const aH = npAnim; npAnim = 0;
-  w.innerHTML = '<div class="nph"><button class="npl" data-np="media"><span class="nptx">' + (npPage ? "Lyrics" : "Now playing") + '</span>' + (act.length > 1 ? '<span class="npn">+' + (act.length - 1) + '</span>' : "") + mdi("chevron-right") + '</button><button class="npt2" data-np="tog" aria-label="' + (npOpen ? "Collapse" : "Expand") + '">' + mdi(npOpen ? "chevron-up" : "chevron-down") + '</button></div>' +
+  w.innerHTML = '<div class="nph"><button class="npl" data-np="tog" aria-label="' + (npOpen ? "Collapse" : "Expand") + '"><span class="nptx">' + (npPage ? "Lyrics" : "Now playing") + '</span>' + (act.length > 1 ? '<span class="npn">+' + (act.length - 1) + '</span>' : "") + mdi(npOpen ? "chevron-up" : "chevron-down") + '</button><button class="npt2" data-np="media" aria-label="Open Media">' + mdi("chevron-right") + '</button></div>' +
     (npOpen ? '<div class="nps"><div class="npg">' + rowX + c.prog + ctl + '</div>' + (hasLy ? '<div class="npg"><div class="nply">' + hlLn(HL.lines, hlIdx()) + '</div></div>' : "") + '</div>' + (hasLy ? '<div class="npdt"><i data-npg="0"' + (npPage ? "" : ' class="on"') + '></i><i data-npg="1"' + (npPage ? ' class="on"' : "") + '></i></div>' : "") : rowH + c.prog);
   { const sl = $(".nps", w); if (sl && npPage) sl.scrollLeft = npPage * npPw(sl); }
   if (aH && w.animate && !matchMedia("(prefers-reduced-motion:reduce)").matches) {   // smooth expand / collapse

@@ -30,7 +30,7 @@ const txt = () => page.evaluate(() => document.querySelector("#np").innerText);
 let t = await txt();
 eq("doors card lists the side door only", [/1 open/i.test(t), /Side Sliding Door/.test(t), /Garage Door/.test(t)], [true, true, false]);
 eq("low batteries are not on the Alerts tab", /Soil Sensor One/.test(t), false);
-eq("three tabs with counts", await page.evaluate(() => [...document.querySelectorAll("#np .nptabs .chip")].map(c => c.textContent.replace(/\s+/g, " "))), ["ALERTS · 1", "ACTIVE", "BATTERIES · 2"]);
+eq("four tabs (Activity has no count)", await page.evaluate(() => [...document.querySelectorAll("#np .nptabs .chip")].map(c => c.textContent.replace(/\s+/g, " "))), ["ALERTS · 1", "ACTIVE", "BATTERIES · 2", "ACTIVITY"]);
 await page.click('#np [data-npt="batteries"]'); await page.waitForTimeout(200);
 t = await txt();
 eq("Batteries tab lists them, lowest first", [/Soil Sensor One/.test(t), /20%/.test(t), t.indexOf("Soil Sensor") < t.indexOf("Rain Sensor"), /Side Sliding/.test(t)], [true, true, true, false]);

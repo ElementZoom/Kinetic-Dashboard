@@ -91,6 +91,7 @@ await p.evaluate(() => { npRender(); }); await p.waitForTimeout(300);
 await p.click("#npmini .npi"); await p.waitForTimeout(800);
 await p.evaluate(() => { npRender(); }); await p.waitForTimeout(500);
 eq("sheet: pages and labels", await p.evaluate(() => [document.querySelector("#npbody .nps").dataset.pn, document.querySelectorAll("#npbody .npdt i").length, [...document.querySelectorAll("#npbody .npdl span")].map(s => s.textContent)]), ["Now playing|Lyrics|Artist", 3, ["Now playing", "Lyrics", "Artist"]]);
+eq("sheet: the next page never peeks into the right-hand margin (page 2 starts beyond the scroller)", await p.evaluate(() => { const s = document.querySelector("#npbody .nps"), r = s.getBoundingClientRect(); return [...s.children].slice(1).every(c => c.getBoundingClientRect().left >= r.right - 0.5); }), true);
 await p.click("#npbody .npa .ai-nm"); await p.waitForTimeout(900);
 eq("sheet: the artist name jumps to the Artist page", await p.evaluate(() => [document.querySelector("#npbody .nptx").textContent, document.querySelector("#npbody .npdt i:nth-child(3)").classList.contains("on"), npsName]), ["Artist", true, "Artist"]);
 eq("sheet: the Artist page shows the bio", await p.evaluate(() => (document.querySelector("#npbody .ar .arb") || { textContent: "" }).textContent.startsWith("Demo Artist is an invented")), true);

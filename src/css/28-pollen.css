@@ -37,3 +37,10 @@ html[data-mode=light] .alert.fr{background:#dff1fd;color:#0b3550;border-left-col
 #wxsun .wg{grid-template-columns:repeat(5,minmax(0,1fr))}#wxsun .ws.moon b{display:flex;align-items:center;gap:10px;font-size:15px;line-height:1.2}#wxsun .ws.moon small{display:block;color:var(--mut);font-weight:400;font-size:12px}#wxsun .moon svg{flex:none;color:var(--ink)}
 @media(max-width:760px){#wxsun .wg{grid-template-columns:repeat(2,minmax(0,1fr))}#wxsun .ws.moon{grid-column:1/-1}}
 .ws .wtr{display:block;font:500 11px var(--mono);color:var(--mut);margin-top:3px;letter-spacing:.02em}
+
+/* Weather on phones: the Sun and Moon and Pollen cards are at least 430px tall (the content spreads out instead of leaving a short card on an empty page); sunrise and sunset sit on one line, the daylight text on its own line below */
+@media(max-width:760px){
+#wxsun,#wxpol{min-height:430px;box-sizing:border-box}   /* the Now tab's two cards keep their own height (shorter than Pollen) so the dots clear the mini player */
+#wxsun{display:flex;flex-direction:column}#wxsun .wg{flex:1;grid-auto-rows:1fr;align-content:stretch}#wxsun .ws{display:flex;flex-direction:column;justify-content:center}
+.sunl{flex-wrap:wrap;row-gap:8px}.sunl .sm{order:3;flex:0 0 100%;font-size:13px}
+}

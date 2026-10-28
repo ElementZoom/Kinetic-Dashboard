@@ -443,6 +443,12 @@ window.DASH_CONFIG = {
     ["input_boolean.demo_rubbish_day", "Rubbish day", "Bring the bins out", "driveway"],
     ["switch.demo_backyard_tap", "Backyard tap", "Water is running"]
   ],
+  // Bins card (Alerts tab, and "Bins out" in the header strip while a bin is due and not out yet). due = [switch that is on from the evening before pickup, name, icon];
+  // out = a switch that turns on once the bins are at the kerb; camera = a camera name (as on the Security page) for a quick look on pickup day; eveningFrom = the hour from which pickup is "tomorrow".
+  // bins: { due: [["input_boolean.demo_recycling_day", "Recycling", "recycle"], ["input_boolean.demo_rubbish_day", "Rubbish", "trash-can"], ["input_boolean.demo_garden_day", "Garden", "leaf"]], out: "input_boolean.demo_bins_out", camera: "road", eveningFrom: 16 },
+  // Activity tab in the notifications pop-up: a timeline of camera person / vehicle detections, doors and windows, water taps, towel rails and anything matched by include.
+  // A person / vehicle row shows the same picture as Security > Detections (needs playback) and the picture plays that exact clip. activity: false hides the tab.
+  // activity: { hours: 24, max: 150, merge: 120, include: "switch\\.demo_(rice|oven)", exclude: "", cameras: { "walkway": "right-walkway" } },
   // Water leak sensors: while one is on it shows first under Warnings in the notifications pop-up and the strip by
   // the clock turns into a leak icon (top priority).
   // An id on its own, or [id, name, text]. Example: [["binary_sensor.demo_washing_machine_leak", "Washing machine",

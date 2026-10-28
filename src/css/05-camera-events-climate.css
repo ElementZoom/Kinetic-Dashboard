@@ -147,7 +147,7 @@ body.m-tabs .main{padding-bottom:72px}
 #events.srch :is(#ep,#en,#etd,#et,#elg,#eerr){display:none!important}#events.srch #esrch{order:2}#events.srch #eadd{order:3}
 @media(min-width:761px){#eadd{font-size:22px;font-weight:300;line-height:1;min-width:42px}}
 @media(max-width:760px){#events .eh{gap:8px;row-gap:6px}#events .eh h2{font-size:22px;min-width:0;flex:1;text-align:left}#events .eb{padding:9px 14px;font-size:12px}#events .lg{margin-left:0;width:100%;gap:12px;font-size:11px}}
-#events .eh h2{white-space:nowrap}
+#events .eh h2{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 #events .esq:focus{outline:none;border-color:var(--mint)}
 @media(max-width:760px){#events .eh h2{font-size:20px}#events .eb{padding:9px 12px}#events #esrch{min-width:40px}}
 /* phones: the month bar and legend stay put and only the agenda list scrolls (no overlay layer, so nothing bleeds through or flickers) */

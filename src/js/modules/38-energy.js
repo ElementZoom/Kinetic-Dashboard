@@ -228,7 +228,8 @@ function route() {
   if (p === "vehicle") drawVehicle();
   if (p === "hazards") { HZ.vb = null; HZ.tab = { earthquakes: "quake", quakes: "quake", volcanoes: "volc", volcano: "volc" }[h[1]] || "map"; HZ.view = HZ.view || (states["zone.home"] ? "home" : "ni"); requestAnimationFrame(drawHaz); }
   if (h[0] === "disarm") alarmLink("disarm"); else if (h[0] === "arm") alarmLink("arm_" + (h[1] || "away"));
-  if (h[0] === "notifications" || h[0] === "active" || h[0] === "batteries") { npTab = h[0] === "active" ? "active" : h[0] === "batteries" ? "batteries" : "alerts"; npGo = h[0] === "active" && h[1] ? { s: h[1], t: Date.now() } : null; document.body.classList.add("np-open"); drawNotif(); }
+  if (h[0] === "notifications" || h[0] === "attention" || h[0] === "active" || h[0] === "batteries") { npTab = h[0] === "active" ? "active" : h[0] === "attention" || h[0] === "batteries" ? "attention" : "alerts";   // #batteries (old links) now opens Attention, which lists the low batteries
+  npGo = h[0] === "active" && h[1] ? { s: h[1], t: Date.now() } : null; document.body.classList.add("np-open"); drawNotif(); }
 }
 // tablet battery pill: shown on the Fully Kiosk tablet only ("kiosk" = the Fully JS interface, a FullyKiosk user agent, or ?tablet=1 once; "always" / "never" override)
 const BAT_ON = (() => {

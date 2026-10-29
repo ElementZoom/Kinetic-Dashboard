@@ -446,9 +446,16 @@ window.DASH_CONFIG = {
   // Bins card (Alerts tab, and "Bins out" in the header strip while a bin is due and not out yet). due = [switch that is on from the evening before pickup, name, icon];
   // out = a switch that turns on once the bins are at the kerb; camera = a camera name (as on the Security page) for a quick look on pickup day; eveningFrom = the hour from which pickup is "tomorrow".
   // bins: { due: [["input_boolean.demo_recycling_day", "Recycling", "recycle"], ["input_boolean.demo_rubbish_day", "Rubbish", "trash-can"], ["input_boolean.demo_garden_day", "Garden", "leaf"]], out: "input_boolean.demo_bins_out", camera: "road", eveningFrom: 16 },
-  // Activity tab in the notifications pop-up: a timeline of camera person / vehicle detections, doors and windows, water taps, towel rails and anything matched by include.
-  // A person / vehicle row shows the same picture as Security > Detections (needs playback) and the picture plays that exact clip. activity: false hides the tab.
-  // activity: { hours: 24, max: 150, merge: 120, include: "switch\\.demo_(rice|oven)", exclude: "", cameras: { "walkway": "right-walkway" } },
+  // Attention: things worth acting on, on the Notifications > ATTENTION tab (it replaces the Batteries tab) and a slim "NEEDS ATTENTION" card on Home that opens it.
+  // It lists the bins that are due, dry soil, devices (lights, switches, covers, locks, climate, cameras, fans, sirens, alarm panels, vacuums) that have been offline for a while,
+  // updates waiting in Home Assistant and low batteries. Alerts keeps the urgent things (leak, warnings, doors). All of it is on by default; attention: false hides the lot.
+  // offlineMinutes = how long a device must be unavailable before it is listed. soilBelow / batteryBelow = the percentages under which soil and batteries are listed.
+  // ignore = regular expressions for entities to leave out. watch = more entities (sensors, say) to list when they go offline. home: false removes the card from Home.
+  // attention: { offline: true, offlineMinutes: 10, updates: true, soil: true, soilBelow: 25, batteries: true, batteryBelow: 26, home: true, ignore: ["demo_hall_lamp"], watch: ["binary_sensor.demo_gate"] },
+  // Weather alerts: a Weather card in Notifications > Alerts (wind now with a gauge, and rain in the next few hours), from the weather entity and its hourly forecast. On by default.
+  // Wind tiers are km/h (Moderate / Strong / Severe), rain tiers are mm per hour (Light / Moderate / Heavy). stripWind / stripRain = the tier (1 to 3) from which the header strip shows a chip: Strong wind and Heavy rain by default.
+  // weatherAlerts: false hides it. wind: false or rain: false hides one part. hours = how far ahead the forecast is checked.
+  // weatherAlerts: { wind: true, rain: true, windTiers: [30, 62, 89], rainTiers: [0.5, 2, 5], hours: 6, stripWind: 2, stripRain: 3 },
   // Water leak sensors: while one is on it shows first under Warnings in the notifications pop-up and the strip by
   // the clock turns into a leak icon (top priority).
   // An id on its own, or [id, name, text]. Example: [["binary_sensor.demo_washing_machine_leak", "Washing machine",

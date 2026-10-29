@@ -4,6 +4,15 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
+## 1.14.6 - 2026-10-29
+
+### Added
+- **Attention tab in Notifications.** Replaces the Batteries tab. One list of what needs a look: bins, dry soil, offline devices (offline for more than `attention.offlineMinutes`, default 10), pending updates and low batteries (under `attention.batteryBelow`, default 26 %). A one-line card on Home (the count and a summary such as "3 offline · 4 low batteries · 5 updates") opens it and hides itself when nothing needs attention. On tablets it shares the row under the greeting with the Today strip, which moves up from under the cameras (list `schedule` in `layout.tablet` to keep it where config.js puts it); either one takes the whole row when the other is empty. Each part can be switched off, and `ignore` / `watch` fine-tune the devices. See `attention` in `config.example.js`.
+- **Weather alerts.** One Weather card in Notifications > Alerts: a wind gauge (live wind with the 30 / 62 / 89 km/h marks, gusts, and the forecast peak when it is higher) and a rain line from the next 6 hours of the hourly forecast (Light, Moderate or Heavy from 0.5 / 2 / 5 mm per hour). Tapping it opens the wind or rain chart on the Weather page. The header strip shows a chip from Strong wind and Heavy rain up, in the tier colour, after the garage and the weather warning in the priority order. Configure with `weatherAlerts` (`wind`, `rain`, `windTiers`, `rainTiers`, `hours`, `stripWind`, `stripRain`, or `false` to hide).
+
+### Removed
+- **Activity tab in Notifications**, and the `activity` option in config.js (it can stay there, it is ignored). Notifications now has Alerts, Attention and Active.
+
 ## 1.14.5 - 2026-10-28
 
 ### Added

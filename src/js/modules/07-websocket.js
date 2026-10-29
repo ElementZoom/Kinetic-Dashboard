@@ -65,7 +65,7 @@ function openWs(tk) {
       send({ type: "subscribe_events", event_type: "state_changed" });
       loadFc(); loadFcH(); evBtn(); if (curPg() === "energy") { en.busy = false; loadEnergy(); }
     } else if (m.type === "result" && pending[m.id]) { try { pending[m.id](m.result, m); } catch (x) {} delete pending[m.id]; }
-    else if (m.type === "event") { if (m.event && m.event.event_type === "state_changed") skewSample(Date.now() - Date.parse(m.event.time_fired)); if (subs[m.id]) subs[m.id](m.event); else if (m.event.data && m.event.data.new_state) { actNote(m.event.data); setState(m.event.data.new_state); } }
+    else if (m.type === "event") { if (m.event && m.event.event_type === "state_changed") skewSample(Date.now() - Date.parse(m.event.time_fired)); if (subs[m.id]) subs[m.id](m.event); else if (m.event.data && m.event.data.new_state) setState(m.event.data.new_state); }
   };
   ws.onclose = () => { if (loginUp) return; setStatus(false); setTimeout(connect, 3000); };
 }

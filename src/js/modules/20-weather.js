@@ -2,7 +2,7 @@
 let fcH = [];
 function loadFcH() {
   send({ type: "call_service", domain: "weather", service: "get_forecasts", service_data: { type: "hourly" }, target: { entity_id: W }, return_response: true },
-    r => { fcH = r.response[W].forecast || []; if (curPg() === "weather") drawWeather(); else if (curPg() === "irrigation") drawIrr(); });
+    r => { fcH = r.response[W].forecast || []; queueNotif(); if (curPg() === "weather") drawWeather(); else if (curPg() === "irrigation") drawIrr(); });
 }
 const CARD = d => ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"][Math.round(d / 22.5) % 16];
 // ----- summary lines worked out from the hourly forecast (replaces the template sensors) -----

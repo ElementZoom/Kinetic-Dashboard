@@ -1,4 +1,4 @@
-// Notifications pop-up: the garage door is not listed under Doors, and Low batteries have their own tab.   Run:  node tests/notifications.mjs
+// Notifications pop-up: the garage door is not listed under Doors, and low batteries are listed on the Attention tab.   Run:  node tests/notifications.mjs
 import http from "node:http";
 import fs from "node:fs";
 import path from "node:path";
@@ -30,18 +30,21 @@ const txt = () => page.evaluate(() => document.querySelector("#np").innerText);
 let t = await txt();
 eq("doors card lists the side door only", [/1 open/i.test(t), /Side Sliding Door/.test(t), /Garage Door/.test(t)], [true, true, false]);
 eq("low batteries are not on the Alerts tab", /Soil Sensor One/.test(t), false);
-eq("four tabs (Activity has no count)", await page.evaluate(() => [...document.querySelectorAll("#np .nptabs .chip")].map(c => c.textContent.replace(/\s+/g, " "))), ["ALERTS · 1", "ACTIVE", "BATTERIES · 2", "ACTIVITY"]);
-await page.click('#np [data-npt="batteries"]'); await page.waitForTimeout(200);
+eq("three tabs: Alerts, Attention, Active", await page.evaluate(() => [...document.querySelectorAll("#np .nptabs .chip")].map(c => c.textContent.replace(/\s+/g, " "))), ["ALERTS · 1", "ATTENTION · 1", "ACTIVE"]);   // only Soil Sensor One (20 %) is under the 26 % default of attention.batteryBelow; Rain Sensor (50 %) is not
+await page.click('#np [data-npt="attention"]'); await page.waitForTimeout(200);
 t = await txt();
-eq("Batteries tab lists them, lowest first", [/Soil Sensor One/.test(t), /20%/.test(t), t.indexOf("Soil Sensor") < t.indexOf("Rain Sensor"), /Side Sliding/.test(t)], [true, true, true, false]);
-eq("Batteries tab has a heading with the count, and no ALL OFF button", await page.evaluate(() => { const h = document.querySelector("#npc .np2"); return [h ? h.textContent.replace(/\s+/g, " ").trim() : null, !!document.querySelector("#npc .np2 .eb")]; }), ["Batteries · 2", false]);
-eq("the tab is the selected one", await page.evaluate(() => document.querySelector('#np [data-npt="batteries"]').classList.contains("on")), true);
+eq("Attention lists the battery under 26 % and leaves the 50 % one out", [/Soil Sensor One/.test(t), /20%/.test(t), /Rain Sensor/.test(t), /Side Sliding/.test(t)], [true, true, false, false]);
+await page.evaluate(() => { states["sensor.b_battery_plus"].state = "24"; drawNotif(); }); await page.waitForTimeout(200);
+t = await txt();
+eq("with two low batteries the lowest is first", [t.indexOf("Soil Sensor") < t.indexOf("Rain Sensor"), /24%/.test(t)], [true, true]);
+eq("Attention has a Batteries heading with the count, and no ALL OFF button", await page.evaluate(() => { const h = document.querySelector("#npc .np2"); return [h ? h.textContent.replace(/\s+/g, " ").trim() : null, !!document.querySelector("#npc .np2 .eb")]; }), ["Batteries · 2", false]);
+eq("the tab is the selected one", await page.evaluate(() => document.querySelector('#np [data-npt="attention"]').classList.contains("on")), true);
 eq("a redraw with nothing new keeps the same tabs and list (no flicker)", await page.evaluate(() => { const c = document.querySelector("#np .nptabs .chip"), k = document.querySelector("#npc").firstElementChild; c._m = 1; k._m = 1; drawNotif(); drawNotif(); return [document.querySelector("#np .nptabs .chip")._m === 1, document.querySelector("#npc").firstElementChild._m === 1]; }), [true, true]);
-eq("tabs with bigger counts scroll and show the animated arrow on a phone", await page.evaluate(() => { const c = document.querySelector("#np .nptabs"), k = [...c.children]; k[0].textContent = "ALERTS · 12"; k[1].textContent = "ACTIVE · 11"; k[2].textContent = "BATTERIES · 14"; hsAll(); const w = c.closest(".hsw"); return [!!w, c.scrollWidth > c.clientWidth, !!w && w.classList.contains("more")]; }), [true, true, true]);
+eq("tabs with bigger counts scroll and show the animated arrow on a phone", await page.evaluate(() => { const c = document.querySelector("#np .nptabs"), k = [...c.children]; k[0].textContent = "ALERTS · 12"; k[1].textContent = "ATTENTION · 14"; k[2].textContent = "ACTIVE · 11"; hsAll(); const w = c.closest(".hsw"); return [!!w, c.scrollWidth > c.clientWidth, !!w && w.classList.contains("more")]; }), [true, true, true]);
 await page.evaluate(() => { states["sensor.a_battery_plus"].state = "90"; states["sensor.b_battery_plus"].state = "90"; drawNotif(); });
 await page.waitForTimeout(200);
-eq("no low batteries: friendly message", /All batteries are fine/i.test(await txt()), true);
-eq("the limit is derived.batteryBelow (80): 75% is listed, 85% is not, and a non-Battery-Notes battery sensor is ignored; the count agrees", await page.evaluate(() => { CONFIG.derived.batteryBelow = 80; states["sensor.a_battery_plus"].state = "75"; states["sensor.b_battery_plus"].state = "85"; states["sensor.phone_battery"] = { entity_id: "sensor.phone_battery", state: "10", attributes: {} }; drawNotif(); return [document.querySelector('#np [data-npt="batteries"]').textContent, String(VIRT["sensor.low_battery_count"]())]; }), ["BATTERIES · 1", "1"]);
+eq("nothing low: friendly message", /Nothing needs attention/i.test(await txt()), true);
+eq("the limit is attention.batteryBelow (80): 75% is listed, 85% is not, and a non-Battery-Notes battery sensor is ignored; the tab count and the low-battery count agree", await page.evaluate(() => { CONFIG.derived.batteryBelow = 80; CONFIG.attention = { batteryBelow: 80 }; states["sensor.a_battery_plus"].state = "75"; states["sensor.b_battery_plus"].state = "85"; states["sensor.phone_battery"] = { entity_id: "sensor.phone_battery", state: "10", attributes: {} }; drawNotif(); return [document.querySelector('#np [data-npt="attention"]').textContent, String(VIRT["sensor.low_battery_count"]())]; }), ["ATTENTION · 1", "1"]);
 if (process.env.SHOT) { await page.click('#np [data-npt="alerts"]'); await page.screenshot({ path: process.env.SHOT + "_np.png" }); }
 await page.close(); await browser.close(); server.close();
 if (errors.length) problems.push("JavaScript errors: " + errors.join(" | "));

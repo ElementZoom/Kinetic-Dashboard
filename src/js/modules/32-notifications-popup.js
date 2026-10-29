@@ -11,7 +11,7 @@ const gar = x => /garage/i.test(x + " " + fname(x)) || Object.keys(galCfg()).som
 // open doors from the external-doors group (garage excluded): a list of ids, [] when the group says "on" but cannot say which one, or null when all are shut
 const doorsOpen = () => { const g = E("doorsGroup"), d0 = members(g).filter(x => x !== g && isOn(x)), d = d0.filter(x => !gar(x)); return d.length || (isOn(g) && !d0.length) ? d : null; };
 function notif(full) {
-  let n = 0, h = "", bh = "", nb = 0, hasB = false;
+  let n = 0, h = "";
   const sec = (t, b) => { if (full && b) h += '<div class="lbl np2">' + t + '</div>' + b; };
   const grid = a => a.length ? '<div class="tg3">' + a.map(tileHtml).join("") + '</div>' : "";
   const al = volcHtml().concat(quakeHtml() || []), pa = polAlert(); if (pa) al.push(pa); n += al.length; sec("Alerts", al.join(""));
@@ -21,20 +21,16 @@ function notif(full) {
   n += LK.length + W2.length; sec("Warnings", LK.map(x => '<div class="alert q"><div class="lbl">' + mdi("water-alert") + ' WATER LEAK</div><b>' + esc(x[1]) + '</b><div>' + esc(x[2]) + '</div></div>').join("") + grid(W2.map(x => npItem(x[0], { name: x[1], sub: x[2], confirm: /rubbish|recycle/.test(x[0]) }))));
   const wr = states[E("weatherWarnings")];
   if (wr && sv(E("weatherWarnings")) && wr.attributes.warnings) { n++; sec("Weather warning", '<div class="alert w">' + esc(wr.attributes.warnings) + '</div>'); }
-  const bc = binsCard(); if (bc) { n++; sec("Bins", bc); }   // 32-bins-activity.js
+  const wxa = wxaNow(); if (wxa) { n++; sec("Weather", wxaHtml(wxa)); }   // 31-weather-alerts.js: wind now / coming up, and rain in the next hours
   // Cameras: live pictures (the same WebRTC streams as the Security page), mounted into these slots after the list is drawn. An alert's 4th value names the camera to show while it is on:
   // "driveway", "garage", or any camera by its name as shown on the Security page ("road", "right-walkway"). The garage also shows while its door sensor says it is opening / open.
   if (full) sec("Cameras", npCams().map(x => '<div class="snap npcam" data-vw="' + esc(x.key) + '" data-npc="' + esc(x.id) + '" data-name="' + esc(x.name) + '"></div>').join(""));
-  const ch = [];
-  Object.keys(CONFIG.derived.soil || {}).sort().map(z => ["sensor.average_" + z + "_soil_moisture", title(z)]).forEach(x => { const m = parseFloat(sv(x[0])); if (m < 40) ch.push('<div class="ws"><span class="lbl">' + x[1] + ' soil</span><b style="color:var(' + (m < 15 ? "--sd0" : m < 25 ? "--sd1" : "--sd2") + ')">' + (m < 15 ? "Very dry" : m < 25 ? "Dry" : "Moist") + '</b>' + f1(m) + '%</div>'); });
-  n += ch.length; sec("Chores", ch.length ? '<div class="wg">' + ch.join("") + '</div>' : "");
   const tm = (CONFIG.notifTimers || []).filter(x => states[x] && states[x].state === "active");   // optional Timers card: config notifTimers ["timer.x", ...] (none by default; tiles show their own countdown, see tileTimers)
   n += tm.length;
   sec("Timers", tm.map(x => { const t = states[x].attributes, fin = Date.parse(t.finishes_at || "") || 0, dur = (t.duration || "0:00:00").split(":").reduce((p, q) => p * 60 + +q, 0) * 1000; return '<div class="ws" style="margin-bottom:8px"><span class="lbl">' + esc(fname(x)) + '</span><div class="lbl tmr" data-fin="' + fin + '">--</div><div class="zb"><i data-dur="' + dur + '"></i></div></div>'; }).join(""));
-  const bl = lowBatt();
-  if (bl.length || parseFloat(sv(E("lowBatteryCount"))) > 0) { n++; hasB = true; nb = bl.length; if (full) bh = bl.map(x => { const v = Math.round(states[x].state), hh = Math.max(1.5, 13 * Math.min(v, 100) / 100); return '<div class="nrow ' + (v <= 15 ? "bad" : v < 40 ? "warn" : "ok") + '"><svg class="nbi" viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="4" width="10" height="17" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="10" y="2" width="4" height="2" rx=".5" fill="currentColor"/><rect x="9" y="' + (19 - hh) + '" width="6" height="' + hh + '" rx="1" fill="currentColor"/></svg><span class="nbn">' + esc(fname(x).replace(/\s+battery(\s+plus|\+)$/i, "")) + '</span><b class="nbp">' + v + '%</b></div>'; }).join(""); }
   sec("Controls", TOG.map(g => { const c = parseInt(sv(g[1])) || 0, sub = c === 0 ? "All " + g[2] + "s active" : c + " " + g[2] + (c > 1 ? "s" : "") + " disabled"; return '<div class="ws" style="margin-bottom:10px"><span class="lbl">' + g[0] + '</span><div style="margin:6px 0 10px;color:var(--mut)">' + sub + '</div><div class="chips cscr">' + g[3].map(x => '<button class="chip' + (isOn(x[0]) ? " on" : "") + '" data-nt="' + x[0] + '"' + (x[2] ? ' data-sc="' + x[2] + '"' : "") + '>' + x[1] + '</button>').join("") + '</div></div>'; }).join(""));
-  return { n: n - (hasB ? 1 : 0), all: n, nb: nb, html: h, bh: bh };
+  const ai = attnItems();   // 33-attention.js: bins, dry soil, offline devices, updates, low batteries
+  return { n: n, all: n + ai.length, html: h, na: ai.length, ah: full ? attnHtml(ai) : "", ai: ai };
 }
 // header strip: normally a glowing bar while something is waiting; it turns into an icon for the conditions below. Priority when several are true:
 // water leak, then weather warning, then garage door open, then a door open, then water on, then bins not out yet, then pollen (from the level set by pollen.alertFrom), then laundry running, then towel heating. The top one shows and a small "+n" says how many more there are.
@@ -47,6 +43,8 @@ const NSK = [
   ["leak", "water-alert", "Water leak", () => LEAKS().some(x => isOn(x[0]))],
   ["warn", "weather-cloudy-alert", "Weather warning", () => { const s = states[E("weatherWarnings")]; return !!s && s.state !== "unknown" && s.state !== "unavailable"; }],
   ["garage", "garage-open-variant", "Garage door open", () => Object.keys(galCfg()).some(k => { const c = galCfg()[k], s = c && c.sensor && states[c.sensor]; return !!s && (s.state === "on") !== !!c.invert; })],
+  ["wind", "weather-windy", () => { const w = (wxaNow() || {}).wind; return w ? WXA_W[w.tier] + " wind" + (w.now ? "" : " soon") : "Wind"; }, () => { const w = wxaNow(); return !!w && !!w.wind && w.wind.tier >= w.cfg.sw; }],   // from the tier set by weatherAlerts.stripWind (Strong by default)
+  ["rain", "weather-rainy", () => { const r = (wxaNow() || {}).rain; return r ? WXA_R[r.tier] + (r.now ? "" : " soon") : "Rain"; }, () => { const w = wxaNow(); return !!w && !!w.rain && w.rain.tier >= w.cfg.sr; }],   // Heavy rain by default (weatherAlerts.stripRain)
   ["door", "door-open", "Door open", () => !!doorsOpen()],
   ["water", "m3-water-drop", "Water on", () => Object.keys(states).some(k => /^switch\..*water_tap$/.test(k) && states[k].state === "on") || (CONFIG.irrigation || []).some(z => z.switch && states[z.switch] && states[z.switch].state === "on")],
   ["bins", "recycle", "Bins out", binsWaiting],   // a bin is due and not out yet (config bins)
@@ -55,7 +53,7 @@ const NSK = [
   ["laundry", "washing-machine", "Laundry running", laundryOn],
   ["towel", "radiator", "Towel heating on", towelsOn]
 ];
-const nskRel = id => polRel(id) || binsIds().includes(id) || /^sensor\..*battery_plus$/.test(id) || LEAKS().some(x => x[0] === id) || id === E("weatherWarnings") || id === E("doorsGroup") || id === E("laundryState") || id === E("laundryRemaining") || id === E("towelGroup") || members(E("towelGroup")).includes(id) || members(E("doorsGroup")).includes(id) || /^switch\..*water_tap$/.test(id) || Object.keys(galCfg()).some(k => (galCfg()[k] || {}).sensor === id) || (CONFIG.irrigation || []).some(z => z.switch === id);
+const nskRel = id => attnRel(id) || polRel(id) || binsIds().includes(id) || /^sensor\..*battery_plus$/.test(id) || LEAKS().some(x => x[0] === id) || id === E("weatherWarnings") || id === W || id === E("doorsGroup") || id === E("laundryState") || id === E("laundryRemaining") || id === E("towelGroup") || members(E("towelGroup")).includes(id) || members(E("doorsGroup")).includes(id) || /^switch\..*water_tap$/.test(id) || Object.keys(galCfg()).some(k => (galCfg()[k] || {}).sensor === id) || (CONFIG.irrigation || []).some(z => z.switch === id);
 let npTab = "alerts";
 const ACTC = CONFIG.quickAll || [];
 
@@ -135,21 +133,22 @@ function drawNotif() {
   const r = notif(open);
   const ks = NSK.filter(k => k[3]()), top = ks[0], nacc = $("#nacc");   // the strip turns into the icon of the most urgent condition
   // each condition is a .nai (icon + name): a phone shows just the top icon, a tablet shows the name as a chip, and a wide screen shows the two most urgent chips
-  const pn = polNow(), nai = (k, c) => '<span class="nai' + c + '" data-k="' + k[0] + '"' + (k[0] === "pollen" && pn ? ' style="--nk:' + pn.col + '"' : "") + '>' + (k[0] === "laundry" ? DRUM : mdi(k[1])) + '<b class="nal">' + esc(k[0] === "pollen" && pn ? "Pollen · " + pn.name : k[0] === "battery" && lowBattChip().length > 1 ? lowBattChip().length + " low batteries" : k[2]) + '</b></span>';
+  const pn = polNow(), nkc = k => k[0] === "pollen" ? (pn ? pn.col : "") : k[0] === "wind" || k[0] === "rain" ? wxaCol(k[0]) : "", nsn = k => typeof k[2] === "function" ? k[2]() : k[2], nai = (k, c) => '<span class="nai' + c + '" data-k="' + k[0] + '"' + (nkc(k) ? ' style="--nk:' + nkc(k) + '"' : "") + '>' + (k[0] === "laundry" ? DRUM : mdi(k[1])) + '<b class="nal">' + esc(k[0] === "pollen" && pn ? "Pollen · " + pn.name : k[0] === "battery" && lowBattChip().length > 1 ? lowBattChip().length + " low batteries" : nsn(k)) + '</b></span>';
   const sig = ks.slice(0, 2).map((k, i) => nai(k, i ? " nai2" : "")).join("");
-  if ((nacc.dataset.k || "") !== (top ? top[0] : "") || nacc._sig !== sig) { nacc._sig = sig; if (top) nacc.dataset.k = top[0]; else nacc.removeAttribute("data-k"); nacc.innerHTML = sig; if (top && top[0] === "pollen" && pn) nacc.style.setProperty("--nk", pn.col); else nacc.style.removeProperty("--nk"); }
+  if ((nacc.dataset.k || "") !== (top ? top[0] : "") || nacc._sig !== sig) { nacc._sig = sig; if (top) nacc.dataset.k = top[0]; else nacc.removeAttribute("data-k"); nacc.innerHTML = sig; if (top && nkc(top)) nacc.style.setProperty("--nk", nkc(top)); else nacc.style.removeProperty("--nk"); }
   nacc.dataset.n = ks.length;   // 3+ conditions: one chip + "+N" (see 28-pollen.css)
   if (ks.length > 1) nacc.dataset.more = "+" + (ks.length - 1); else nacc.removeAttribute("data-more");
   if (ks.length > 2) nacc.dataset.more2 = "+" + (ks.length - 2); else if (ks.length > 1) nacc.dataset.more2 = ""; else nacc.removeAttribute("data-more2");
   nacc.classList.toggle("on", !!r.all || !!top);
-  $("#hc").title = ks.length ? ks.map(k => k[2]).join(" · ") + (r.all ? " · " : "") + (r.all ? r.all + " notification" + (r.all > 1 ? "s" : "") : "") : r.all ? r.all + " notification" + (r.all > 1 ? "s" : "") : "Notifications";
+  $("#hc").title = ks.length ? ks.map(nsn).join(" · ") + (r.all ? " · " : "") + (r.all ? r.all + " notification" + (r.all > 1 ? "s" : "") : "") : r.all ? r.all + " notification" + (r.all > 1 ? "s" : "") : "Notifications";
+  attnCard(r.ai);
   if (!open) { npCamStop(); return; }
   const A = actList(), tot = A.reduce((s, x) => s + x.ids.length, 0);
   // the header and tabs are built once and only updated in place; the list below is only replaced when its HTML really changes, so nothing blinks on a state update
-  const np = $("#np"), tb = [["alerts", "ALERTS", r.n], ["active", "ACTIVE", tot], ["batteries", "BATTERIES", r.nb]].concat(afCfg() ? [["activity", "ACTIVITY", 0]] : []); let tc = false;
+  const np = $("#np"), tb = [["alerts", "ALERTS", r.n], ["attention", "ATTENTION", r.na], ["active", "ACTIVE", tot]]; let tc = false;
   if (!np.querySelector(".nptabs")) { tc = true; np.innerHTML = '<div class="nh"><div><div class="lbl">Home</div><h3>Notifications</h3></div><button class="eb" data-close="1">DONE</button></div>' + hsw('<div class="chips tabs nptabs">' + tb.map(t => '<button class="chip" data-npt="' + t[0] + '"></button>').join("") + '</div>') + '<div id="npc"></div>'; }
   np.querySelectorAll(".nptabs .chip").forEach((c, k) => { const tx = tb[k][1] + (tb[k][2] ? " · " + tb[k][2] : ""); if (c.textContent !== tx) { c.textContent = tx; tc = true; } c.classList.toggle("on", c.dataset.npt === npTab); });
-  const body = npLoading() ? '<div class="lbl" style="margin:14px 0">Loading…</div>' : npTab === "active" ? actHtml(A) : npTab === "activity" && afCfg() ? afHtml() : npTab === "batteries" ? (r.bh ? '<div class="lbl np2 il">' + mdi("battery-low") + 'Batteries · ' + r.nb + '</div>' + r.bh : '<div class="lbl" style="margin:14px 0">All batteries are fine</div>') : (r.n ? "" : '<div class="lbl" style="margin:14px 0">All clear</div>') + r.html, nc = $("#npc"), key = npTab + "|" + body.replace(/<em class="ldr">[^<]*<\/em>/g, '<em class="ldr"></em>');   // the remaining time is filled in below, so the minute ticking over does not redraw the list (and restart the drum)
+  const body = npLoading() ? '<div class="lbl" style="margin:14px 0">Loading…</div>' : npTab === "active" ? actHtml(A) : npTab === "attention" ? (r.na ? r.ah : '<div class="lbl" style="margin:14px 0">Nothing needs attention</div>') : (r.n ? "" : '<div class="lbl" style="margin:14px 0">All clear</div>') + r.html, nc = $("#npc"), key = npTab + "|" + body.replace(/<em class="ldr">[^<]*<\/em>/g, '<em class="ldr"></em>');   // the remaining time is filled in below, so the minute ticking over does not redraw the list (and restart the drum)
   if (nc._k !== key) { nc._k = key; nc.innerHTML = body; }
   npGoRun(); npCamMount();
   $$("#npc .ldr").forEach(el => { const t = ldTime(); if (el.textContent !== t) el.textContent = t; });
@@ -159,15 +158,14 @@ function drawNotif() {
 let nq = 0;
 function queueNotif() { if (!nq) nq = requestAnimationFrame(() => { nq = 0; drawNotif(); }); }
 $("#hc").onclick = () => { document.body.classList.toggle("np-open"); drawNotif(); };
-const npClose = () => { document.body.classList.remove("np-open"); npCamStop(); if (/^#(notifications|active|batteries)/.test(location.hash)) location.hash = "#home"; };
+const npClose = () => { document.body.classList.remove("np-open"); npCamStop(); if (/^#(notifications|attention|active|batteries)/.test(location.hash)) location.hash = "#home"; };
 $("#nbd").onclick = npClose;
 $("#np").onclick = e => {
   if (e.target.closest("[data-close]")) { npClose(); return; }
   const tb = e.target.closest("[data-npt]"); if (tb) { npTab = tb.dataset.npt; drawNotif(); return; }
   const of = e.target.closest("[data-off]"); if (of) { const ids = actList()[+of.dataset.off].ids; const cl = actList()[+of.dataset.off].c[3] === "close"; if (ids.length) { if (!cl) npDismiss(ids); call(cl ? "cover" : "homeassistant", cl ? "close_cover" : "turn_off", ids); } return; }
-  const af = e.target.closest("[data-aff]"); if (af) { AF.filter = af.dataset.aff; drawNotif(); return; }
+  const wa = e.target.closest("[data-wxa]"); if (wa) { npClose(); location.hash = "#weather/" + wa.dataset.wxa; return; }   // the weather card opens that forecast chart
   const bn = e.target.closest("[data-bn]"); if (bn) { binsTap(bn.dataset.bn); return; }
-  const ap = e.target.closest("[data-afp]"); if (ap) { dtPlay(ap.dataset.afp, ap.dataset.cam, +ap.dataset.ts, (ap.dataset.tg || "").split(",")); return; }   // Activity: the picture opens that exact clip
   const vw = e.target.closest("[data-vw]"); if (vw) { VW.back = /^#(view|camera|notifications|active|batteries)/.test(location.hash) ? "#home" : (location.hash || "#home"); location.hash = "#view/" + vw.dataset.vw; return; }
   const c = e.target.closest("[data-nt]");
   if (c) { if (c.dataset.sc) send({ type: "call_service", domain: "script", service: c.dataset.sc }); else call(c.dataset.nt.split(".")[0], "toggle", c.dataset.nt); return; }

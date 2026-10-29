@@ -39,7 +39,9 @@
 <!-- @include css/29-today-schedule.css -->
 <!-- @include css/29-setup-check.css -->
 <!-- @include css/30-motion.css -->
-<!-- @include css/31-bins-activity.css -->
+<!-- @include css/31-bins-card.css -->
+<!-- @include css/32-attention.css -->
+<!-- @include css/33-weather-alerts.css -->
 </style>
 </head>
 <body>
@@ -58,6 +60,7 @@
 
   <div id="home" class="page on">
     <div class="pn hs"><canvas id="wfx"></canvas><b id="gr"></b><span id="dt" class="lbl"></span><span id="wchip" class="wch">--</span><span id="wwind" class="wch"></span><span id="whl" class="lbl">--</span></div>
+    <div id="hstrip" hidden><div class="pn" id="attn" hidden></div></div>
     <div class="hm">
       <div class="left"><div class="camcol"><div class="cams" id="cams"></div><div class="pn sch" id="sch" hidden></div></div><div class="rooms" id="rooms"></div></div>
       <div class="side">
@@ -146,8 +149,10 @@
 <!-- @include js/modules/31-section-pills.js -->
 <!-- @include js/modules/30-admin-page.js -->
 <!-- @include js/modules/31-home-weather-shortcuts.js -->
+<!-- @include js/modules/31-weather-alerts.js -->
 <!-- @include js/modules/32-notifications-popup.js -->
-<!-- @include js/modules/32-bins-activity.js -->
+<!-- @include js/modules/32-bins-card.js -->
+<!-- @include js/modules/33-attention.js -->
 <!-- @include js/modules/33-media.js -->
 <!-- @include js/modules/34-album-art-colour.js -->
 <!-- @include js/modules/35-now-playing.js -->

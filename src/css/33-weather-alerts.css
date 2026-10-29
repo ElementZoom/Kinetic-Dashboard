@@ -1,0 +1,13 @@
+/* Weather alerts: the Notifications > Alerts card (wind gauge + rain line) */
+.wxa{border-radius:16px;margin-bottom:14px;overflow:hidden;background:rgba(var(--w),.07);border:1px solid var(--line)}
+.wxa-s{padding:14px 18px;cursor:pointer;position:relative}.wxa-s+.wxa-s{border-top:1px solid var(--line)}
+.wxa-s::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--wc)}
+.wxa-l{display:flex;align-items:center;gap:8px;color:var(--wc)}.wxa-l svg{width:18px;height:18px;fill:currentColor}
+.wxa-v{font-size:34px;font-weight:500;line-height:1.1;margin:4px 0 12px}.wxa-v small{font-size:15px;font-weight:400;color:var(--mut);margin-left:6px}
+.wxa-g{position:relative;height:7px;border-radius:4px;background:rgba(var(--w),.14)}.wxa-g i{position:absolute;left:0;top:0;bottom:0;border-radius:4px;background:var(--wc)}.wxa-g u{position:absolute;top:-3px;width:1px;height:13px;background:rgba(var(--w),.4)}
+.wxa-k{position:relative;height:16px;margin-top:6px;font-size:11px;color:var(--mut)}.wxa-k span{position:absolute;transform:translateX(-50%)}
+.wxa-n{font-size:13px;color:var(--mut);margin-top:6px}
+.wxa-r{display:flex;align-items:center;gap:12px}.wxa-r>svg{width:26px;height:26px;fill:var(--wc);flex:none}.wxa-r b{display:block;font-weight:500}.wxa-r small{display:block;font-size:13px;color:var(--mut);margin-top:2px}
+html[data-mode=light] .wxa{background:rgba(0,0,0,.04)}html[data-mode=light] .wxa-g{background:rgba(0,0,0,.12)}html[data-mode=light] .wxa-g u{background:rgba(0,0,0,.35)}
+.wt1{--wc:#e6c84f}.wt2{--wc:#f2a33a}.wt3{--wc:#ff6b5e}html[data-mode=light] .wt1{--wc:#a88a00}html[data-mode=light] .wt2{--wc:#b86a00}html[data-mode=light] .wt3{--wc:#c42a1f}
+#nacc[data-k=wind],#nacc .nai[data-k=wind]{--nk:#f2a33a}#nacc[data-k=rain],#nacc .nai[data-k=rain]{--nk:#6bb8ff}

@@ -14,7 +14,7 @@ html[data-mode=light] :where(.pn,.card,.cd,.ws,.pk,.zf,.rc,.tl,.bd,header){backg
 .snap{cursor:pointer;border-radius:16px;overflow:hidden;position:relative;margin-bottom:10px}.snap img{width:100%;display:block;aspect-ratio:16/9;object-fit:cover}.snap .lbl{position:absolute;left:12px;top:10px;color:#fff;text-shadow:0 1px 4px #000}
 .nrow{display:flex;align-items:center;gap:12px;min-height:60px;padding:12px 14px;margin-bottom:8px;border-radius:20px;border:1px solid var(--line);background:rgba(var(--w),.05);font-size:15px;font-weight:500;--bc:#7fd6a0}.nrow.warn{--bc:#ffc266}.nrow.bad{--bc:#ff8a80}
 html[data-mode=light] .nrow{--bc:#2f7d4f}html[data-mode=light] .nrow.warn{--bc:#b86a00}html[data-mode=light] .nrow.bad{--bc:#c42a1f}
-.nrow .nbi{width:30px;height:30px;flex:none;color:var(--bc)}.nrow .nbn{flex:1;min-width:0;line-height:1.25}.nrow .nbp{flex:none;font:700 15px var(--mono);padding:6px 12px;border-radius:999px;border:1px solid var(--bc);color:var(--bc)}
+.nrow .nbn{flex:1;min-width:0;line-height:1.25}
 .mpg{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px}
 .mpc{display:flex;flex-direction:column;gap:14px}
 .mpa{display:flex;gap:16px;align-items:center}.mpa img,.mpa .ph{width:120px;height:120px;border-radius:14px;object-fit:cover;background:rgba(var(--w),.08);flex:none}

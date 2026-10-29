@@ -45,9 +45,9 @@ function dtItems() {
   return out.sort((a, b) => b.ts - a.ts);
 }
 const dtWhen = ts => { const d = new Date(ts), n = new Date(), df = Math.round((new Date(n.getFullYear(), n.getMonth(), n.getDate()) - new Date(d.getFullYear(), d.getMonth(), d.getDate())) / 864e5), tm = d.toLocaleTimeString([], tmo({ hour: "numeric", minute: "2-digit" })).replace(" ", "").toLowerCase(); return (df === 0 ? "Today" : df === 1 ? "Yesterday" : d.toLocaleDateString([], { weekday: "short", day: "numeric", month: "short" })) + " · " + tm; };
-// the picture shown for a clip, the same everywhere (Security > Detections and Notifications > Activity): HA's own snapshot from when the detection began, else the frame cut from the clip, else the browse thumbnail
+// the picture shown for a clip, the same everywhere: HA's own snapshot from when the detection began, else the frame cut from the clip, else the browse thumbnail
 function dtThumbUrl(x) { const su = DT.snapUrl[x.mc]; return su && Date.now() - su.t < 3000000 ? su.u : DT.th[x.mc] || (x.th ? (x.th.indexOf("/") === 0 ? CONFIG.url : "") + x.th : ""); }
-const dtWanted = () => location.hash === "#security/detections" || (document.body.classList.contains("np-open") && npTab === "activity");   // the loader runs for the Detections tab and for the Activity tab
+const dtWanted = () => location.hash === "#security/detections";   // the loader runs for the Detections tab
 function dtDraw(soft) {
   const P = $("#dtp"); if (!P) return; if (!dtCams().length || CONFIG.detections === false) { P.style.display = "none"; return; } P.style.display = "";
   const all = dtItems(), tyOn = k => DT.types[k], vis = all.filter(x => (DT.cam === "all" || x.cam === DT.cam) && x.p.tags.some(t => tyOn(t)));
@@ -73,7 +73,7 @@ function dtNext() {
   while (DT.run < thPar() && DT.q.length) dtOne(DT.q.shift());
 }
 function dtOne(mc) {
-  const put = u => { const n = $$("[data-dth]", $("#dtp")).filter(x => x.dataset.dth === mc)[0]; if (n && !n.querySelector("img")) { const im = document.createElement("img"); im.alt = ""; im.src = u; n.insertBefore(im, n.firstChild); } if (typeof afThumbReady === "function") afThumbReady(mc); };
+  const put = u => { const n = $$("[data-dth]", $("#dtp")).filter(x => x.dataset.dth === mc)[0]; if (n && !n.querySelector("img")) { const im = document.createElement("img"); im.alt = ""; im.src = u; n.insertBefore(im, n.firstChild); } };
   const sid = DT.snapOf[mc];
   if (sid) {   // a picture HA saved at the time: just fetch it, nothing to decode
     const su = DT.snapUrl[mc]; if (su && Date.now() - su.t < 3000000) { put(su.u); return; }
@@ -117,7 +117,7 @@ $("#dtp").addEventListener("click", e => {
   else if (k === "refresh") dtLoad(true);
   else if (k === "play") dtPlay(b.dataset.k, b.dataset.cam, +b.dataset.ts, (b.dataset.tg || "").split(","));
 });
-// open the viewer on one exact clip (Detections tab and Activity feed): fades in, resolves the recording, plays it, adds the detection marks
+// open the viewer on one exact clip (Detections tab): fades in, resolves the recording, plays it, adds the detection marks
 function dtPlay(mc, cam, ts, tags) {
   const m = $("#dtm"), v = $("#dtm video"); m.classList.add("on"); $("#dtm .dtt").textContent = dtName(cam) + " · " + dtWhen(ts); $("#dtm .dte").textContent = "Loading…"; v.removeAttribute("src");
   send({ type: "media_source/resolve_media", media_content_id: mc, expires: 3600 }, r => { if (!m.classList.contains("on")) return; if (!r || !r.url) { $("#dtm .dte").textContent = "Could not open this recording"; return; } $("#dtm .dte").textContent = ""; v.removeAttribute("crossorigin"); v.src = (r.url.indexOf("http") === 0 ? "" : CONFIG.url) + r.url; v.play().catch(() => {}); mkAttach($("#dtm .dtv"), tags); });

@@ -405,7 +405,7 @@ html[data-mode=light] :where(.pn,.card,.cd,.ws,.pk,.zf,.rc,.tl,.bd,header){backg
 .snap{cursor:pointer;border-radius:16px;overflow:hidden;position:relative;margin-bottom:10px}.snap img{width:100%;display:block;aspect-ratio:16/9;object-fit:cover}.snap .lbl{position:absolute;left:12px;top:10px;color:#fff;text-shadow:0 1px 4px #000}
 .nrow{display:flex;align-items:center;gap:12px;min-height:60px;padding:12px 14px;margin-bottom:8px;border-radius:20px;border:1px solid var(--line);background:rgba(var(--w),.05);font-size:15px;font-weight:500;--bc:#7fd6a0}.nrow.warn{--bc:#ffc266}.nrow.bad{--bc:#ff8a80}
 html[data-mode=light] .nrow{--bc:#2f7d4f}html[data-mode=light] .nrow.warn{--bc:#b86a00}html[data-mode=light] .nrow.bad{--bc:#c42a1f}
-.nrow .nbi{width:30px;height:30px;flex:none;color:var(--bc)}.nrow .nbn{flex:1;min-width:0;line-height:1.25}.nrow .nbp{flex:none;font:700 15px var(--mono);padding:6px 12px;border-radius:999px;border:1px solid var(--bc);color:var(--bc)}
+.nrow .nbn{flex:1;min-width:0;line-height:1.25}
 .mpg{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px}
 .mpc{display:flex;flex-direction:column;gap:14px}
 .mpa{display:flex;gap:16px;align-items:center}.mpa img,.mpa .ph{width:120px;height:120px;border-radius:14px;object-fit:cover;background:rgba(var(--w),.08);flex:none}
@@ -1963,21 +1963,34 @@ body.ly-open.ly-out::after{animation:fdOut .3s ease both}
 #nacc[data-k=bins],#nacc .nai[data-k=bins]{--nk:#f2c261}
 html[data-mode=light] .bn{background:rgba(255,255,255,.72);box-shadow:0 1px 4px rgba(0,0,0,.08)}
 html[data-mode=light] .bn-btn{color:#0b6b45;border-color:#1f9d6a;background:rgba(31,157,106,.12)}
-/* Notifications > ACTIVITY tab: filter chips + a timeline of what changed (time on the left, icon on the line, text and picture on the right). Config: activity (see config.example.js) */
-.af-f{margin:14px 0 10px;overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none}.af-f::-webkit-scrollbar{display:none}.af-f .chip{flex:none}
-.af-l{border-radius:18px;border:1px solid var(--line);background:rgba(var(--w),.06);padding:6px 14px;margin-bottom:14px}
-.af-r{display:grid;grid-template-columns:44px 32px minmax(0,1fr);gap:10px;position:relative;padding:8px 0}
-.af-r::before{content:"";position:absolute;left:69px;top:0;bottom:0;width:2px;background:var(--line);border-radius:1px}
-.af-r:first-child::before{top:24px}.af-r:last-child::before{bottom:auto;height:24px;top:0}.af-r:first-child:last-child::before{display:none}
-.af-r.go{cursor:pointer}.af-r.go:active{opacity:.7}
-.af-tm{font-size:12px;color:var(--mut);text-align:right;padding-top:6px;white-space:nowrap}
-.af-i{--ac:var(--cool);width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;z-index:1;background:color-mix(in srgb,var(--ac) 22%,var(--bg))}
-.af-i svg{width:18px;height:18px;fill:var(--ac);display:block}
-.af-i.dng{--ac:#ff6b5e}.af-i.wrn{--ac:#ffc857}.af-i.ok{--ac:var(--mint)}.af-i.wat{--ac:#5cc8ff}.af-i.heat{--ac:#ff9f43}
-.af-t{min-width:0;padding-top:2px}.af-t b{display:block;font-size:14px;font-weight:600;line-height:1.3}.af-t span{display:block;font-size:12px;color:var(--mut);line-height:1.4}
-.af-th{position:relative;margin-top:6px;max-width:240px;aspect-ratio:16/9;border-radius:10px;overflow:hidden;background:rgba(var(--w),.08);cursor:pointer}.af-th img{width:100%;height:100%;object-fit:cover;display:block}
-.af-th b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.18)}.af-th b svg{width:30px;height:30px;fill:#fff;filter:drop-shadow(0 1px 3px rgba(0,0,0,.5))}.af-th:active{opacity:.8}
-html[data-mode=light] .af-l{background:rgba(255,255,255,.72);box-shadow:0 1px 4px rgba(0,0,0,.08)}
+/* Attention: the Notifications tab rows and the slim Home card */
+.nrow.at-r{--bc:var(--cool);align-items:center}.nrow.warn.at-r{--bc:#f2a33a}.nrow.bad.at-r{--bc:#ff6b5e}
+html[data-mode=light] .nrow.at-r{--bc:#2d6aa3}html[data-mode=light] .nrow.warn.at-r{--bc:#b86a00}html[data-mode=light] .nrow.bad.at-r{--bc:#c42a1f}
+.at-r .at-i{flex:none;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:color-mix(in srgb,var(--bc) 20%,transparent)}.at-r .at-i svg{width:20px;height:20px;fill:var(--bc);display:block}
+.at-r .nbn b{display:block;font-weight:500}.at-r .nbn small{display:block;font-size:13px;color:var(--mut);margin-top:2px}
+.at-r .at-c{flex:none;color:var(--mut)}.at-r .at-c svg,#attn .at-c svg{width:20px;height:20px;fill:currentColor;display:block}
+.at-more{margin:2px 0 10px;padding-left:4px}
+#hstrip{margin-bottom:14px}#hstrip[hidden]{display:none}
+#hstrip[data-n="2"]{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,4fr);gap:14px;align-items:stretch}
+#hstrip>#attn,#hstrip>#sch{margin:0;min-height:46px;box-sizing:border-box}
+#attn{display:flex;align-items:center;gap:14px;padding:10px 18px;cursor:pointer;min-height:0}#attn[hidden]{display:none}
+#attn .at-h{flex:none;display:inline-flex;align-items:center;gap:8px;font:600 14px var(--mono);color:#f2a33a}#attn .at-h svg{width:20px;height:20px;fill:currentColor}
+#attn .at-l{flex:1;min-width:0;overflow:hidden;white-space:nowrap}
+#attn .at-x{display:block;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:760px){#hstrip[data-n="2"]{display:block}#attn{padding:12px 14px}#attn .at-l{white-space:normal}#attn .at-x{white-space:normal}}
+/* Weather alerts: the Notifications > Alerts card (wind gauge + rain line) */
+.wxa{border-radius:16px;margin-bottom:14px;overflow:hidden;background:rgba(var(--w),.07);border:1px solid var(--line)}
+.wxa-s{padding:14px 18px;cursor:pointer;position:relative}.wxa-s+.wxa-s{border-top:1px solid var(--line)}
+.wxa-s::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--wc)}
+.wxa-l{display:flex;align-items:center;gap:8px;color:var(--wc)}.wxa-l svg{width:18px;height:18px;fill:currentColor}
+.wxa-v{font-size:34px;font-weight:500;line-height:1.1;margin:4px 0 12px}.wxa-v small{font-size:15px;font-weight:400;color:var(--mut);margin-left:6px}
+.wxa-g{position:relative;height:7px;border-radius:4px;background:rgba(var(--w),.14)}.wxa-g i{position:absolute;left:0;top:0;bottom:0;border-radius:4px;background:var(--wc)}.wxa-g u{position:absolute;top:-3px;width:1px;height:13px;background:rgba(var(--w),.4)}
+.wxa-k{position:relative;height:16px;margin-top:6px;font-size:11px;color:var(--mut)}.wxa-k span{position:absolute;transform:translateX(-50%)}
+.wxa-n{font-size:13px;color:var(--mut);margin-top:6px}
+.wxa-r{display:flex;align-items:center;gap:12px}.wxa-r>svg{width:26px;height:26px;fill:var(--wc);flex:none}.wxa-r b{display:block;font-weight:500}.wxa-r small{display:block;font-size:13px;color:var(--mut);margin-top:2px}
+html[data-mode=light] .wxa{background:rgba(0,0,0,.04)}html[data-mode=light] .wxa-g{background:rgba(0,0,0,.12)}html[data-mode=light] .wxa-g u{background:rgba(0,0,0,.35)}
+.wt1{--wc:#e6c84f}.wt2{--wc:#f2a33a}.wt3{--wc:#ff6b5e}html[data-mode=light] .wt1{--wc:#a88a00}html[data-mode=light] .wt2{--wc:#b86a00}html[data-mode=light] .wt3{--wc:#c42a1f}
+#nacc[data-k=wind],#nacc .nai[data-k=wind]{--nk:#f2a33a}#nacc[data-k=rain],#nacc .nai[data-k=rain]{--nk:#6bb8ff}
 </style>
 </head>
 <body>
@@ -1996,6 +2009,7 @@ html[data-mode=light] .af-l{background:rgba(255,255,255,.72);box-shadow:0 1px 4p
 
   <div id="home" class="page on">
     <div class="pn hs"><canvas id="wfx"></canvas><b id="gr"></b><span id="dt" class="lbl"></span><span id="wchip" class="wch">--</span><span id="wwind" class="wch"></span><span id="whl" class="lbl">--</span></div>
+    <div id="hstrip" hidden><div class="pn" id="attn" hidden></div></div>
     <div class="hm">
       <div class="left"><div class="camcol"><div class="cams" id="cams"></div><div class="pn sch" id="sch" hidden></div></div><div class="rooms" id="rooms"></div></div>
       <div class="side">
@@ -2049,7 +2063,7 @@ html[data-mode=light] .af-l{background:rgba(255,255,255,.72);box-shadow:0 1px 4p
 // (notification tap such as #view/driveway, #security ...), not the return from the login, and the device has not asked for reduced motion.
 window.brandLogo = function () { var L = window.DASH_LOGO, B = (window.DASH_CONFIG || {}).brand; return L && L.svg ? { svg: L.svg, lockup: !!L.lockup } : B && B.mark ? { svg: B.mark, lockup: false } : null; };   // brand-logo.js wins over brand.mark in config.js
 window.brandMark = function (s) { var g = window.brandLogo(); if (!g) return ""; return g.svg.replace(/\bid="([\w-]+)"/g, 'id="$1' + s + '"').replace(/url\(#([\w-]+)\)/g, 'url(#$1' + s + ')'); };
-window.DASH_VER = "1.14.5";   // the one place to change the version
+window.DASH_VER = "1.14.6";   // the one place to change the version
 (function () { try {
   var B = (window.DASH_CONFIG || {}).brand, el = document.getElementById("bootld"), r = document.documentElement, lp = "on";
   try { lp = localStorage.getItem("dashLogo") || "on"; } catch (e) {}   // Theme page -> "Start-up logo": on | load (no intro) | off (plain spinner, as before)
@@ -2464,7 +2478,7 @@ function openWs(tk) {
       send({ type: "subscribe_events", event_type: "state_changed" });
       loadFc(); loadFcH(); evBtn(); if (curPg() === "energy") { en.busy = false; loadEnergy(); }
     } else if (m.type === "result" && pending[m.id]) { try { pending[m.id](m.result, m); } catch (x) {} delete pending[m.id]; }
-    else if (m.type === "event") { if (m.event && m.event.event_type === "state_changed") skewSample(Date.now() - Date.parse(m.event.time_fired)); if (subs[m.id]) subs[m.id](m.event); else if (m.event.data && m.event.data.new_state) { actNote(m.event.data); setState(m.event.data.new_state); } }
+    else if (m.type === "event") { if (m.event && m.event.event_type === "state_changed") skewSample(Date.now() - Date.parse(m.event.time_fired)); if (subs[m.id]) subs[m.id](m.event); else if (m.event.data && m.event.data.new_state) setState(m.event.data.new_state); }
   };
   ws.onclose = () => { if (loginUp) return; setStatus(false); setTimeout(connect, 3000); };
 }
@@ -2947,7 +2961,7 @@ const schTm = d => d.toLocaleTimeString([], tmo({ hour: "numeric", minute: "2-di
 function schDraw() {
   const el = $("#sch"); if (!el) return;
   const now = new Date(), live = SCH.ev.filter(v => v.ad || v.e > now);   // all-day events and anything not finished yet
-  if (!schOn() || !live.length) { el.hidden = true; el.innerHTML = ""; return; }
+  if (!schOn() || !live.length) { el.hidden = true; el.innerHTML = ""; hsFit(); return; }
   const nx = live.filter(v => !v.ad)[0], past = SCH.ev.filter(v => !v.ad && v.e <= now), n = SCH.ev.length;
   const when = v => v.ad ? "ALL DAY" : schTm(v.t);
   const chip = v => '<span class="sch-c' + (v === nx ? " nx" : "") + (v.ad ? " ad" : "") + '" style="--c:' + v.c + '"><i></i><small>' + when(v) + '</small><span>' + esc(v.s) + '</span></span>';
@@ -2958,7 +2972,15 @@ function schDraw() {
     live.slice(0, 3).map(v => '<div class="sch-r' + (v === nx ? " nx" : "") + '" style="--c:' + v.c + '"><small>' + when(v) + '</small><span>' + esc(v.s) + '</span>' + (v === nx && eta ? '<em>' + eta + '</em>' : '') + '</div>').join("") +
     (live.length > 3 ? '<div class="sch-x lbl">+' + (live.length - 3) + ' more</div>' : "") + (past.length ? '<div class="sch-x lbl">' + past.length + ' done</div>' : "") + '</div>' +
     '<span class="sch-g">' + mdi("chevron-right") + '</span>';
-  el.hidden = false; schFit();
+  el.hidden = false; hsFit(); schFit();
+}
+// tablet: the Attention summary and the Today strip share one row under the greeting (#hstrip); alone, either one takes the whole row. A layout.tablet that lists "schedule" keeps Today where config.js puts it.
+function hsFit() {
+  const h = $("#hstrip"), s = $("#sch"), a = $("#attn"); if (!h || !s || !a) return;
+  const own = !isMobile() && ((CONFIG.layout || {}).tablet || []).indexOf("schedule") < 0;
+  if (own && s.parentNode !== h) h.appendChild(s); else if (!own && s.parentNode === h) $(".camcol").appendChild(s);
+  const n = [a, s].filter(x => x.parentNode === h && !x.hidden).length;
+  h.dataset.n = n; h.hidden = !n; if (own && n) schFit();
 }
 function schFit() {   // tablet strip: chips that do not fit are hidden and counted as "+n"
   const el = $("#sch"); if (!el || el.hidden) return; const l = $(".sch-l", el), cs = $$(".sch-c", l), nn = $(".sch-n", l); if (!l.offsetWidth) return;
@@ -2970,7 +2992,7 @@ function schFit() {   // tablet strip: chips that do not fit are hidden and coun
 }
 document.addEventListener("click", e => { if (e.target.closest("#sch")) location.hash = "#events"; });
 setInterval(() => { if (curPg() === "home") { schLoad(); schDraw(); } }, 60000);
-addEventListener("resize", () => { clearTimeout(SCH.rs); SCH.rs = setTimeout(schFit, 120); });
+addEventListener("resize", () => { clearTimeout(SCH.rs); SCH.rs = setTimeout(() => { hsFit(); schFit(); }, 120); });
 // ---------- haptics: a short buzz on taps (Vibration API; silently does nothing where unsupported) ----------
 (function () {
   if (!navigator.vibrate) return;
@@ -3538,7 +3560,7 @@ const sv = id => VIRT[id] ? VIRT[id]() : rawSv(id);
 const avgOf = ids => { const v = ids.map(x => parseFloat(rawSv(x))).filter(x => !isNaN(x)); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null; };
 const fx = v => v == null ? null : v.toFixed(1);
 // Low batteries: Battery Notes makes one "Battery+" sensor per device (sensor.<device>_battery_plus). The Notifications pop-up and the low-battery count both read these, listing any below derived.batteryBelow (%, 61 if not set)
-const lowBattChip = () => { const th = CONFIG.derived.batteryAlertBelow != null ? +CONFIG.derived.batteryAlertBelow : 20; return th > 0 ? lowBatt().filter(k => parseFloat(states[k].state) < th) : []; };   // strip chip: only the really low ones (default under 20 %), the Batteries tab still lists everything under batteryBelow
+const lowBattChip = () => { const th = CONFIG.derived.batteryAlertBelow != null ? +CONFIG.derived.batteryAlertBelow : 20; return th > 0 ? lowBatt().filter(k => parseFloat(states[k].state) < th) : []; };   // strip chip: only the really low ones (default under 20 %), the Attention tab lists every battery under attention.batteryBelow (default 26 %)
 const lowBatt = () => { const th = CONFIG.derived.batteryBelow != null ? +CONFIG.derived.batteryBelow : 61; return Object.keys(states).filter(k => /^sensor\..*battery_plus$/.test(k) && parseFloat(states[k].state) < th).sort((x, y) => states[x].state - states[y].state); };
 const wLevel = () => {   // 0 = no restriction, 1-4 = level, -1 = unknown. input_select.water_restriction_level first (options "No Water Restriction", "Water Level 1".."Water Level 4"); the older input_boolean.no_water_restriction / water_level_1..4 helpers still work
   const s = states["input_select.water_restriction_level"];
@@ -3713,7 +3735,7 @@ function wxSunCard() {
 let fcH = [];
 function loadFcH() {
   send({ type: "call_service", domain: "weather", service: "get_forecasts", service_data: { type: "hourly" }, target: { entity_id: W }, return_response: true },
-    r => { fcH = r.response[W].forecast || []; if (curPg() === "weather") drawWeather(); else if (curPg() === "irrigation") drawIrr(); });
+    r => { fcH = r.response[W].forecast || []; queueNotif(); if (curPg() === "weather") drawWeather(); else if (curPg() === "irrigation") drawIrr(); });
 }
 const CARD = d => ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"][Math.round(d / 22.5) % 16];
 // ----- summary lines worked out from the hourly forecast (replaces the template sensors) -----
@@ -4401,9 +4423,9 @@ function dtItems() {
   return out.sort((a, b) => b.ts - a.ts);
 }
 const dtWhen = ts => { const d = new Date(ts), n = new Date(), df = Math.round((new Date(n.getFullYear(), n.getMonth(), n.getDate()) - new Date(d.getFullYear(), d.getMonth(), d.getDate())) / 864e5), tm = d.toLocaleTimeString([], tmo({ hour: "numeric", minute: "2-digit" })).replace(" ", "").toLowerCase(); return (df === 0 ? "Today" : df === 1 ? "Yesterday" : d.toLocaleDateString([], { weekday: "short", day: "numeric", month: "short" })) + " · " + tm; };
-// the picture shown for a clip, the same everywhere (Security > Detections and Notifications > Activity): HA's own snapshot from when the detection began, else the frame cut from the clip, else the browse thumbnail
+// the picture shown for a clip, the same everywhere: HA's own snapshot from when the detection began, else the frame cut from the clip, else the browse thumbnail
 function dtThumbUrl(x) { const su = DT.snapUrl[x.mc]; return su && Date.now() - su.t < 3000000 ? su.u : DT.th[x.mc] || (x.th ? (x.th.indexOf("/") === 0 ? CONFIG.url : "") + x.th : ""); }
-const dtWanted = () => location.hash === "#security/detections" || (document.body.classList.contains("np-open") && npTab === "activity");   // the loader runs for the Detections tab and for the Activity tab
+const dtWanted = () => location.hash === "#security/detections";   // the loader runs for the Detections tab
 function dtDraw(soft) {
   const P = $("#dtp"); if (!P) return; if (!dtCams().length || CONFIG.detections === false) { P.style.display = "none"; return; } P.style.display = "";
   const all = dtItems(), tyOn = k => DT.types[k], vis = all.filter(x => (DT.cam === "all" || x.cam === DT.cam) && x.p.tags.some(t => tyOn(t)));
@@ -4429,7 +4451,7 @@ function dtNext() {
   while (DT.run < thPar() && DT.q.length) dtOne(DT.q.shift());
 }
 function dtOne(mc) {
-  const put = u => { const n = $$("[data-dth]", $("#dtp")).filter(x => x.dataset.dth === mc)[0]; if (n && !n.querySelector("img")) { const im = document.createElement("img"); im.alt = ""; im.src = u; n.insertBefore(im, n.firstChild); } if (typeof afThumbReady === "function") afThumbReady(mc); };
+  const put = u => { const n = $$("[data-dth]", $("#dtp")).filter(x => x.dataset.dth === mc)[0]; if (n && !n.querySelector("img")) { const im = document.createElement("img"); im.alt = ""; im.src = u; n.insertBefore(im, n.firstChild); } };
   const sid = DT.snapOf[mc];
   if (sid) {   // a picture HA saved at the time: just fetch it, nothing to decode
     const su = DT.snapUrl[mc]; if (su && Date.now() - su.t < 3000000) { put(su.u); return; }
@@ -4473,7 +4495,7 @@ $("#dtp").addEventListener("click", e => {
   else if (k === "refresh") dtLoad(true);
   else if (k === "play") dtPlay(b.dataset.k, b.dataset.cam, +b.dataset.ts, (b.dataset.tg || "").split(","));
 });
-// open the viewer on one exact clip (Detections tab and Activity feed): fades in, resolves the recording, plays it, adds the detection marks
+// open the viewer on one exact clip (Detections tab): fades in, resolves the recording, plays it, adds the detection marks
 function dtPlay(mc, cam, ts, tags) {
   const m = $("#dtm"), v = $("#dtm video"); m.classList.add("on"); $("#dtm .dtt").textContent = dtName(cam) + " · " + dtWhen(ts); $("#dtm .dte").textContent = "Loading…"; v.removeAttribute("src");
   send({ type: "media_source/resolve_media", media_content_id: mc, expires: 3600 }, r => { if (!m.classList.contains("on")) return; if (!r || !r.url) { $("#dtm .dte").textContent = "Could not open this recording"; return; } $("#dtm .dte").textContent = ""; v.removeAttribute("crossorigin"); v.src = (r.url.indexOf("http") === 0 ? "" : CONFIG.url) + r.url; v.play().catch(() => {}); mkAttach($("#dtm .dtv"), tags); });
@@ -4811,6 +4833,54 @@ $("#admin").addEventListener("click", e => { const ac = e.target.closest("[data-
 // ---------- Home weather shortcuts ----------
 [[".hs", "#weather/now"], ["#fcp", "#weather/week"]].forEach(q => { const x = $(q[0]); x.style.cursor = "pointer"; x.onclick = () => { location.hash = q[1]; }; });   // the greeting opens the Now card, the Forecast card opens Next 7 days
 
+// ---------- weather alerts: wind now, wind and rain coming up (Notifications > Alerts card, and the header strip chips) ----------
+// Same tiers as a Home Assistant weather-alert automation: wind 30 / 62 / 89 km/h, rain 0.5 / 2 / 5 mm per hour over the next 6 hours.
+// config weatherAlerts: false = off, or { wind: true, rain: true, windTiers: [30, 62, 89], rainTiers: [0.5, 2, 5], hours: 6, stripWind: 2, stripRain: 3 }
+// stripWind / stripRain = the tier (1 to 3) from which the header strip shows a chip (Strong wind and Heavy rain by default); the Alerts card shows from tier 1.
+const wxaCfg = () => {
+  const c = CONFIG.weatherAlerts; if (c === false) return null;
+  const o = c && typeof c === "object" ? c : {}, tiers = (a, d) => Array.isArray(a) && a.length === 3 && a.every(x => isFinite(x)) ? a.map(Number) : d;
+  return { wind: o.wind !== false, rain: o.rain !== false, wt: tiers(o.windTiers, [30, 62, 89]), rt: tiers(o.rainTiers, [0.5, 2, 5]), hours: +o.hours > 0 ? +o.hours : 6, sw: +o.stripWind || 2, sr: +o.stripRain || 3 };
+};
+const wxaTier = (v, t) => v == null || isNaN(v) ? 0 : v > t[2] ? 3 : v > t[1] ? 2 : v > t[0] ? 1 : 0;
+const WXA_COL = ["", "#e6c84f", "#f2a33a", "#ff6b5e"];
+const wxaCol = k => { const w = wxaNow(); const t = w ? (k === "wind" ? (w.wind || {}).tier : (w.rain || {}).tier) : 0; return WXA_COL[t || 1]; };
+const wxaTime = ts => { const d = new Date(ts), td = d.toDateString() === new Date().toDateString(); return (td ? "" : d.toLocaleDateString([], { weekday: "short" }) + " ") + d.toLocaleTimeString([], tmo({ hour: "numeric" })).replace(/\s?([AP])M/i, " $1M"); };
+function wxaNow() {
+  const c = wxaCfg(), w = states[W]; if (!c) return null;
+  const a = w ? w.attributes : {}, now = Date.now(), end = now + c.hours * 3600000, fc = fcH.filter(x => { const t = Date.parse(x.datetime); return t >= now - 3600000 && t <= end; }), out = {};
+  if (c.wind) {
+    const u = a.wind_speed_unit || "km/h", k = /mph/i.test(u) ? 1.609 : /m\/s/i.test(u) ? 3.6 : /kn|kt/i.test(u) ? 1.852 : 1;
+    const live = a.wind_speed != null ? +a.wind_speed * k : null, gust = a.wind_gust_speed != null ? +a.wind_gust_speed * k : null;
+    const pk = fc.filter(x => x.wind_speed != null).reduce((p, x) => !p || x.wind_speed > p.wind_speed ? x : p, null), fmax = pk ? pk.wind_speed * k : null;
+    const lt = wxaTier(live, c.wt), ft = wxaTier(fmax, c.wt), tier = Math.max(lt, ft);
+    if (tier) out.wind = { tier: tier, now: lt >= ft && lt > 0, v: lt >= ft ? live : fmax, gust: gust, fmax: fmax, fat: pk ? Date.parse(pk.datetime) : 0, ft: ft, lt: lt, t: c.wt };
+  }
+  if (c.rain && fc.length) {
+    const mm = x => +x.precipitation || 0, band = fc.filter(x => mm(x) > c.rt[0]), mx = band.reduce((p, x) => Math.max(p, mm(x)), 0), tier = wxaTier(mx, c.rt);
+    if (tier) { const s = Date.parse(band[0].datetime), e = Date.parse(band[band.length - 1].datetime) + 3600000; out.rain = { tier: tier, max: mx, from: s, to: e, now: s <= now, n: band.length }; }
+  }
+  return out.wind || out.rain ? Object.assign(out, { cfg: c }) : null;
+}
+const WXA_W = ["", "Moderate", "Strong", "Severe"], WXA_R = ["", "Light rain", "Moderate rain", "Heavy rain"];
+function wxaHtml(w) {
+  let h = "";
+  const x = w.wind, r = w.rain;
+  if (x) {
+    const mx = x.t[2] * 1.1, pc = v => Math.min(100, v / mx * 100).toFixed(1), lbl = (x.now ? "WIND NOW" : "WIND FORECAST") + " · " + WXA_W[x.tier].toUpperCase();
+    const sub = []; if (x.now && x.gust != null && x.gust > x.v + 1) sub.push("Gusts " + Math.round(x.gust) + " km/h"); if (x.now && x.fmax != null && x.fmax > x.v + 1) sub.push("Up to " + Math.round(x.fmax) + " km/h around " + wxaTime(x.fat)); if (!x.now) sub.push("Around " + wxaTime(x.fat));
+    h += '<div class="wxa-s wt' + x.tier + '" data-wxa="wind"><div class="lbl wxa-l">' + mdi(x.tier === 3 ? "weather-hurricane" : x.tier === 2 ? "weather-windy-variant" : "weather-windy") + ' ' + lbl + '</div>' +
+      '<div class="wxa-v">' + Math.round(x.v) + '<small>km/h</small></div>' +
+      '<div class="wxa-g"><i style="width:' + pc(x.v) + '%"></i>' + x.t.map(t => '<u style="left:' + pc(t) + '%"></u>').join("") + '</div>' +
+      '<div class="wxa-k">' + x.t.map(t => '<span style="left:' + pc(t) + '%">' + t + '</span>').join("") + '</div>' +
+      (sub.length ? '<div class="wxa-n">' + esc(sub.join(" · ")) + '</div>' : "") + '</div>';
+  }
+  if (r) {
+    const when = r.now ? "now, until " + wxaTime(r.to) : r.n === 1 ? "at " + wxaTime(r.from) : "from " + wxaTime(r.from);
+    h += '<div class="wxa-s wxa-r wt' + r.tier + '" data-wxa="rain">' + mdi(r.tier === 3 ? "weather-pouring" : r.tier === 2 ? "weather-rainy" : "weather-partly-rainy") + '<div><b>' + WXA_R[r.tier] + ' ' + esc(when) + '</b><small>Up to ' + (+r.max.toFixed(1)) + ' mm/h</small></div></div>';
+  }
+  return '<div class="wxa">' + h + '</div>';
+}
 // ---------- notifications popup ----------
 const fname = id => (states[id] && states[id].attributes.friendly_name) || id.split(".")[1].replace(/_/g, " ");
 const NREL = rxj(/(^group\.|^timer\.|battery)/, (CONFIG.relevance || {}).notif);
@@ -4824,7 +4894,7 @@ const gar = x => /garage/i.test(x + " " + fname(x)) || Object.keys(galCfg()).som
 // open doors from the external-doors group (garage excluded): a list of ids, [] when the group says "on" but cannot say which one, or null when all are shut
 const doorsOpen = () => { const g = E("doorsGroup"), d0 = members(g).filter(x => x !== g && isOn(x)), d = d0.filter(x => !gar(x)); return d.length || (isOn(g) && !d0.length) ? d : null; };
 function notif(full) {
-  let n = 0, h = "", bh = "", nb = 0, hasB = false;
+  let n = 0, h = "";
   const sec = (t, b) => { if (full && b) h += '<div class="lbl np2">' + t + '</div>' + b; };
   const grid = a => a.length ? '<div class="tg3">' + a.map(tileHtml).join("") + '</div>' : "";
   const al = volcHtml().concat(quakeHtml() || []), pa = polAlert(); if (pa) al.push(pa); n += al.length; sec("Alerts", al.join(""));
@@ -4834,20 +4904,16 @@ function notif(full) {
   n += LK.length + W2.length; sec("Warnings", LK.map(x => '<div class="alert q"><div class="lbl">' + mdi("water-alert") + ' WATER LEAK</div><b>' + esc(x[1]) + '</b><div>' + esc(x[2]) + '</div></div>').join("") + grid(W2.map(x => npItem(x[0], { name: x[1], sub: x[2], confirm: /rubbish|recycle/.test(x[0]) }))));
   const wr = states[E("weatherWarnings")];
   if (wr && sv(E("weatherWarnings")) && wr.attributes.warnings) { n++; sec("Weather warning", '<div class="alert w">' + esc(wr.attributes.warnings) + '</div>'); }
-  const bc = binsCard(); if (bc) { n++; sec("Bins", bc); }   // 32-bins-activity.js
+  const wxa = wxaNow(); if (wxa) { n++; sec("Weather", wxaHtml(wxa)); }   // 31-weather-alerts.js: wind now / coming up, and rain in the next hours
   // Cameras: live pictures (the same WebRTC streams as the Security page), mounted into these slots after the list is drawn. An alert's 4th value names the camera to show while it is on:
   // "driveway", "garage", or any camera by its name as shown on the Security page ("road", "right-walkway"). The garage also shows while its door sensor says it is opening / open.
   if (full) sec("Cameras", npCams().map(x => '<div class="snap npcam" data-vw="' + esc(x.key) + '" data-npc="' + esc(x.id) + '" data-name="' + esc(x.name) + '"></div>').join(""));
-  const ch = [];
-  Object.keys(CONFIG.derived.soil || {}).sort().map(z => ["sensor.average_" + z + "_soil_moisture", title(z)]).forEach(x => { const m = parseFloat(sv(x[0])); if (m < 40) ch.push('<div class="ws"><span class="lbl">' + x[1] + ' soil</span><b style="color:var(' + (m < 15 ? "--sd0" : m < 25 ? "--sd1" : "--sd2") + ')">' + (m < 15 ? "Very dry" : m < 25 ? "Dry" : "Moist") + '</b>' + f1(m) + '%</div>'); });
-  n += ch.length; sec("Chores", ch.length ? '<div class="wg">' + ch.join("") + '</div>' : "");
   const tm = (CONFIG.notifTimers || []).filter(x => states[x] && states[x].state === "active");   // optional Timers card: config notifTimers ["timer.x", ...] (none by default; tiles show their own countdown, see tileTimers)
   n += tm.length;
   sec("Timers", tm.map(x => { const t = states[x].attributes, fin = Date.parse(t.finishes_at || "") || 0, dur = (t.duration || "0:00:00").split(":").reduce((p, q) => p * 60 + +q, 0) * 1000; return '<div class="ws" style="margin-bottom:8px"><span class="lbl">' + esc(fname(x)) + '</span><div class="lbl tmr" data-fin="' + fin + '">--</div><div class="zb"><i data-dur="' + dur + '"></i></div></div>'; }).join(""));
-  const bl = lowBatt();
-  if (bl.length || parseFloat(sv(E("lowBatteryCount"))) > 0) { n++; hasB = true; nb = bl.length; if (full) bh = bl.map(x => { const v = Math.round(states[x].state), hh = Math.max(1.5, 13 * Math.min(v, 100) / 100); return '<div class="nrow ' + (v <= 15 ? "bad" : v < 40 ? "warn" : "ok") + '"><svg class="nbi" viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="4" width="10" height="17" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="10" y="2" width="4" height="2" rx=".5" fill="currentColor"/><rect x="9" y="' + (19 - hh) + '" width="6" height="' + hh + '" rx="1" fill="currentColor"/></svg><span class="nbn">' + esc(fname(x).replace(/\s+battery(\s+plus|\+)$/i, "")) + '</span><b class="nbp">' + v + '%</b></div>'; }).join(""); }
   sec("Controls", TOG.map(g => { const c = parseInt(sv(g[1])) || 0, sub = c === 0 ? "All " + g[2] + "s active" : c + " " + g[2] + (c > 1 ? "s" : "") + " disabled"; return '<div class="ws" style="margin-bottom:10px"><span class="lbl">' + g[0] + '</span><div style="margin:6px 0 10px;color:var(--mut)">' + sub + '</div><div class="chips cscr">' + g[3].map(x => '<button class="chip' + (isOn(x[0]) ? " on" : "") + '" data-nt="' + x[0] + '"' + (x[2] ? ' data-sc="' + x[2] + '"' : "") + '>' + x[1] + '</button>').join("") + '</div></div>'; }).join(""));
-  return { n: n - (hasB ? 1 : 0), all: n, nb: nb, html: h, bh: bh };
+  const ai = attnItems();   // 33-attention.js: bins, dry soil, offline devices, updates, low batteries
+  return { n: n, all: n + ai.length, html: h, na: ai.length, ah: full ? attnHtml(ai) : "", ai: ai };
 }
 // header strip: normally a glowing bar while something is waiting; it turns into an icon for the conditions below. Priority when several are true:
 // water leak, then weather warning, then garage door open, then a door open, then water on, then bins not out yet, then pollen (from the level set by pollen.alertFrom), then laundry running, then towel heating. The top one shows and a small "+n" says how many more there are.
@@ -4860,6 +4926,8 @@ const NSK = [
   ["leak", "water-alert", "Water leak", () => LEAKS().some(x => isOn(x[0]))],
   ["warn", "weather-cloudy-alert", "Weather warning", () => { const s = states[E("weatherWarnings")]; return !!s && s.state !== "unknown" && s.state !== "unavailable"; }],
   ["garage", "garage-open-variant", "Garage door open", () => Object.keys(galCfg()).some(k => { const c = galCfg()[k], s = c && c.sensor && states[c.sensor]; return !!s && (s.state === "on") !== !!c.invert; })],
+  ["wind", "weather-windy", () => { const w = (wxaNow() || {}).wind; return w ? WXA_W[w.tier] + " wind" + (w.now ? "" : " soon") : "Wind"; }, () => { const w = wxaNow(); return !!w && !!w.wind && w.wind.tier >= w.cfg.sw; }],   // from the tier set by weatherAlerts.stripWind (Strong by default)
+  ["rain", "weather-rainy", () => { const r = (wxaNow() || {}).rain; return r ? WXA_R[r.tier] + (r.now ? "" : " soon") : "Rain"; }, () => { const w = wxaNow(); return !!w && !!w.rain && w.rain.tier >= w.cfg.sr; }],   // Heavy rain by default (weatherAlerts.stripRain)
   ["door", "door-open", "Door open", () => !!doorsOpen()],
   ["water", "m3-water-drop", "Water on", () => Object.keys(states).some(k => /^switch\..*water_tap$/.test(k) && states[k].state === "on") || (CONFIG.irrigation || []).some(z => z.switch && states[z.switch] && states[z.switch].state === "on")],
   ["bins", "recycle", "Bins out", binsWaiting],   // a bin is due and not out yet (config bins)
@@ -4868,7 +4936,7 @@ const NSK = [
   ["laundry", "washing-machine", "Laundry running", laundryOn],
   ["towel", "radiator", "Towel heating on", towelsOn]
 ];
-const nskRel = id => polRel(id) || binsIds().includes(id) || /^sensor\..*battery_plus$/.test(id) || LEAKS().some(x => x[0] === id) || id === E("weatherWarnings") || id === E("doorsGroup") || id === E("laundryState") || id === E("laundryRemaining") || id === E("towelGroup") || members(E("towelGroup")).includes(id) || members(E("doorsGroup")).includes(id) || /^switch\..*water_tap$/.test(id) || Object.keys(galCfg()).some(k => (galCfg()[k] || {}).sensor === id) || (CONFIG.irrigation || []).some(z => z.switch === id);
+const nskRel = id => attnRel(id) || polRel(id) || binsIds().includes(id) || /^sensor\..*battery_plus$/.test(id) || LEAKS().some(x => x[0] === id) || id === E("weatherWarnings") || id === W || id === E("doorsGroup") || id === E("laundryState") || id === E("laundryRemaining") || id === E("towelGroup") || members(E("towelGroup")).includes(id) || members(E("doorsGroup")).includes(id) || /^switch\..*water_tap$/.test(id) || Object.keys(galCfg()).some(k => (galCfg()[k] || {}).sensor === id) || (CONFIG.irrigation || []).some(z => z.switch === id);
 let npTab = "alerts";
 const ACTC = CONFIG.quickAll || [];
 
@@ -4948,21 +5016,22 @@ function drawNotif() {
   const r = notif(open);
   const ks = NSK.filter(k => k[3]()), top = ks[0], nacc = $("#nacc");   // the strip turns into the icon of the most urgent condition
   // each condition is a .nai (icon + name): a phone shows just the top icon, a tablet shows the name as a chip, and a wide screen shows the two most urgent chips
-  const pn = polNow(), nai = (k, c) => '<span class="nai' + c + '" data-k="' + k[0] + '"' + (k[0] === "pollen" && pn ? ' style="--nk:' + pn.col + '"' : "") + '>' + (k[0] === "laundry" ? DRUM : mdi(k[1])) + '<b class="nal">' + esc(k[0] === "pollen" && pn ? "Pollen · " + pn.name : k[0] === "battery" && lowBattChip().length > 1 ? lowBattChip().length + " low batteries" : k[2]) + '</b></span>';
+  const pn = polNow(), nkc = k => k[0] === "pollen" ? (pn ? pn.col : "") : k[0] === "wind" || k[0] === "rain" ? wxaCol(k[0]) : "", nsn = k => typeof k[2] === "function" ? k[2]() : k[2], nai = (k, c) => '<span class="nai' + c + '" data-k="' + k[0] + '"' + (nkc(k) ? ' style="--nk:' + nkc(k) + '"' : "") + '>' + (k[0] === "laundry" ? DRUM : mdi(k[1])) + '<b class="nal">' + esc(k[0] === "pollen" && pn ? "Pollen · " + pn.name : k[0] === "battery" && lowBattChip().length > 1 ? lowBattChip().length + " low batteries" : nsn(k)) + '</b></span>';
   const sig = ks.slice(0, 2).map((k, i) => nai(k, i ? " nai2" : "")).join("");
-  if ((nacc.dataset.k || "") !== (top ? top[0] : "") || nacc._sig !== sig) { nacc._sig = sig; if (top) nacc.dataset.k = top[0]; else nacc.removeAttribute("data-k"); nacc.innerHTML = sig; if (top && top[0] === "pollen" && pn) nacc.style.setProperty("--nk", pn.col); else nacc.style.removeProperty("--nk"); }
+  if ((nacc.dataset.k || "") !== (top ? top[0] : "") || nacc._sig !== sig) { nacc._sig = sig; if (top) nacc.dataset.k = top[0]; else nacc.removeAttribute("data-k"); nacc.innerHTML = sig; if (top && nkc(top)) nacc.style.setProperty("--nk", nkc(top)); else nacc.style.removeProperty("--nk"); }
   nacc.dataset.n = ks.length;   // 3+ conditions: one chip + "+N" (see 28-pollen.css)
   if (ks.length > 1) nacc.dataset.more = "+" + (ks.length - 1); else nacc.removeAttribute("data-more");
   if (ks.length > 2) nacc.dataset.more2 = "+" + (ks.length - 2); else if (ks.length > 1) nacc.dataset.more2 = ""; else nacc.removeAttribute("data-more2");
   nacc.classList.toggle("on", !!r.all || !!top);
-  $("#hc").title = ks.length ? ks.map(k => k[2]).join(" · ") + (r.all ? " · " : "") + (r.all ? r.all + " notification" + (r.all > 1 ? "s" : "") : "") : r.all ? r.all + " notification" + (r.all > 1 ? "s" : "") : "Notifications";
+  $("#hc").title = ks.length ? ks.map(nsn).join(" · ") + (r.all ? " · " : "") + (r.all ? r.all + " notification" + (r.all > 1 ? "s" : "") : "") : r.all ? r.all + " notification" + (r.all > 1 ? "s" : "") : "Notifications";
+  attnCard(r.ai);
   if (!open) { npCamStop(); return; }
   const A = actList(), tot = A.reduce((s, x) => s + x.ids.length, 0);
   // the header and tabs are built once and only updated in place; the list below is only replaced when its HTML really changes, so nothing blinks on a state update
-  const np = $("#np"), tb = [["alerts", "ALERTS", r.n], ["active", "ACTIVE", tot], ["batteries", "BATTERIES", r.nb]].concat(afCfg() ? [["activity", "ACTIVITY", 0]] : []); let tc = false;
+  const np = $("#np"), tb = [["alerts", "ALERTS", r.n], ["attention", "ATTENTION", r.na], ["active", "ACTIVE", tot]]; let tc = false;
   if (!np.querySelector(".nptabs")) { tc = true; np.innerHTML = '<div class="nh"><div><div class="lbl">Home</div><h3>Notifications</h3></div><button class="eb" data-close="1">DONE</button></div>' + hsw('<div class="chips tabs nptabs">' + tb.map(t => '<button class="chip" data-npt="' + t[0] + '"></button>').join("") + '</div>') + '<div id="npc"></div>'; }
   np.querySelectorAll(".nptabs .chip").forEach((c, k) => { const tx = tb[k][1] + (tb[k][2] ? " · " + tb[k][2] : ""); if (c.textContent !== tx) { c.textContent = tx; tc = true; } c.classList.toggle("on", c.dataset.npt === npTab); });
-  const body = npLoading() ? '<div class="lbl" style="margin:14px 0">Loading…</div>' : npTab === "active" ? actHtml(A) : npTab === "activity" && afCfg() ? afHtml() : npTab === "batteries" ? (r.bh ? '<div class="lbl np2 il">' + mdi("battery-low") + 'Batteries · ' + r.nb + '</div>' + r.bh : '<div class="lbl" style="margin:14px 0">All batteries are fine</div>') : (r.n ? "" : '<div class="lbl" style="margin:14px 0">All clear</div>') + r.html, nc = $("#npc"), key = npTab + "|" + body.replace(/<em class="ldr">[^<]*<\/em>/g, '<em class="ldr"></em>');   // the remaining time is filled in below, so the minute ticking over does not redraw the list (and restart the drum)
+  const body = npLoading() ? '<div class="lbl" style="margin:14px 0">Loading…</div>' : npTab === "active" ? actHtml(A) : npTab === "attention" ? (r.na ? r.ah : '<div class="lbl" style="margin:14px 0">Nothing needs attention</div>') : (r.n ? "" : '<div class="lbl" style="margin:14px 0">All clear</div>') + r.html, nc = $("#npc"), key = npTab + "|" + body.replace(/<em class="ldr">[^<]*<\/em>/g, '<em class="ldr"></em>');   // the remaining time is filled in below, so the minute ticking over does not redraw the list (and restart the drum)
   if (nc._k !== key) { nc._k = key; nc.innerHTML = body; }
   npGoRun(); npCamMount();
   $$("#npc .ldr").forEach(el => { const t = ldTime(); if (el.textContent !== t) el.textContent = t; });
@@ -4972,15 +5041,14 @@ function drawNotif() {
 let nq = 0;
 function queueNotif() { if (!nq) nq = requestAnimationFrame(() => { nq = 0; drawNotif(); }); }
 $("#hc").onclick = () => { document.body.classList.toggle("np-open"); drawNotif(); };
-const npClose = () => { document.body.classList.remove("np-open"); npCamStop(); if (/^#(notifications|active|batteries)/.test(location.hash)) location.hash = "#home"; };
+const npClose = () => { document.body.classList.remove("np-open"); npCamStop(); if (/^#(notifications|attention|active|batteries)/.test(location.hash)) location.hash = "#home"; };
 $("#nbd").onclick = npClose;
 $("#np").onclick = e => {
   if (e.target.closest("[data-close]")) { npClose(); return; }
   const tb = e.target.closest("[data-npt]"); if (tb) { npTab = tb.dataset.npt; drawNotif(); return; }
   const of = e.target.closest("[data-off]"); if (of) { const ids = actList()[+of.dataset.off].ids; const cl = actList()[+of.dataset.off].c[3] === "close"; if (ids.length) { if (!cl) npDismiss(ids); call(cl ? "cover" : "homeassistant", cl ? "close_cover" : "turn_off", ids); } return; }
-  const af = e.target.closest("[data-aff]"); if (af) { AF.filter = af.dataset.aff; drawNotif(); return; }
+  const wa = e.target.closest("[data-wxa]"); if (wa) { npClose(); location.hash = "#weather/" + wa.dataset.wxa; return; }   // the weather card opens that forecast chart
   const bn = e.target.closest("[data-bn]"); if (bn) { binsTap(bn.dataset.bn); return; }
-  const ap = e.target.closest("[data-afp]"); if (ap) { dtPlay(ap.dataset.afp, ap.dataset.cam, +ap.dataset.ts, (ap.dataset.tg || "").split(",")); return; }   // Activity: the picture opens that exact clip
   const vw = e.target.closest("[data-vw]"); if (vw) { VW.back = /^#(view|camera|notifications|active|batteries)/.test(location.hash) ? "#home" : (location.hash || "#home"); location.hash = "#view/" + vw.dataset.vw; return; }
   const c = e.target.closest("[data-nt]");
   if (c) { if (c.dataset.sc) send({ type: "call_service", domain: "script", service: c.dataset.sc }); else call(c.dataset.nt.split(".")[0], "toggle", c.dataset.nt); return; }
@@ -5013,115 +5081,55 @@ function binsTap(k) {
   if (k === "out" && b.out) call("input_boolean", "turn_on", b.out);
   else call("homeassistant", "turn_off", binsIds());
 }
-// ---------- activity feed (notifications pop-up, ACTIVITY tab): camera person / vehicle sensors, doors and windows, water taps, towel rails and any extra entities, newest first ----------
-// config activity: { hours: 24, max: 150, merge: 120, include: "switch\\.(dyson|rice)", exclude: "", cameras: { "walkway": "right-walkway" } }  (activity: false hides the tab)
-// Layout: a timeline (time on the left, an icon on the line, the text and, for a person / vehicle, the picture from the matching recent-detections clip when config playback is set up).
-// Live events come from the state_changed stream; the past hours are read once from Home Assistant's logbook when the tab opens. Repeats of the same entity within "merge" seconds become one row with a count.
-const AF = { raw: [], filter: "all", loaded: 0, busy: 0, rx: {}, dt: [], req: {}, pt: 0 };
-const AFG = { all: null, cams: ["person", "vehicle"], doors: ["door", "window"], water: ["water"], sw: ["towel", "switch"] };
-const AFN = [["all", "All"], ["cams", "Cameras"], ["doors", "Doors"], ["water", "Water"], ["sw", "Switches"]];
-const afCfg = () => CONFIG.activity === false ? null : Object.assign({ hours: 24, max: 150, merge: 120 }, CONFIG.activity && typeof CONFIG.activity === "object" ? CONFIG.activity : {});
-const afRx = s => { if (!s) return null; if (!(s in AF.rx)) { try { AF.rx[s] = new RegExp(s); } catch (e) { AF.rx[s] = null; } } return AF.rx[s]; };
-function afKind(id) {
-  const c = afCfg(); if (!c) return null;
-  const ex = afRx(c.exclude); if (ex && ex.test(id)) return null;
-  const d = id.split(".")[0], a = (states[id] && states[id].attributes) || {};
-  if (d === "binary_sensor") {
-    if (/camera/.test(id) && /person/.test(id)) return "person";
-    if (/camera/.test(id) && /vehicle/.test(id)) return "vehicle";
-    if (a.device_class === "window") return "window";
-    if (a.device_class === "door" || a.device_class === "garage_door" || a.device_class === "opening") return "door";
+// ---------- Attention: things worth acting on ----------
+// Notifications > ATTENTION lists the bins, dry soil, devices that have been offline for a while, updates waiting and low batteries. A slim card on Home shows the top few while there is anything. Alerts keeps the urgent things (leak, warnings, doors).
+// Config: attention: false | { offline: true, offlineMinutes: 10, updates: true, soil: true, soilBelow: 25, batteries: true, batteryBelow: 26, home: true, ignore: ["light.hall_lamp"], watch: ["binary_sensor.x"] } (see config.example.js)
+const attnCfg = () => { const a = CONFIG.attention; return a === false ? null : Object.assign({ offline: true, offlineMinutes: 10, updates: true, soil: true, soilBelow: 25, batteries: true, batteryBelow: 26, home: true, ignore: [], watch: [] }, a || {}); };
+const ATD = /^(light|switch|cover|lock|climate|camera|fan|siren|alarm_control_panel|vacuum)\./;   // what counts as a device that can be "offline" (sensors and media players come and go too often); add more with watch
+const ATU = new Set();   // ids that were unavailable at their last change, so the redraw also fires when they come back
+function attnRel(id) {   // a state change that can alter the Attention list (the list redraws only for these)
+  if (/^update\./.test(id) || /^sensor\.average_.*_soil_moisture$/.test(id)) return true;
+  const c = attnCfg(); if (!c || !c.offline || !(ATD.test(id) || (c.watch || []).includes(id))) return false;
+  const u = !!states[id] && states[id].state === "unavailable", was = ATU.has(id); if (u) ATU.add(id); else ATU.delete(id); return u || was;
+}
+const attnAgo = ms => ms < 36e5 ? Math.max(1, Math.round(ms / 6e4)) + " min" : ms < 864e5 ? Math.round(ms / 36e5) + " h" : Math.round(ms / 864e5) + " d";
+function attnItems() {
+  const c = attnCfg(), out = []; if (!c) return out;
+  if (binsCfg() && binsDue().length) { const due = binsDue().map(x => x[1]), o = binsOut(), e = binsEvening(); out.push({ k: "bins", icon: "recycle", t: o ? "Bins are out" : e ? "Bins out tonight" : "Bring the bins out", sub: due.join(", ") }); }
+  if (c.soil) Object.keys(CONFIG.derived.soil || {}).sort((a, b) => parseFloat(sv("sensor.average_" + a + "_soil_moisture")) - parseFloat(sv("sensor.average_" + b + "_soil_moisture"))).forEach(z => { const m = parseFloat(sv("sensor.average_" + z + "_soil_moisture")); if (m < (+c.soilBelow || 25)) out.push({ k: "soil", icon: "water-percent", t: title(z) + " soil", sub: (m < 15 ? "Very dry" : m < 25 ? "Dry" : "Moist") + " · " + f1(m) + "%", tone: m < 15 ? "bad" : m < 25 ? "warn" : "", m: m, z: title(z) }); });
+  if (c.offline) {
+    const rx = [].concat(c.ignore || []).map(x => { try { return new RegExp(x); } catch (e) { return null; } }).filter(Boolean), min = (+c.offlineMinutes || 0) * 6e4, now = Date.now(), w = c.watch || [];
+    Object.keys(states).filter(id => states[id].state === "unavailable" && (ATD.test(id) || w.includes(id)) && !rx.some(r => r.test(id))).sort().forEach(id => { const ms = now - (Date.parse(states[id].last_changed || "") || now); if (ms >= min) out.push({ k: "off", icon: "access-point-network", t: fname(id), sub: "Offline for " + attnAgo(ms), tone: "warn" }); });
   }
-  if (d === "switch" && (/water_tap$/.test(id) || (CONFIG.irrigation || []).some(z => z.switch === id))) return "water";
-  if (d === "switch" && /towel/.test(id)) return "towel";
-  const inc = afRx(c.include); if (inc && inc.test(id)) return "switch";
-  return null;
+  if (c.updates) Object.keys(states).filter(id => /^update\./.test(id) && states[id].state === "on").sort().forEach(id => { const a = states[id].attributes || {}; out.push({ k: "upd", icon: "autorenew", t: a.title || a.friendly_name || fname(id), sub: a.in_progress ? "Installing…" : (a.installed_version ? a.installed_version + " → " : "") + (a.latest_version || "new version") }); });
+  if (c.batteries) { const th = +c.batteryBelow || 26; Object.keys(states).filter(k => /^sensor\..*battery_plus$/.test(k) && parseFloat(states[k].state) < th).sort((x, y) => parseFloat(states[x].state) - parseFloat(states[y].state)).forEach(k => { const v = Math.round(parseFloat(states[k].state)); out.push({ k: "bat", icon: "battery-low", t: fname(k).replace(/\s+battery(\s+plus|\+)$/i, ""), sub: v + "%", tone: v <= 15 ? "bad" : "warn" }); }); }   // Battery Notes "Battery+" sensors under 26 %
+  return out;
 }
-const afCamOf = id => {   // the camera a person / vehicle sensor belongs to: config activity.cameras { "text in the sensor id": "camera name" }, else a camera whose name is in the sensor id (longest match wins)
-  const c = afCfg() || {}, m = c.cameras || {}, k = Object.keys(m).find(x => id.indexOf(x) > -1); if (k) return npCamFor(m[k]);
-  let best = null; CONFIG.security.concat(CONFIG.cameras).forEach(cm => { const s = slug(cm.name).replace(/-/g, "_"); if (id.indexOf(s) > -1 && (!best || s.length > best.s.length)) best = { s: s, c: cm }; });
-  return best ? { id: best.c.id, name: best.c.name, key: slug(best.c.name) } : null;
-};
-const afName = id => { const f = (states[id] && states[id].attributes.friendly_name) || id.split(".")[1].replace(/_/g, " "); return f.replace(/\b(contact|opening|detection|person|vehicle|sensor|crossline|entry|exit|camera|cameras)\b/gi, "").replace(/\s+/g, " ").trim() || f; };
-function afAdd(t, id, s) {   // one raw change: dedupe on entity + state + second (the logbook repeats what was already seen live)
-  const k = afKind(id); if (!k || (s !== "on" && s !== "off")) return;
-  if ((k === "person" || k === "vehicle") && s !== "on") return;
-  const key = id + "|" + s + "|" + Math.round(t / 1000); if (AF.raw.some(x => x.key === key)) return;
-  AF.raw.push({ t: t, id: id, s: s, k: k, key: key });
-  const c = afCfg(), lim = Date.now() - c.hours * 36e5; if (AF.raw.length > c.max * 4) AF.raw = AF.raw.filter(x => x.t > lim).sort((a, b) => b.t - a.t).slice(0, c.max * 4);
+function attnHtml(it) {
+  if (!it.length) return "";
+  const head = (ic, t, n) => '<div class="lbl np2 il">' + mdi(ic) + t + (n ? " · " + n : "") + '</div>', row = x => '<div class="nrow ' + (x.tone || "") + ' at-r"' + "" + '><span class="at-i">' + mdi(x.icon) + '</span><span class="nbn"><b>' + esc(x.t) + '</b><small>' + esc(x.sub) + '</small></span>' + '</div>';
+  const by = k => it.filter(x => x.k === k); let h = "";
+  if (by("bins").length) h += head("recycle", "Bins") + binsCard();   // 32-bins-card.js
+  const so = by("soil"); if (so.length) h += head("water-percent", "Chores") + '<div class="wg">' + so.map(x => '<div class="ws"><span class="lbl">' + x.z + ' soil</span><b style="color:var(' + (x.m < 15 ? "--sd0" : x.m < 25 ? "--sd1" : "--sd2") + ')">' + (x.m < 15 ? "Very dry" : x.m < 25 ? "Dry" : "Moist") + '</b>' + f1(x.m) + '%</div>').join("") + '</div>';
+  const of = by("off"); if (of.length) h += head("access-point-network", "Offline", of.length) + of.slice(0, 8).map(row).join("") + (of.length > 8 ? '<div class="lbl at-more">+' + (of.length - 8) + ' more</div>' : "");
+  const up = by("upd"); if (up.length) h += head("autorenew", "Updates", up.length) + up.map(row).join("");
+  const ba = by("bat"); if (ba.length) h += head("battery-low", "Batteries", ba.length) + ba.map(row).join("");
+  return h;
 }
-function actNote(d) {   // called for every state_changed event, before the state is stored
-  if (!d || !d.new_state || !afCfg()) return;
-  const o = d.old_state ? d.old_state.state : "", n = d.new_state.state;
-  if ((o !== "on" && o !== "off") || (n !== "on" && n !== "off") || o === n) return;
-  if (!states[d.entity_id]) states[d.entity_id] = d.new_state;   // so a brand-new entity can be classified
-  const before = AF.raw.length; afAdd(Date.now(), d.entity_id, n);
-  if (AF.raw.length !== before && document.body.classList.contains("np-open") && npTab === "activity") queueNotif();
+// the slim Home card: opens the Attention tab. One line: the count and a summary ("3 offline · 12 updates · 5 low batteries"); a single item shows its own name. On a tablet it shares the row under the greeting with the Today strip (see hsFit in 10-today-schedule.js)
+const AT_N = { off: n => n + " offline", soil: n => n + " dry soil", bat: n => n + (n > 1 ? " low batteries" : " low battery"), upd: n => n + (n > 1 ? " updates" : " update") };
+function attnSum(it) {
+  if (it.length === 1) return it[0].t + " · " + it[0].sub;
+  const b = it.filter(x => x.k === "bins")[0], n = k => it.filter(x => x.k === k).length;
+  return (b ? [b.t] : []).concat(["off", "soil", "bat", "upd"].filter(n).map(k => AT_N[k](n(k)))).join(" · ");
 }
-function afLoad(force) {
-  const c = afCfg(); if (!c || AF.busy || (!force && Date.now() - AF.loaded < 3e5)) return;
-  const ids = Object.keys(states).filter(afKind); if (!ids.length) return;
-  AF.busy = 1; const end = new Date(), start = new Date(end.getTime() - c.hours * 36e5);
-  send({ type: "logbook/get_events", start_time: start.toISOString(), end_time: end.toISOString(), entity_ids: ids }, res => {
-    AF.busy = 0; AF.loaded = Date.now(); if (!Array.isArray(res)) return;
-    res.forEach(x => { const w = typeof x.when === "number" ? x.when * 1000 : Date.parse(x.when); if (w && x.entity_id && x.state) afAdd(w, x.entity_id, String(x.state)); });
-    if (document.body.classList.contains("np-open") && npTab === "activity") queueNotif();
-  });
+function attnCard(it) {
+  const el = $("#attn"); if (!el) return; const c = attnCfg(), on = !!c && c.home !== false && it.length > 0;
+  const h = on ? '<span class="at-h" title="Needs attention">' + mdi("alert-circle") + it.length + '</span><span class="at-l"><span class="at-x">' + esc(attnSum(it)) + '</span></span><span class="at-c">' + mdi("chevron-right") + '</span>' : "";
+  if (el._h !== h) { el._h = h; el.innerHTML = h; } el.hidden = !on; hsFit();
 }
-function afList() {   // newest first, repeats merged, durations (open for / ran for) worked out from the on / off pairs
-  const c = afCfg(), now = Date.now(), lim = now - c.hours * 36e5, asc = AF.raw.filter(x => x.t > lim).sort((a, b) => a.t - b.t), on = {};
-  asc.forEach(x => { if (x.s === "on") { if (!on[x.id]) on[x.id] = x.t; } else { x.dur = on[x.id] ? x.t - on[x.id] : 0; delete on[x.id]; } });
-  const want = AFG[AF.filter], out = [], last = {};
-  asc.slice().reverse().forEach(x => {
-    if (want && want.indexOf(x.k) < 0) return;
-    const p = last[x.id + x.s]; if (p && p.first - x.t < c.merge * 1000) { p.n++; p.first = x.t; return; }
-    const it = { t: x.t, first: x.t, id: x.id, s: x.s, k: x.k, dur: x.dur || 0, n: 1 }; last[x.id + x.s] = it; out.push(it);
-  });
-  return out.slice(0, c.max);
-}
-const afDur = ms => { const m = Math.round(ms / 60000); return m < 1 ? Math.max(1, Math.round(ms / 1000)) + " sec" : m < 60 ? m + " min" : Math.floor(m / 60) + " hr" + (m % 60 ? " " + (m % 60) + " min" : ""); };
-const afWhen = t => Date.now() - t < 6e4 ? "now" : new Date(t).toLocaleTimeString([], tmo({ hour: "numeric", minute: "2-digit" })).replace(" ", "").toLowerCase();
-const afGroup = t => { const a = Date.now() - t, d0 = new Date(); d0.setHours(0, 0, 0, 0); return a < 36e5 ? "Last hour" : t >= d0.getTime() ? "Earlier today" : t >= d0.getTime() - 864e5 ? "Yesterday" : "Earlier"; };
-const afDtOn = () => CONFIG.detections !== false && typeof dtCams === "function" && dtCams().length > 0;
-function afClip(x, cam) {   // the recent-detections clip (same camera, same kind, within 90 s of the sensor) from the Security page's list, or null
-  if (!cam || !AF.dt.length) return null;
-  const tag = x.k === "vehicle" ? "Vehicle" : "Person"; let best = null;
-  AF.dt.forEach(d => { if (d.cam === cam.id && d.p && d.p.tags.indexOf(tag) > -1) { const df = Math.abs(d.ts - x.t); if (df < 9e4 && (!best || df < best.df)) best = { d: d, df: df }; } });
-  return best ? best.d : null;
-}
-function afThumb(d) {   // the same picture the Detections tab shows for that clip (dtThumbUrl); when there is none yet the shared loader fetches / cuts it
-  const u = dtThumbUrl(d);
-  const su = DT.snapUrl[d.mc], fresh = su && Date.now() - su.t < 3000000;
-  if (Date.now() - (AF.req[d.mc] || 0) > 3e6 && (DT.snapOf[d.mc] ? !fresh : !u && DT.th[d.mc] == null)) { AF.req[d.mc] = Date.now(); DT.q.push(d.mc); dtNext(); }   // same rule as the Detections tab (dtThumbs)
-  return u;
-}
-let afRt = 0;
-function afThumbReady() { clearTimeout(afRt); afRt = setTimeout(() => { if (document.body.classList.contains("np-open") && npTab === "activity") queueNotif(); }, 200); }   // called by the thumbnail loader (27-recent-detections.js)
-function afRow(x) {
-  const nm = afName(x.id), on = x.s === "on", cam = x.k === "person" || x.k === "vehicle" ? afCamOf(x.id) : null, rep = x.n > 1 ? " ×" + x.n : "";
-  const T = { person: ["account", "Person detected" + rep, cam ? cam.name : nm, "dng"], vehicle: ["car", "Vehicle detected" + rep, cam ? cam.name : nm, "dng"],
-    door: [on ? "door-open" : "m3-door-front", nm + (on ? " opened" : " closed") + rep, on ? "" : x.dur ? "Open for " + afDur(x.dur) : "", on ? "wrn" : "ok"],
-    window: [on ? "window-open-variant" : "m3-window-closed", nm + (on ? " opened" : " closed") + rep, on ? "" : x.dur ? "Open for " + afDur(x.dur) : "", on ? "wrn" : "ok"],
-    water: ["m3-water-drop", nm + (on ? " turned on" : " turned off") + rep, on ? "" : x.dur ? "Ran for " + afDur(x.dur) : "", on ? "wat" : "ok"],
-    towel: ["radiator", nm + (on ? " turned on" : " turned off") + rep, on ? "" : x.dur ? "On for " + afDur(x.dur) : "", on ? "heat" : "ok"],
-    switch: ["toggle-switch", nm + (on ? " turned on" : " turned off") + rep, on ? "" : x.dur ? "On for " + afDur(x.dur) : "", on ? "wat" : "ok"] }[x.k];
-  const d = cam ? afClip(x, cam) : null, th = d ? afThumb(d) : "";
-  const pic = d ? '<div class="af-th" data-afp="' + esc(d.mc) + '" data-cam="' + esc(d.cam) + '" data-ts="' + d.ts + '" data-tg="' + esc(d.p.tags.join(",")) + '">' + (th ? '<img src="' + esc(th) + '" alt="" loading="lazy">' : "") + '<b>' + mdi("play") + '</b></div>' : "";   // tap = play that exact clip, like the Detections tab
-  return '<div class="af-r' + (cam ? " go" : "") + '"' + (cam ? ' data-vw="' + esc(cam.key) + '"' : "") + '><span class="af-tm">' + afWhen(x.t) + '</span><span class="af-i ' + T[3] + '">' + mdi(T[0]) + '</span><div class="af-t"><b>' + esc(T[1]) + '</b>' + (T[2] ? '<span>' + esc(T[2]) + '</span>' : "") + pic + '</div></div>';
-}
-function afHtml() {
-  afLoad();
-  if (afDtOn()) {   // the clips the Security page lists: read once (and again after 10 minutes) so person / vehicle rows can show their picture
-    if (!DT.busy && Date.now() - DT.t0 > 6e5) dtLoad();
-    AF.dt = dtItems();
-    if (DT.busy) { clearTimeout(AF.pt); AF.pt = setTimeout(() => { if (document.body.classList.contains("np-open") && npTab === "activity") queueNotif(); }, 3000); }
-  } else AF.dt = [];
-  const L = afList(), chips = '<div class="chips af-f">' + AFN.map(n => '<button class="chip' + (AF.filter === n[0] ? " on" : "") + '" data-aff="' + n[0] + '">' + n[1] + '</button>').join("") + '</div>';
-  if (!L.length) return chips + '<div class="lbl" style="margin:14px 0">' + (AF.busy ? "Loading…" : "Nothing yet") + '</div>';
-  let g = "", h = ""; L.forEach(x => { const gn = afGroup(x.t); if (gn !== g) { if (g) h += '</div>'; g = gn; h += '<div class="lbl np2">' + gn + '</div><div class="af-l">'; } h += afRow(x); });
-  return chips + h + '</div>';
-}
-setInterval(() => { if (document.body.classList.contains("np-open") && npTab === "activity") queueNotif(); }, 30000);   // "3 min" ticks over
+$("#attn").onclick = () => { npTab = "attention"; document.body.classList.add("np-open"); drawNotif(); };
+setInterval(() => queueNotif(), 60000);   // "offline for N min" needs a clock, not only state changes
 // ---------- media (Sonos / Spotify) ----------
 // cover art: real picture, else CONFIG.mediaArt match by title (optional), else a generated waveform tile
 // ---------- dominant colour of the album art, used for the Now playing glow ----------
@@ -6234,7 +6242,8 @@ function route() {
   if (p === "vehicle") drawVehicle();
   if (p === "hazards") { HZ.vb = null; HZ.tab = { earthquakes: "quake", quakes: "quake", volcanoes: "volc", volcano: "volc" }[h[1]] || "map"; HZ.view = HZ.view || (states["zone.home"] ? "home" : "ni"); requestAnimationFrame(drawHaz); }
   if (h[0] === "disarm") alarmLink("disarm"); else if (h[0] === "arm") alarmLink("arm_" + (h[1] || "away"));
-  if (h[0] === "notifications" || h[0] === "active" || h[0] === "batteries") { npTab = h[0] === "active" ? "active" : h[0] === "batteries" ? "batteries" : "alerts"; npGo = h[0] === "active" && h[1] ? { s: h[1], t: Date.now() } : null; document.body.classList.add("np-open"); drawNotif(); }
+  if (h[0] === "notifications" || h[0] === "attention" || h[0] === "active" || h[0] === "batteries") { npTab = h[0] === "active" ? "active" : h[0] === "attention" || h[0] === "batteries" ? "attention" : "alerts";   // #batteries (old links) now opens Attention, which lists the low batteries
+  npGo = h[0] === "active" && h[1] ? { s: h[1], t: Date.now() } : null; document.body.classList.add("np-open"); drawNotif(); }
 }
 // tablet battery pill: shown on the Fully Kiosk tablet only ("kiosk" = the Fully JS interface, a FullyKiosk user agent, or ?tablet=1 once; "always" / "never" override)
 const BAT_ON = (() => {

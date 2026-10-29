@@ -19,7 +19,7 @@ const schTm = d => d.toLocaleTimeString([], tmo({ hour: "numeric", minute: "2-di
 function schDraw() {
   const el = $("#sch"); if (!el) return;
   const now = new Date(), live = SCH.ev.filter(v => v.ad || v.e > now);   // all-day events and anything not finished yet
-  if (!schOn() || !live.length) { el.hidden = true; el.innerHTML = ""; return; }
+  if (!schOn() || !live.length) { el.hidden = true; el.innerHTML = ""; hsFit(); return; }
   const nx = live.filter(v => !v.ad)[0], past = SCH.ev.filter(v => !v.ad && v.e <= now), n = SCH.ev.length;
   const when = v => v.ad ? "ALL DAY" : schTm(v.t);
   const chip = v => '<span class="sch-c' + (v === nx ? " nx" : "") + (v.ad ? " ad" : "") + '" style="--c:' + v.c + '"><i></i><small>' + when(v) + '</small><span>' + esc(v.s) + '</span></span>';
@@ -30,7 +30,15 @@ function schDraw() {
     live.slice(0, 3).map(v => '<div class="sch-r' + (v === nx ? " nx" : "") + '" style="--c:' + v.c + '"><small>' + when(v) + '</small><span>' + esc(v.s) + '</span>' + (v === nx && eta ? '<em>' + eta + '</em>' : '') + '</div>').join("") +
     (live.length > 3 ? '<div class="sch-x lbl">+' + (live.length - 3) + ' more</div>' : "") + (past.length ? '<div class="sch-x lbl">' + past.length + ' done</div>' : "") + '</div>' +
     '<span class="sch-g">' + mdi("chevron-right") + '</span>';
-  el.hidden = false; schFit();
+  el.hidden = false; hsFit(); schFit();
+}
+// tablet: the Attention summary and the Today strip share one row under the greeting (#hstrip); alone, either one takes the whole row. A layout.tablet that lists "schedule" keeps Today where config.js puts it.
+function hsFit() {
+  const h = $("#hstrip"), s = $("#sch"), a = $("#attn"); if (!h || !s || !a) return;
+  const own = !isMobile() && ((CONFIG.layout || {}).tablet || []).indexOf("schedule") < 0;
+  if (own && s.parentNode !== h) h.appendChild(s); else if (!own && s.parentNode === h) $(".camcol").appendChild(s);
+  const n = [a, s].filter(x => x.parentNode === h && !x.hidden).length;
+  h.dataset.n = n; h.hidden = !n; if (own && n) schFit();
 }
 function schFit() {   // tablet strip: chips that do not fit are hidden and counted as "+n"
   const el = $("#sch"); if (!el || el.hidden) return; const l = $(".sch-l", el), cs = $$(".sch-c", l), nn = $(".sch-n", l); if (!l.offsetWidth) return;
@@ -42,4 +50,4 @@ function schFit() {   // tablet strip: chips that do not fit are hidden and coun
 }
 document.addEventListener("click", e => { if (e.target.closest("#sch")) location.hash = "#events"; });
 setInterval(() => { if (curPg() === "home") { schLoad(); schDraw(); } }, 60000);
-addEventListener("resize", () => { clearTimeout(SCH.rs); SCH.rs = setTimeout(schFit, 120); });
+addEventListener("resize", () => { clearTimeout(SCH.rs); SCH.rs = setTimeout(() => { hsFit(); schFit(); }, 120); });

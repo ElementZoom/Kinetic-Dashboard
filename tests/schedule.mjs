@@ -43,7 +43,7 @@ eq("strip shown on a tablet, card hidden", [i.hidden, i.strip, i.card], [false, 
 eq("finished events are not in the strip; the next one is highlighted", [i.chips.includes("Day Shift"), i.next], [false, "Rubbish"]);
 eq("all-day event comes first", i.chips[0], "Labour Day");
 eq("chevron is centred in the thin strip", i.mid, true);
-eq("sits under the cameras", await t.page.evaluate(() => { const c = document.getElementById("cams").getBoundingClientRect(), s = document.getElementById("sch").getBoundingClientRect(); return s.top >= c.bottom - 1 && Math.abs(s.left - c.left) < 2; }), true);
+eq("sits in the strip row under the greeting, above the cameras", await t.page.evaluate(() => { const c = document.getElementById("cams").getBoundingClientRect(), s = document.getElementById("sch").getBoundingClientRect(), g = document.querySelector(".hs").getBoundingClientRect(); return s.top >= g.bottom - 1 && s.bottom <= c.top + 1 && document.getElementById("sch").parentNode.id === "hstrip"; }), true);
 await t.page.click("#sch"); await t.page.waitForTimeout(300);
 eq("tap opens Events", await t.page.evaluate(() => location.hash), "#events");
 await t.ctx.close();

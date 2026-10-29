@@ -1,0 +1,37 @@
+// Tablet: the greeting strip joins the header while no music plays, and drops back when music starts, on other pages or when the row is too tight.   Run:  node tests/header-merge.mjs
+import http from "node:http";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const cfg = `window.DASH_CONFIG = { url: location.origin, token: "tok", rooms: [{ id: "living", name: "Living", main: true }], notifTimers: [], leakSensors: ["binary_sensor.leak"], media: ["media_player.a"], weather: "weather.home" };`;
+const server = http.createServer((q, r) => { const u = q.url.split("?")[0]; if (u === "/config.js") { r.writeHead(200, { "content-type": "text/javascript" }); return r.end(cfg); }
+  if (u !== "/dash.html") { r.writeHead(404); return r.end(); } r.writeHead(200, { "content-type": "text/html" }); r.end(fs.readFileSync(path.join(root, "dash.html"))); }).listen(0);
+await new Promise(r => server.once("listening", r));
+const { chromium } = await import("playwright");
+const browser = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});
+const problems = [], errors = []; let checks = 0;
+const eq = (what, got, want) => { checks++; if (JSON.stringify(got) !== JSON.stringify(want)) problems.push(`${what}: got ${JSON.stringify(got)}, wanted ${JSON.stringify(want)}`); };
+const page = await (await browser.newContext({ viewport: { width: 1500, height: 800 } })).newPage();
+page.on("pageerror", e => errors.push(String(e).slice(0, 300)));
+await page.routeWebSocket(/api\/websocket/, ws => { ws.send(JSON.stringify({ type: "auth_required" })); ws.onMessage(raw => { const m = JSON.parse(raw); if (m.type === "auth") ws.send(JSON.stringify({ type: "auth_ok" })); else if (m.id) ws.send(JSON.stringify({ id: m.id, type: "result", success: true, result: m.type === "get_states" ? [] : null })); }); });
+await page.goto(`http://127.0.0.1:${server.address().port}/dash.html#home`); await page.waitForTimeout(1500);
+await page.evaluate(() => { document.documentElement.classList.remove("boot"); const l = document.getElementById("lg"); if (l) l.hidden = true; });
+const S = (id, st, a) => page.evaluate(([i, s, a]) => { states[i] = { entity_id: i, state: s, attributes: Object.assign({ friendly_name: i }, a || {}) }; }, [id, st, a]);
+const where = () => page.evaluate(() => { const hd = document.querySelector("header"), hs = document.querySelector(".hs"), r = hd.getBoundingClientRect(); return { inHeader: hs.parentNode === hd, h: Math.round(r.height), wrapped: hd.scrollWidth > hd.clientWidth + 1 }; });
+const settle = () => page.waitForTimeout(400);
+await S("weather.home", "sunny", { temperature: 21, wind_speed: 12 }); await page.evaluate(() => { try { drawHome && drawHome(); } catch (e) {} }); await settle();
+let r = await where(); eq("tablet, nothing playing: greeting is in the header", r.inHeader, true); eq("header stays one row", r.h < 100, true);
+await page.screenshot({ path: process.env.SHOT || "/tmp/hdr-merge.png", clip: { x: 0, y: 0, width: 1500, height: 160 } });
+await S("media_player.a", "playing", { friendly_name: "Living", media_title: "Song", media_artist: "Artist", media_duration: 200, media_position: 10, media_position_updated_at: new Date().toISOString() });
+await page.evaluate(() => { npRender(); }); await settle(); r = await where(); eq("music playing: greeting back below the header", r.inHeader, false);
+await S("media_player.a", "idle", {}); await page.evaluate(() => { npRender(); }); await settle(); r = await where(); eq("music stopped: greeting returns to the header", r.inHeader, true);
+await page.evaluate(() => { location.hash = "#weather"; }); await settle(); r = await where(); eq("other page: greeting is in the header too", r.inHeader, true);
+await page.evaluate(() => { location.hash = "#home"; }); await settle(); r = await where(); eq("back on Home: still merged", r.inHeader, true);
+await page.evaluate(() => { location.hash = "#weather"; }); await S("media_player.a", "playing", { friendly_name: "Living", media_title: "Song", media_artist: "Artist", media_duration: 200, media_position: 10, media_position_updated_at: new Date().toISOString() }); await page.evaluate(() => { npRender(); }); await settle(); r = await where(); eq("other page + music: player replaces the greeting", r.inHeader, false);
+await S("media_player.a", "idle", {}); await page.evaluate(() => { npRender(); location.hash = "#home"; }); await settle();
+await page.setViewportSize({ width: 700, height: 900 }); await settle(); r = await where(); eq("phone width: not merged", r.inHeader, false);
+await page.setViewportSize({ width: 1000, height: 800 }); await settle(); r = await where(); eq("narrow tablet: merged only when it fits one row", r.inHeader ? r.h < 100 : true, true);
+eq("no page errors", errors, []);
+await browser.close(); server.close();
+if (problems.length) { console.log("FAIL\n" + problems.join("\n")); process.exit(1); } console.log(`header-merge: ${checks} checks passed`);

@@ -1862,6 +1862,14 @@ html[data-mode=light] .alert.fr{background:#dff1fd;color:#0b3550;border-left-col
 #wxsun{display:flex;flex-direction:column}#wxsun .wg{flex:1;grid-auto-rows:1fr;align-content:stretch}#wxsun .ws{display:flex;flex-direction:column;justify-content:center}
 .sunl{flex-wrap:wrap;row-gap:8px}.sunl .sm{order:3;flex:0 0 100%;font-size:13px}
 }
+/* tablet: the greeting strip sits in the header while no music plays (41-start.js moves it) */
+header.hmerge>.hs{flex:1 1 0;min-width:0;margin:0 0 0 6px;padding:0 14px;min-height:0;border:0;background:none;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;flex-wrap:nowrap;white-space:nowrap;gap:6px 18px;align-self:stretch;border-radius:14px}
+header.hmerge>.hs::before{display:none}header.hmerge>.hs::after{display:none}
+header.hs1 #whl,header.hs2 #whl,header.hs2 #wwind,header.hs3 #whl,header.hs3 #wwind,header.hs3 #dt{display:none}
+header.hmerge>.hs #wfx{display:none}
+header.hmerge #ttl{display:none}header.hmerge>.hs{margin-left:0;padding-left:8px}
+/* tablet: the page name is left to the sidebar; the greeting or the player starts at the left edge of the header */
+@media(min-width:761px){header #ttl{display:none}header #hnp:not(.npoff){margin-left:0}}
 /* Home: today's schedule (tablet strip under the cameras, phone card under the greeting) */
 #sch{cursor:pointer;position:relative;box-sizing:border-box;padding:0 40px 0 14px;min-height:46px;display:flex;align-items:center;border-radius:18px;border:1px solid rgba(var(--mint-rgb),.5);background:rgba(var(--mint-rgb),.09)}
 #sch[hidden]{display:none!important}
@@ -6482,9 +6490,21 @@ route(); drawGsum(); authReturn().then(r => { if (r !== "fail") connect(); });
   const hd = document.querySelector("header"); if (!hd) return;
   const bad = () => { if (hd.scrollWidth > hd.clientWidth + 1) return true; const np = $("#hnp"), hr = hd.querySelector(".hr"); if (!np || np.classList.contains("npoff") || !hr) return false; const a = np.getBoundingClientRect(), b = hr.getBoundingClientRect(), t = $("#ttl").getBoundingClientRect(); if (a.top > b.bottom - 4) return false; const art = np.querySelector(".npart"), ctl = np.querySelector(".hnpc"); if (art && ctl && art.getBoundingClientRect().right > ctl.getBoundingClientRect().left - 6) return true; return a.right > b.left + 1 || a.left < t.right - 1 || np.scrollWidth > np.clientWidth + 1; };
   const mo = new MutationObserver(() => later()), ob = () => mo.observe(hd, { subtree: true, childList: true, attributes: true, attributeFilter: ["class", "data-k", "data-more", "data-more2"] });
-  const fit = () => { mo.disconnect(); hd.classList.remove("hcmp", "hcmp2"); if (innerWidth > 760 && bad()) { hd.classList.add("hcmp"); if (bad()) hd.classList.add("hcmp2"); } ob(); };
+  // on tablets, while no music plays, the greeting strip (.hs) moves up into the header so Home and the weather line share one row. It sheds the wind, then the high/low, then the date (hs1..hs3) as the row gets tight, and drops back below the header when even that does not fit, when music starts 
+  const hs = $(".hs"), home = $("#home"), hr0 = hd.querySelector(".hr");
+  const inHd = () => hs.parentNode === hd;
+  const put = on => { if (on === inHd()) return; if (on) hd.insertBefore(hs, $("#hnp")); else home.insertBefore(hs, home.firstChild); hd.classList.toggle("hmerge", on); };
+  const hsBad = () => { const a = hs.getBoundingClientRect(), b = hr0.getBoundingClientRect(); return hs.scrollWidth > hs.clientWidth + 1 || a.top >= b.bottom - 2 || b.top >= a.bottom - 2; };
+  const can = () => innerWidth > 760 && hs.style.display !== "none" && $("#hnp").classList.contains("npoff");
+  const fit = () => {
+    mo.disconnect(); hd.classList.remove("hcmp", "hcmp2", "hs1", "hs2", "hs3");
+    let ok = false;
+    if (can()) { put(true); for (let i = 0; i < 4 && !ok; i++) { hd.classList.remove("hs1", "hs2", "hs3"); if (i) hd.classList.add("hs" + i); ok = !bad() && !hsBad(); } }
+    if (!ok) { put(false); hd.classList.remove("hs1", "hs2", "hs3"); if (innerWidth > 760 && bad()) { hd.classList.add("hcmp"); if (bad()) hd.classList.add("hcmp2"); } }
+    ob();
+  };
   let tm = 0; const later = () => { clearTimeout(tm); tm = setTimeout(fit, 60); };
-  addEventListener("resize", later);
+  addEventListener("resize", later); addEventListener("hashchange", later);
   fit();
 })();
 </script>

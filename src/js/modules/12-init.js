@@ -96,17 +96,19 @@ document.addEventListener("fullscreenchange", fsChange); document.addEventListen
 const AUD = {
   on: '<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3m13.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4M14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6"/></svg>',
   off: '<svg viewBox="0 0 24 24"><path d="M12 4 9.9 6.1 12 8.2M3.3 2 2 3.3 6.7 8H3v6h4l5 5v-6.7l4.2 4.2c-.7.5-1.4.9-2.2 1.1v2.1a9 9 0 0 0 3.5-1.7l2 2 1.3-1.3L3.3 2M19 12a7 7 0 0 0-2-4.9l1.4-1.4A9 9 0 0 1 21 12c0 1.4-.3 2.7-.9 3.9l-1.5-1.5c.3-.7.4-1.5.4-2.4m-3 0a4.5 4.5 0 0 0-1.9-3.7V10l1.9 1.9V12"/></svg>',
-  mic: '<svg viewBox="0 0 24 24"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3m5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.9V21h2v-3.1A7 7 0 0 0 19 11h-2"/></svg>'
+  mic: '<svg viewBox="0 0 24 24"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3m5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.9V21h2v-3.1A7 7 0 0 0 19 11h-2"/></svg>',
+  det: '<svg viewBox="0 0 24 24"><path d="M3 3h6v2H5v4H3V3m12 0h6v6h-2V5h-4V3M3 15h2v4h4v2H3v-6m16 0h2v6h-6v-2h4v-4"/><circle cx="12" cy="9.6" r="2.1"/><path d="M8.4 16.2c0-2.1 1.6-3.5 3.6-3.5s3.6 1.4 3.6 3.5z"/><path class="sl" d="M3.5 20.5 20.5 3.5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>'
 };
 function micOff(c) { if (c.mic) { c.mic.getTracks().forEach(t => t.stop()); c.mic = null; } c.talk = false; const b = c.o && $(".mic", c.o.el); if (b) b.classList.remove("on"); }
 function mkCam(c, host) {
   const el = document.createElement("div"); el.className = "cam";
-  el.innerHTML = '<div class="lbl">' + esc(c.name) + '</div><span class="lv">' + mdi("circle") + ' LIVE</span><img alt=""><video muted autoplay playsinline></video><button class="fsb" aria-label="Landscape"><svg viewBox="0 0 24 24"><path d="M5 5h5v2H7v3H5V5m9 0h5v5h-2V7h-3V5M5 14h2v3h3v2H5v-5m12 0h2v5h-5v-2h3v-3"/></svg></button><button class="cx" aria-label="Close">' + mdi("close") + '</button><button class="px">' + mdi("play") + ' PLAYBACK</button><span class="dl"></span><div class="aud"><button class="snd" aria-label="Sound">' + AUD.off + '</button><button class="mic" aria-label="Talk">' + AUD.mic + '</button></div><div class="cpanel"></div><div class="pbk"></div><div class="gal" role="status" aria-live="polite"></div>';
+  el.innerHTML = '<div class="lbl">' + esc(c.name) + '</div><span class="lv">' + mdi("circle") + ' LIVE</span><img alt=""><video muted autoplay playsinline></video><button class="fsb" aria-label="Landscape"><svg viewBox="0 0 24 24"><path d="M5 5h5v2H7v3H5V5m9 0h5v5h-2V7h-3V5M5 14h2v3h3v2H5v-5m12 0h2v5h-5v-2h3v-3"/></svg></button><button class="cx" aria-label="Close">' + mdi("close") + '</button><button class="px">' + mdi("play") + ' PLAYBACK</button><span class="dl"></span><div class="aud"><button class="snd" aria-label="Sound">' + AUD.off + '</button><button class="mic" aria-label="Talk">' + AUD.mic + '</button>' + (CONFIG.detectLive && CONFIG.detectAI && CONFIG.detectMark !== false ? '<button class="det' + (mkPref("live") ? " on" : "") + '" data-mkt="live" aria-label="Detection boxes">' + AUD.det + '</button>' : '') + '</div><div class="cpanel"></div><div class="pbk"></div><div class="gal" role="status" aria-live="polite"></div>';
   CAMREG.push({ el: el, id: c.id });
   const px = $(".px", el); if (CONFIG.playback[c.id]) px.onclick = e => { e.stopPropagation(); openPb(c); }; else px.remove();
   const o = c.o = { el: el, img: $("img", el), vid: $("video", el) }; if (camIO) camIO.observe(el);
   { const m = camMem.get(c.id); if (m) o.img.src = m; }   // last picture this device saw, shown instantly while the stream connects
-  const snd = $(".snd", el), mic = $(".mic", el);
+  const snd = $(".snd", el), mic = $(".mic", el), det = $(".det", el);
+  if (det) det.onclick = e => { e.stopPropagation(); mkSetPref("live", !mkPref("live")); };   // detection boxes on / off for the live pictures (remembered on this device)
   snd.onclick = e => { e.stopPropagation(); c.snd = !c.snd; o.vid.muted = !c.snd; snd.classList.toggle("on", c.snd); snd.innerHTML = c.snd ? AUD.on : AUD.off; if (c.snd) o.vid.play().catch(() => {}); };
   mic.onclick = async e => {
     e.stopPropagation();

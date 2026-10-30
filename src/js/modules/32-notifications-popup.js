@@ -43,12 +43,14 @@ const NSK = [
   ["leak", "water-alert", "Water leak", () => LEAKS().some(x => isOn(x[0]))],
   ["warn", "weather-cloudy-alert", "Weather warning", () => { const s = states[E("weatherWarnings")]; return !!s && s.state !== "unknown" && s.state !== "unavailable"; }],
   ["garage", "garage-open-variant", "Garage door open", () => Object.keys(galCfg()).some(k => { const c = galCfg()[k], s = c && c.sensor && states[c.sensor]; return !!s && (s.state === "on") !== !!c.invert; })],
-  ["wind", "weather-windy", () => { const w = (wxaNow() || {}).wind; return w ? WXA_W[w.tier] + " wind" + (w.now ? "" : " soon") : "Wind"; }, () => { const w = wxaNow(); return !!w && !!w.wind && w.wind.tier >= w.cfg.sw; }],   // from the tier set by weatherAlerts.stripWind (Strong by default)
-  ["rain", "weather-rainy", () => { const r = (wxaNow() || {}).rain; return r ? WXA_R[r.tier] + (r.now ? "" : " soon") : "Rain"; }, () => { const w = wxaNow(); return !!w && !!w.rain && w.rain.tier >= w.cfg.sr; }],   // Heavy rain by default (weatherAlerts.stripRain)
+  ["wind", "weather-windy", wxaName("wind"), () => wxaChip("wind", true)],   // Strong or Severe wind: right after the garage
+  ["rain", "weather-rainy", wxaName("rain"), () => wxaChip("rain", true)],   // Heavy rain
   ["door", "door-open", "Door open", () => !!doorsOpen()],
   ["water", "m3-water-drop", "Water on", () => Object.keys(states).some(k => /^switch\..*water_tap$/.test(k) && states[k].state === "on") || (CONFIG.irrigation || []).some(z => z.switch && states[z.switch] && states[z.switch].state === "on")],
   ["bins", "recycle", "Bins out", binsWaiting],   // a bin is due and not out yet (config bins)
   ["battery", "battery-low", "Low battery", () => lowBattChip().length > 0],   // under 20 % by default (derived.batteryAlertBelow)
+  ["wind", "weather-windy", wxaName("wind"), () => wxaChip("wind", false)],   // Moderate wind: weatherAlerts.stripWind sets the first tier shown; the lower tiers sit below the battery chip so they never crowd out a door or a tap
+  ["rain", "weather-rainy", wxaName("rain"), () => wxaChip("rain", false)],   // Light or Moderate rain (weatherAlerts.stripRain)
   ["pollen", "pollen", "Pollen", polOn],   // below a leak, a warning, the garage, a door and water on; the chip adds the level
   ["laundry", "washing-machine", "Laundry running", laundryOn],
   ["towel", "radiator", "Towel heating on", towelsOn]
@@ -141,7 +143,6 @@ function drawNotif() {
   if (ks.length > 2) nacc.dataset.more2 = "+" + (ks.length - 2); else if (ks.length > 1) nacc.dataset.more2 = ""; else nacc.removeAttribute("data-more2");
   nacc.classList.toggle("on", !!r.all || !!top);
   $("#hc").title = ks.length ? ks.map(nsn).join(" · ") + (r.all ? " · " : "") + (r.all ? r.all + " notification" + (r.all > 1 ? "s" : "") : "") : r.all ? r.all + " notification" + (r.all > 1 ? "s" : "") : "Notifications";
-  attnCard(r.ai);
   if (!open) { npCamStop(); return; }
   const A = actList(), tot = A.reduce((s, x) => s + x.ids.length, 0);
   // the header and tabs are built once and only updated in place; the list below is only replaced when its HTML really changes, so nothing blinks on a state update
@@ -158,11 +159,12 @@ function drawNotif() {
 let nq = 0;
 function queueNotif() { if (!nq) nq = requestAnimationFrame(() => { nq = 0; drawNotif(); }); }
 $("#hc").onclick = () => { document.body.classList.toggle("np-open"); drawNotif(); };
+$("#nclk").onclick = () => $("#hc").click();   // tablet: the clock at the top of the side menu opens the notifications too
 const npClose = () => { document.body.classList.remove("np-open"); npCamStop(); if (/^#(notifications|attention|active|batteries)/.test(location.hash)) location.hash = "#home"; };
 $("#nbd").onclick = npClose;
 $("#np").onclick = e => {
   if (e.target.closest("[data-close]")) { npClose(); return; }
-  const tb = e.target.closest("[data-npt]"); if (tb) { npTab = tb.dataset.npt; drawNotif(); return; }
+  const tb = e.target.closest("[data-npt]"); if (tb) { const ord = ["alerts", "attention", "active"], was = npTab; npTab = tb.dataset.npt; drawNotif(); if (was !== npTab) txGo($("#npc"), ord.indexOf(npTab) > ord.indexOf(was) ? 1 : -1, true); return; }
   const of = e.target.closest("[data-off]"); if (of) { const ids = actList()[+of.dataset.off].ids; const cl = actList()[+of.dataset.off].c[3] === "close"; if (ids.length) { if (!cl) npDismiss(ids); call(cl ? "cover" : "homeassistant", cl ? "close_cover" : "turn_off", ids); } return; }
   const wa = e.target.closest("[data-wxa]"); if (wa) { npClose(); location.hash = "#weather/" + wa.dataset.wxa; return; }   // the weather card opens that forecast chart
   const bn = e.target.closest("[data-bn]"); if (bn) { binsTap(bn.dataset.bn); return; }

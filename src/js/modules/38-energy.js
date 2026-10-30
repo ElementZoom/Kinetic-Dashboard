@@ -166,7 +166,11 @@ const lzIO = "IntersectionObserver" in window ? new IntersectionObserver(es => e
       try { n.getAnimations({ subtree: true }).forEach(a => { if (a.animationName === "cdIn" || a.animationName === "pgFade") a.currentTime = (a.currentTime || 0) + el; }); } catch (e) { pg.classList.remove("enter"); } }));
   }).observe(pg, { childList: true, subtree: true }));
 })();
-function pgEnter(el) { clearTimeout(el._hold); el.classList.remove("hold", "enter"); void el.offsetWidth; el._enT = performance.now(); el.classList.add("enter"); clearTimeout(el._enX); el._enX = setTimeout(() => el.classList.remove("enter"), 900); }
+function pgDir(el) {   // slide direction: +1 when the new page is further along the menu than the one you left, else -1
+  const id = x => x && x.id === "roomspg" ? "rooms" : x && x.id, ord = $$("nav a").map(a => a.getAttribute("href").slice(1)), a = ord.indexOf(id(lastPg)), b = ord.indexOf(id(el));
+  return a < 0 || b < 0 || b >= a ? 1 : -1;
+}
+function pgEnter(el) { el.style.setProperty("--pgdx", pgDir(el) * 36 + "px"); clearTimeout(el._hold); el.classList.remove("hold", "enter"); void el.offsetWidth; el._enT = performance.now(); el.classList.add("enter"); clearTimeout(el._enX); el._enX = setTimeout(() => el.classList.remove("enter"), 900); }
 function pgHold(el, ms) { el.classList.remove("enter"); el.classList.add("hold"); clearTimeout(el._hold); el._hold = setTimeout(() => pgEnter(el), ms); }   // wait (briefly) for the page's data so it fades in once, complete
 function lazyIn(pg) {
   if (!lzIO || !isMobile() || matchMedia("(prefers-reduced-motion:reduce)").matches) return;
@@ -210,7 +214,7 @@ function route() {
     const ti = { temp: 0, wind: 1, rain: 2, uv: 3, cloud: 3 }[h[1]];
     if (ti != null) fcTab = ti;
     if (h[1] === "pollen") SECP.want = { page: "weather", q: "#wxpol" }; else if (ti != null) SECP.want = { page: "weather", q: ".fcp" };
-    const wk = h[1] === "now" || h[1] === "week"; if (wk) { wcI = h[1] === "week" ? 1 : 0; SECP.want = { page: "weather", q: ".wcols" }; }   // #weather/now = the Now card, #weather/week = the Next 7 days card (both on the Now tab)   // phones: open the tab that holds that card
+    const wk = h[1] === "now" || h[1] === "week"; if (wk) { wcI = h[1] === "week" ? 1 : 0; SECP.want = { page: "weather", q: ".wnow" }; }   // #weather/now = the Now card, #weather/week = the Next 7 days card (both on the Now tab)   // phones: open the tab that holds that card
     drawWeather();
     if (wk) [0, 80, 400].forEach(ms => setTimeout(() => { const wc = $("#wx .wcols"); if (curPg() === "weather" && wc && wc.clientWidth) { wc.scrollLeft = wcI * (wc.clientWidth + 12); $$("#wx .wdots i").forEach((d, k) => d.classList.toggle("on", k === wcI)); } }, ms));
     if (h[1] === "pollen") [60, 1500].forEach(ms => setTimeout(() => { if (curPg() === "weather") { const f = $("#wxpol"); if (f) f.scrollIntoView({ block: "start" }); } }, ms));   // #weather/pollen scrolls to the Pollen card
@@ -251,7 +255,7 @@ function batTick() {
 }
 function tick() {
   const n = new Date(), h = n.getHours();
-  $("#clk").textContent = n.toLocaleTimeString([], tmo({ hour: CLK12() ? "numeric" : "2-digit", minute: "2-digit" }));
+  $("#clk").textContent = $("#nclk").textContent = n.toLocaleTimeString([], tmo({ hour: CLK12() ? "numeric" : "2-digit", minute: "2-digit" }));
   batTick();
   $("#dt").textContent = n.toLocaleDateString([], { weekday: "long", day: "numeric", month: "long" });
   $("#gr").textContent = (h < 12 ? "Morning" : h < 18 ? "Afternoon" : "Evening") + (userName ? ", " + userName : userKnown ? "" : CONFIG.name ? ", " + CONFIG.name : "") + "!";

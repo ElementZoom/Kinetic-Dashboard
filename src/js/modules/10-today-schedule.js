@@ -32,9 +32,9 @@ function schDraw() {
     '<span class="sch-g">' + mdi("chevron-right") + '</span>';
   el.hidden = false; hsFit(); schFit();
 }
-// tablet: the Attention summary and the Today strip share one row under the greeting (#hstrip); alone, either one takes the whole row. A layout.tablet that lists "schedule" keeps Today where config.js puts it.
+// tablet: the Leaving card and the Today strip share one row under the greeting (#hstrip); alone, either one takes the whole row. A layout.tablet that lists "schedule" keeps Today where config.js puts it.
 function hsFit() {
-  const h = $("#hstrip"), s = $("#sch"), a = $("#attn"); if (!h || !s || !a) return;
+  const h = $("#hstrip"), s = $("#sch"), a = $("#lvc"); if (!h || !s || !a) return;
   const own = !isMobile() && ((CONFIG.layout || {}).tablet || []).indexOf("schedule") < 0;
   if (own && s.parentNode !== h) h.appendChild(s); else if (!own && s.parentNode === h) $(".camcol").appendChild(s);
   const n = [a, s].filter(x => x.parentNode === h && !x.hidden).length;

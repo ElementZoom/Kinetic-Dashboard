@@ -61,7 +61,7 @@ function openWs(tk) {
     else if (m.type === "auth_invalid") authBad();
     else if (m.type === "auth_ok") {
       setStatus(true); hideLogin();
-      send({ type: "get_states" }, list => { list.forEach(setState); palTick(); schLoad(); vGroups(); buildDep(); drawGsum(); if (cards[MAIN]) render(MAIN); if (!identDone) identify(); batTick(); tick(); bootMark("s"); queueNotif(); setTimeout(bootGo, 1400); if (camPage()) startCams(); if (onRooms) { if (curRoom) drawRoom(curRoom.id); else updRooms(); } });
+      send({ type: "get_states" }, list => { list.forEach(setState); palTick(); schLoad(); vGroups(); buildDep(); drawGsum(); if (cards[MAIN]) render(MAIN); if (!identDone) identify(); batTick(); tick(); bootMark("s"); LV.t = null; lvQ(); queueNotif(); setTimeout(bootGo, 1400); if (camPage()) startCams(); if (onRooms) { if (curRoom) drawRoom(curRoom.id); else updRooms(); } });
       send({ type: "subscribe_events", event_type: "state_changed" });
       loadFc(); loadFcH(); evBtn(); if (curPg() === "energy") { en.busy = false; loadEnergy(); }
     } else if (m.type === "result" && pending[m.id]) { try { pending[m.id](m.result, m); } catch (x) {} delete pending[m.id]; }
@@ -95,6 +95,7 @@ function setState(s) {
   if (onView()) applyView(); else if (CONFIG.view.popup && s.state === "on" && (CONFIG.view.driveway.trig.concat(CONFIG.view.garage.trig)).indexOf(id) > -1 && VW) { VW.back = location.hash || "#home"; location.hash = "#view/auto"; }
   const rx = REL[curPg()]; if (rx && rx.test(id)) queuePg();
   if (NREL.test(id) || nskRel(id)) queueNotif();
+  if (lvRel(id)) lvQ();
   if (curRoom && id.indexOf("timer.") === 0) queueRoom();   // a tile's countdown starts or ends
   if (onRooms && !curRoom && CONFIG.roomsByPresence !== false && /^(binary_sensor|input_boolean)\./.test(id) && CONFIG.house.some(r => occOf(r).indexOf(id) > -1)) queueRl();
   if (id.indexOf("media_player.") === 0 && CONFIG.media && CONFIG.media.indexOf(id) > -1) queueNp();

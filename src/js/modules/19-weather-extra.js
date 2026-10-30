@@ -25,7 +25,7 @@ function wxPresLoad() {
 function wxPresTrend(a) {   // "↑ Rising +2.1 / 3 h", "→ Steady", "↓ Falling -3.4 / 3 h"
   if (!wxP.d || wxP.d.h < 1) return ""; const hpa = /inhg/i.test(a.pressure_unit || "") ? 33.8639 : /mmhg/i.test(a.pressure_unit || "") ? 1.3332 : /kpa/i.test(a.pressure_unit || "") ? 10 : 1, d = wxP.d.d * hpa, ph = Math.round(wxP.d.h);
   const k = Math.abs(d) < 1 ? ["→", "Steady"] : d > 0 ? ["↑", d > 3 ? "Rising fast" : "Rising"] : ["↓", d < -3 ? "Falling fast" : "Falling"];
-  return k[0] + " " + k[1] + (Math.abs(d) >= 1 ? '<small class="wtr">' + (d > 0 ? "+" : "") + f1(wxP.d.d) + " " + (a.pressure_unit || "hPa") + " in " + ph + " h</small>" : "");
+  return k[0] + " " + k[1] + (Math.abs(d) >= 1 ? '<small class="wtr"><span style="white-space:nowrap">' + (d > 0 ? "+" : "") + f1(wxP.d.d) + " " + (a.pressure_unit || "hPa") + '</span> <span style="white-space:nowrap">in ' + ph + " h</span></small>" : "");
 }
 // ----- frost risk: lowest temperature in the next 24 hours of the hourly forecast (daily low as a fallback) -----
 function wxFrost(a) {

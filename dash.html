@@ -228,6 +228,27 @@ html.camlive .cam[data-det]::after,html.camlive .snap[data-det]::after{animation
 .sc{position:relative;aspect-ratio:5/3;border-radius:14px;overflow:hidden;cursor:pointer;border:2px solid var(--line);background:transparent}.sc img{width:100%;height:100%;object-fit:cover;display:block}.sc.on{border-color:var(--mint)}
 .sc span{position:absolute;left:8px;bottom:6px;font:600 11px var(--mono);color:#fff;text-shadow:0 1px 3px #000}
 @media(max-width:1100px){.wcols{grid-template-columns:1fr}.scl{grid-template-columns:1fr}.sct{position:static;max-height:none;order:-1}}
+
+/* Header: the alarm is a coloured cap on the left end of the card, glowing softly (same colours as the Security page: grey disarmed, green armed, yellow arming, red and blinking pending / triggered). #al stays as the invisible tap area on that edge and opens Security. */
+header{--alc:rgba(var(--w),.2)}
+header::after{content:"";position:absolute;inset:-1px;border-radius:inherit;pointer-events:none;box-shadow:inset 5px 0 0 0 var(--alc);transition:box-shadow .4s}
+header[data-al=on]{--alc:var(--mint)}header[data-al=wn]{--alc:#ffe599}header[data-al=al]{--alc:var(--heat)}
+header[data-al=on]::after,header[data-al=wn]::after,header[data-al=al]::after{box-shadow:inset 7px 0 0 0 var(--alc),inset 26px 0 24px -14px color-mix(in srgb,var(--alc) 60%,transparent),-8px 0 22px -6px color-mix(in srgb,var(--alc) 55%,transparent);animation:alg 4.5s ease-in-out infinite}
+header[data-al=wn]::after{animation-duration:2.2s}
+@keyframes alg{50%{box-shadow:inset 7px 0 0 0 var(--alc),inset 34px 0 28px -14px color-mix(in srgb,var(--alc) 90%,transparent),-10px 0 28px -4px color-mix(in srgb,var(--alc) 80%,transparent)}}
+header[data-al=al]::after{animation:bl 1s infinite}
+html[data-mode=light] header[data-al=wn]{--alc:#d9a100}html[data-mode=light] header[data-al=al]{--alc:#c42a1f}
+.hr>#hc{position:relative;z-index:2}
+#al,#al.al{position:absolute;left:0;top:0;bottom:0;width:26px;right:auto;height:auto;padding:0;margin:0;border:0;border-radius:0;background:transparent;opacity:0;animation:none;cursor:pointer;z-index:2}
+#al svg,#al .at{display:none!important}
+@media(prefers-reduced-motion:reduce){header[data-al=on]::after,header[data-al=wn]::after,header[data-al=al]::after{animation:none}}
+/* Stop scenes: no state label; red outline always, and it glows while a scene is running so it reads as "stop this" */
+#scenes .sr.stp{--sx:229,72,77;border:1px dashed rgba(var(--sx),.5);background:rgba(var(--sx),.06)}
+#scenes .sr.stp .sbd{color:rgb(var(--sx));background:rgba(var(--sx),.16)}
+#scenes .sr.stp.on{border:1px solid rgba(var(--sx),.9);background:rgba(var(--sx),.14);animation:stpg 2.2s ease-in-out infinite}
+#scenes .sr.stp.on .sbd{color:#fff;background:rgb(var(--sx));box-shadow:0 0 14px rgba(var(--sx),.7)}
+@keyframes stpg{0%,100%{box-shadow:0 0 6px rgba(var(--sx),.25)}50%{box-shadow:0 0 22px rgba(var(--sx),.6)}}
+@media(prefers-reduced-motion:reduce){#scenes .sr.stp.on{animation:none;box-shadow:0 0 16px rgba(var(--sx),.45)}}
 /* palette + playback */
 
 .pk{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;border:1px solid var(--line);border-radius:14px;background:rgba(var(--w),.04);font-size:14px}
@@ -389,6 +410,18 @@ body.m-tabs .main{padding-bottom:72px}
   #evp{width:100%;max-width:none;max-height:88dvh;border-radius:24px 24px 0 0;border-bottom:0;box-shadow:none;opacity:1;will-change:auto;transform:translateY(102%);transition:transform .36s cubic-bezier(.2,.85,.3,1)}
   body.ev-open #evp{transform:none}
 }
+
+/* Calendar: error line above the buttons, and the reveal of a new / moved event */
+.evm2:not(:empty){padding:10px 2px 0;font-size:14px}.evm2.shk{animation:evShk .4s}
+@keyframes evShk{20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+.ce.evnew{background:color-mix(in srgb,var(--c) 30%,transparent);animation:evPop .7s cubic-bezier(.2,.9,.3,1.3) both,evRing 2.6s ease-out .1s}
+.ce.evnew.evkeep{animation:none}.cd.evnewd{background:rgba(var(--w),.08)}
+@keyframes evPop{0%{transform:scale(.55);opacity:0}60%{transform:scale(1.07);opacity:1}100%{transform:none}}
+@keyframes evRing{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--c) 70%,transparent),0 0 0 0 transparent}35%{box-shadow:0 0 0 4px color-mix(in srgb,var(--c) 55%,transparent),0 0 20px 4px color-mix(in srgb,var(--c) 45%,transparent)}100%{box-shadow:0 0 0 0 transparent,0 0 0 0 transparent}}
+#evtoast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,24px);opacity:0;pointer-events:none;z-index:96;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 32px);padding:11px 18px;border-radius:99px;background:var(--bg2);border:1px solid rgba(var(--mint-rgb),.5);color:var(--ink);font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,.35);transition:opacity .25s,transform .4s cubic-bezier(.2,.85,.3,1)}
+#evtoast.on{opacity:1;transform:translate(-50%,0)}#evtoast svg{width:20px;height:20px;fill:var(--mint);flex:none}#evtoast span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(prefers-reduced-motion:reduce){.ce.evnew{animation:none;box-shadow:0 0 0 2px var(--c)}#evtoast{transition:opacity .2s;transform:translate(-50%,0)}.evm2.shk{animation:none}}
+.evqc .qs{flex-direction:column}.evqc .qs button{width:100%;flex:none}.evqc .qc{margin-top:8px;width:100%;flex:none;background:transparent;color:var(--mut)}
 /* light / dark surfaces */
 .cam,nav{--w:255,255,255;--line:rgba(255,255,255,.1)}
 .cam{--ink:#eaf1fb;--ink-rgb:234,241,251;--mut:rgba(234,241,251,.6)}
@@ -869,6 +902,8 @@ html.camlive[data-style=glass]{--gb:blur(10px) saturate(140%)}
 .aud{display:none;position:absolute;left:12px;top:64px;z-index:4;flex-direction:column;gap:10px}.cam.fs .aud,.cam.vf .aud{display:flex}
 .aud button{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:rgba(0,0,0,.55);cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center}.aud svg{width:21px;height:21px;fill:#fff}
 .aud button.on{background:rgba(var(--mint-rgb),.85);border-color:transparent}.aud button.on svg{fill:var(--onmint,#000)}.aud .mic.on{background:#ff3b3b}.aud .mic.on svg{fill:#fff}.aud button{position:relative}.aud button.err{background:rgba(255,160,0,.8)}.aud button.err::after{content:attr(data-e);position:absolute;left:52px;top:50%;transform:translateY(-50%);white-space:nowrap;font:600 12px var(--sans);color:#fff;background:rgba(0,0,0,.75);padding:7px 11px;border-radius:10px}
+.det .sl,.mkt .sl{display:none}.det:not(.on) .sl,.mkt:not(.on) .sl{display:block}#vw.two .aud .det{display:none}
+.mkt{position:absolute;top:8px;right:8px;z-index:7;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:rgba(0,0,0,.55);padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer}.mkt[hidden]{display:none}.mkt svg{width:20px;height:20px;fill:#fff}.mkt.on{background:rgba(var(--mint-rgb),.85);border-color:transparent}.mkt.on svg{fill:var(--onmint,#000)}
 .cam.ls .aud{left:20px;top:72px}.cam.pb .aud{display:none!important}
 /* tablet full-screen camera: fill the whole screen (no bars, no white edge), buttons keep their on-screen positions */
 @media(min-width:761px){
@@ -967,7 +1002,8 @@ html[data-mode=dark][data-style=glass]:not(#x) :is(.card.auto,.rc.auto){backgrou
 @keyframes cpglow{50%{box-shadow:0 0 0 5px rgba(var(--mint-rgb),.10),0 0 22px 4px rgba(var(--mint-rgb),.8)}}@media(prefers-reduced-motion:reduce){#cpp .cpl .tl.on::after{animation:none}}
 @media(min-width:761px){.cpb{width:auto;height:46px;padding:0 18px;border-radius:999px}.cpb .cpt{display:inline;font:600 12px var(--mono);letter-spacing:.1em}.cpb .cpn,.cpb .cpn.z{position:static;display:flex;border-radius:10px}.cpb .cpn.z{display:none}}
 @keyframes tbhint{0%,52%,100%{transform:translateX(0)}8%{transform:translateX(-6px)}16%{transform:translateX(0)}24%{transform:translateX(-6px)}32%{transform:translateX(0)}}
-@media(max-width:760px){header h1{display:flex;align-items:center;gap:4px;font-size:22px}#ttl.bk{cursor:pointer;margin-left:-4px;padding:8px 14px 8px 2px;-webkit-tap-highlight-color:transparent}#ttl.bk:active{opacity:.6}#ttl .tbc{flex:none;color:var(--mint);animation:tbhint 4s ease-in-out infinite}.rh>.eb[href="#rooms"]{display:none}.rh h2{flex:1}}
+@media(max-width:760px){header h1{display:flex;align-items:center;gap:4px;font-size:22px}#ttl:not(.bk){margin-left:-4px;padding:8px 14px 8px 2px}   /* Home has no back arrow, but the title keeps the same box as the other pages so the header is the same height and the chip and clock line up */
+#ttl.bk{cursor:pointer;margin-left:-4px;padding:8px 14px 8px 2px;-webkit-tap-highlight-color:transparent}#ttl.bk:active{opacity:.6}#ttl .tbc{flex:none;color:var(--mint);animation:tbhint 4s ease-in-out infinite}.rh>.eb[href="#rooms"]{display:none}.rh h2{flex:1}}
 @media(min-width:761px){#ttl .tbc{display:none}}
 @media(prefers-reduced-motion:reduce){#ttl .tbc{animation:none}}
 .cps{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}.cps>:first-child{margin-left:auto}.cps::-webkit-scrollbar{display:none}
@@ -1232,8 +1268,8 @@ html[data-style=material] header{border-radius:999px}
 html[data-style=material] nav{background:var(--m1);color:var(--ink);border-radius:28px}
 html[data-style=material] nav a{background:transparent;color:var(--mut);opacity:1;border-radius:999px;font-weight:600}
 html[data-style=material] nav a.on{background:var(--mp);color:var(--ink)}
-html[data-style=material] :where(.tl,.bd,.fcc>div,.vtv>div,.vch,.pk){background:var(--m2);border:0;border-radius:18px}
-html[data-style=material] :where(.chip,.eb,.vch){background:transparent;border:1px solid rgba(var(--w),.28);border-radius:999px;color:var(--ink)}
+html[data-style=material] :where(.tl,.bd,.fcc>div,.vtv>div,.vch,.pk,.wdy){background:var(--m2);border:0;border-radius:18px}
+html[data-style=material] :where(.chip,.eb,.vch,.wnp){background:transparent;border:1px solid rgba(var(--w),.28);border-radius:999px;color:var(--ink)}
 html[data-style=material] :where(.rnd){background:var(--m2);border:0;border-radius:18px}
 html[data-style=material] :is(.eb.on,.chip.on,.seg .on){background:var(--mp);color:var(--ink);border-color:transparent}
 html[data-style=material] #btab{border-radius:28px;padding:10px 6px}
@@ -1299,6 +1335,13 @@ html[data-font=manrope]{--sans:"Manrope",Inter,system-ui,sans-serif;--mono:"Manr
 .pre2{display:flex;flex-direction:column;align-items:stretch;gap:10px;padding:10px;border-radius:14px;border:1px solid var(--line);background:rgba(var(--w),.06);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
 .pre2 i{display:block;height:26px;border-radius:8px}.pre2 b{font-weight:500;font-size:15px;padding:0 2px 2px}.pre2:active{background:rgba(var(--w),.14)}.pre2.on{border-color:var(--mint);box-shadow:inset 0 0 0 1px var(--mint)}
 header{position:relative}#hnp{display:none}
+/* tablet: no player bar in the header any more, only a small music note while something plays (it sways, with a soft ring); tap = Media page */
+#hnote{display:none;position:relative;flex:none;width:42px;height:42px;padding:0;border-radius:50%;border:1px solid var(--line);background:rgba(var(--w),.05);color:var(--mint);align-items:center;justify-content:center;cursor:pointer;z-index:2}
+#hnote.on{display:inline-flex}#hnote svg{width:22px;height:22px;fill:currentColor;transform-origin:50% 85%}
+#hnote.pl svg{animation:hnsw 2.4s ease-in-out infinite}#hnote.pl::before{content:"";position:absolute;inset:-1px;border-radius:50%;border:1.5px solid currentColor;opacity:0;pointer-events:none;animation:hnrg 2.4s ease-out infinite}
+@keyframes hnsw{0%,100%{transform:rotate(-9deg) translateY(0)}25%{transform:rotate(0) translateY(-3px)}50%{transform:rotate(9deg) translateY(0)}75%{transform:rotate(0) translateY(-3px)}}
+@keyframes hnrg{0%{transform:scale(1);opacity:.5}100%{transform:scale(1.6);opacity:0}}
+@media(prefers-reduced-motion:reduce){#hnote.pl svg,#hnote.pl::before{animation:none}}
 @media(min-width:761px){
 #hnp:not(.npoff){display:flex;align-items:center;gap:16px;flex:1;min-width:0;max-width:700px;margin:0 20px}
 body.np-hdr header{padding-bottom:14px}
@@ -1854,7 +1897,45 @@ html[data-mode=light] .alert.fr{background:#dff1fd;color:#0b3550;border-left-col
 .sunl{display:flex;justify-content:space-between;align-items:baseline;margin-top:8px;font:600 12px var(--mono);color:var(--mut)}.sunl .sm{margin:0;text-align:center;flex:1}
 #wxsun .wg{grid-template-columns:repeat(5,minmax(0,1fr))}#wxsun .ws.moon b{display:flex;align-items:center;gap:10px;font-size:15px;line-height:1.2}#wxsun .ws.moon small{display:block;color:var(--mut);font-weight:400;font-size:12px}#wxsun .moon svg{flex:none;color:var(--ink)}
 @media(max-width:760px){#wxsun .wg{grid-template-columns:repeat(2,minmax(0,1fr))}#wxsun .ws.moon{grid-column:1/-1}}
-.ws .wtr{display:block;font:500 11px var(--mono);color:var(--mut);margin-top:3px;letter-spacing:.02em}
+.ws .wtr{display:block;font:500 11px var(--mono);color:var(--mut);margin-top:3px;letter-spacing:.02em;white-space:normal;line-height:1.35;overflow-wrap:anywhere}
+.wnm .ws b:has(.wtr){white-space:normal;line-height:1.25}   /* phones: the pressure trend tile wraps (value on top, "+2.5 hPa in 3 h" below) instead of running out of the tile */
+.wnm .ws:has(.wtr){min-width:0;overflow:hidden}
+
+/* Weather: ONE Now card (big temperature, the four numbers you check, a 7-day strip; the rest behind MORE on phones). On tablets Sun and Moon sits beside it. */
+.wnh{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:8px 0 12px}.wns{color:var(--mut);font-size:13px;margin-top:6px}
+.wnr{display:flex;flex-wrap:wrap;gap:8px}.wnp{display:inline-flex;align-items:center;gap:6px;padding:7px 11px;border-radius:99px;border:1px solid var(--line);background:rgba(var(--w),.04);font-size:13px;white-space:nowrap}.wnp small{font:10px var(--mono);letter-spacing:.1em;color:var(--mut)}.wnp svg{width:16px;height:16px;fill:currentColor;flex:none}
+@media(max-width:760px){.wnr{gap:5px}.wnp{padding:6px 7px;gap:4px;font-size:12.5px}.wnp small{font-size:9.5px;letter-spacing:.06em}}
+.wnp.wnd{color:var(--wc);border-color:color-mix(in srgb,var(--wc) 45%,transparent);background:color-mix(in srgb,var(--wc) 15%,transparent)}
+.wnb{display:flex;margin:8px auto 0;align-items:center;gap:4px;border:0;background:none;color:var(--mut);font:11px var(--mono);letter-spacing:.14em;cursor:pointer;padding:6px 10px}.wnb svg{width:16px;height:16px;fill:currentColor;transition:transform .2s}.wnow.open .wnb svg{transform:rotate(180deg)}
+.wnm{display:none;margin-top:6px;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.wnow.open .wnm{display:grid}.wnm .ws{padding:8px 10px;border-radius:12px}.wnm .ws .lbl{font-size:9.5px;letter-spacing:.08em}.wnm .ws b{font-size:15px;margin:2px 0 0}
+.wn7{margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}.wn7s{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin-top:8px;scroll-snap-type:x proximity}.wn7s::-webkit-scrollbar{display:none}
+.wdy{flex:0 0 58px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0 6px;border-radius:16px;background:rgba(var(--w),.04);scroll-snap-align:start}.wdy.td{border:1px solid color-mix(in srgb,var(--mint) 50%,transparent)}
+.wdy .lbl{font-size:9.5px;letter-spacing:.1em}.wdy .wb{font-size:20px;line-height:1.3}.wdy b{font-size:16px;font-weight:500;color:var(--hc)}.wdy small{font-size:12px;color:var(--mut)}.wdy em{font-style:normal;font-size:10px;color:#6ab7ff;height:12px}
+@media(min-width:761px){
+#wx{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:stretch}
+#wx>*{grid-column:1/-1;margin-top:0;margin-bottom:0}
+#wx>.wnow:has(+#wxsun){grid-column:1}#wx>.wnow+#wxsun{grid-column:2}
+.wnb{display:none}.wnm{display:grid;margin-top:12px}
+.wdy{flex:1 1 0;min-width:0}
+#wx>#wxsun{display:flex;flex-direction:column}#wx>#wxsun .wg{flex:1;grid-auto-rows:1fr;align-content:stretch}#wx>#wxsun .ws{display:flex;flex-direction:column;justify-content:center}
+#wx>#wxsun .wg{grid-template-columns:repeat(2,minmax(0,1fr))}#wx>#wxsun .ws.moon{grid-column:1/-1}
+}
+@media(prefers-reduced-motion:reduce){.wnb svg{transition:none}}
+/* phones, full-screen / viewer camera: every control in the button row (Sound, Talk, Detection boxes, PLAYBACK, Landscape, Close) is the same height (40px, 38px on small phones) and sits on the same line. PLAYBACK starts right after the three round buttons (10px + 3 x 40 + 2 x 6, plus a gap) instead of the centre, and the viewer's row has a tighter gap so Close stays on the row. */
+@media(max-width:760px){
+html:not(#x) .cam.fs:not(.ls) :is(.px,.fsb,.cx,.aud button),html:not(#x) #vw .cam.vf:not(.ls) .vh>:is(.px,.fsb,.cx),html:not(#x) #vw .cam.vf:not(.ls) .vh>.aud button{height:40px;min-height:0;box-sizing:border-box}
+html:not(#x) .cam.fs:not(.ls) :is(.fsb,.cx,.aud button),html:not(#x) #vw .cam.vf:not(.ls) .vh>:is(.fsb,.cx),html:not(#x) #vw .cam.vf:not(.ls) .vh>.aud button{width:40px}
+html:not(#x) .cam.fs:not(.ls) .px,html:not(#x) #vw .cam.vf:not(.ls) .vh>.px{padding-top:0;padding-bottom:0;display:inline-flex;align-items:center;justify-content:center}
+.cam.fs:not(.ls) .px{left:106px;right:auto;transform:none}.cam.fs:not(.ls):has(.aud .det) .px{left:152px}   /* after the round buttons: 2 of them (no detection button), or 3 */
+html:not(#x) #vw .cam.vf:not(.ls) .vh{gap:6px}
+}
+@media(max-width:380px){
+html:not(#x) .cam.fs:not(.ls) :is(.px,.fsb,.cx,.aud button),html:not(#x) #vw .cam.vf:not(.ls) .vh>:is(.px,.fsb,.cx),html:not(#x) #vw .cam.vf:not(.ls) .vh>.aud button{height:38px}
+html:not(#x) .cam.fs:not(.ls) :is(.fsb,.cx,.aud button),html:not(#x) #vw .cam.vf:not(.ls) .vh>:is(.fsb,.cx),html:not(#x) #vw .cam.vf:not(.ls) .vh>.aud button{width:38px}
+.cam.fs:not(.ls) .aud,.cam.vf:not(.ls) .aud{gap:4px}.cam.fs:not(.ls) .px{left:100px}.cam.fs:not(.ls):has(.aud .det) .px{left:140px}html:not(#x) #vw .cam.vf:not(.ls) .vh{gap:4px}
+}
+/* Wind tile: tinted by the same tiers as the Alerts card (moderate / strong / severe) */
+.ws.wnd{border-color:color-mix(in srgb,var(--wc) 45%,transparent);background:color-mix(in srgb,var(--wc) 13%,transparent)}.ws.wnd b{color:var(--wc)}.ws.wnd .lbl{color:color-mix(in srgb,var(--wc) 70%,var(--mut))}
 
 /* Weather on phones: the Sun and Moon and Pollen cards are at least 430px tall (the content spreads out instead of leaving a short card on an empty page); sunrise and sunset sit on one line, the daylight text on its own line below */
 @media(max-width:760px){
@@ -1863,13 +1944,22 @@ html[data-mode=light] .alert.fr{background:#dff1fd;color:#0b3550;border-left-col
 .sunl{flex-wrap:wrap;row-gap:8px}.sunl .sm{order:3;flex:0 0 100%;font-size:13px}
 }
 /* tablet: the greeting strip sits in the header while no music plays (41-start.js moves it) */
-header.hmerge>.hs{flex:1 1 0;min-width:0;margin:0 0 0 6px;padding:0 14px;min-height:0;border:0;background:none;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;flex-wrap:nowrap;white-space:nowrap;gap:6px 18px;align-self:stretch;border-radius:14px}
+header.hmerge>.hs{flex:1 1 0;min-width:0;margin:0 0 0 6px;padding:0 14px;min-height:0;display:grid;grid-auto-flow:column;grid-auto-columns:max-content;justify-content:start;align-items:baseline;align-content:center;border:0;background:none;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;flex-wrap:nowrap;white-space:nowrap;gap:6px 18px;align-self:stretch;border-radius:14px}
 header.hmerge>.hs::before{display:none}header.hmerge>.hs::after{display:none}
 header.hs1 #whl,header.hs2 #whl,header.hs2 #wwind,header.hs3 #whl,header.hs3 #wwind,header.hs3 #dt{display:none}
-header.hmerge>.hs #wfx{display:none}
+/* the weather animation stays on in the merged header: the canvas spreads over the whole header card, behind the text */
+header.hmerge{isolation:isolate}header.hmerge>.hs{position:static}
+header.hmerge>.hs #wfx{position:absolute;inset:0;width:100%;height:100%;border-radius:19px;z-index:-1;-webkit-mask-image:linear-gradient(90deg,#000 var(--wm,80%),rgba(0,0,0,.25) calc(var(--wm,80%) + 14%)),linear-gradient(180deg,#000 calc(100% - 16px),transparent);mask-image:linear-gradient(90deg,#000 var(--wm,80%),rgba(0,0,0,.25) calc(var(--wm,80%) + 14%)),linear-gradient(180deg,#000 calc(100% - 16px),transparent);-webkit-mask-composite:source-in;mask-composite:intersect;clip-path:inset(0 round 19px)}   /* fades toward the chips and the clock so the sun never sits behind the time; fades out above the bottom edge so cut-off rain streaks and clouds never draw a line there (the alarm outline lives on that edge) */
+html[data-style=material] header.hmerge #wfx{border-radius:999px;clip-path:inset(0 round 999px)}
 header.hmerge #ttl{display:none}header.hmerge>.hs{margin-left:0;padding-left:8px}
 /* tablet: the page name is left to the sidebar; the greeting or the player starts at the left edge of the header */
 @media(min-width:761px){header #ttl{display:none}header #hnp:not(.npoff){margin-left:0}}
+
+/* tablet: the clock takes the place of the outside temperature at the top of the side menu and leaves the header (the phone keeps both as they were) */
+#nclk{display:none}
+@media(min-width:761px){#outs{display:none}nav .t#nclk{display:block;cursor:pointer;font-size:30px;white-space:nowrap}#clk{display:none}}
+/* light mode: the 7-day highs and lows get the same darkening as the hourly forecast tiles (a pale yellow high was unreadable on a cream card) */
+html[data-mode=light] .wdy b{color:color-mix(in srgb,var(--hc) 55%,#1d1d2b)}
 /* Home: today's schedule (tablet strip under the cameras, phone card under the greeting) */
 #sch{cursor:pointer;position:relative;box-sizing:border-box;padding:0 40px 0 14px;min-height:46px;display:flex;align-items:center;border-radius:18px;border:1px solid rgba(var(--mint-rgb),.5);background:rgba(var(--mint-rgb),.09)}
 #sch[hidden]{display:none!important}
@@ -1968,16 +2058,16 @@ html[data-mode=light] .bn-btn{color:#0b6b45;border-color:#1f9d6a;background:rgba
 html[data-mode=light] .nrow.at-r{--bc:#2d6aa3}html[data-mode=light] .nrow.warn.at-r{--bc:#b86a00}html[data-mode=light] .nrow.bad.at-r{--bc:#c42a1f}
 .at-r .at-i{flex:none;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:color-mix(in srgb,var(--bc) 20%,transparent)}.at-r .at-i svg{width:20px;height:20px;fill:var(--bc);display:block}
 .at-r .nbn b{display:block;font-weight:500}.at-r .nbn small{display:block;font-size:13px;color:var(--mut);margin-top:2px}
-.at-r .at-c{flex:none;color:var(--mut)}.at-r .at-c svg,#attn .at-c svg{width:20px;height:20px;fill:currentColor;display:block}
+.at-r .at-c{flex:none;color:var(--mut)}.at-r .at-c svg,#lvc .at-c svg{width:20px;height:20px;fill:currentColor;display:block}
 .at-more{margin:2px 0 10px;padding-left:4px}
 #hstrip{margin-bottom:14px}#hstrip[hidden]{display:none}
 #hstrip[data-n="2"]{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,4fr);gap:14px;align-items:stretch}
-#hstrip>#attn,#hstrip>#sch{margin:0;min-height:46px;box-sizing:border-box}
-#attn{display:flex;align-items:center;gap:14px;padding:10px 18px;cursor:pointer;min-height:0}#attn[hidden]{display:none}
-#attn .at-h{flex:none;display:inline-flex;align-items:center;gap:8px;font:600 14px var(--mono);color:#f2a33a}#attn .at-h svg{width:20px;height:20px;fill:currentColor}
-#attn .at-l{flex:1;min-width:0;overflow:hidden;white-space:nowrap}
-#attn .at-x{display:block;overflow:hidden;text-overflow:ellipsis}
-@media(max-width:760px){#hstrip[data-n="2"]{display:block}#attn{padding:12px 14px}#attn .at-l{white-space:normal}#attn .at-x{white-space:normal}}
+#hstrip>#lvc,#hstrip>#sch{margin:0;min-height:46px;box-sizing:border-box}
+#lvc{display:flex;align-items:center;gap:14px;padding:10px 18px;cursor:pointer;min-height:0}#lvc[hidden]{display:none}
+#lvc .at-h{flex:none;display:inline-flex;align-items:center;gap:8px;font:600 14px var(--mono);color:#f2a33a}#lvc .at-h svg{width:20px;height:20px;fill:currentColor}
+#lvc .at-l{flex:1;min-width:0;overflow:hidden;white-space:nowrap}
+#lvc .at-x{display:block;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:760px){#hstrip[data-n="2"]{display:block}#lvc{padding:12px 14px}#lvc .at-l{white-space:normal}#lvc .at-x{white-space:normal}}
 /* Weather alerts: the Notifications > Alerts card (wind gauge + rain line) */
 .wxa{border-radius:16px;margin-bottom:14px;overflow:hidden;background:rgba(var(--w),.07);border:1px solid var(--line)}
 .wxa-s{padding:14px 18px;cursor:pointer;position:relative}.wxa-s+.wxa-s{border-top:1px solid var(--line)}
@@ -1991,25 +2081,52 @@ html[data-mode=light] .nrow.at-r{--bc:#2d6aa3}html[data-mode=light] .nrow.warn.a
 html[data-mode=light] .wxa{background:rgba(0,0,0,.04)}html[data-mode=light] .wxa-g{background:rgba(0,0,0,.12)}html[data-mode=light] .wxa-g u{background:rgba(0,0,0,.35)}
 .wt1{--wc:#e6c84f}.wt2{--wc:#f2a33a}.wt3{--wc:#ff6b5e}html[data-mode=light] .wt1{--wc:#a88a00}html[data-mode=light] .wt2{--wc:#b86a00}html[data-mode=light] .wt3{--wc:#c42a1f}
 #nacc[data-k=wind],#nacc .nai[data-k=wind]{--nk:#f2a33a}#nacc[data-k=rain],#nacc .nai[data-k=rain]{--nk:#6bb8ff}
+/* the wind readout in the greeting: coloured by the same Moderate / Strong / Severe limits */
+.wch.wnd{color:var(--wc);font-weight:500;padding:2px 11px;border-radius:99px;border:1px solid color-mix(in srgb,var(--wc) 45%,transparent);background:color-mix(in srgb,var(--wc) 15%,transparent)}
+.wch.wnd.wt3{animation:bl 2s ease-in-out infinite}
+@media(prefers-reduced-motion:reduce){.wch.wnd.wt3{animation:none}}
+/* page transition (Theme > Page transition): variants of the .page.enter entrance, set by html[data-pgfx]. "rise" is the original look. */
+@keyframes pgSlide{from{opacity:0;transform:translateX(var(--pgdx,36px))}}
+html[data-pgfx=slide] .page.enter{animation:pgSlide .36s cubic-bezier(.2,.8,.2,1) backwards}
+html[data-pgfx=slide] .page.enter>*,html[data-pgfx=slide] .page.enter :is(.rooms,.cams,#grid,.zg,.wcols,.hm,.left,.side,#wx,.vgrid,.hzg,.hzside,.scl,.mlay,.thl)>*,
+html[data-pgfx=fade] .page.enter>*,html[data-pgfx=fade] .page.enter :is(.rooms,.cams,#grid,.zg,.wcols,.hm,.left,.side,#wx,.vgrid,.hzg,.hzside,.scl,.mlay,.thl)>*{animation:none}
+html[data-pgfx=fade] .page.enter{animation:pgFade .22s ease}
+html[data-pgfx=off] .page.enter,html[data-pgfx=off] .page.enter>*,html[data-pgfx=off] .page.enter :is(.rooms,.cams,#grid,.zg,.wcols,.hm,.left,.side,#wx,.vgrid,.hzg,.hzside,.scl,.mlay,.thl)>*{animation:none}
+html[data-pgfx=off] #theme.enter .thr,html[data-pgfx=off] #scenes.enter .sct,html[data-pgfx=off] #irrigation.enter .zsx,html[data-pgfx=fade] #theme.enter .thr,html[data-pgfx=fade] #scenes.enter .sct,html[data-pgfx=fade] #irrigation.enter .zsx,html[data-pgfx=slide] #theme.enter .thr,html[data-pgfx=slide] #scenes.enter .sct,html[data-pgfx=slide] #irrigation.enter .zsx{animation:none}
+@media(prefers-reduced-motion:reduce){html[data-pgfx=slide] .page.enter{animation:pgFade .2s ease}}
+/* Leaving: the Home card (#lvc, styled with the strip row in 32-attention.css) and its sheet */
+#lvc .at-x small{font-size:inherit;color:var(--mut)}
+#lvsheet{display:block;position:fixed;inset:0;z-index:85;visibility:hidden;pointer-events:none;transition:visibility 0s .36s}body.lv-open #lvsheet{visibility:visible;pointer-events:auto;transition:none}
+.lvbk{position:absolute;inset:0;background:rgba(0,0,0,.5);opacity:0;transition:opacity .3s ease}body.lv-open .lvbk{opacity:1}
+.lvb{position:absolute;overflow-y:auto;background:linear-gradient(160deg,var(--bg2),var(--bg))!important;transition:transform .36s cubic-bezier(.2,.85,.3,1);display:flex;flex-direction:column;gap:8px}
+html[data-style=material] .lvb{background:var(--bg2)!important}
+.lvh{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}.lvh span{display:inline-flex;align-items:center;gap:8px}.lvh svg{width:18px;height:18px;fill:currentColor}
+.lvx{width:36px;height:36px;flex:none}.lvx svg{width:18px;height:18px;fill:currentColor}
+.lvb .nrow{margin:0}
+.lvb2{display:flex;gap:8px;margin-top:6px}.lvb2 .eb{flex:1;justify-content:center}
+@media(max-width:760px){.lvb{left:0;right:0;bottom:0;max-height:88dvh;border-radius:24px 24px 0 0;padding:16px 16px 26px;transform:translateY(102%)}body.lv-open .lvb{transform:none}}
+@media(min-width:761px){.lvb{top:0;right:0;bottom:0;width:min(400px,92vw);border-radius:24px 0 0 24px;padding:20px;transform:translateX(102%)}body.lv-open .lvb{transform:none}}
+@media(prefers-reduced-motion:reduce){.lvb,.lvbk{transition:none}}
 </style>
 </head>
 <body>
 <div id="bootld" aria-hidden="true"><i></i></div>
 <div id="bd"></div>
 <nav>
-  <div class="t" id="outs">--°C</div>
+  <div class="t" id="outs">--°C</div><div class="t" id="nclk" role="button" aria-label="Notifications">--:--</div>
   <a href="#home" class="on">HOME</a><a href="#rooms">ROOMS</a><a href="#climate">CLIMATE</a><a href="#security">SECURITY</a><a href="#weather">WEATHER</a><a href="#energy">ENERGY</a><a href="#irrigation">IRRIGATION</a><a href="#scenes">SCENES</a><a href="#media">MEDIA</a><a href="#events">EVENTS</a><a href="#vehicle">VEHICLE</a><a href="#hazards">HAZARDS</a><a href="#theme">THEME</a><a href="#admin">ADMIN</a><a href="/config/dashboard" id="navset" class="nset">SETTINGS</a>
 </nav>
 <div id="btab"><a href="#home" data-i2="n-home"><span>Home</span></a><a href="#rooms" data-i2="n-rooms"><span>Rooms</span></a><a href="#scenes" data-i2="n-scenes"><span>Scenes</span></a><a href="#security" data-i2="n-cam"><span>Camera</span></a><button id="bmore" data-i2="n-more"><span>More</span></button></div>
 <div id="npmini" class="npoff"></div><div id="npfab"></div>
+<div id="lvsheet"><div class="lvbk" data-lv="close"></div><div class="pn lvb" id="lvbody"></div></div>
 <div id="npsheet"><div class="npbk" data-np="close"></div><div class="pn npb" id="npbody"></div></div>
 <div id="mshe"><a href="#climate" data-i2="n-climate"><span>Climate</span></a><a href="#weather" data-i2="n-weather"><span>Weather</span></a><a href="#energy" data-i2="n-energy"><span>Energy</span></a><a href="#irrigation" data-i2="n-irr"><span>Irrigation</span></a><a href="#media" data-i2="music-note"><span>Media</span></a><a href="#events" data-i2="n-events"><span>Events</span></a><a href="#vehicle" data-i2="v-car"><span>Vehicle</span></a><a href="#hazards" data-i2="volcano"><span>Hazards</span></a><a href="#theme" data-i2="n-palette"><span>Theme</span></a><a href="#admin" data-i2="n-admin"><span>Admin</span></a><a href="/config/dashboard" id="navset2" data-i2="n-set"><span>Settings</span></a></div>
 <div class="main">
-  <header><button id="hb" aria-label="Menu" data-i="menu"></button><h1 id="ttl">Home</h1><div id="hnp" class="npoff"></div><div class="hr"><button id="al" class="al s-x" data-i="shield-outline"></button><span id="st" class="bad">CONNECTING</span><span id="bat" hidden></span><div id="hc" role="button" aria-label="Notifications"><i id="nacc"></i><span id="clk">--:--</span></div></div></header>
+  <header><button id="hb" aria-label="Menu" data-i="menu"></button><h1 id="ttl">Home</h1><div id="hnp" class="npoff"></div><div class="hr"><button id="al" class="al s-x" data-i="shield-outline"></button><span id="st" class="bad">CONNECTING</span><span id="bat" hidden></span><button id="hnote" aria-label="Open Media"><svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg></button><div id="hc" role="button" aria-label="Notifications"><i id="nacc"></i><span id="clk">--:--</span></div></div></header>
 
   <div id="home" class="page on">
     <div class="pn hs"><canvas id="wfx"></canvas><b id="gr"></b><span id="dt" class="lbl"></span><span id="wchip" class="wch">--</span><span id="wwind" class="wch"></span><span id="whl" class="lbl">--</span></div>
-    <div id="hstrip" hidden><div class="pn" id="attn" hidden></div></div>
+    <div id="hstrip" hidden><div class="pn" id="lvc" hidden></div></div>
     <div class="hm">
       <div class="left"><div class="camcol"><div class="cams" id="cams"></div><div class="pn sch" id="sch" hidden></div></div><div class="rooms" id="rooms"></div></div>
       <div class="side">
@@ -2130,7 +2247,7 @@ function ruApply(o) {   // hides what this person may not use; the engine also s
     css += "#navset,#navset2,#outs,#hnp{display:none!important}#hc{pointer-events:none}#nacc{display:none!important}";   // no Settings link, no notification pop-up (it holds the "all off" switches and admin toggles)
     if (!PAGE_ON("security") || !ruSec("alarm")) css += "#al{display:none!important}";
     if (!["climate", "weather", "energy", "irrigation", "media", "events", "vehicle", "hazards", "theme"].some(PAGE_ON)) css += "#bmore{display:none!important}";
-    if (off.indexOf("media") > -1) css += "#npmini,#npfab,#npsheet{display:none!important}";
+    if (off.indexOf("media") > -1) css += "#npmini,#npfab,#npsheet,#hnote{display:none!important}";
     if (left <= 1 || RU.header === false) css += "#hb{display:none!important}";
     if (!ruSec("alarm")) css += "#alp{display:none!important}";
     if (!ruSec("playback")) css += ".px,.pbk{display:none!important}";
@@ -2201,6 +2318,11 @@ let STYLE = "default"; try { STYLE = localStorage.getItem("dashStyle") || "defau
 const STYLES = [["default", "Kinetic", "The original look: tinted depth, fine outlines"], ["glass", "Liquid Glass", "Apple style: glass navigation over clear cards"], ["material", "Material", "Google style: tonal surfaces from your colour, pill buttons"], ["minimal", "Minimal", "Flat, thin lines, no effects"]];
 const applyStyle = () => document.documentElement.setAttribute("data-style", STYLES.some(x => x[0] === STYLE) ? STYLE : "default");
 applyStyle();
+// page transition: how a page appears when you move between tabs (Theme page; per device, config pageTransition sets the default)
+const PGFXS = [["rise", "RISE", "Fade, then the cards rise in (default)"], ["slide", "SLIDE", "Pages slide in the direction you moved"], ["fade", "FADE", "A plain, quick fade"], ["off", "OFF", "No animation between pages"]];
+let PGFX = "rise"; try { PGFX = localStorage.getItem("dashPgFx") || CONFIG.pageTransition || "rise"; } catch (_) {}
+const applyPgFx = () => document.documentElement.setAttribute("data-pgfx", PGFXS.some(x => x[0] === PGFX) ? PGFX : "rise");
+applyPgFx();
 let FONT = "jakarta"; try { FONT = localStorage.getItem("dashFont") || "jakarta"; } catch (_) {}
 const FONTS = [["jakarta", "Plus Jakarta Sans", "Modern, friendly", '"Plus Jakarta Sans",Inter,system-ui,sans-serif'], ["google", "Google (Roboto Flex)", "Clean, Android feel", '"Roboto Flex",Roboto,system-ui,sans-serif'], ["googlemono", "Google + mono labels", "Roboto Flex with Roboto Mono labels", '"Roboto Flex",Roboto,system-ui,sans-serif'], ["outfit", "Outfit", "Geometric, rounded", '"Outfit",Inter,system-ui,sans-serif'], ["manrope", "Manrope", "Soft and neutral", '"Manrope",Inter,system-ui,sans-serif'], ["default", "Classic", "Your previous look", 'Inter,"Segoe UI",Roboto,system-ui,sans-serif']];
 const applyFont = () => document.documentElement.setAttribute("data-font", FONTS.some(x => x[0] === FONT) ? FONT : "jakarta");
@@ -2474,7 +2596,7 @@ function openWs(tk) {
     else if (m.type === "auth_invalid") authBad();
     else if (m.type === "auth_ok") {
       setStatus(true); hideLogin();
-      send({ type: "get_states" }, list => { list.forEach(setState); palTick(); schLoad(); vGroups(); buildDep(); drawGsum(); if (cards[MAIN]) render(MAIN); if (!identDone) identify(); batTick(); tick(); bootMark("s"); queueNotif(); setTimeout(bootGo, 1400); if (camPage()) startCams(); if (onRooms) { if (curRoom) drawRoom(curRoom.id); else updRooms(); } });
+      send({ type: "get_states" }, list => { list.forEach(setState); palTick(); schLoad(); vGroups(); buildDep(); drawGsum(); if (cards[MAIN]) render(MAIN); if (!identDone) identify(); batTick(); tick(); bootMark("s"); LV.t = null; lvQ(); queueNotif(); setTimeout(bootGo, 1400); if (camPage()) startCams(); if (onRooms) { if (curRoom) drawRoom(curRoom.id); else updRooms(); } });
       send({ type: "subscribe_events", event_type: "state_changed" });
       loadFc(); loadFcH(); evBtn(); if (curPg() === "energy") { en.busy = false; loadEnergy(); }
     } else if (m.type === "result" && pending[m.id]) { try { pending[m.id](m.result, m); } catch (x) {} delete pending[m.id]; }
@@ -2508,6 +2630,7 @@ function setState(s) {
   if (onView()) applyView(); else if (CONFIG.view.popup && s.state === "on" && (CONFIG.view.driveway.trig.concat(CONFIG.view.garage.trig)).indexOf(id) > -1 && VW) { VW.back = location.hash || "#home"; location.hash = "#view/auto"; }
   const rx = REL[curPg()]; if (rx && rx.test(id)) queuePg();
   if (NREL.test(id) || nskRel(id)) queueNotif();
+  if (lvRel(id)) lvQ();
   if (curRoom && id.indexOf("timer.") === 0) queueRoom();   // a tile's countdown starts or ends
   if (onRooms && !curRoom && CONFIG.roomsByPresence !== false && /^(binary_sensor|input_boolean)\./.test(id) && CONFIG.house.some(r => occOf(r).indexOf(id) > -1)) queueRl();
   if (id.indexOf("media_player.") === 0 && CONFIG.media && CONFIG.media.indexOf(id) > -1) queueNp();
@@ -2586,6 +2709,7 @@ function home() {
   const ic = "", unit = a.temperature_unit || "°C", wsp = null;   // icon and wind come straight from the weather entity
   $("#wchip").innerHTML = w ? (raining ? mdi("weather-pouring") : MDI[ic] ? mdi(ic) : wic(w.state)) + " " + f1(ot != null ? ot : a.temperature) + " " + unit + ", " + (dry ? "Dry" : cd[1]) : "--";
   $("#wwind").innerHTML = w ? mdi("weather-windy") + " " + (wsp != null ? wsp : a.wind_speed != null ? Math.round(a.wind_speed) : "--") + " " + (a.wind_speed_unit || "km/h") : "";
+  { const wt = typeof wxaLive === "function" ? wxaLive() : 0, el = $("#wwind"); el.className = "wch" + (wt ? " wnd wt" + wt : ""); el.title = wt ? WXA_W[wt] + " wind" : ""; }   // Moderate / Strong / Severe wind: coloured like the Alerts card
   wfxSet(w ? w.state : "", raining, parseFloat(wsp != null ? wsp : a.wind_speed) || 0);
   if (fc[0]) $("#whl").textContent = "High " + Math.round(fc[0].temperature) + "° / Low " + Math.round(fc[0].templow != null ? fc[0].templow : fc[0].temperature) + "°";
   if (!CONFIG.outside && w) $("#outs").textContent = f1(a.temperature) + "°C";
@@ -2650,7 +2774,7 @@ function loadEvents() {
       let d = new Date(s.getFullYear(), s.getMonth(), s.getDate());
       for (let n = 0; n < 42 && d <= last; n++, d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1))
         (map[dk(d)] = map[dk(d)] || []).push({ t: s, ad: ad, s: v.summary, c: evColOf(c, v) || CALCOL[i % CALCOL.length], i: EVS.push({ v: v, cal: c, ci: i }) - 1 });
-    } catch (x) { evErr.push(calName(c) + ": skipped \"" + (v && v.summary || "?") + "\" (" + x.message + ")"); } })).catch(x => { evErr.push(calName(c) + ": " + x.message); }))).then(() => { if (tok === evTok) { evLast = { k: mk, gs: gs, map: map }; drawEvents(gs, map, true); const el = $("#eerr"); if (el) el.textContent = evErr.length ? evErr.join(" · ") + "  |  Calendars HA has: " + Object.keys(states).filter(k => k.indexOf("calendar.") === 0).join(", ") : ""; } });
+    } catch (x) { evErr.push(calName(c) + ": skipped \"" + (v && v.summary || "?") + "\" (" + x.message + ")"); } })).catch(x => { evErr.push(calName(c) + ": " + x.message); }))).then(() => { if (tok === evTok) { evLast = { k: mk, gs: gs, map: map }; drawEvents(gs, map, true); evReveal(); const el = $("#eerr"); if (el) el.textContent = evErr.length ? evErr.join(" · ") + "  |  Calendars HA has: " + Object.keys(states).filter(k => k.indexOf("calendar.") === 0).join(", ") : ""; } });
 }
 let evTy = null;
 function evTitle(y, m) {   // the month name, or its short form when the long one does not fit between the arrows (September on a narrow phone)
@@ -2706,6 +2830,15 @@ function txGo(el, dir, stag) {
   el.classList.add(stag ? "txc" : "tx");
   clearTimeout(el._tx); el._tx = setTimeout(() => el.classList.remove("tx", "txc"), 1100);
 }
+// the same slide for cards that are shown one at a time (the phone's section pills: no wrapper to animate, the cards themselves slide in)
+function txEls(els, dir) {
+  if (!els || (window.matchMedia && matchMedia("(prefers-reduced-motion:reduce)").matches)) return;
+  els.forEach((el, i) => {
+    el.classList.remove("tx"); void el.offsetWidth;
+    el.style.setProperty("--tx", (dir || 0) * 28 + "px"); el.style.setProperty("--ty", dir ? "6px" : "14px"); el.style.animationDelay = i * 32 + "ms";
+    el.classList.add("tx"); clearTimeout(el._tx); el._tx = setTimeout(() => { el.classList.remove("tx"); el.style.animationDelay = ""; }, 1100);
+  });
+}
 let evS = null;
 function evBtn() { const b = $("#eadd"); if (b) b.style.display = evWritable().length ? "" : "none"; }
 function evOpen(o) {   // o: {ev} to edit, or {date} to add
@@ -2718,7 +2851,7 @@ function evOpen(o) {   // o: {ev} to edit, or {date} to add
     const r = v.rrule || ""; if (r) { const f = (/FREQ=(\w+)/.exec(r) || [])[1]; st.rep = f ? f.toLowerCase() : ""; const iv = +(/INTERVAL=(\d+)/.exec(r) || [])[1] || 1; if (iv > 1 && st.rep) { st.unit = st.rep; st.n = iv; st.rep = "custom"; } const b = (/BYDAY=([A-Z,]+)/.exec(r) || [])[1]; if (b) st.days = b.split(","); const u = (/UNTIL=(\d{4})(\d{2})(\d{2})/.exec(r)); if (u) st.until = u[1] + "-" + u[2] + "-" + u[3]; }
     st.recur = !!(v.rrule || v.recurrence_id); st.noUid = !v.uid; st.src = e; if (st.recur && !evCanUpdate(st.cal)) st.scope = "following";
   } else { st.ed = st.sd; }
-  st.sig0 = evSig(st); evS = st; evDraw(); document.body.classList.add("ev-open");
+  st.sd0 = st.sd; st.st0 = st.st; st.days0 = st.days.slice(); st.sig0 = evSig(st); evS = st; evDraw(); document.body.classList.add("ev-open");
 }
 function evClose() { $("#evq").classList.remove("on"); document.body.classList.remove("ev-open"); evS = null; }
 function evFreq(s) { return s.rep === "custom" ? s.unit : s.rep; }
@@ -2739,8 +2872,7 @@ function evDraw() {
     (s.rep ? f("Repeat until (optional)", '<input type="date" id="evun" value="' + s.until + '">') : "") +
     f("Location", '<input type="text" id="evlc" value="' + esc(s.loc) + '" autocomplete="off">') + f("Notes", '<textarea id="evnt">' + esc(s.note) + '</textarea>') +
     (s.edit && s.recur ? '<div><span class="lbl">Apply changes to</span><div class="evc" style="margin-top:6px">' + [["this", "This event"], ["following", "This and following"], ["all", "All events"]].filter(x => x[0] !== "all" || evCanUpdate(s.cal)).map(x => '<button data-sc="' + x[0] + '" class="' + (s.scope === x[0] ? "on" : "") + '">' + x[1] + '</button>').join("") + '</div></div>' : "") +
-    '<div class="evm2" id="evmsg">' + (ro ? "This event can't be edited (no ID from the calendar)." : esc(s.msg)) + '</div>' +
-    '</div></div><div class="evact">' + (s.edit ? '<button class="evdel" data-x="del"' + (ro ? " disabled" : "") + '>Delete</button><button class="evdup" data-x="dup">Duplicate</button>' : "") + '<button class="sv" data-x="save"' + (ro || !cs.length ? " disabled" : "") + '>' + (s.edit ? "Save" : "Add event") + '</button></div>';
+    '</div></div><div class="evm2" id="evmsg">' + (ro ? "This event can't be edited (no ID from the calendar)." : esc(s.msg)) + '</div><div class="evact">' + (s.edit ? '<button class="evdel" data-x="del"' + (ro ? " disabled" : "") + '>Delete</button><button class="evdup" data-x="dup">Duplicate</button>' : "") + '<button class="sv" data-x="save"' + (ro || !cs.length ? " disabled" : "") + '>' + (s.edit ? "Save" : "Add event") + '</button></div>';
 }
 function evRead() {   // keep what was typed when the sheet redraws
   const s = evS; if (!s) return; const g = id => { const x = $("#" + id); return x ? x.value : null; };
@@ -2752,19 +2884,22 @@ function evSave() {
     const s = evS, t = s.title.trim(), tk = evKey(s.cal, t), old = evUk(s.cal, (s.src || {}).v);
     if (again) { if (old) delete EVCOL[old]; EVPEND = s.col && ev ? { cal: s.cal, t: t.toLowerCase(), start: ev.dtstart, col: s.col } : null; }
     else if (old) { if (s.col) EVCOL[old] = s.col; else if (EVCOL[tk]) EVCOL[old] = "-"; else delete EVCOL[old]; }
-    evColSave(); }; const s = evS, m = t => { s.msg = t; $("#evmsg").textContent = t; };
+    evColSave(); }; const s = evS, m = t => { s.msg = t; const x = $("#evmsg"); x.textContent = t; x.classList.remove("shk"); void x.offsetWidth; x.classList.add("shk"); };
   if (s.edit && s.sig0 === evSig(s)) { fin(null, false); evClose(); loadEvents(); return; }   // only the colour changed: the colour lives on this device (and in your Home Assistant user data), so the calendar is not touched
   if (!s.title.trim()) return m("Add a title first.");
+  if (s.edit && s.recur && !s.scoped && !s.asked && (s.sd !== s.sd0 || (!s.ad && s.st !== s.st0))) return evAskScope();   // moved a repeating event: just this one, or the series too?
   if (!s.sd || !s.ed) return m("Pick the dates.");
   const ev = { summary: s.title.trim() };
   if (s.ad) { ev.dtstart = s.sd; ev.dtend = addDays(s.ed < s.sd ? s.sd : s.ed, 1); }
   else { ev.dtstart = dtIso(s.sd, s.st); ev.dtend = dtIso(s.ed, s.et); if (new Date(ev.dtend) <= new Date(ev.dtstart)) return m("The end has to be after the start."); }
   ev.location = s.loc.trim(); ev.description = s.note.trim();
   if (s.rep) {
-    const fq = evFreq(s); let r = "FREQ=" + fq.toUpperCase(); if (s.rep === "custom" && s.n > 1) r += ";INTERVAL=" + s.n; if (fq === "weekly" && s.days.length) r += ";BYDAY=" + s.days.join(",");
+    const fq = evFreq(s); let r = "FREQ=" + fq.toUpperCase(); if (s.rep === "custom" && s.n > 1) r += ";INTERVAL=" + s.n; if (fq === "weekly" && s.days.length) r += ";BYDAY=" + evDays(s).join(",");
     if (s.until) r += ";UNTIL=" + (s.ad ? s.until.replace(/-/g, "") : new Date(s.until + "T23:59:59").toISOString().replace(/[-:]/g, "").replace(/\.\d+/, ""));
     ev.rrule = r;
-  } else if (s.edit) ev.rrule = "";
+  }
+  if (s.edit && s.recur && s.scope === "this") delete ev.rrule;   // one occurrence on its own: no repeat rule
+  // no rrule key = does not repeat (Home Assistant refuses an empty one, and an update replaces the whole event, so a series turned into a single event loses its rule this way)
   const b = $("#evp .sv"), reset = () => { b.disabled = false; b.textContent = s.edit ? "Save" : "Add event"; };
   if (s.edit && !evCanUpdate(s.cal)) {   // this calendar (e.g. Google) can't update in place: add the new version, then remove the old one
     if (s.recur && s.scope === "all") s.scope = "following";
@@ -2775,14 +2910,45 @@ function evSave() {
       if (m2 && m2.success === false) { reset(); return m((m2.error && m2.error.message) || "Couldn't save."); }
       send(Object.assign({ type: "calendar/event/delete", entity_id: s.cal }, evTarget()), (r2, m3) => {
         if (m3 && m3.success === false) { evClose(); loadEvents(); alert("The updated event was added, but the old one couldn't be removed. Please delete the old copy."); return; }
-        fin(ev, true); evClose(); loadEvents(); setTimeout(loadEvents, 3000);
+        fin(ev, true); evFocus(ev, s); evClose(); loadEvents(); setTimeout(loadEvents, 3000);
       });
     });
   }
   const msg = { type: "calendar/event/" + (s.edit ? "update" : "create"), entity_id: s.cal, event: ev };
   if (s.edit) Object.assign(msg, evTarget());
   b.disabled = true; b.textContent = "Saving…";
-  send(msg, (r, m2) => { if (m2 && m2.success === false) { b.disabled = false; b.textContent = s.edit ? "Save" : "Add event"; return m((m2.error && m2.error.message) || "Couldn't save."); } fin(ev, !s.edit); evClose(); loadEvents(); setTimeout(loadEvents, 3000); });
+  send(msg, (r, m2) => { if (m2 && m2.success === false) { b.disabled = false; b.textContent = s.edit ? "Save" : "Add event"; return m((m2.error && m2.error.message) || "Couldn't save."); } fin(ev, !s.edit); evFocus(ev, s); evClose(); loadEvents(); setTimeout(loadEvents, 3000); });
+}
+// after adding (or moving) an event: go to its month, scroll to it, pop it in with a glow and say so, instead of dropping back to the old view
+let EVNEW = null, evTt = 0;
+function evFocus(ev, s) {
+  const moved = s.edit && (s.sd !== s.sd0 || (!s.ad && s.st !== s.st0)); if (s.edit && !moved) return;
+  const d = ev.dtstart.slice(0, 10).split("-"); EVNEW = { cal: s.cal, t: s.title.trim().toLowerCase(), day: ev.dtstart.slice(0, 10), tm: s.ad ? "" : s.st, verb: s.edit ? "Moved" : "Added", until: Date.now() + 12000 };
+  cy = +d[0]; cm = +d[1] - 1; evJump = false;
+}
+function evReveal() {   // called after every draw of the month: the highlight survives a redraw until its time is up
+  const n = EVNEW; if (!n || evSq.on) return; if (Date.now() > n.until) { EVNEW = null; return; }
+  const i = EVS.findIndex(x => x.cal === n.cal && (x.v.summary || "").trim().toLowerCase() === n.t && ymd(pd(x.v.start)) === n.day && (!n.tm || hm(pd(x.v.start)) === n.tm)), el = i < 0 ? null : $('#cg [data-ev="' + i + '"]');
+  if (!el) return;
+  const cd = el.closest(".cd"); el.classList.add("evnew"); if (n.shown) el.classList.add("evkeep"); if (cd) cd.classList.add("evnewd");
+  if (n.shown) return; n.shown = true; n.until = Date.now() + 3400;
+  const s0 = pd(EVS[i].v.start), ad = !EVS[i].v.start.dateTime;
+  el.scrollIntoView({ block: "center", behavior: window.matchMedia && matchMedia("(prefers-reduced-motion:reduce)").matches ? "auto" : "smooth" });
+  let tt = $("#evtoast"); if (!tt) { tt = document.createElement("div"); tt.id = "evtoast"; document.body.appendChild(tt); }
+  tt.innerHTML = mdi("check-circle") + '<span><b>' + n.verb + '</b> · ' + esc(calName(n.cal)) + ' · ' + s0.toLocaleDateString([], { weekday: "short", day: "numeric", month: "short" }) + (ad ? "" : ", " + s0.toLocaleTimeString([], tmo({ hour: "numeric", minute: "2-digit" })).replace(" ", "").toLowerCase()) + '</span>';
+  void tt.offsetWidth; tt.classList.add("on"); clearTimeout(evTt);
+  evTt = setTimeout(() => { tt.classList.remove("on"); EVNEW = null; $$("#cg .evnew").forEach(x => x.classList.remove("evnew", "evkeep")); $$("#cg .evnewd").forEach(x => x.classList.remove("evnewd")); }, 3400);
+}
+// the weekly days follow the start when the whole series (or this and following) is moved to another weekday: Tuesdays moved one day later become Wednesdays, otherwise the first one would fall on the next Tuesday and the moved event would vanish
+function evDays(s) {
+  const dd = s.edit ? Math.round((new Date(s.sd + "T12:00") - new Date(s.sd0 + "T12:00")) / 864e5) : 0;
+  return s.edit && dd && s.scope !== "this" && JSON.stringify(s.days) === JSON.stringify(s.days0) ? s.days.map(d => WD[((WD.indexOf(d) + dd) % 7 + 7) % 7]) : s.days;
+}
+function evAskScope() {
+  const s = evS, can = evCanUpdate(s.cal);
+  $("#evq .evqc").innerHTML = '<h4>Repeating event</h4><p><b>' + esc(s.title.trim() || "Untitled") + '</b><br>You changed the date or time. What should change?</p><div class="qb qs">' +
+    '<button data-qs="this">Only this event</button><button data-qs="following">This and following</button>' + (can ? '<button data-qs="all">All events</button>' : "") + '</div><button class="qc" data-q="no">Cancel</button>';
+  $("#evq").classList.add("on"); const f = $("#evq [data-qs=this]"); if (f) f.focus();
 }
 function evTarget() {
   const s = evS, v = (s.src || {}).v || {}, o = { uid: v.uid };
@@ -2796,16 +2962,21 @@ function evDup() {
 }
 function evDelete() {
   const s = evS, sc = { this: "Only this event will be deleted.", following: "This event and all the ones after it will be deleted.", all: "Every event in this series will be deleted." };
+  if (s.recur && !s.scoped) {   // a repeating event: ask what to delete
+    $("#evq .evqc").innerHTML = '<h4>Delete repeating event</h4><p><b>' + esc(s.title || "Untitled") + '</b><br>What should be deleted?</p><div class="qb qs"><button class="qd" data-qd="this">Only this event</button><button class="qd" data-qd="following">This and following</button><button class="qd" data-qd="all">All events</button></div><button class="qc" data-q="no">Cancel</button>';
+    $("#evq").classList.add("on"); const f = $("#evq [data-q=no]"); if (f) f.focus(); return;
+  }
   $("#evq .evqc").innerHTML = '<h4>Delete this event?</h4><p><b>' + esc(s.title || "Untitled") + '</b><br>' + (s.recur ? sc[s.scope] || sc.all : "This can't be undone.") + '</p><div class="qb"><button data-q="no">Cancel</button><button class="qd" data-q="yes">Delete</button></div>';
   $("#evq").classList.add("on"); const n = $("#evq [data-q=no]"); if (n) n.focus();
 }
 function evDelNo() { $("#evq").classList.remove("on"); }
 function evDelYes() {
-  const s = evS, b = $("#evq [data-q=yes]"); b.disabled = true; b.textContent = "Deleting…";
+  const s = evS, b = $("#evq [data-q=yes]"); if (b) { b.disabled = true; b.textContent = "Deleting…"; }
+  if (s.recur && s.scope !== "all" && !((s.src || {}).v || {}).recurrence_id) { evDelNo(); $("#evmsg").textContent = "This calendar can't delete a single occurrence. Choose All events."; return; }   // without the occurrence id Home Assistant would delete the whole series
   const msg = Object.assign({ type: "calendar/event/delete", entity_id: s.cal }, evTarget());
-  send(msg, (r, m2) => { evDelNo(); if (m2 && m2.success === false) { $("#evmsg").textContent = (m2.error && m2.error.message) || "Couldn't delete."; return; } evClose(); loadEvents(); });
+  send(msg, (r, m2) => { evDelNo(); if (m2 && m2.success === false) { $("#evmsg").textContent = (m2.error && m2.error.message) || "Couldn't delete."; return; } evClose(); loadEvents(); setTimeout(loadEvents, 3000); });
 }
-$("#evq").addEventListener("click", e => { const q = e.target.closest("[data-q]"); if (q) { if (q.dataset.q === "yes") evDelYes(); else evDelNo(); } else if (e.target.id === "evq") evDelNo(); });
+$("#evq").addEventListener("click", e => { const k = e.target.closest("[data-qs]"); if (k && evS) { evS.scope = k.dataset.qs; evS.asked = true; evDelNo(); evSave(); return; } const kd = e.target.closest("[data-qd]"); if (kd && evS) { evS.scope = kd.dataset.qd; evDelYes(); return; } const q = e.target.closest("[data-q]"); if (q) { if (q.dataset.q === "yes") evDelYes(); else evDelNo(); } else if (e.target.id === "evq") evDelNo(); });
 document.addEventListener("keydown", e => { if (e.key === "Escape" && $("#evq").classList.contains("on")) { e.stopPropagation(); evDelNo(); } }, true);
 $("#evp").addEventListener("click", e => {
   const t = e.target; if (!evS) return; evRead();
@@ -2814,10 +2985,10 @@ $("#evp").addEventListener("click", e => {
   else if (ad) { evS.ad = !evS.ad; evDraw(); }
   else if (cl) { evRead(); evS.col = cl.dataset.col; evDraw(); }
   else if (wd) { const i = evS.days.indexOf(wd.dataset.wd); if (i > -1) evS.days.splice(i, 1); else evS.days.push(wd.dataset.wd); evDraw(); }
-  else if (sc) { evS.scope = sc.dataset.sc; evDraw(); }
+  else if (sc) { evS.scope = sc.dataset.sc; evS.scoped = true; evDraw(); }
   else if (x) { const k = x.dataset.x; if (k === "close") evClose(); else if (k === "save") evSave(); else if (k === "del") evDelete(); else if (k === "dup") evDup(); }
 });
-$("#evp").addEventListener("change", e => { if (!evS) return; if (e.target.id === "evrp") { evRead(); evS.rep = e.target.value; if (evFreq(evS) === "weekly" && !evS.days.length) evS.days = [WD[(new Date(evS.sd + "T00:00").getDay() + 6) % 7]]; evDraw(); } else if (e.target.id === "evun2") { evRead(); if (evFreq(evS) === "weekly" && !evS.days.length) evS.days = [WD[(new Date(evS.sd + "T00:00").getDay() + 6) % 7]]; evDraw(); } else if (e.target.id === "evst") { const o = new Date(evS.sd + "T" + evS.st), d = evS.edit ? new Date(evS.ed + "T" + evS.et) - o : 0; evRead(); const n = new Date(new Date(evS.sd + "T" + evS.st).getTime() + (d > 0 ? d : 30 * 60000)); evS.ed = ymd(n); evS.et = hm(n); evDraw(); } else if (e.target.id === "evsd") { evRead(); if (evS.ed < evS.sd) evS.ed = evS.sd; evDraw(); } });
+$("#evp").addEventListener("change", e => { if (!evS) return; if (e.target.id === "evrp") { evRead(); evS.rep = e.target.value; if (evFreq(evS) === "weekly" && !evS.days.length) evS.days = [WD[(new Date(evS.sd + "T00:00").getDay() + 6) % 7]]; evDraw(); } else if (e.target.id === "evun2") { evRead(); if (evFreq(evS) === "weekly" && !evS.days.length) evS.days = [WD[(new Date(evS.sd + "T00:00").getDay() + 6) % 7]]; evDraw(); } else if (e.target.id === "evst") { const o = new Date(evS.sd + "T" + evS.st), d = evS.edit ? new Date(evS.ed + "T" + evS.et) - o : 0; evRead(); const n = new Date(new Date(evS.sd + "T" + evS.st).getTime() + (d > 0 ? d : 30 * 60000)); evS.ed = ymd(n); evS.et = hm(n); evDraw(); } else if (e.target.id === "evsd") { const o = evS.sd; evRead(); const dd = Math.round((new Date(evS.sd + "T12:00") - new Date(o + "T12:00")) / 864e5); if (dd) evS.ed = addDays(evS.ed || o, dd); if (evS.ed < evS.sd) evS.ed = evS.sd; evDraw(); } });
 $("#evb").onclick = evClose; document.addEventListener("keydown", e => { if (e.key === "Escape" && evS) evClose(); });
 $("#eadd").onclick = () => evOpen({});
 setInterval(evBtn, 2500);
@@ -2974,9 +3145,9 @@ function schDraw() {
     '<span class="sch-g">' + mdi("chevron-right") + '</span>';
   el.hidden = false; hsFit(); schFit();
 }
-// tablet: the Attention summary and the Today strip share one row under the greeting (#hstrip); alone, either one takes the whole row. A layout.tablet that lists "schedule" keeps Today where config.js puts it.
+// tablet: the Leaving card and the Today strip share one row under the greeting (#hstrip); alone, either one takes the whole row. A layout.tablet that lists "schedule" keeps Today where config.js puts it.
 function hsFit() {
-  const h = $("#hstrip"), s = $("#sch"), a = $("#attn"); if (!h || !s || !a) return;
+  const h = $("#hstrip"), s = $("#sch"), a = $("#lvc"); if (!h || !s || !a) return;
   const own = !isMobile() && ((CONFIG.layout || {}).tablet || []).indexOf("schedule") < 0;
   if (own && s.parentNode !== h) h.appendChild(s); else if (!own && s.parentNode === h) $(".camcol").appendChild(s);
   const n = [a, s].filter(x => x.parentNode === h && !x.hidden).length;
@@ -3105,17 +3276,19 @@ document.addEventListener("fullscreenchange", fsChange); document.addEventListen
 const AUD = {
   on: '<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3m13.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4M14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6"/></svg>',
   off: '<svg viewBox="0 0 24 24"><path d="M12 4 9.9 6.1 12 8.2M3.3 2 2 3.3 6.7 8H3v6h4l5 5v-6.7l4.2 4.2c-.7.5-1.4.9-2.2 1.1v2.1a9 9 0 0 0 3.5-1.7l2 2 1.3-1.3L3.3 2M19 12a7 7 0 0 0-2-4.9l1.4-1.4A9 9 0 0 1 21 12c0 1.4-.3 2.7-.9 3.9l-1.5-1.5c.3-.7.4-1.5.4-2.4m-3 0a4.5 4.5 0 0 0-1.9-3.7V10l1.9 1.9V12"/></svg>',
-  mic: '<svg viewBox="0 0 24 24"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3m5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.9V21h2v-3.1A7 7 0 0 0 19 11h-2"/></svg>'
+  mic: '<svg viewBox="0 0 24 24"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3m5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.9V21h2v-3.1A7 7 0 0 0 19 11h-2"/></svg>',
+  det: '<svg viewBox="0 0 24 24"><path d="M3 3h6v2H5v4H3V3m12 0h6v6h-2V5h-4V3M3 15h2v4h4v2H3v-6m16 0h2v6h-6v-2h4v-4"/><circle cx="12" cy="9.6" r="2.1"/><path d="M8.4 16.2c0-2.1 1.6-3.5 3.6-3.5s3.6 1.4 3.6 3.5z"/><path class="sl" d="M3.5 20.5 20.5 3.5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>'
 };
 function micOff(c) { if (c.mic) { c.mic.getTracks().forEach(t => t.stop()); c.mic = null; } c.talk = false; const b = c.o && $(".mic", c.o.el); if (b) b.classList.remove("on"); }
 function mkCam(c, host) {
   const el = document.createElement("div"); el.className = "cam";
-  el.innerHTML = '<div class="lbl">' + esc(c.name) + '</div><span class="lv">' + mdi("circle") + ' LIVE</span><img alt=""><video muted autoplay playsinline></video><button class="fsb" aria-label="Landscape"><svg viewBox="0 0 24 24"><path d="M5 5h5v2H7v3H5V5m9 0h5v5h-2V7h-3V5M5 14h2v3h3v2H5v-5m12 0h2v5h-5v-2h3v-3"/></svg></button><button class="cx" aria-label="Close">' + mdi("close") + '</button><button class="px">' + mdi("play") + ' PLAYBACK</button><span class="dl"></span><div class="aud"><button class="snd" aria-label="Sound">' + AUD.off + '</button><button class="mic" aria-label="Talk">' + AUD.mic + '</button></div><div class="cpanel"></div><div class="pbk"></div><div class="gal" role="status" aria-live="polite"></div>';
+  el.innerHTML = '<div class="lbl">' + esc(c.name) + '</div><span class="lv">' + mdi("circle") + ' LIVE</span><img alt=""><video muted autoplay playsinline></video><button class="fsb" aria-label="Landscape"><svg viewBox="0 0 24 24"><path d="M5 5h5v2H7v3H5V5m9 0h5v5h-2V7h-3V5M5 14h2v3h3v2H5v-5m12 0h2v5h-5v-2h3v-3"/></svg></button><button class="cx" aria-label="Close">' + mdi("close") + '</button><button class="px">' + mdi("play") + ' PLAYBACK</button><span class="dl"></span><div class="aud"><button class="snd" aria-label="Sound">' + AUD.off + '</button><button class="mic" aria-label="Talk">' + AUD.mic + '</button>' + (CONFIG.detectLive && CONFIG.detectAI && CONFIG.detectMark !== false ? '<button class="det' + (mkPref("live") ? " on" : "") + '" data-mkt="live" aria-label="Detection boxes">' + AUD.det + '</button>' : '') + '</div><div class="cpanel"></div><div class="pbk"></div><div class="gal" role="status" aria-live="polite"></div>';
   CAMREG.push({ el: el, id: c.id });
   const px = $(".px", el); if (CONFIG.playback[c.id]) px.onclick = e => { e.stopPropagation(); openPb(c); }; else px.remove();
   const o = c.o = { el: el, img: $("img", el), vid: $("video", el) }; if (camIO) camIO.observe(el);
   { const m = camMem.get(c.id); if (m) o.img.src = m; }   // last picture this device saw, shown instantly while the stream connects
-  const snd = $(".snd", el), mic = $(".mic", el);
+  const snd = $(".snd", el), mic = $(".mic", el), det = $(".det", el);
+  if (det) det.onclick = e => { e.stopPropagation(); mkSetPref("live", !mkPref("live")); };   // detection boxes on / off for the live pictures (remembered on this device)
   snd.onclick = e => { e.stopPropagation(); c.snd = !c.snd; o.vid.muted = !c.snd; snd.classList.toggle("on", c.snd); snd.innerHTML = c.snd ? AUD.on : AUD.off; if (c.snd) o.vid.play().catch(() => {}); };
   mic.onclick = async e => {
     e.stopPropagation();
@@ -3535,7 +3708,7 @@ function chgH(e) {
   if (d === "light") call("light", "turn_on", id, { brightness_pct: +t.value });
   else if (d === "cover") { const cur = (states[id] && states[id].attributes.current_position) || 0; call("cover", "set_cover_position", id, { position: +t.value }); if (+t.value !== cur) covMark(id, +t.value > cur ? "opening" : "closing"); }
 };
-$("#rl").className = "rooms rooms2"; $("#rv").onclick = tapH; $("#cpp").onclick = e => { const al = e.target.closest("[data-cpall]"); if (al) { $$("#cpp .cpl > *").filter(t => t.style.display !== "none" && /^(input_boolean|switch|light|fan|automation)\./.test(t.dataset.e || "")).forEach(t => { const id = t.dataset.e; if (isOn(id) !== (al.dataset.cpall === "on")) call(id.split(".")[0], "turn_" + al.dataset.cpall, id); }); return; } if (e.target.id === "cpp" || e.target.closest("[data-cpc]")) { $("#cpp").classList.remove("on"); return; } const ct = e.target.closest("[data-cpt]"); if (ct) { const L = $("#cpp .cpl"); CPT[L.dataset.rid] = +ct.dataset.cpt; cpShow(L.dataset.rid); return; } tapH(e); }; $("#rv").onchange = chgH;
+$("#rl").className = "rooms rooms2"; $("#rv").onclick = tapH; $("#cpp").onclick = e => { const al = e.target.closest("[data-cpall]"); if (al) { $$("#cpp .cpl > *").filter(t => t.style.display !== "none" && /^(input_boolean|switch|light|fan|automation)\./.test(t.dataset.e || "")).forEach(t => { const id = t.dataset.e; if (isOn(id) !== (al.dataset.cpall === "on")) call(id.split(".")[0], "turn_" + al.dataset.cpall, id); }); return; } if (e.target.id === "cpp" || e.target.closest("[data-cpc]")) { $("#cpp").classList.remove("on"); return; } const ct = e.target.closest("[data-cpt]"); if (ct) { const L = $("#cpp .cpl"), was = CPT[L.dataset.rid]; CPT[L.dataset.rid] = +ct.dataset.cpt; cpShow(L.dataset.rid); if (was !== CPT[L.dataset.rid]) txGo(L, CPT[L.dataset.rid] > was ? 1 : -1, true); return; } tapH(e); }; $("#rv").onchange = chgH;
 
 // ---------- alarm (Alarmo) ----------
 const ALS = { disarmed: ["DISARMED", ""], armed_away: ["ARMED AWAY", "on"], armed_home: ["ARMED HOME", "on"], armed_night: ["ARMED NIGHT", "on"], arming: ["ARMING", "wn"], disarming: ["DISARMING", "wn"], pending: ["PENDING", "al"], triggered: ["TRIGGERED", "al"] };
@@ -3584,7 +3757,7 @@ const title = v => String(v || "").replace(/_/g, " ").replace(/\b\w/g, c => c.to
 function drawAlarm() {
   const s = states[CONFIG.alarm]; if (!s) return;
   const m = ALS[s.state] || [String(s.state).toUpperCase(), ""], f = s.attributes.supported_features || 0, c = "s-" + (m[1] || "x");
-  $("#al").innerHTML = mdi(ALI[s.state] || "shield-outline") + '<span class="at"> ' + m[0] + '</span>'; $("#al").className = "al " + c; $("#al").title = m[0];
+  $("#al").innerHTML = mdi(ALI[s.state] || "shield-outline") + '<span class="at"> ' + m[0] + '</span>'; $("#al").className = "al " + c; $("#al").title = m[0]; $("#al").setAttribute("aria-label", "Alarm: " + m[0]); document.querySelector("header").dataset.al = m[1] || "x";   // the header card shows the state as a coloured strip on its right edge (see 04-alarm-weather-irrigation-scenes.css)
   const p = $("#alp"); if (!p || !onSec()) return;
   const arm = [[1, "arm_home", "HOME"], [2, "arm_away", "AWAY"], [4, "arm_night", "NIGHT"]].filter(x => (f & x[0]) || (!f && x[1] === "arm_away"));
   p.innerHTML = '<div class="lbl">Alarm</div><div class="astate ' + c + '">' + m[0] + '</div><div class="chips">' +
@@ -3691,7 +3864,7 @@ function wxPresLoad() {
 function wxPresTrend(a) {   // "↑ Rising +2.1 / 3 h", "→ Steady", "↓ Falling -3.4 / 3 h"
   if (!wxP.d || wxP.d.h < 1) return ""; const hpa = /inhg/i.test(a.pressure_unit || "") ? 33.8639 : /mmhg/i.test(a.pressure_unit || "") ? 1.3332 : /kpa/i.test(a.pressure_unit || "") ? 10 : 1, d = wxP.d.d * hpa, ph = Math.round(wxP.d.h);
   const k = Math.abs(d) < 1 ? ["→", "Steady"] : d > 0 ? ["↑", d > 3 ? "Rising fast" : "Rising"] : ["↓", d < -3 ? "Falling fast" : "Falling"];
-  return k[0] + " " + k[1] + (Math.abs(d) >= 1 ? '<small class="wtr">' + (d > 0 ? "+" : "") + f1(wxP.d.d) + " " + (a.pressure_unit || "hPa") + " in " + ph + " h</small>" : "");
+  return k[0] + " " + k[1] + (Math.abs(d) >= 1 ? '<small class="wtr"><span style="white-space:nowrap">' + (d > 0 ? "+" : "") + f1(wxP.d.d) + " " + (a.pressure_unit || "hPa") + '</span> <span style="white-space:nowrap">in ' + ph + " h</span></small>" : "");
 }
 // ----- frost risk: lowest temperature in the next 24 hours of the hourly forecast (daily low as a fallback) -----
 function wxFrost(a) {
@@ -3893,19 +4066,22 @@ function fcPanel(a, wu) {
 function fcFit() { const s = $("#wx .fcs"); if (!s) return; let m = 0; Array.prototype.forEach.call(s.children, c => { m = Math.max(m, c.offsetHeight); }); if (m) s.style.height = m + "px"; }   // every tab gets the tallest height so the card never resizes or scrolls vertically
 function fcSync() { const s = $("#wx .fcs"); if (s) s.scrollLeft = fcTab * s.clientWidth; fcFit(); setTimeout(fcFit, 350); }
 $("#wx").addEventListener("scroll", e => { const g = e.target; if (!g.classList || !g.classList.contains("wcols") || !g.clientWidth) return; wcI = Math.round(g.scrollLeft / (g.clientWidth + 12)); $$("#wx .wdots i").forEach((d, k) => d.classList.toggle("on", k === wcI)); }, true);
-$("#wx").addEventListener("click", e => { const d = e.target.closest("[data-wi]"); if (!d) return; const g = $("#wx .wcols"); wcI = +d.dataset.wi; if (g) g.scrollTo({ left: wcI * (g.clientWidth + 12), behavior: "smooth" }); });
+$("#wx").addEventListener("click", e => { const mb = e.target.closest("[data-wnmore]"); if (mb) { wnMore = !wnMore; const c = mb.closest(".wnow"); if (c) c.classList.toggle("open", wnMore); return; } const d = e.target.closest("[data-wi]"); if (!d) return; const g = $("#wx .wcols"); wcI = +d.dataset.wi; if (g) g.scrollTo({ left: wcI * (g.clientWidth + 12), behavior: "smooth" }); });
 $("#wx").addEventListener("scroll", e => { const s = e.target; if (!s.classList || !s.classList.contains("fcs") || !s.clientWidth) return; const i = Math.round(s.scrollLeft / s.clientWidth); if (i !== fcTab) { fcTab = i; fcFit(); $$("#wx .fct .chip").forEach((c, k) => c.classList.toggle("on", k === i)); } }, true);
 $("#wx").addEventListener("click", e => { const ad = e.target.closest("[data-ai]"); if (ad) { const r = $("#wx .alr"); alI = +ad.dataset.ai; if (r) r.scrollTo({ left: alI * (r.clientWidth + 10), behavior: "smooth" }); return; } const b = e.target.closest("[data-ft]"); if (!b) return; fcTab = +b.dataset.ft; fcFit(); const s = $("#wx .fcs"); $$("#wx .fct .chip").forEach((c, k) => c.classList.toggle("on", k === fcTab)); if (s) s.scrollTo({ left: fcTab * s.clientWidth, behavior: "smooth" }); });
 
-let wcI = 0, alI = 0;
+let wcI = 0, alI = 0, wnMore = false;   // wnMore: the Now card shows its extra conditions (phones)
 function drawWeather() {
   const w = states[W], a = w ? w.attributes : {}, cd = w ? (COND[w.state] || ["☁️", w.state]) : ["", ""], ot = sv(E("outdoorTemp"));
   const st = (l, v) => '<div class="ws"><span class="lbl">' + l + '</span><b>' + v + '</b></div>', n = (v, u) => v != null ? Math.round(v) + (u ? " " + u : "") : "--", wu = a.wind_speed_unit || "km/h";
-  wxPresLoad(); let fd;
-  let h = '<div class="wcols"><div class="pn"><div class="lbl">Now · ' + cd[1] + '</div><div class="row" style="justify-content:flex-start;gap:20px;margin:10px 0 16px"><span class="big2">' + f1(ot != null ? ot : a.temperature) + '°</span><span class="wbig">' + wic(w && w.state) + '</span></div><div class="wg">' +
-    st("Indoor", sv(CONFIG.indoor) != null ? f1(sv(CONFIG.indoor)) + "°" : "--") + st("Humidity", n(a.humidity, "%")) + st("Pressure", n(a.pressure, a.pressure_unit)) + st("Wind", n(a.wind_speed, wu)) + st("Gusts", n(a.wind_gust_speed, wu)) + st("UV", a.uv_index != null ? a.uv_index : "--") + st("Cloud", n(a.cloud_coverage, "%")) +
-    st("Rain now", fcH.length ? f1(+fcH[0].precipitation || 0) + " mm" : "--") + st("Air quality", esc(sv(E("airQuality")) || "--")) + ((fd = wxFeels(a, ot != null ? ot : a.temperature, wu))[0] != null ? st("Feels like", f1(fd[0]) + "°") : "") + (fd[1] != null ? st("Dew point", f1(fd[1]) + "°") : "") + (wxPresTrend(a) ? st("Pressure trend", wxPresTrend(a)) : (a.visibility != null ? st("Visibility", n(a.visibility, a.visibility_unit)) : "")) + '</div></div>' +
-    '<div class="pn"><div class="lbl">Next 7 days</div>' + bentoHtml(fc.slice(0, 7)) + '</div></div><div class="dots wdots"><i data-wi="0"' + (wcI === 0 ? ' class="on"' : "") + '></i><i data-wi="1"' + (wcI === 1 ? ' class="on"' : "") + '></i></div>';
+  wxPresLoad(); const fd = wxFeels(a, ot != null ? ot : a.temperature, wu), wxl = typeof wxaLive === "function" ? wxaLive() : 0, d0 = fc[0];
+  const pill = (l, v, c) => '<span class="wnp' + (c || "") + '"><small>' + l + '</small>' + v + '</span>', lo0 = d0 ? (d0.templow != null ? d0.templow : d0.temperature) : null;
+  const wnm = st("Indoor", sv(CONFIG.indoor) != null ? f1(sv(CONFIG.indoor)) + "°" : "--") + st("Pressure", n(a.pressure, a.pressure_unit)) + st("Gusts", n(a.wind_gust_speed, wu)) + st("Cloud", n(a.cloud_coverage, "%")) + st("Air quality", esc(sv(E("airQuality")) || "--")) + (fd[1] != null ? st("Dew point", f1(fd[1]) + "°") : "") + (wxPresTrend(a) ? st("Pressure trend", wxPresTrend(a)) : (a.visibility != null ? st("Visibility", n(a.visibility, a.visibility_unit)) : ""));
+  const wdy = fc.slice(0, 7).map((d, i) => { const dt = new Date(d.datetime), td = i === 0 && dt.toDateString() === new Date().toDateString(), lw = d.templow != null ? d.templow : d.temperature, p = d.precipitation_probability; return '<div class="wdy' + (td ? " td" : "") + '" style="--hc:' + tcol(d.temperature) + '"><span class="lbl">' + (td ? "Today" : dt.toLocaleDateString([], { weekday: "short" })) + '</span><i class="wb">' + wic(d.condition) + '</i><b>' + Math.round(d.temperature) + '°</b><small>' + Math.round(lw) + '°</small><em>' + (p != null && p >= 30 ? Math.round(p) + "%" : "") + '</em></div>'; }).join("");
+  let h = '<div class="pn pg wnow' + (wnMore ? " open" : "") + '"><div class="lbl">Now · ' + cd[1] + '</div><div class="wnh"><div><span class="big2">' + f1(ot != null ? ot : a.temperature) + '°</span><div class="wns">' + (fd[0] != null ? "Feels " + f1(fd[0]) + "°" : "") + (fd[0] != null && d0 ? " · " : "") + (d0 ? "H " + Math.round(d0.temperature) + "° L " + Math.round(lo0) + "°" : "") + '</div></div><span class="wbig">' + wic(w && w.state) + '</span></div>' +
+    '<div class="wnr">' + pill(mdi("weather-windy"), n(a.wind_speed, wu), wxl ? " wnd wt" + wxl : "") + pill("HUM", n(a.humidity, "%")) + pill("RAIN", fcH.length ? f1(+fcH[0].precipitation || 0) + " mm" : "--") + pill("UV", a.uv_index != null ? a.uv_index : "--") + '</div>' +
+    '<button class="wnb" data-wnmore aria-label="More conditions">MORE ' + mdi("chevron-down") + '</button><div class="wnm wg">' + wnm + '</div>' +
+    (wdy ? '<div class="wn7"><div class="lbl">Next 7 days</div><div class="wn7s">' + wdy + '</div></div>' : "") + '</div>';
   h += wxSunCard();
   h += polCard();   // Pollen (config.js pollen), between the conditions and the forecast tabs
   h += fcPanel(a, wu);
@@ -4038,7 +4214,7 @@ function irrMoist() {
     ticks.map(t => '<line x1="' + lx(t) + '" x2="' + lx(t) + '" y1="0" y2="' + H + '" stroke="currentColor" stroke-opacity=".08"/><text x="' + (lx(t) + 4) + '" y="' + (H + 17) + '" fill="currentColor" opacity=".55" font-size="11" font-family="monospace">' + new Date(t).toLocaleDateString([], { weekday: "short" }).toUpperCase() + '</text>').join("") +
     Z.map((z, i) => '<path d="' + path(IH.d[z.moist]) + '" fill="none" stroke="' + PC[i % 4] + '" stroke-width="2.4" stroke-linejoin="round"/><circle cx="' + (W - PD) + '" cy="' + y(now[i]) + '" r="4" fill="' + PC[i % 4] + '"/>').join("") + '</svg>';
   return '<div class="pn pg imc"><div class="lbl">' + mdi("water-percent") + ' Soil moisture · last 72 hours</div><div class="h3" style="margin:6px 0 10px">' + head + '</div>' +
-    '<div class="wg">' + Z.map((z, i) => '<div class="ws"><span class="lbl">' + esc(z.name) + ' now</span><b style="color:' + mc(now[i]) + '">' + Math.round(now[i]) + '%</b></div>').join("") + '<div class="ws"><span class="lbl">Trend (24 h)</span><b>' + (Math.abs(tr) < 1 ? "steady" : (tr < 0 ? "▼ " : "▲ ") + Math.abs(Math.round(tr)) + "%") + '</b></div></div>' +
+    '<div class="wg">' + Z.map((z, i) => '<div class="ws"><span class="lbl">' + esc(z.name) + ' now</span><b style="color:' + mc(now[i]) + '">' + Math.round(now[i]) + '%</b></div>').join("") + '<div class="ws"><span class="lbl">Trend (24 h)</span><b' + (Math.abs(tr) < 1 ? "" : ' style="color:' + (tr < 0 ? "var(--heat)" : "var(--cool)") + '"') + '>' + (Math.abs(tr) < 1 ? "steady" : (tr < 0 ? "▼ " : "▲ ") + Math.abs(Math.round(tr)) + "%") + '</b></div></div>' +
     '<div class="imw"><div class="imy" style="height:' + H + 'px"><span>100</span><span>50</span><span>0</span></div>' + hsw('<div class="ims">' + svg + '</div>') + '</div>' +
     '<div class="iml">' + Z.map((z, i) => '<span><b style="color:' + PC[i % 4] + '">━</b> ' + esc(z.name) + '</span>').join("") + '<span>shaded: wet · moist · dry</span><span class="imh">swipe to look back →</span></div></div>';
 }
@@ -4151,7 +4327,7 @@ function scPanel(g) {
   if (g) body = hsw('<div class="chips tabs sctb">' + G.map((x, i) => '<button class="chip' + (i === scTab ? " on" : "") + '" data-st="' + i + '">' + mdi(x[1]) + '<span>' + esc(x[0]) + '</span></button>').join("") + '</div>') + '<div class="srl">' + G[scTab][2].map(i => '<div class="sr" data-r="' + i + '" style="--rc:' + S.rc[i] + '"><i class="sbd">' + mdi(S.ri[i]) + '</i><b>' + esc(S.rooms[i].n) + '</b><span class="ts2">--</span></div>').join("") + '</div>';
   else body = '<div class="srl">' + S.lights.map((l, i) => '<div class="sr" data-g="' + i + '" style="--rc:var(--lit,#f6bd60)"><i class="sbd">' + mdi("lightbulb") + '</i><b>' + esc(l.n) + '</b><span class="ts2">--</span></div>').join("") + '</div>';
   const ctl = '<div class="lbl np2">Scenes control</div>' + [[E("dynBrightness"), "Brightness", "brightness-6"], [E("dynInterval"), "Interval", "timer"]].map(x => '<div class="mv"><span>' + mdi(x[2]) + ' ' + x[1] + '</span><input type="range" data-nb="' + x[0] + '"><b class="nbv"></b></div>').join("") +
-    '<div class="sr stp" data-stop="1"><i class="sbd">' + mdi("stop-circle") + '</i><b>Stop scenes</b><span class="ts2">--</span></div>';
+    '<div class="sr stp" data-stop="1"><i class="sbd">' + mdi("stop-circle") + '</i><b>Stop scenes</b></div>';
   const col = isMobile() ? !scSheet : scCol, dir = CONFIG.url + (S.imageDir || "/local/hue/") + (g ? "raw/" : "multi_color/");
   body = '<div class="lbl scpk">Scene</div>' + hsw('<div class="scstp">' + (g ? S.preset : S.gradient).map(c => c[1].map(x => '<div class="sc" data-v="' + x[1] + '"><img loading="lazy" alt="" src="' + dir + x[0] + '.webp"><span>' + esc(title(x[1])) + '</span></div>').join("")).join("") + '</div>') + '<div class="lbl scpk">Apply to</div>' + body;
   return '<div class="scbk" data-sch="1"></div><div class="pn sct' + (col ? " col" : "") + '"><div class="sch" data-sch="1"><i class="schi" id="scth">' + mdi("palette") + '</i><div class="sck"><span class="lbl">Scene</span><b class="h3" id="scn">--</b><div class="sm">' + (g ? "Select a room to apply this scene" : "Tap a light to apply the scene") + '</div><div class="sm scsm" id="scsum"></div></div><span class="schc">' + mdi("chevron-down") + '<i class="schx">' + mdi("close") + '</i></span></div><div class="scb">' + body + ctl + '</div></div>';
@@ -4174,7 +4350,7 @@ function updScenes() {
   $$("#scenes [data-g]").forEach(el => { const l = S.lights[el.dataset.g], on = isOn(l.l); el.classList.toggle("on", on); $(".ts2", el).textContent = on ? title(sv(l.s) || "ON") : "OFF"; });
   $$("#scenes [data-nb]").forEach(r => { const s = states[r.dataset.nb]; if (!s) return; const a = s.attributes; r.min = a.min != null ? a.min : 0; r.max = a.max != null ? a.max : 100; r.step = a.step || 1; if (document.activeElement !== r) r.value = s.state; $(".nbv", r.parentNode).textContent = Math.round(r.value); });
   { const sm = $("#scsum"), num = k => { const x = states[E(k)], v = x ? Math.round(+x.state) : NaN; return isNaN(v) ? "" : v; }, bb = num("dynBrightness"), iv = num("dynInterval"); if (sm) sm.textContent = [scMode === "preset" ? (S.groups[scTab] || [""])[0] : "Gradient", bb !== "" ? "Brightness " + bb : "", iv !== "" ? "Interval " + iv : ""].filter(Boolean).join(" · "); }
-  const st = $("#scenes [data-stop]"); if (st) { const on = isOn(E("dynStop")); st.classList.toggle("on", on); $(".ts2", st).textContent = on ? "ON" : "OFF"; }
+  const st = $("#scenes [data-stop]"); if (st) { const on = isOn(E("dynStop")); st.classList.toggle("on", on); }
 }
 $("#scenes").oninput = e => { const r = e.target; if (r.dataset.nb) $(".nbv", r.parentNode).textContent = Math.round(r.value); };
 $("#scenes").onchange = e => { const r = e.target; if (r.dataset.nb) call("input_number", "set_value", r.dataset.nb, { value: +r.value }); };
@@ -4595,7 +4771,7 @@ function hzFit() {   // phone: the map page and the lists page each fill the spa
   const bt = $("#btab"), br = bt ? bt.getBoundingClientRect() : null, bot = br && br.height ? br.top : innerHeight, hd = $("header"), tw = $("#hazards .hztw"), top = tw && tw.offsetHeight ? tw.getBoundingClientRect().bottom + 8 : hd ? hd.getBoundingClientRect().bottom + 12 : g.getBoundingClientRect().top, h = Math.max(360, bot - top - 54);
   g.style.setProperty("--hzH", h + "px");
 }
-function hzTab(t) { HZ.tab = t; const g = $("#hazards .hzg"); if (g) g.dataset.tab = t; $$("#hazards .hztabs .chip").forEach(c => c.classList.toggle("on", c.dataset.v === t)); hzFit(); }
+function hzTab(t) { const ord = ["map", "quake", "volc"], was = HZ.tab; HZ.tab = t; if (was !== t && was && $("#hazards .hzg")) txGo($("#hazards .hzg"), ord.indexOf(t) > ord.indexOf(was) ? 1 : -1, true); const g = $("#hazards .hzg"); if (g) g.dataset.tab = t; $$("#hazards .hztabs .chip").forEach(c => c.classList.toggle("on", c.dataset.v === t)); hzFit(); }
 function hzPage(i) { hzTab(i ? "quake" : "map"); }
 function hzSel(id, fly) {
   HZ.sel = HZ.sel === id && !fly ? "" : id; const d = HZ.d || hzData();
@@ -4660,6 +4836,7 @@ function drawPalette() {
     sec("Mode", '<div class="seg" style="margin-top:12px;flex-wrap:wrap">' + [["dark", "DARK"], ["light", "LIGHT"], ["auto", "FOLLOW DEVICE"], ["sun", "FOLLOW SUN"], ["time", "SCHEDULE"]].map(x => '<button class="eb' + (PAL.mode === x[0] ? " on" : "") + '" data-mode="' + x[0] + '">' + x[1] + '</button>').join("") + '</div>' +
       (PAL.mode === "time" ? '<div class="lbl" style="margin-top:12px;text-transform:none;letter-spacing:0;display:flex;gap:10px;align-items:center;flex-wrap:wrap">Dark from <input type="time" data-tm="from" value="' + esc(PAL.from || "18:00") + '"> until <input type="time" data-tm="to" value="' + esc(PAL.to || "06:00") + '"></div>' : "") + (PAL.mode === "sun" ? '<div class="lbl" style="margin-top:12px;text-transform:none;letter-spacing:0">Dark from sunset to sunrise, from <b>sun.sun</b> in Home Assistant' + (states["sun.sun"] ? "" : " (not found, using 6am–7pm)") + '. Saved on this device only.</div>' : "")) +
     sznSec(sec) +
+    sec("Page transition", '<div class="seg" style="margin-top:12px;flex-wrap:wrap">' + PGFXS.map(x => '<button class="eb' + (PGFX === x[0] ? " on" : "") + '" data-pgfx="' + x[0] + '">' + x[1] + '</button>').join("") + '</div><div class="lbl" style="margin-top:10px;text-transform:none;letter-spacing:0">' + esc((PGFXS.filter(x => x[0] === PGFX)[0] || PGFXS[0])[2]) + '. Plays when you switch between pages, on this device only.</div>') +
     sec("Clock", '<div class="seg" style="margin-top:12px">' + [["auto", "DEVICE"], ["12", "12-HOUR"], ["24", "24-HOUR"]].map(x => '<button class="eb' + (CLOCK === x[0] ? " on" : "") + '" data-clock="' + x[0] + '">' + x[1] + '</button>').join("") + '</div><div class="lbl" style="margin-top:10px;text-transform:none;letter-spacing:0">How times are shown on this dashboard. DEVICE follows the language of this phone or tablet. Saved on this device only.</div>') +
     (brandOn() ? sec("Start-up logo", '<div class="seg" style="margin-top:12px">' + [["on", "LOGO + INTRO"], ["load", "WHILE LOADING ONLY"], ["off", "OFF"]].map(x => '<button class="eb' + (logoPref() === x[0] ? " on" : "") + '" data-logo="' + x[0] + '">' + x[1] + '</button>').join("") + '</div><div class="lbl" style="margin-top:10px;text-transform:none;letter-spacing:0">Applies the next time the dashboard starts. Saved on this device only.</div>') : "") +
     (AUTH && !AUTH.borrowed && !CONFIG.token ? sec("Account", '<div style="margin-top:12px"><button class="eb" data-signout="1">SIGN OUT OF THIS DEVICE</button><span class="lbl" style="margin-left:14px">Signed in on this device only</span></div>') : "") +
@@ -4680,6 +4857,8 @@ $("#theme").onclick = e => {
   if (fn) { themeDip(() => { FONT = fn.dataset.font; try { localStorage.setItem("dashFont", FONT); } catch (_) {} applyFont(); drawPalette(); }); return; }
   if (sy) { themeDip(() => { STYLE = sy.dataset.style; try { localStorage.setItem("dashStyle", STYLE); } catch (_) {} applyStyle(); drawPalette(); }); return; }
   if (sznClick(e)) return;
+  const px = e.target.closest("button[data-pgfx]");
+  if (px) { PGFX = px.dataset.pgfx; try { localStorage.setItem("dashPgFx", PGFX); } catch (_) {} applyPgFx(); drawPalette(); pgEnter($("#theme")); return; }   // plays once so you can see it
   const ck = e.target.closest("button[data-clock]");
   if (ck) { CLOCK = ck.dataset.clock; try { localStorage.setItem("dashClock", CLOCK); } catch (_) {} tick(); drawPalette(); queueHome(); return; }
   const lg = e.target.closest("button[data-logo]");
@@ -4732,7 +4911,7 @@ function accSec(sec) {
   }).join("");
   return accWrap(h);
 }
-function accSave(M) { const v = accEncode(M); if (v.length > 255) return false; const id = E("access"); states[id] = Object.assign({}, states[id], { state: v }); call("input_text", "set_value", id, { value: v }); ruRefresh(); drawPalette(); return true; }
+function accSave(M) { const v = accEncode(M); if (v.length > 255) return false; const id = E("access"); states[id] = Object.assign({}, states[id], { state: v }); call("input_text", "set_value", id, { value: v }); ruRefresh(); if (curPg() === "admin") drawAdmin(); else if (curPg() === "theme") drawPalette(); return true; }   // Access lives on the Admin page now: redraw that (it used to redraw the Theme page, so taps saved but the switch and chips never changed on screen)
 function accClick(b) {
   if (b.dataset.acc === "fold") { const k = b.dataset.u, w = b.closest(".acc-u"), o = !w.classList.contains("open"); ACC.fold[k] = o; w.classList.toggle("open", o); b.setAttribute("aria-expanded", o); $(".acct", b).innerHTML = mdi(o ? "chevron-up" : "chevron-down"); return; }
   if (!states[E("access")]) return;
@@ -4810,7 +4989,7 @@ function secPills(page, host, anchor, min) {
   wrap.innerHTML = hsw('<div class="chips tabs secnav">' + items.map((x, i) => '<button class="chip' + (i === k ? " on" : "") + '" data-i="' + i + '">' + esc(x.n).toUpperCase() + '</button>').join("") + '</div>').replace(/^<div class="hsw">|<\/div>$/g, "");
   const row = wrap.firstElementChild; row._items = items;
   (anchor || host).parentNode.insertBefore(wrap, anchor || host);
-  row.addEventListener("click", e => { const b = e.target.closest(".chip"); if (!b) return; const i = +b.dataset.i, it = row._items[i]; if (!it) return; SECP.sel[key] = it.n; row._items.forEach((x, j) => x.els.forEach(el => { el.style.display = j === i ? "" : "none"; })); [...row.children].forEach((c, j) => c.classList.toggle("on", j === i)); page.scrollTop = 0; });
+  row.addEventListener("click", e => { const b = e.target.closest(".chip"); if (!b) return; const i = +b.dataset.i, it = row._items[i]; if (!it) return; const was = [...row.children].findIndex(c => c.classList.contains("on")); SECP.sel[key] = it.n; row._items.forEach((x, j) => x.els.forEach(el => { el.style.display = j === i ? "" : "none"; })); [...row.children].forEach((c, j) => c.classList.toggle("on", j === i)); page.scrollTop = 0; if (was !== i) txEls(it.els, i > was ? 1 : -1); });
 }
 (() => {
   const wrap = (name, fn) => { const f = window[name]; if (typeof f !== "function") return; window[name] = function () { const r = f.apply(this, arguments); try { fn(); } catch (e) {} return r; }; };
@@ -4835,17 +5014,22 @@ $("#admin").addEventListener("click", e => { const ac = e.target.closest("[data-
 
 // ---------- weather alerts: wind now, wind and rain coming up (Notifications > Alerts card, and the header strip chips) ----------
 // Same tiers as a Home Assistant weather-alert automation: wind 30 / 62 / 89 km/h, rain 0.5 / 2 / 5 mm per hour over the next 6 hours.
-// config weatherAlerts: false = off, or { wind: true, rain: true, windTiers: [30, 62, 89], rainTiers: [0.5, 2, 5], hours: 6, stripWind: 2, stripRain: 3 }
-// stripWind / stripRain = the tier (1 to 3) from which the header strip shows a chip (Strong wind and Heavy rain by default); the Alerts card shows from tier 1.
+// config weatherAlerts: false = off, or { wind: true, rain: true, windTiers: [30, 62, 89], rainTiers: [0.5, 2, 5], hours: 6, stripWind: 1, stripRain: 1 }
+// stripWind / stripRain = the tier (1 to 3) from which the header strip shows a chip (1 = any wind or rain from the first tier, 3 = only Severe wind / Heavy rain); the Alerts card always shows from tier 1.
 const wxaCfg = () => {
   const c = CONFIG.weatherAlerts; if (c === false) return null;
   const o = c && typeof c === "object" ? c : {}, tiers = (a, d) => Array.isArray(a) && a.length === 3 && a.every(x => isFinite(x)) ? a.map(Number) : d;
-  return { wind: o.wind !== false, rain: o.rain !== false, wt: tiers(o.windTiers, [30, 62, 89]), rt: tiers(o.rainTiers, [0.5, 2, 5]), hours: +o.hours > 0 ? +o.hours : 6, sw: +o.stripWind || 2, sr: +o.stripRain || 3 };
+  return { wind: o.wind !== false, rain: o.rain !== false, wt: tiers(o.windTiers, [30, 62, 89]), rt: tiers(o.rainTiers, [0.5, 2, 5]), hours: +o.hours > 0 ? +o.hours : 6, sw: +o.stripWind || 1, sr: +o.stripRain || 1 };
 };
 const wxaTier = (v, t) => v == null || isNaN(v) ? 0 : v > t[2] ? 3 : v > t[1] ? 2 : v > t[0] ? 1 : 0;
 const WXA_COL = ["", "#e6c84f", "#f2a33a", "#ff6b5e"];
 const wxaCol = k => { const w = wxaNow(); const t = w ? (k === "wind" ? (w.wind || {}).tier : (w.rain || {}).tier) : 0; return WXA_COL[t || 1]; };
 const wxaTime = ts => { const d = new Date(ts), td = d.toDateString() === new Date().toDateString(); return (td ? "" : d.toLocaleDateString([], { weekday: "short" }) + " ") + d.toLocaleTimeString([], tmo({ hour: "numeric" })).replace(/\s?([AP])M/i, " $1M"); };
+// the tier (0 to 3) of the wind blowing now, by the same limits as the Alerts card: the greeting's wind readout takes its colour from it
+function wxaLive() {
+  const c = wxaCfg(), a = (states[W] || {}).attributes; if (!c || !c.wind || !a || a.wind_speed == null) return 0;
+  const u = a.wind_speed_unit || "km/h", k = /mph/i.test(u) ? 1.609 : /m\/s/i.test(u) ? 3.6 : /kn|kt/i.test(u) ? 1.852 : 1; return wxaTier(+a.wind_speed * k, c.wt);
+}
 function wxaNow() {
   const c = wxaCfg(), w = states[W]; if (!c) return null;
   const a = w ? w.attributes : {}, now = Date.now(), end = now + c.hours * 3600000, fc = fcH.filter(x => { const t = Date.parse(x.datetime); return t >= now - 3600000 && t <= end; }), out = {};
@@ -4881,6 +5065,9 @@ function wxaHtml(w) {
   }
   return '<div class="wxa">' + h + '</div>';
 }
+// the header strip: Strong / Severe wind and Heavy rain are urgent (hi = true), the lower tiers are not (see NSK in 32-notifications-popup.js). Each shows from its own first tier (stripWind / stripRain).
+const wxaChip = (k, hi) => { const w = wxaNow(), x = w && w[k]; if (!x || x.tier < (k === "wind" ? w.cfg.sw : w.cfg.sr)) return false; return (k === "wind" ? x.tier >= 2 : x.tier >= 3) === hi; };
+const wxaName = k => () => { const x = (wxaNow() || {})[k]; return x ? (k === "wind" ? WXA_W[x.tier] + " wind" : WXA_R[x.tier]) + (x.now ? "" : " soon") : (k === "wind" ? "Wind" : "Rain"); };
 // ---------- notifications popup ----------
 const fname = id => (states[id] && states[id].attributes.friendly_name) || id.split(".")[1].replace(/_/g, " ");
 const NREL = rxj(/(^group\.|^timer\.|battery)/, (CONFIG.relevance || {}).notif);
@@ -4926,12 +5113,14 @@ const NSK = [
   ["leak", "water-alert", "Water leak", () => LEAKS().some(x => isOn(x[0]))],
   ["warn", "weather-cloudy-alert", "Weather warning", () => { const s = states[E("weatherWarnings")]; return !!s && s.state !== "unknown" && s.state !== "unavailable"; }],
   ["garage", "garage-open-variant", "Garage door open", () => Object.keys(galCfg()).some(k => { const c = galCfg()[k], s = c && c.sensor && states[c.sensor]; return !!s && (s.state === "on") !== !!c.invert; })],
-  ["wind", "weather-windy", () => { const w = (wxaNow() || {}).wind; return w ? WXA_W[w.tier] + " wind" + (w.now ? "" : " soon") : "Wind"; }, () => { const w = wxaNow(); return !!w && !!w.wind && w.wind.tier >= w.cfg.sw; }],   // from the tier set by weatherAlerts.stripWind (Strong by default)
-  ["rain", "weather-rainy", () => { const r = (wxaNow() || {}).rain; return r ? WXA_R[r.tier] + (r.now ? "" : " soon") : "Rain"; }, () => { const w = wxaNow(); return !!w && !!w.rain && w.rain.tier >= w.cfg.sr; }],   // Heavy rain by default (weatherAlerts.stripRain)
+  ["wind", "weather-windy", wxaName("wind"), () => wxaChip("wind", true)],   // Strong or Severe wind: right after the garage
+  ["rain", "weather-rainy", wxaName("rain"), () => wxaChip("rain", true)],   // Heavy rain
   ["door", "door-open", "Door open", () => !!doorsOpen()],
   ["water", "m3-water-drop", "Water on", () => Object.keys(states).some(k => /^switch\..*water_tap$/.test(k) && states[k].state === "on") || (CONFIG.irrigation || []).some(z => z.switch && states[z.switch] && states[z.switch].state === "on")],
   ["bins", "recycle", "Bins out", binsWaiting],   // a bin is due and not out yet (config bins)
   ["battery", "battery-low", "Low battery", () => lowBattChip().length > 0],   // under 20 % by default (derived.batteryAlertBelow)
+  ["wind", "weather-windy", wxaName("wind"), () => wxaChip("wind", false)],   // Moderate wind: weatherAlerts.stripWind sets the first tier shown; the lower tiers sit below the battery chip so they never crowd out a door or a tap
+  ["rain", "weather-rainy", wxaName("rain"), () => wxaChip("rain", false)],   // Light or Moderate rain (weatherAlerts.stripRain)
   ["pollen", "pollen", "Pollen", polOn],   // below a leak, a warning, the garage, a door and water on; the chip adds the level
   ["laundry", "washing-machine", "Laundry running", laundryOn],
   ["towel", "radiator", "Towel heating on", towelsOn]
@@ -5024,7 +5213,6 @@ function drawNotif() {
   if (ks.length > 2) nacc.dataset.more2 = "+" + (ks.length - 2); else if (ks.length > 1) nacc.dataset.more2 = ""; else nacc.removeAttribute("data-more2");
   nacc.classList.toggle("on", !!r.all || !!top);
   $("#hc").title = ks.length ? ks.map(nsn).join(" · ") + (r.all ? " · " : "") + (r.all ? r.all + " notification" + (r.all > 1 ? "s" : "") : "") : r.all ? r.all + " notification" + (r.all > 1 ? "s" : "") : "Notifications";
-  attnCard(r.ai);
   if (!open) { npCamStop(); return; }
   const A = actList(), tot = A.reduce((s, x) => s + x.ids.length, 0);
   // the header and tabs are built once and only updated in place; the list below is only replaced when its HTML really changes, so nothing blinks on a state update
@@ -5041,11 +5229,12 @@ function drawNotif() {
 let nq = 0;
 function queueNotif() { if (!nq) nq = requestAnimationFrame(() => { nq = 0; drawNotif(); }); }
 $("#hc").onclick = () => { document.body.classList.toggle("np-open"); drawNotif(); };
+$("#nclk").onclick = () => $("#hc").click();   // tablet: the clock at the top of the side menu opens the notifications too
 const npClose = () => { document.body.classList.remove("np-open"); npCamStop(); if (/^#(notifications|attention|active|batteries)/.test(location.hash)) location.hash = "#home"; };
 $("#nbd").onclick = npClose;
 $("#np").onclick = e => {
   if (e.target.closest("[data-close]")) { npClose(); return; }
-  const tb = e.target.closest("[data-npt]"); if (tb) { npTab = tb.dataset.npt; drawNotif(); return; }
+  const tb = e.target.closest("[data-npt]"); if (tb) { const ord = ["alerts", "attention", "active"], was = npTab; npTab = tb.dataset.npt; drawNotif(); if (was !== npTab) txGo($("#npc"), ord.indexOf(npTab) > ord.indexOf(was) ? 1 : -1, true); return; }
   const of = e.target.closest("[data-off]"); if (of) { const ids = actList()[+of.dataset.off].ids; const cl = actList()[+of.dataset.off].c[3] === "close"; if (ids.length) { if (!cl) npDismiss(ids); call(cl ? "cover" : "homeassistant", cl ? "close_cover" : "turn_off", ids); } return; }
   const wa = e.target.closest("[data-wxa]"); if (wa) { npClose(); location.hash = "#weather/" + wa.dataset.wxa; return; }   // the weather card opens that forecast chart
   const bn = e.target.closest("[data-bn]"); if (bn) { binsTap(bn.dataset.bn); return; }
@@ -5082,9 +5271,9 @@ function binsTap(k) {
   else call("homeassistant", "turn_off", binsIds());
 }
 // ---------- Attention: things worth acting on ----------
-// Notifications > ATTENTION lists the bins, dry soil, devices that have been offline for a while, updates waiting and low batteries. A slim card on Home shows the top few while there is anything. Alerts keeps the urgent things (leak, warnings, doors).
-// Config: attention: false | { offline: true, offlineMinutes: 10, updates: true, soil: true, soilBelow: 25, batteries: true, batteryBelow: 26, home: true, ignore: ["light.hall_lamp"], watch: ["binary_sensor.x"] } (see config.example.js)
-const attnCfg = () => { const a = CONFIG.attention; return a === false ? null : Object.assign({ offline: true, offlineMinutes: 10, updates: true, soil: true, soilBelow: 25, batteries: true, batteryBelow: 26, home: true, ignore: [], watch: [] }, a || {}); };
+// Notifications > ATTENTION lists the bins, dry soil, devices that have been offline for a while, updates waiting and low batteries. Alerts keeps the urgent things (leak, warnings, doors).
+// Config: attention: false | { offline: true, offlineMinutes: 10, updates: true, soil: true, soilBelow: 25, batteries: true, batteryBelow: 26, ignore: ["light.hall_lamp"], watch: ["binary_sensor.x"] } (see config.example.js)
+const attnCfg = () => { const a = CONFIG.attention; return a === false ? null : Object.assign({ offline: true, offlineMinutes: 10, updates: true, soil: true, soilBelow: 25, batteries: true, batteryBelow: 26, ignore: [], watch: [] }, a || {}); };
 const ATD = /^(light|switch|cover|lock|climate|camera|fan|siren|alarm_control_panel|vacuum)\./;   // what counts as a device that can be "offline" (sensors and media players come and go too often); add more with watch
 const ATU = new Set();   // ids that were unavailable at their last change, so the redraw also fires when they come back
 function attnRel(id) {   // a state change that can alter the Attention list (the list redraws only for these)
@@ -5116,20 +5305,57 @@ function attnHtml(it) {
   const ba = by("bat"); if (ba.length) h += head("battery-low", "Batteries", ba.length) + ba.map(row).join("");
   return h;
 }
-// the slim Home card: opens the Attention tab. One line: the count and a summary ("3 offline · 12 updates · 5 low batteries"); a single item shows its own name. On a tablet it shares the row under the greeting with the Today strip (see hsFit in 10-today-schedule.js)
-const AT_N = { off: n => n + " offline", soil: n => n + " dry soil", bat: n => n + (n > 1 ? " low batteries" : " low battery"), upd: n => n + (n > 1 ? " updates" : " update") };
-function attnSum(it) {
-  if (it.length === 1) return it[0].t + " · " + it[0].sub;
-  const b = it.filter(x => x.k === "bins")[0], n = k => it.filter(x => x.k === k).length;
-  return (b ? [b.t] : []).concat(["off", "soil", "bat", "upd"].filter(n).map(k => AT_N[k](n(k)))).join(" · ");
-}
-function attnCard(it) {
-  const el = $("#attn"); if (!el) return; const c = attnCfg(), on = !!c && c.home !== false && it.length > 0;
-  const h = on ? '<span class="at-h" title="Needs attention">' + mdi("alert-circle") + it.length + '</span><span class="at-l"><span class="at-x">' + esc(attnSum(it)) + '</span></span><span class="at-c">' + mdi("chevron-right") + '</span>' : "";
-  if (el._h !== h) { el._h = h; el.innerHTML = h; } el.hidden = !on; hsFit();
-}
-$("#attn").onclick = () => { npTab = "attention"; document.body.classList.add("np-open"); drawNotif(); };
 setInterval(() => queueNotif(), 60000);   // "offline for N min" needs a clock, not only state changes
+// ---------- Leaving: what is still on or open before you go ----------
+// The card on Home (it took the place of the old Attention card; Attention lives on in Notifications) lists lights left on, the garage door, open doors and a disarmed alarm. Tap it for the list, with Lights off and Arm away.
+// Config: leaving: false | { lights: true, garage: true, doors: true, alarm: true, lightEntities: [], ignore: ["light.hall_lamp"] } (see config.example.js). Lights default to the lights of the rooms on the Rooms page.
+const lvCfg = () => { const a = CONFIG.leaving; return a === false ? null : Object.assign({ lights: true, garage: true, doors: true, alarm: true, lightEntities: [], ignore: [] }, a || {}); };
+const LV = { t: null, q: 0, open: false };
+const lvRx = c => [].concat(c.ignore || []).map(x => { try { return new RegExp(x); } catch (e) { return null; } }).filter(Boolean);
+function lvLights() {
+  const c = lvCfg(); if (!c) return [];
+  const src = c.lightEntities && c.lightEntities.length ? c.lightEntities : (CONFIG.house || []).reduce((a, r) => a.concat(r.lights || [], r.lightSwitches || []), []), rx = lvRx(c);
+  return members(src).filter(id => /^(light|switch)\./.test(id) && states[id] && !rx.some(r => r.test(id)));
+}
+const lvGarage = () => Object.keys(galCfg()).map(k => (galCfg()[k] || {}).sensor).filter(Boolean);
+function lvSet() { const c = lvCfg(), s = new Set(); if (!c) return s; lvLights().forEach(x => s.add(x)); lvGarage().forEach(x => s.add(x)); const g = E("doorsGroup"); if (g) { s.add(g); members(g).forEach(x => s.add(x)); } if (CONFIG.alarm) s.add(CONFIG.alarm); return s; }
+const lvRel = id => (LV.t || (LV.t = lvSet())).has(id);   // a state change that can alter the card
+const lvNames = ids => ids.slice(0, 2).map(fname).join(", ") + (ids.length > 2 ? " +" + (ids.length - 2) : "");
+function lvItems() {
+  const c = lvCfg(), out = []; if (!c) return out;
+  if (c.lights) { const on = lvLights().filter(isOn); if (on.length) out.push({ k: "lights", icon: "lightbulb-on", t: on.length + (on.length > 1 ? " lights on" : " light on"), sub: lvNames(on), s: on.length + (on.length > 1 ? " lights" : " light"), ids: on }); }
+  if (c.garage) { const sn = lvGarage().filter(x => isOn(x))[0]; if (sn) { const ms = Date.now() - (Date.parse(states[sn].last_changed || "") || Date.now()); out.push({ k: "garage", icon: "garage-open-variant", t: "Garage door open", sub: ms > 6e4 ? "For " + attnAgo(ms) : "", s: "garage" }); } }
+  if (c.doors) { const d = doorsOpen(); if (d) out.push({ k: "doors", icon: "door-open", t: d.length > 1 ? d.length + " doors open" : d.length ? fname(d[0]) + " open" : "A door is open", sub: d.length > 1 ? lvNames(d) : "", s: d.length > 1 ? d.length + " doors" : d.length ? fname(d[0]).toLowerCase() : "a door" }); }
+  const al = CONFIG.alarm && states[CONFIG.alarm];
+  if (c.alarm && al && al.state === "disarmed") out.push({ k: "alarm", icon: "shield-off", t: "Alarm not armed", sub: "", s: "alarm off" });
+  return out;
+}
+function lvCard() {
+  const el = $("#lvc"); if (!el) return; const it = lvItems(), on = it.length > 0;
+  const h = on ? '<span class="at-h" title="Before you leave">' + mdi("door-open") + '</span><span class="at-l"><span class="at-x">Leaving? <small>' + esc(it.map(x => x.s).join(", ")) + '</small></span></span><span class="at-c">' + mdi("chevron-right") + '</span>' : "";
+  if (el._h !== h) { el._h = h; el.innerHTML = h; } el.hidden = !on; hsFit();
+  if (LV.open) { if (on) lvDraw(it); else lvClose(); }
+}
+function lvQ() { if (!LV.q) LV.q = requestAnimationFrame(() => { LV.q = 0; lvCard(); }); }
+function lvDraw(it) {
+  const b = $("#lvbody"); if (!b) return;
+  const row = x => '<div class="nrow warn at-r"><span class="at-i">' + mdi(x.icon) + '</span><span class="nbn"><b>' + esc(x.t) + '</b>' + (x.sub ? '<small>' + esc(x.sub) + '</small>' : "") + '</span></div>';
+  const lt = it.filter(x => x.k === "lights")[0], al = it.filter(x => x.k === "alarm")[0];
+  const h = '<div class="lbl lvh"><span>' + mdi("door-open") + 'Before you leave</span><button class="rnd lvx" data-lv="close" aria-label="Close">' + mdi("close") + '</button></div>' + it.map(row).join("") +
+    '<div class="lvb2">' + (lt ? '<button class="eb" data-lv="off">LIGHTS OFF</button>' : "") + (al ? '<button class="eb" data-lv="arm">ARM AWAY</button>' : "") + '</div>';
+  if (b._h !== h) { b._h = h; b.innerHTML = h; }
+}
+function lvOpen() { const it = lvItems(); if (!it.length) return; LV.open = true; lvDraw(it); document.body.classList.add("lv-open"); }
+function lvClose() { LV.open = false; document.body.classList.remove("lv-open"); }
+$("#lvc").onclick = lvOpen;
+$("#lvsheet").onclick = e => {
+  const b = e.target.closest("[data-lv]"), k = b ? b.dataset.lv : (e.target.classList.contains("lvbk") ? "close" : ""); if (!k) return;
+  if (k === "close") lvClose();
+  else if (k === "off") lvItems().filter(x => x.k === "lights").forEach(x => x.ids.forEach(id => call(id.split(".")[0], "turn_off", id)));
+  else if (k === "arm") alarmDo("arm_away");
+};
+addEventListener("keydown", e => { if (e.key === "Escape" && LV.open) lvClose(); });
+setInterval(() => { LV.t = null; lvQ(); }, 60000);   // "for 12 min" needs a clock, and the room list may have changed
 // ---------- media (Sonos / Spotify) ----------
 // cover art: real picture, else CONFIG.mediaArt match by title (optional), else a generated waveform tile
 // ---------- dominant colour of the album art, used for the Now playing glow ----------
@@ -5287,9 +5513,10 @@ function npRender() {
   const act = npActive(), w = $("#npw"), mi = $("#npmini"), sh = $("#npsheet"), hn0 = $("#hnp"), dragging = document.activeElement && document.activeElement.type === "range" && (w.contains(document.activeElement) || sh.contains(document.activeElement) || hn0.contains(document.activeElement));
   document.body.classList.toggle("np-on", !!act.length);
   const onMed = curPg() === "media";
+  { const nt = $("#hnote"), pl = act.some(x => (states[x.ctl] || {}).state === "playing"); nt.classList.toggle("on", !!act.length && !isMobile()); nt.classList.toggle("pl", pl); if (act.length) nt.title = "Open Media"; }   // tablet: the music note in the header on every page, Media included (the player bar is gone)
   document.body.classList.toggle("np-fab", !!act.length && isMobile() && ["scenes", "irrigation"].indexOf(curPg()) > -1);   // pages with a floating pill: the music bar becomes a round button beside it
-  document.body.classList.toggle("np-home", onHome()); document.body.classList.toggle("np-media", onMed); document.body.classList.toggle("np-hdr", !!act.length && !onMed && !isMobile());
-  w.classList.toggle("npoff", !act.length); mi.classList.toggle("npoff", !act.length || onMed); hn0.classList.toggle("npoff", !act.length || onMed);
+  document.body.classList.toggle("np-home", onHome()); document.body.classList.toggle("np-media", onMed); document.body.classList.remove("np-hdr");
+  w.classList.toggle("npoff", !act.length); mi.classList.toggle("npoff", !act.length || onMed); hn0.classList.add("npoff");
   if (!act.length) { npSheet = false; document.body.classList.remove("nps-open"); w.innerHTML = mi.innerHTML = hn0.innerHTML = ""; return; }
   if (dragging) return;
   if (Date.now() < npHoldT) { setTimeout(queueNp, npHoldT - Date.now() + 30); return; }   // not while a swipe is in progress
@@ -5332,18 +5559,7 @@ function npRender() {
       (PG.length > 1 ? '<div class="nps" data-pn="' + PG.map(x => x[0]).join("|") + '">' + PG.map(x => '<div class="npg">' + x[1] + '</div>').join("") + '</div><div class="npdt">' + PG.map((x, i) => '<i data-npg="' + i + '"' + (i === npsPage ? ' class="on"' : "") + '></i>').join("") + '</div><div class="npdl">' + PG.map((x, i) => '<span data-npg="' + i + '"' + (i === npsPage ? ' class="on"' : "") + '>' + x[0] + '</span>').join("") + '</div>' : PG[0][1]);
     { const sl = $("#npbody .nps"); if (sl && npsPage) sl.scrollLeft = npsPage * npPw(sl); const ar = $("#npbody .ar"); if (ar && arTop) ar.scrollTop = arTop; }
   } else { clearTimeout(npbT); npbT = setTimeout(() => { if (!npSheet) $("#npbody").innerHTML = ""; }, 420); }
-  const hn = $("#hnp");
-  if (isMobile() || onMed) hn.innerHTML = "";
-  else {
-    const s = states[g.ctl] || { attributes: {} }, a = s.attributes, play = s.state === "playing", pic = a.entity_picture;
-    const art = mpArt(a, s.state, pic);
-    const vs = g.mem.map(x => ((states[x] || {}).attributes || {}).volume_level || 0), av = Math.round(vs.reduce((x, y) => x + y, 0) / vs.length * 100);
-    const bt = (m, i, big) => '<button class="rnd' + (big ? " big" : "") + '" data-mp="' + m + '" data-e="' + g.ctl + '">' + i + '</button>';
-    hn.innerHTML = '<div class="hnpi" data-np="media" title="Open Media"><div class="npart">' + art + '</div><div class="npi"><b>' + esc(mpTitle(a, "playing") || "Playing") + '</b><small>' + esc([a.media_artist, a.media_album_name].filter(Boolean).join(" · ")) + '</small><small>' + esc(g.mem.map(fname).join(" · ")) + '</small></div></div>' +
-      '<div class="hnpc">' + bt("prev", mdi("skip-previous")) + bt("pp", mdi(play ? "pause" : "play"), 1) + bt("next", mdi("skip-next")) + '</div>' +
-      '<div class="hnpv">' + mdi("volume-high") + '<input type="range" min="0" max="100" data-hvol="' + g.mem.join(",") + '" value="' + av + '"></div>' +
-      '<div class="mpb" ' + mpData(g.ctl) + '><i></i></div>';
-  }
+  $("#hnp").innerHTML = "";   // the old header player bar is gone (see #hnote)
   tickMedia();
 }
 let npbT = 0, npq = 0; const queueNp = () => { if (!npq) npq = requestAnimationFrame(() => { npq = 0; try { npRender(); } catch (e) {} }); };
@@ -5365,6 +5581,7 @@ $("#npbody").addEventListener("scroll", e => { const g = e.target; if (!g.classL
 setInterval(() => { if (!SL.lines || !npSheet) return; const i = hlIdx(SL.lines, SL.ctl); if (i === SL.cur) return; SL.cur = i; const el = $("#npbody .shly"); if (el) el.innerHTML = slLn(SL.lines, i); }, 500);
 setInterval(() => { if (!HL.lines || !npOpen || curPg() !== "home") return; const i = hlIdx(); if (i === HL.cur) return; HL.cur = i; const el = $("#npw .nply"); if (el) el.innerHTML = hlLn(HL.lines, i); }, 500);
 $("#npw").onclick = $("#npmini").onclick = $("#npsheet").onclick = $("#hnp").onclick = $("#npfab").onclick = npClick;
+$("#hnote").onclick = () => { location.hash = "#media"; };
 $("#hnp").onchange = e => {   // header slider = group volume: scale every speaker so the balance between them is kept
   const t = e.target; if (!t.dataset.hvol) return;
   const ids = t.dataset.hvol.split(","), cur = ids.map(x => ((states[x] || {}).attributes || {}).volume_level || 0), av = cur.reduce((x, y) => x + y, 0) / cur.length, nv = +t.value / 100;
@@ -5546,8 +5763,8 @@ function lyrTick(jump) {
 $("#lyr").onclick = e => {
   const of = e.target.closest('[data-ly="off-"],[data-ly="off+"]');
   if (of) { LY.off = Math.max(-10, Math.min(10, Math.round((LY.off + (of.dataset.ly === "off+" ? 0.5 : -0.5)) * 10) / 10)); try { localStorage.setItem("dashLyOff", LY.off); } catch (_) {} LY.drawn = ""; lyrDraw(); return; }
-  const tt = e.target.closest("[data-ly=tab]"); if (tt) { AI.tab = tt.dataset.t === "artist" ? "artist" : "lyrics"; try { localStorage.setItem("dashLyTab", AI.tab); } catch (_) {} if (!LY.open) { LY.open = true; try { localStorage.setItem("dashLyr", "1"); } catch (_) {} } LY.drawn = ""; lyrUpdate(); return; }
-  const sb = e.target.closest("[data-ly=sel]"); if (sb) { LY.sel = sb.dataset.c; LY.drawn = ""; lyrUpdate(); return; }
+  const tt = e.target.closest("[data-ly=tab]"); if (tt) { AI.tab = tt.dataset.t === "artist" ? "artist" : "lyrics"; try { localStorage.setItem("dashLyTab", AI.tab); } catch (_) {} if (!LY.open) { LY.open = true; try { localStorage.setItem("dashLyr", "1"); } catch (_) {} } LY.drawn = ""; lyrUpdate(); txGo($("#lyr"), AI.tab === "artist" ? 1 : -1, false); return; }
+  const sb = e.target.closest("[data-ly=sel]"); if (sb) { const was = LY.sel; LY.sel = sb.dataset.c; LY.drawn = ""; lyrUpdate(); if (was !== LY.sel) txGo($("#lyr"), 0, false); return; }
   if (e.target.closest("[data-ly=retry]")) { delete LY.cache[LY.key]; LY.busy = ""; LY.drawn = ""; LY.st = ""; lyrUpdate(); return; }
   if (e.target.closest("[data-ly]") && innerWidth <= 760) { lyClose(); return; }
   if (e.target.closest("[data-ly]")) { LY.open = !LY.open; try { localStorage.setItem("dashLyr", LY.open ? "1" : "0"); } catch (_) {} LY.drawn = ""; lyrUpdate(); return; }
@@ -5625,13 +5842,15 @@ function wfxInit() {
 }
 function wfxFrame(ts) {
   requestAnimationFrame(wfxFrame);
-  const c = WFX.c; if (!c || document.hidden || curPg() !== "home") return;
+  const c = WFX.c; if (!c || document.hidden || (curPg() !== "home" && !c.closest("header"))) return;   // Home, or any page while the tablet strip sits in the header (hmerge)
   if (ts - WFX.last < 33) return; const FXS = Math.max(0.05, +(CONFIG.weatherFx && CONFIG.weatherFx.speed) || 1), dt = Math.min(3, (ts - WFX.last) / 16.7) * FXS; WFX.last = ts;
   const g = c.getContext("2d"); if (!g) return;
   const W = c.clientWidth, H = c.clientHeight, d = Math.min(window.devicePixelRatio || 1, 2);
   if (!W || !H) return;
   if (c.width !== Math.round(W * d) || c.height !== Math.round(H * d)) { c.width = Math.round(W * d); c.height = Math.round(H * d); WFX.w = W; WFX.h = H; WFX.parts = []; wfxInit(); }
   g.setTransform(d, 0, 0, d, 0, 0); g.clearRect(0, 0, W, H);
+  let ax = W - 90; const hd = c.closest("header"), hr = hd && hd.querySelector(".hr");   // in the header the sun / moon sits in the free space left of the music note and the chips, not under them
+  if (hr) { const hl = hr.getBoundingClientRect().left - c.getBoundingClientRect().left; ax = Math.max(W * 0.4, Math.min(W - 90, hl - 56)); const wm = Math.round(Math.max(40, Math.min(100, (hl - 16) / W * 100))); if (c._wm !== wm) { c._wm = wm; c.style.setProperty("--wm", wm + "%"); } }
   const light = document.documentElement.getAttribute("data-mode") === "light", k = WFX.k, wd = WFX.wind, t = (WFX.t += dt * 0.016);
   const ink = light ? "40,70,110" : "230,240,255", rain = light ? "50,110,200" : "150,200,255", cl = light ? "90,110,140" : "255,255,255";
   const clouds = () => WFX.parts.forEach(p => {
@@ -5641,13 +5860,13 @@ function wfxFrame(ts) {
   });
   const sunGlow = (x, y, r, col) => { const gr = g.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, "rgba(" + col + ",.55)"); gr.addColorStop(1, "rgba(" + col + ",0)"); g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, 6.283); g.fill(); };
   if (k === "sun" || k === "partly") {
-    const x = W - 90, y = H * 0.5, col = light ? "255,170,40" : "255,205,90"; sunGlow(x, y, 120, col);
+    const x = ax, y = H * 0.5, col = light ? "255,170,40" : "255,205,90"; sunGlow(x, y, 120, col);
     g.strokeStyle = "rgba(" + col + ",.55)"; g.lineWidth = 2.5; g.lineCap = "round";
     for (let i = 0; i < 12; i++) { const a = i * 0.5236 + t * 0.4; g.beginPath(); g.moveTo(x + Math.cos(a) * 34, y + Math.sin(a) * 34); g.lineTo(x + Math.cos(a) * (46 + 5 * Math.sin(t * 2 + i)), y + Math.sin(a) * (46 + 5 * Math.sin(t * 2 + i))); g.stroke(); }
     g.fillStyle = "rgba(" + col + ",.9)"; g.beginPath(); g.arc(x, y, 24, 0, 6.283); g.fill();
   }
   if (k === "night" || k === "pnight") {
-    const x = W - 90, y = H * 0.45; sunGlow(x, y, 90, light ? "120,140,200" : "170,190,255");
+    const x = ax, y = H * 0.45; sunGlow(x, y, 90, light ? "120,140,200" : "170,190,255");
     g.fillStyle = light ? "rgba(90,100,150,.85)" : "rgba(235,240,255,.92)"; g.beginPath(); g.arc(x, y, 22, 0, 6.283); g.fill();
     g.globalCompositeOperation = "destination-out"; g.beginPath(); g.arc(x + 11, y - 6, 20, 0, 6.283); g.fill(); g.globalCompositeOperation = "source-over";
     WFX.parts.forEach(p => { if (p.cloud) return; const a = 0.25 + 0.6 * Math.abs(Math.sin(t * p.v + p.p)); g.fillStyle = "rgba(" + (light ? "90,100,150" : "255,255,255") + "," + a + ")"; g.beginPath(); g.arc(p.x, p.y, p.s * 1.3, 0, 6.283); g.fill(); });
@@ -5796,10 +6015,24 @@ function mkKind(types, ar, area, prev) {   // which of the camera's tags a box i
   return prev || types[0];
 }
 const mkSmall = (oth, ar, per) => per && !(ar > 1.5 && oth.length > 1) ? "Person" : oth.length > 1 && ar > 1.2 ? oth.filter(t => t !== "Person")[0] || "Person" : oth[0];
+// The boxes can be turned off and on with a round button: on the live picture (full screen card, camera view; next to Sound / Talk) and on the Playback and Detections players (top right).
+// Live and recordings are remembered separately on this device (localStorage dashMklive / dashMkrec). Default: on.
+function mkPref(k) { if (window.__mkp && window.__mkp[k]) return window.__mkp[k] !== "off"; try { return localStorage.getItem("dashMk" + k) !== "off"; } catch (_) { return true; } }
+function mkSetPref(k, on) {
+  (window.__mkp = window.__mkp || {})[k] = on ? "on" : "off"; try { localStorage.setItem("dashMk" + k, on ? "on" : "off"); } catch (_) {}
+  document.querySelectorAll(".cam,.pbv,.dtv").forEach(el => { if (el._mkv && (el._mkLive ? "live" : "rec") === k) mkAttach(el, el._mkAll || []); });
+  document.querySelectorAll("[data-mkt]").forEach(b => b.classList.toggle("on", mkPref(b.dataset.mkt)));
+}
+function mkBtn(el) {   // Playback / Detections player: the button only shows for a clip the camera tagged (otherwise there is nothing to mark)
+  if (el.classList.contains("cam")) return;
+  const show = !!mkStyle() && el._mkAll.length > 0; let b = el._mkBtn;
+  if (!b) { if (!show) return; b = el._mkBtn = document.createElement("button"); b.type = "button"; b.className = "mkt"; b.dataset.mkt = "rec"; b.setAttribute("aria-label", "Detection boxes"); b.innerHTML = AUD.det; b.onclick = e => { e.stopPropagation(); mkSetPref("rec", !mkPref("rec")); }; el.append(b); }
+  b.hidden = !show; b.classList.toggle("on", mkPref("rec"));
+}
 function mkAttach(el, tags) {   // el = .pbv or .dtv; call each time a clip is loaded
   const v = el && el.querySelector("video:not(.mkw)"), st = mkStyle(); if (!v) return;
-  el._mkTags = (tags || []).filter(t => MKN[t]); el._mkv = v; el.dataset.mk = st; el._mkTok = (el._mkTok || 0) + 1; el._mkAiBusy = 0; el._mkD = []; el._mkPT = -1; el._mkLaOff = 0; el._mkLaBad = 0; el._mkLaOk = 0;
-  mkClear(el); const on = st && el._mkTags.length; el.classList.toggle("mkon", !!on);
+  el._mkAll = (tags || []).filter(t => MKN[t]); el._mkTags = mkPref(el._mkLive ? "live" : "rec") ? el._mkAll : []; el._mkv = v; el.dataset.mk = st; el._mkTok = (el._mkTok || 0) + 1; el._mkAiBusy = 0; el._mkD = []; el._mkPT = -1; el._mkLaOff = 0; el._mkLaBad = 0; el._mkLaOk = 0;
+  mkClear(el); const on = st && el._mkTags.length; el.classList.toggle("mkon", !!on); mkBtn(el);
   if (!on) { if (el._mkg) el._mkg.innerHTML = ""; mkLaSync(el); return; }
   if (!el._mk) { el._mk = document.createElement("div"); el._mk.className = "mkl"; el._mkg = document.createElement("div"); el._mkg.className = "mkg"; el.append(el._mk, el._mkg); ["seeked", "emptied", "loadstart", "ended"].forEach(n => v.addEventListener(n, () => mkClear(el))); }
   el._mkg.innerHTML = st === "glow" ? el._mkTags.map(t => '<span class="' + t.toLowerCase() + '">' + MKN[t] + '</span>').join("") : "";
@@ -6180,7 +6413,11 @@ const lzIO = "IntersectionObserver" in window ? new IntersectionObserver(es => e
       try { n.getAnimations({ subtree: true }).forEach(a => { if (a.animationName === "cdIn" || a.animationName === "pgFade") a.currentTime = (a.currentTime || 0) + el; }); } catch (e) { pg.classList.remove("enter"); } }));
   }).observe(pg, { childList: true, subtree: true }));
 })();
-function pgEnter(el) { clearTimeout(el._hold); el.classList.remove("hold", "enter"); void el.offsetWidth; el._enT = performance.now(); el.classList.add("enter"); clearTimeout(el._enX); el._enX = setTimeout(() => el.classList.remove("enter"), 900); }
+function pgDir(el) {   // slide direction: +1 when the new page is further along the menu than the one you left, else -1
+  const id = x => x && x.id === "roomspg" ? "rooms" : x && x.id, ord = $$("nav a").map(a => a.getAttribute("href").slice(1)), a = ord.indexOf(id(lastPg)), b = ord.indexOf(id(el));
+  return a < 0 || b < 0 || b >= a ? 1 : -1;
+}
+function pgEnter(el) { el.style.setProperty("--pgdx", pgDir(el) * 36 + "px"); clearTimeout(el._hold); el.classList.remove("hold", "enter"); void el.offsetWidth; el._enT = performance.now(); el.classList.add("enter"); clearTimeout(el._enX); el._enX = setTimeout(() => el.classList.remove("enter"), 900); }
 function pgHold(el, ms) { el.classList.remove("enter"); el.classList.add("hold"); clearTimeout(el._hold); el._hold = setTimeout(() => pgEnter(el), ms); }   // wait (briefly) for the page's data so it fades in once, complete
 function lazyIn(pg) {
   if (!lzIO || !isMobile() || matchMedia("(prefers-reduced-motion:reduce)").matches) return;
@@ -6224,7 +6461,7 @@ function route() {
     const ti = { temp: 0, wind: 1, rain: 2, uv: 3, cloud: 3 }[h[1]];
     if (ti != null) fcTab = ti;
     if (h[1] === "pollen") SECP.want = { page: "weather", q: "#wxpol" }; else if (ti != null) SECP.want = { page: "weather", q: ".fcp" };
-    const wk = h[1] === "now" || h[1] === "week"; if (wk) { wcI = h[1] === "week" ? 1 : 0; SECP.want = { page: "weather", q: ".wcols" }; }   // #weather/now = the Now card, #weather/week = the Next 7 days card (both on the Now tab)   // phones: open the tab that holds that card
+    const wk = h[1] === "now" || h[1] === "week"; if (wk) { wcI = h[1] === "week" ? 1 : 0; SECP.want = { page: "weather", q: ".wnow" }; }   // #weather/now = the Now card, #weather/week = the Next 7 days card (both on the Now tab)   // phones: open the tab that holds that card
     drawWeather();
     if (wk) [0, 80, 400].forEach(ms => setTimeout(() => { const wc = $("#wx .wcols"); if (curPg() === "weather" && wc && wc.clientWidth) { wc.scrollLeft = wcI * (wc.clientWidth + 12); $$("#wx .wdots i").forEach((d, k) => d.classList.toggle("on", k === wcI)); } }, ms));
     if (h[1] === "pollen") [60, 1500].forEach(ms => setTimeout(() => { if (curPg() === "weather") { const f = $("#wxpol"); if (f) f.scrollIntoView({ block: "start" }); } }, ms));   // #weather/pollen scrolls to the Pollen card
@@ -6265,7 +6502,7 @@ function batTick() {
 }
 function tick() {
   const n = new Date(), h = n.getHours();
-  $("#clk").textContent = n.toLocaleTimeString([], tmo({ hour: CLK12() ? "numeric" : "2-digit", minute: "2-digit" }));
+  $("#clk").textContent = $("#nclk").textContent = n.toLocaleTimeString([], tmo({ hour: CLK12() ? "numeric" : "2-digit", minute: "2-digit" }));
   batTick();
   $("#dt").textContent = n.toLocaleDateString([], { weekday: "long", day: "numeric", month: "long" });
   $("#gr").textContent = (h < 12 ? "Morning" : h < 18 ? "Afternoon" : "Evening") + (userName ? ", " + userName : userKnown ? "" : CONFIG.name ? ", " + CONFIG.name : "") + "!";

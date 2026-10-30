@@ -36,7 +36,45 @@ html[data-mode=light] .alert.fr{background:#dff1fd;color:#0b3550;border-left-col
 .sunl{display:flex;justify-content:space-between;align-items:baseline;margin-top:8px;font:600 12px var(--mono);color:var(--mut)}.sunl .sm{margin:0;text-align:center;flex:1}
 #wxsun .wg{grid-template-columns:repeat(5,minmax(0,1fr))}#wxsun .ws.moon b{display:flex;align-items:center;gap:10px;font-size:15px;line-height:1.2}#wxsun .ws.moon small{display:block;color:var(--mut);font-weight:400;font-size:12px}#wxsun .moon svg{flex:none;color:var(--ink)}
 @media(max-width:760px){#wxsun .wg{grid-template-columns:repeat(2,minmax(0,1fr))}#wxsun .ws.moon{grid-column:1/-1}}
-.ws .wtr{display:block;font:500 11px var(--mono);color:var(--mut);margin-top:3px;letter-spacing:.02em}
+.ws .wtr{display:block;font:500 11px var(--mono);color:var(--mut);margin-top:3px;letter-spacing:.02em;white-space:normal;line-height:1.35;overflow-wrap:anywhere}
+.wnm .ws b:has(.wtr){white-space:normal;line-height:1.25}   /* phones: the pressure trend tile wraps (value on top, "+2.5 hPa in 3 h" below) instead of running out of the tile */
+.wnm .ws:has(.wtr){min-width:0;overflow:hidden}
+
+/* Weather: ONE Now card (big temperature, the four numbers you check, a 7-day strip; the rest behind MORE on phones). On tablets Sun and Moon sits beside it. */
+.wnh{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:8px 0 12px}.wns{color:var(--mut);font-size:13px;margin-top:6px}
+.wnr{display:flex;flex-wrap:wrap;gap:8px}.wnp{display:inline-flex;align-items:center;gap:6px;padding:7px 11px;border-radius:99px;border:1px solid var(--line);background:rgba(var(--w),.04);font-size:13px;white-space:nowrap}.wnp small{font:10px var(--mono);letter-spacing:.1em;color:var(--mut)}.wnp svg{width:16px;height:16px;fill:currentColor;flex:none}
+@media(max-width:760px){.wnr{gap:5px}.wnp{padding:6px 7px;gap:4px;font-size:12.5px}.wnp small{font-size:9.5px;letter-spacing:.06em}}
+.wnp.wnd{color:var(--wc);border-color:color-mix(in srgb,var(--wc) 45%,transparent);background:color-mix(in srgb,var(--wc) 15%,transparent)}
+.wnb{display:flex;margin:8px auto 0;align-items:center;gap:4px;border:0;background:none;color:var(--mut);font:11px var(--mono);letter-spacing:.14em;cursor:pointer;padding:6px 10px}.wnb svg{width:16px;height:16px;fill:currentColor;transition:transform .2s}.wnow.open .wnb svg{transform:rotate(180deg)}
+.wnm{display:none;margin-top:6px;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.wnow.open .wnm{display:grid}.wnm .ws{padding:8px 10px;border-radius:12px}.wnm .ws .lbl{font-size:9.5px;letter-spacing:.08em}.wnm .ws b{font-size:15px;margin:2px 0 0}
+.wn7{margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}.wn7s{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin-top:8px;scroll-snap-type:x proximity}.wn7s::-webkit-scrollbar{display:none}
+.wdy{flex:0 0 58px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0 6px;border-radius:16px;background:rgba(var(--w),.04);scroll-snap-align:start}.wdy.td{border:1px solid color-mix(in srgb,var(--mint) 50%,transparent)}
+.wdy .lbl{font-size:9.5px;letter-spacing:.1em}.wdy .wb{font-size:20px;line-height:1.3}.wdy b{font-size:16px;font-weight:500;color:var(--hc)}.wdy small{font-size:12px;color:var(--mut)}.wdy em{font-style:normal;font-size:10px;color:#6ab7ff;height:12px}
+@media(min-width:761px){
+#wx{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:stretch}
+#wx>*{grid-column:1/-1;margin-top:0;margin-bottom:0}
+#wx>.wnow:has(+#wxsun){grid-column:1}#wx>.wnow+#wxsun{grid-column:2}
+.wnb{display:none}.wnm{display:grid;margin-top:12px}
+.wdy{flex:1 1 0;min-width:0}
+#wx>#wxsun{display:flex;flex-direction:column}#wx>#wxsun .wg{flex:1;grid-auto-rows:1fr;align-content:stretch}#wx>#wxsun .ws{display:flex;flex-direction:column;justify-content:center}
+#wx>#wxsun .wg{grid-template-columns:repeat(2,minmax(0,1fr))}#wx>#wxsun .ws.moon{grid-column:1/-1}
+}
+@media(prefers-reduced-motion:reduce){.wnb svg{transition:none}}
+/* phones, full-screen / viewer camera: every control in the button row (Sound, Talk, Detection boxes, PLAYBACK, Landscape, Close) is the same height (40px, 38px on small phones) and sits on the same line. PLAYBACK starts right after the three round buttons (10px + 3 x 40 + 2 x 6, plus a gap) instead of the centre, and the viewer's row has a tighter gap so Close stays on the row. */
+@media(max-width:760px){
+html:not(#x) .cam.fs:not(.ls) :is(.px,.fsb,.cx,.aud button),html:not(#x) #vw .cam.vf:not(.ls) .vh>:is(.px,.fsb,.cx),html:not(#x) #vw .cam.vf:not(.ls) .vh>.aud button{height:40px;min-height:0;box-sizing:border-box}
+html:not(#x) .cam.fs:not(.ls) :is(.fsb,.cx,.aud button),html:not(#x) #vw .cam.vf:not(.ls) .vh>:is(.fsb,.cx),html:not(#x) #vw .cam.vf:not(.ls) .vh>.aud button{width:40px}
+html:not(#x) .cam.fs:not(.ls) .px,html:not(#x) #vw .cam.vf:not(.ls) .vh>.px{padding-top:0;padding-bottom:0;display:inline-flex;align-items:center;justify-content:center}
+.cam.fs:not(.ls) .px{left:106px;right:auto;transform:none}.cam.fs:not(.ls):has(.aud .det) .px{left:152px}   /* after the round buttons: 2 of them (no detection button), or 3 */
+html:not(#x) #vw .cam.vf:not(.ls) .vh{gap:6px}
+}
+@media(max-width:380px){
+html:not(#x) .cam.fs:not(.ls) :is(.px,.fsb,.cx,.aud button),html:not(#x) #vw .cam.vf:not(.ls) .vh>:is(.px,.fsb,.cx),html:not(#x) #vw .cam.vf:not(.ls) .vh>.aud button{height:38px}
+html:not(#x) .cam.fs:not(.ls) :is(.fsb,.cx,.aud button),html:not(#x) #vw .cam.vf:not(.ls) .vh>:is(.fsb,.cx),html:not(#x) #vw .cam.vf:not(.ls) .vh>.aud button{width:38px}
+.cam.fs:not(.ls) .aud,.cam.vf:not(.ls) .aud{gap:4px}.cam.fs:not(.ls) .px{left:100px}.cam.fs:not(.ls):has(.aud .det) .px{left:140px}html:not(#x) #vw .cam.vf:not(.ls) .vh{gap:4px}
+}
+/* Wind tile: tinted by the same tiers as the Alerts card (moderate / strong / severe) */
+.ws.wnd{border-color:color-mix(in srgb,var(--wc) 45%,transparent);background:color-mix(in srgb,var(--wc) 13%,transparent)}.ws.wnd b{color:var(--wc)}.ws.wnd .lbl{color:color-mix(in srgb,var(--wc) 70%,var(--mut))}
 
 /* Weather on phones: the Sun and Moon and Pollen cards are at least 430px tall (the content spreads out instead of leaving a short card on an empty page); sunrise and sunset sit on one line, the daylight text on its own line below */
 @media(max-width:760px){
@@ -45,10 +83,19 @@ html[data-mode=light] .alert.fr{background:#dff1fd;color:#0b3550;border-left-col
 .sunl{flex-wrap:wrap;row-gap:8px}.sunl .sm{order:3;flex:0 0 100%;font-size:13px}
 }
 /* tablet: the greeting strip sits in the header while no music plays (41-start.js moves it) */
-header.hmerge>.hs{flex:1 1 0;min-width:0;margin:0 0 0 6px;padding:0 14px;min-height:0;border:0;background:none;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;flex-wrap:nowrap;white-space:nowrap;gap:6px 18px;align-self:stretch;border-radius:14px}
+header.hmerge>.hs{flex:1 1 0;min-width:0;margin:0 0 0 6px;padding:0 14px;min-height:0;display:grid;grid-auto-flow:column;grid-auto-columns:max-content;justify-content:start;align-items:baseline;align-content:center;border:0;background:none;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;flex-wrap:nowrap;white-space:nowrap;gap:6px 18px;align-self:stretch;border-radius:14px}
 header.hmerge>.hs::before{display:none}header.hmerge>.hs::after{display:none}
 header.hs1 #whl,header.hs2 #whl,header.hs2 #wwind,header.hs3 #whl,header.hs3 #wwind,header.hs3 #dt{display:none}
-header.hmerge>.hs #wfx{display:none}
+/* the weather animation stays on in the merged header: the canvas spreads over the whole header card, behind the text */
+header.hmerge{isolation:isolate}header.hmerge>.hs{position:static}
+header.hmerge>.hs #wfx{position:absolute;inset:0;width:100%;height:100%;border-radius:19px;z-index:-1;-webkit-mask-image:linear-gradient(90deg,#000 var(--wm,80%),rgba(0,0,0,.25) calc(var(--wm,80%) + 14%)),linear-gradient(180deg,#000 calc(100% - 16px),transparent);mask-image:linear-gradient(90deg,#000 var(--wm,80%),rgba(0,0,0,.25) calc(var(--wm,80%) + 14%)),linear-gradient(180deg,#000 calc(100% - 16px),transparent);-webkit-mask-composite:source-in;mask-composite:intersect;clip-path:inset(0 round 19px)}   /* fades toward the chips and the clock so the sun never sits behind the time; fades out above the bottom edge so cut-off rain streaks and clouds never draw a line there (the alarm outline lives on that edge) */
+html[data-style=material] header.hmerge #wfx{border-radius:999px;clip-path:inset(0 round 999px)}
 header.hmerge #ttl{display:none}header.hmerge>.hs{margin-left:0;padding-left:8px}
 /* tablet: the page name is left to the sidebar; the greeting or the player starts at the left edge of the header */
 @media(min-width:761px){header #ttl{display:none}header #hnp:not(.npoff){margin-left:0}}
+
+/* tablet: the clock takes the place of the outside temperature at the top of the side menu and leaves the header (the phone keeps both as they were) */
+#nclk{display:none}
+@media(min-width:761px){#outs{display:none}nav .t#nclk{display:block;cursor:pointer;font-size:30px;white-space:nowrap}#clk{display:none}}
+/* light mode: the 7-day highs and lows get the same darkening as the hourly forecast tiles (a pale yellow high was unreadable on a cream card) */
+html[data-mode=light] .wdy b{color:color-mix(in srgb,var(--hc) 55%,#1d1d2b)}

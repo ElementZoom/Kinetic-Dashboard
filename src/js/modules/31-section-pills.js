@@ -19,7 +19,7 @@ function secPills(page, host, anchor, min) {
   wrap.innerHTML = hsw('<div class="chips tabs secnav">' + items.map((x, i) => '<button class="chip' + (i === k ? " on" : "") + '" data-i="' + i + '">' + esc(x.n).toUpperCase() + '</button>').join("") + '</div>').replace(/^<div class="hsw">|<\/div>$/g, "");
   const row = wrap.firstElementChild; row._items = items;
   (anchor || host).parentNode.insertBefore(wrap, anchor || host);
-  row.addEventListener("click", e => { const b = e.target.closest(".chip"); if (!b) return; const i = +b.dataset.i, it = row._items[i]; if (!it) return; SECP.sel[key] = it.n; row._items.forEach((x, j) => x.els.forEach(el => { el.style.display = j === i ? "" : "none"; })); [...row.children].forEach((c, j) => c.classList.toggle("on", j === i)); page.scrollTop = 0; });
+  row.addEventListener("click", e => { const b = e.target.closest(".chip"); if (!b) return; const i = +b.dataset.i, it = row._items[i]; if (!it) return; const was = [...row.children].findIndex(c => c.classList.contains("on")); SECP.sel[key] = it.n; row._items.forEach((x, j) => x.els.forEach(el => { el.style.display = j === i ? "" : "none"; })); [...row.children].forEach((c, j) => c.classList.toggle("on", j === i)); page.scrollTop = 0; if (was !== i) txEls(it.els, i > was ? 1 : -1); });
 }
 (() => {
   const wrap = (name, fn) => { const f = window[name]; if (typeof f !== "function") return; window[name] = function () { const r = f.apply(this, arguments); try { fn(); } catch (e) {} return r; }; };

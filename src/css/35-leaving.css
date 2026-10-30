@@ -1,0 +1,13 @@
+/* Leaving: the Home card (#lvc, styled with the strip row in 32-attention.css) and its sheet */
+#lvc .at-x small{font-size:inherit;color:var(--mut)}
+#lvsheet{display:block;position:fixed;inset:0;z-index:85;visibility:hidden;pointer-events:none;transition:visibility 0s .36s}body.lv-open #lvsheet{visibility:visible;pointer-events:auto;transition:none}
+.lvbk{position:absolute;inset:0;background:rgba(0,0,0,.5);opacity:0;transition:opacity .3s ease}body.lv-open .lvbk{opacity:1}
+.lvb{position:absolute;overflow-y:auto;background:linear-gradient(160deg,var(--bg2),var(--bg))!important;transition:transform .36s cubic-bezier(.2,.85,.3,1);display:flex;flex-direction:column;gap:8px}
+html[data-style=material] .lvb{background:var(--bg2)!important}
+.lvh{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}.lvh span{display:inline-flex;align-items:center;gap:8px}.lvh svg{width:18px;height:18px;fill:currentColor}
+.lvx{width:36px;height:36px;flex:none}.lvx svg{width:18px;height:18px;fill:currentColor}
+.lvb .nrow{margin:0}
+.lvb2{display:flex;gap:8px;margin-top:6px}.lvb2 .eb{flex:1;justify-content:center}
+@media(max-width:760px){.lvb{left:0;right:0;bottom:0;max-height:88dvh;border-radius:24px 24px 0 0;padding:16px 16px 26px;transform:translateY(102%)}body.lv-open .lvb{transform:none}}
+@media(min-width:761px){.lvb{top:0;right:0;bottom:0;width:min(400px,92vw);border-radius:24px 0 0 24px;padding:20px;transform:translateX(102%)}body.lv-open .lvb{transform:none}}
+@media(prefers-reduced-motion:reduce){.lvb,.lvbk{transition:none}}

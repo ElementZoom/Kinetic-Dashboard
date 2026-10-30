@@ -43,14 +43,14 @@ const out = await page.evaluate(async () => {
 });
 eq("nothing shows in light wind and dry weather", out.quiet, [[], [], "ALERTS"]);
 eq("Strong wind now (64) with the forecast peak, and light rain from the forecast, as one Weather card counted once", out.cards.map(x => x.replace(/((?:Mon|Tue|Wed|Thu|Fri|Sat|Sun) )?\d+(:\d\d)? ?[AP]M/g, "T")), ["wind | WIND NOW · STRONG64km/h306289Gusts 80 km/h · Up to 70 km/h around T", "rain | Light rain from TUp to 1.2 mm/h"]);
-eq("the header strip shows Strong wind but not Light rain", out.strip, ["wind:Strong wind"]);
+eq("the header strip shows Strong wind and Light rain (stripWind and stripRain default to 1)", out.strip, ["wind:Strong wind", "rain:Light rain soon"]);
 eq("the Alerts tab counts the weather card once", [out.tab, out.head], ["ALERTS · 1", ["Weather"]]);
 eq("heavy rain shows a strip chip", out.heavy[1], ["rain:Heavy rain soon"]);
-eq("moderate wind is on the card but stays out of the strip", [out.mod[0].length, out.mod[1]], [1, []]);
+eq("moderate wind is on the card and, by default, in the strip", [out.mod[0].length, out.mod[1]], [1, ["wind:Moderate wind"]]);
 eq("mph is converted (40 mph = 64 km/h)", out.mph[0].slice(0, 30), "wind | WIND NOW · STRONG64km/h".slice(0, 30));
 eq("wind: false leaves only the rain", out.windOff, ["rain"]);
 eq("weatherAlerts: false hides everything", out.off, [[], []]);
-eq("stripWind: 1 puts moderate wind in the strip", out.stripFrom, ["wind:Moderate wind"]);
+eq("stripWind: 1 keeps moderate wind in the strip", out.stripFrom, ["wind:Moderate wind"]);
 eq("tapping the card opens the wind forecast chart", out.tap, ["#weather/wind", false]);
 eq("strip priority: leak, weather warning, garage, then wind, rain, then a door", out.order, ["leak", "warn", "garage", "wind", "rain", "door", "water"]);
 eq("no page errors", errors, []);

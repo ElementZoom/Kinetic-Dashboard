@@ -31,10 +31,10 @@ const setup = (page, low) => page.evaluate(([low, rise, set]) => {
   fcH = Array.from({ length: 30 }, (_, i) => ({ datetime: new Date(Date.now() + i * 3600e3).toISOString(), temperature: i === 10 ? low : 12, condition: "sunny" }));
   wxP = { t: 0, d: null, busy: false }; drawWeather();
 }, [low, new Date(day(6, 15).getTime() + 864e5).toISOString(), day(19, 40).toISOString()]);
-const read = p => p.evaluate(() => { const tiles = {}; document.querySelectorAll("#wx .wcols .ws").forEach(e => { tiles[e.querySelector(".lbl").textContent] = e.querySelector("b").textContent; });
-  return { tiles, frost: (document.querySelector(".alert.fr .lbl") || {}).textContent || "", sun: [...document.querySelectorAll("#wxsun .wg .ws")].map(e => e.querySelector(".lbl").textContent + "=" + e.querySelector("b").textContent.replace(/\s+/g, " ").trim()), moon: !!document.querySelector("#wxsun .moon svg") }; });
+const read = p => p.evaluate(() => { const tiles = {}; document.querySelectorAll("#wx .wnow .ws").forEach(e => { tiles[e.querySelector(".lbl").textContent] = e.querySelector("b").textContent; });
+  return { tiles, feels: /Feels \d+\.\d°/.test((document.querySelector("#wx .wnow") || {}).textContent || ""), frost: (document.querySelector(".alert.fr .lbl") || {}).textContent || "", sun: [...document.querySelectorAll("#wxsun .wg .ws")].map(e => e.querySelector(".lbl").textContent + "=" + e.querySelector("b").textContent.replace(/\s+/g, " ").trim()), moon: !!document.querySelector("#wxsun .moon") }; });
 let t = await open(1280, 800); await setup(t.page, 5); await t.page.waitForTimeout(700); let r = await read(t.page);
-eq("feels like and dew point are worked out (20 °C, 50 %, 10 km/h → dew point 9.3)", [r.tiles["Dew point"], /^\d+\.\d°$/.test(r.tiles["Feels like"])], ["9.3°", true]);
+eq("feels like and dew point are worked out (20 °C, 50 %, 10 km/h → dew point 9.3)", [r.tiles["Dew point"], r.feels], ["9.3°", true]);
 eq("pressure trend from the entity's history (1012 → 1015 in 3 h)", /Rising\+3\.0 hPa in 3 h/.test(r.tiles["Pressure trend"].replace(/\s/g, "") ) || /Rising/.test(r.tiles["Pressure trend"]), true);
 eq("no frost advisory at a 5 ° low", r.frost, "");
 eq("sun card: today's sunrise and sunset from tomorrow's next_rising", r.sun.slice(0, 3), ["Sunrise=6:15am", "Sunset=7:40pm", "Daylight=13 h 25 min"]);

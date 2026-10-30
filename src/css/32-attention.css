@@ -3,13 +3,13 @@
 html[data-mode=light] .nrow.at-r{--bc:#2d6aa3}html[data-mode=light] .nrow.warn.at-r{--bc:#b86a00}html[data-mode=light] .nrow.bad.at-r{--bc:#c42a1f}
 .at-r .at-i{flex:none;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:color-mix(in srgb,var(--bc) 20%,transparent)}.at-r .at-i svg{width:20px;height:20px;fill:var(--bc);display:block}
 .at-r .nbn b{display:block;font-weight:500}.at-r .nbn small{display:block;font-size:13px;color:var(--mut);margin-top:2px}
-.at-r .at-c{flex:none;color:var(--mut)}.at-r .at-c svg,#attn .at-c svg{width:20px;height:20px;fill:currentColor;display:block}
+.at-r .at-c{flex:none;color:var(--mut)}.at-r .at-c svg,#lvc .at-c svg{width:20px;height:20px;fill:currentColor;display:block}
 .at-more{margin:2px 0 10px;padding-left:4px}
 #hstrip{margin-bottom:14px}#hstrip[hidden]{display:none}
 #hstrip[data-n="2"]{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,4fr);gap:14px;align-items:stretch}
-#hstrip>#attn,#hstrip>#sch{margin:0;min-height:46px;box-sizing:border-box}
-#attn{display:flex;align-items:center;gap:14px;padding:10px 18px;cursor:pointer;min-height:0}#attn[hidden]{display:none}
-#attn .at-h{flex:none;display:inline-flex;align-items:center;gap:8px;font:600 14px var(--mono);color:#f2a33a}#attn .at-h svg{width:20px;height:20px;fill:currentColor}
-#attn .at-l{flex:1;min-width:0;overflow:hidden;white-space:nowrap}
-#attn .at-x{display:block;overflow:hidden;text-overflow:ellipsis}
-@media(max-width:760px){#hstrip[data-n="2"]{display:block}#attn{padding:12px 14px}#attn .at-l{white-space:normal}#attn .at-x{white-space:normal}}
+#hstrip>#lvc,#hstrip>#sch{margin:0;min-height:46px;box-sizing:border-box}
+#lvc{display:flex;align-items:center;gap:14px;padding:10px 18px;cursor:pointer;min-height:0}#lvc[hidden]{display:none}
+#lvc .at-h{flex:none;display:inline-flex;align-items:center;gap:8px;font:600 14px var(--mono);color:#f2a33a}#lvc .at-h svg{width:20px;height:20px;fill:currentColor}
+#lvc .at-l{flex:1;min-width:0;overflow:hidden;white-space:nowrap}
+#lvc .at-x{display:block;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:760px){#hstrip[data-n="2"]{display:block}#lvc{padding:12px 14px}#lvc .at-l{white-space:normal}#lvc .at-x{white-space:normal}}

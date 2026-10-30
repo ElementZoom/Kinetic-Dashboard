@@ -71,7 +71,8 @@ html[data-mode=dark][data-style=glass]:not(#x) :is(.card.auto,.rc.auto){backgrou
 @keyframes cpglow{50%{box-shadow:0 0 0 5px rgba(var(--mint-rgb),.10),0 0 22px 4px rgba(var(--mint-rgb),.8)}}@media(prefers-reduced-motion:reduce){#cpp .cpl .tl.on::after{animation:none}}
 @media(min-width:761px){.cpb{width:auto;height:46px;padding:0 18px;border-radius:999px}.cpb .cpt{display:inline;font:600 12px var(--mono);letter-spacing:.1em}.cpb .cpn,.cpb .cpn.z{position:static;display:flex;border-radius:10px}.cpb .cpn.z{display:none}}
 @keyframes tbhint{0%,52%,100%{transform:translateX(0)}8%{transform:translateX(-6px)}16%{transform:translateX(0)}24%{transform:translateX(-6px)}32%{transform:translateX(0)}}
-@media(max-width:760px){header h1{display:flex;align-items:center;gap:4px;font-size:22px}#ttl.bk{cursor:pointer;margin-left:-4px;padding:8px 14px 8px 2px;-webkit-tap-highlight-color:transparent}#ttl.bk:active{opacity:.6}#ttl .tbc{flex:none;color:var(--mint);animation:tbhint 4s ease-in-out infinite}.rh>.eb[href="#rooms"]{display:none}.rh h2{flex:1}}
+@media(max-width:760px){header h1{display:flex;align-items:center;gap:4px;font-size:22px}#ttl:not(.bk){margin-left:-4px;padding:8px 14px 8px 2px}   /* Home has no back arrow, but the title keeps the same box as the other pages so the header is the same height and the chip and clock line up */
+#ttl.bk{cursor:pointer;margin-left:-4px;padding:8px 14px 8px 2px;-webkit-tap-highlight-color:transparent}#ttl.bk:active{opacity:.6}#ttl .tbc{flex:none;color:var(--mint);animation:tbhint 4s ease-in-out infinite}.rh>.eb[href="#rooms"]{display:none}.rh h2{flex:1}}
 @media(min-width:761px){#ttl .tbc{display:none}}
 @media(prefers-reduced-motion:reduce){#ttl .tbc{animation:none}}
 .cps{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}.cps>:first-child{margin-left:auto}.cps::-webkit-scrollbar{display:none}

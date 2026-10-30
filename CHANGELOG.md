@@ -4,11 +4,27 @@ All notable changes to Kinetic, newest first. The version is the number in the `
 
 Versions are `MAJOR.MINOR.PATCH`. Bug fixes raise the patch number (1.0.0 to 1.0.1), new features raise the minor number (1.0.1 to 1.1.0), and big changes raise the major number (2.0.0). When a release is published, its notes are taken from the matching section below.
 
-## 1.14.6 - 2026-10-29
+## 1.14.6 - 2026-10-31
 
 ### Added
 - **Attention tab in Notifications.** Replaces the Batteries tab. One list of what needs a look: bins, dry soil, offline devices (offline for more than `attention.offlineMinutes`, default 10), pending updates and low batteries (under `attention.batteryBelow`, default 26 %). A one-line card on Home (the count and a summary such as "3 offline · 4 low batteries · 5 updates") opens it and hides itself when nothing needs attention. On tablets it shares the row under the greeting with the Today strip, which moves up from under the cameras (list `schedule` in `layout.tablet` to keep it where config.js puts it); either one takes the whole row when the other is empty. Each part can be switched off, and `ignore` / `watch` fine-tune the devices. See `attention` in `config.example.js`.
 - **Weather alerts.** One Weather card in Notifications > Alerts: a wind gauge (live wind with the 30 / 62 / 89 km/h marks, gusts, and the forecast peak when it is higher) and a rain line from the next 6 hours of the hourly forecast (Light, Moderate or Heavy from 0.5 / 2 / 5 mm per hour). Tapping it opens the wind or rain chart on the Weather page. The header strip shows a chip from Strong wind and Heavy rain up, in the tier colour, after the garage and the weather warning in the priority order. Configure with `weatherAlerts` (`wind`, `rain`, `windTiers`, `rainTiers`, `hours`, `stripWind`, `stripRain`, or `false` to hide).
+- **Leaving card on Home.** Takes the place of the slim Attention card. One line, "Leaving? 2 lights, garage, alarm off", shown while something is on or open: lights left on (from the rooms on the Rooms page), the garage door (`garageAlert` sensors), open doors (`doorsGroup`) and a disarmed alarm. Tap it for the list, with Lights off and Arm away (a side panel on tablets, a bottom sheet on phones). New `leaving` option in config.js; `leaving: false` removes it. Attention itself stays in Notifications.
+- **Page transition on the Theme page.** Choose how a page appears when you switch tabs: Rise (the default), Slide (follows the menu order), Fade or Off. Saved per device; `pageTransition` in config.js sets the default.
+- **Detection boxes can be switched off.** A round button on the live full-screen camera view and on the Playback and Detections players hides or shows the boxes. Remembered per device.
+- **Alarm state on the header card.** A coloured, glowing cap shows armed, home, night or triggered at a glance.
+- **Weather Now card.** One card with the big temperature, wind, humidity, rain and UV pills, the other readings and the next 7 days (a MORE page on phones; Sun and Moon beside it on tablets). Wind is tinted by its Moderate, Strong or Severe tier, also in the greeting.
+- **Calendar.** Moving or deleting a repeating event asks whether it is this one, this and following, or all; the weekday follows the date; new and moved events jump into view, glow and show a toast; an error shakes the sheet.
+- **Slide between tabs** in the page tabs (Hazards, Notifications, Scenes, Security, Rooms and more).
+
+### Changed
+- **Tablet header.** The player bar is replaced by a swaying music note that opens Media. The greeting stays in the header on every page with the weather animation behind it, its text sits on one baseline and is centred in the card, and the clock moved to the top of the side menu.
+- **Home** no longer shows the Attention summary (the Leaving card is there instead). The `attention.home` option is gone.
+- **`weatherAlerts.stripWind` / `stripRain`** now default to 1 (Moderate wind, Light rain show in the header strip).
+- **Stop scenes** has no ON/OFF label; it has a red outline and glows red while a scene is running.
+- **Soil trend** (Irrigation) is coloured: drying in the heat colour, wetting in the cool colour.
+- **Material style:** the Weather Now pills and 7-day tiles have a visible outline and fill. In light mode the 7-day highs are darkened for contrast in every style.
+- The phone camera button row has the same height on every camera.
 
 ### Removed
 - **Activity tab in Notifications**, and the `activity` option in config.js (it can stay there, it is ignored). Notifications now has Alerts, Attention and Active.

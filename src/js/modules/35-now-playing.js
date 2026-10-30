@@ -50,9 +50,10 @@ function npRender() {
   const act = npActive(), w = $("#npw"), mi = $("#npmini"), sh = $("#npsheet"), hn0 = $("#hnp"), dragging = document.activeElement && document.activeElement.type === "range" && (w.contains(document.activeElement) || sh.contains(document.activeElement) || hn0.contains(document.activeElement));
   document.body.classList.toggle("np-on", !!act.length);
   const onMed = curPg() === "media";
+  { const nt = $("#hnote"), pl = act.some(x => (states[x.ctl] || {}).state === "playing"); nt.classList.toggle("on", !!act.length && !isMobile()); nt.classList.toggle("pl", pl); if (act.length) nt.title = "Open Media"; }   // tablet: the music note in the header on every page, Media included (the player bar is gone)
   document.body.classList.toggle("np-fab", !!act.length && isMobile() && ["scenes", "irrigation"].indexOf(curPg()) > -1);   // pages with a floating pill: the music bar becomes a round button beside it
-  document.body.classList.toggle("np-home", onHome()); document.body.classList.toggle("np-media", onMed); document.body.classList.toggle("np-hdr", !!act.length && !onMed && !isMobile());
-  w.classList.toggle("npoff", !act.length); mi.classList.toggle("npoff", !act.length || onMed); hn0.classList.toggle("npoff", !act.length || onMed);
+  document.body.classList.toggle("np-home", onHome()); document.body.classList.toggle("np-media", onMed); document.body.classList.remove("np-hdr");
+  w.classList.toggle("npoff", !act.length); mi.classList.toggle("npoff", !act.length || onMed); hn0.classList.add("npoff");
   if (!act.length) { npSheet = false; document.body.classList.remove("nps-open"); w.innerHTML = mi.innerHTML = hn0.innerHTML = ""; return; }
   if (dragging) return;
   if (Date.now() < npHoldT) { setTimeout(queueNp, npHoldT - Date.now() + 30); return; }   // not while a swipe is in progress
@@ -95,18 +96,7 @@ function npRender() {
       (PG.length > 1 ? '<div class="nps" data-pn="' + PG.map(x => x[0]).join("|") + '">' + PG.map(x => '<div class="npg">' + x[1] + '</div>').join("") + '</div><div class="npdt">' + PG.map((x, i) => '<i data-npg="' + i + '"' + (i === npsPage ? ' class="on"' : "") + '></i>').join("") + '</div><div class="npdl">' + PG.map((x, i) => '<span data-npg="' + i + '"' + (i === npsPage ? ' class="on"' : "") + '>' + x[0] + '</span>').join("") + '</div>' : PG[0][1]);
     { const sl = $("#npbody .nps"); if (sl && npsPage) sl.scrollLeft = npsPage * npPw(sl); const ar = $("#npbody .ar"); if (ar && arTop) ar.scrollTop = arTop; }
   } else { clearTimeout(npbT); npbT = setTimeout(() => { if (!npSheet) $("#npbody").innerHTML = ""; }, 420); }
-  const hn = $("#hnp");
-  if (isMobile() || onMed) hn.innerHTML = "";
-  else {
-    const s = states[g.ctl] || { attributes: {} }, a = s.attributes, play = s.state === "playing", pic = a.entity_picture;
-    const art = mpArt(a, s.state, pic);
-    const vs = g.mem.map(x => ((states[x] || {}).attributes || {}).volume_level || 0), av = Math.round(vs.reduce((x, y) => x + y, 0) / vs.length * 100);
-    const bt = (m, i, big) => '<button class="rnd' + (big ? " big" : "") + '" data-mp="' + m + '" data-e="' + g.ctl + '">' + i + '</button>';
-    hn.innerHTML = '<div class="hnpi" data-np="media" title="Open Media"><div class="npart">' + art + '</div><div class="npi"><b>' + esc(mpTitle(a, "playing") || "Playing") + '</b><small>' + esc([a.media_artist, a.media_album_name].filter(Boolean).join(" · ")) + '</small><small>' + esc(g.mem.map(fname).join(" · ")) + '</small></div></div>' +
-      '<div class="hnpc">' + bt("prev", mdi("skip-previous")) + bt("pp", mdi(play ? "pause" : "play"), 1) + bt("next", mdi("skip-next")) + '</div>' +
-      '<div class="hnpv">' + mdi("volume-high") + '<input type="range" min="0" max="100" data-hvol="' + g.mem.join(",") + '" value="' + av + '"></div>' +
-      '<div class="mpb" ' + mpData(g.ctl) + '><i></i></div>';
-  }
+  $("#hnp").innerHTML = "";   // the old header player bar is gone (see #hnote)
   tickMedia();
 }
 let npbT = 0, npq = 0; const queueNp = () => { if (!npq) npq = requestAnimationFrame(() => { npq = 0; try { npRender(); } catch (e) {} }); };
@@ -128,6 +118,7 @@ $("#npbody").addEventListener("scroll", e => { const g = e.target; if (!g.classL
 setInterval(() => { if (!SL.lines || !npSheet) return; const i = hlIdx(SL.lines, SL.ctl); if (i === SL.cur) return; SL.cur = i; const el = $("#npbody .shly"); if (el) el.innerHTML = slLn(SL.lines, i); }, 500);
 setInterval(() => { if (!HL.lines || !npOpen || curPg() !== "home") return; const i = hlIdx(); if (i === HL.cur) return; HL.cur = i; const el = $("#npw .nply"); if (el) el.innerHTML = hlLn(HL.lines, i); }, 500);
 $("#npw").onclick = $("#npmini").onclick = $("#npsheet").onclick = $("#hnp").onclick = $("#npfab").onclick = npClick;
+$("#hnote").onclick = () => { location.hash = "#media"; };
 $("#hnp").onchange = e => {   // header slider = group volume: scale every speaker so the balance between them is kept
   const t = e.target; if (!t.dataset.hvol) return;
   const ids = t.dataset.hvol.split(","), cur = ids.map(x => ((states[x] || {}).attributes || {}).volume_level || 0), av = cur.reduce((x, y) => x + y, 0) / cur.length, nv = +t.value / 100;

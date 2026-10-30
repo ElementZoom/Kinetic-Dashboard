@@ -85,8 +85,8 @@ function lyrTick(jump) {
 $("#lyr").onclick = e => {
   const of = e.target.closest('[data-ly="off-"],[data-ly="off+"]');
   if (of) { LY.off = Math.max(-10, Math.min(10, Math.round((LY.off + (of.dataset.ly === "off+" ? 0.5 : -0.5)) * 10) / 10)); try { localStorage.setItem("dashLyOff", LY.off); } catch (_) {} LY.drawn = ""; lyrDraw(); return; }
-  const tt = e.target.closest("[data-ly=tab]"); if (tt) { AI.tab = tt.dataset.t === "artist" ? "artist" : "lyrics"; try { localStorage.setItem("dashLyTab", AI.tab); } catch (_) {} if (!LY.open) { LY.open = true; try { localStorage.setItem("dashLyr", "1"); } catch (_) {} } LY.drawn = ""; lyrUpdate(); return; }
-  const sb = e.target.closest("[data-ly=sel]"); if (sb) { LY.sel = sb.dataset.c; LY.drawn = ""; lyrUpdate(); return; }
+  const tt = e.target.closest("[data-ly=tab]"); if (tt) { AI.tab = tt.dataset.t === "artist" ? "artist" : "lyrics"; try { localStorage.setItem("dashLyTab", AI.tab); } catch (_) {} if (!LY.open) { LY.open = true; try { localStorage.setItem("dashLyr", "1"); } catch (_) {} } LY.drawn = ""; lyrUpdate(); txGo($("#lyr"), AI.tab === "artist" ? 1 : -1, false); return; }
+  const sb = e.target.closest("[data-ly=sel]"); if (sb) { const was = LY.sel; LY.sel = sb.dataset.c; LY.drawn = ""; lyrUpdate(); if (was !== LY.sel) txGo($("#lyr"), 0, false); return; }
   if (e.target.closest("[data-ly=retry]")) { delete LY.cache[LY.key]; LY.busy = ""; LY.drawn = ""; LY.st = ""; lyrUpdate(); return; }
   if (e.target.closest("[data-ly]") && innerWidth <= 760) { lyClose(); return; }
   if (e.target.closest("[data-ly]")) { LY.open = !LY.open; try { localStorage.setItem("dashLyr", LY.open ? "1" : "0"); } catch (_) {} LY.drawn = ""; lyrUpdate(); return; }

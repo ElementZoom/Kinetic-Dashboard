@@ -26,7 +26,7 @@ const title = v => String(v || "").replace(/_/g, " ").replace(/\b\w/g, c => c.to
 function drawAlarm() {
   const s = states[CONFIG.alarm]; if (!s) return;
   const m = ALS[s.state] || [String(s.state).toUpperCase(), ""], f = s.attributes.supported_features || 0, c = "s-" + (m[1] || "x");
-  $("#al").innerHTML = mdi(ALI[s.state] || "shield-outline") + '<span class="at"> ' + m[0] + '</span>'; $("#al").className = "al " + c; $("#al").title = m[0];
+  $("#al").innerHTML = mdi(ALI[s.state] || "shield-outline") + '<span class="at"> ' + m[0] + '</span>'; $("#al").className = "al " + c; $("#al").title = m[0]; $("#al").setAttribute("aria-label", "Alarm: " + m[0]); document.querySelector("header").dataset.al = m[1] || "x";   // the header card shows the state as a coloured strip on its right edge (see 04-alarm-weather-irrigation-scenes.css)
   const p = $("#alp"); if (!p || !onSec()) return;
   const arm = [[1, "arm_home", "HOME"], [2, "arm_away", "AWAY"], [4, "arm_night", "NIGHT"]].filter(x => (f & x[0]) || (!f && x[1] === "arm_away"));
   p.innerHTML = '<div class="lbl">Alarm</div><div class="astate ' + c + '">' + m[0] + '</div><div class="chips">' +

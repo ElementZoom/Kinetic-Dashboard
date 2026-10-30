@@ -1,0 +1,9 @@
+/* page transition (Theme > Page transition): variants of the .page.enter entrance, set by html[data-pgfx]. "rise" is the original look. */
+@keyframes pgSlide{from{opacity:0;transform:translateX(var(--pgdx,36px))}}
+html[data-pgfx=slide] .page.enter{animation:pgSlide .36s cubic-bezier(.2,.8,.2,1) backwards}
+html[data-pgfx=slide] .page.enter>*,html[data-pgfx=slide] .page.enter :is(.rooms,.cams,#grid,.zg,.wcols,.hm,.left,.side,#wx,.vgrid,.hzg,.hzside,.scl,.mlay,.thl)>*,
+html[data-pgfx=fade] .page.enter>*,html[data-pgfx=fade] .page.enter :is(.rooms,.cams,#grid,.zg,.wcols,.hm,.left,.side,#wx,.vgrid,.hzg,.hzside,.scl,.mlay,.thl)>*{animation:none}
+html[data-pgfx=fade] .page.enter{animation:pgFade .22s ease}
+html[data-pgfx=off] .page.enter,html[data-pgfx=off] .page.enter>*,html[data-pgfx=off] .page.enter :is(.rooms,.cams,#grid,.zg,.wcols,.hm,.left,.side,#wx,.vgrid,.hzg,.hzside,.scl,.mlay,.thl)>*{animation:none}
+html[data-pgfx=off] #theme.enter .thr,html[data-pgfx=off] #scenes.enter .sct,html[data-pgfx=off] #irrigation.enter .zsx,html[data-pgfx=fade] #theme.enter .thr,html[data-pgfx=fade] #scenes.enter .sct,html[data-pgfx=fade] #irrigation.enter .zsx,html[data-pgfx=slide] #theme.enter .thr,html[data-pgfx=slide] #scenes.enter .sct,html[data-pgfx=slide] #irrigation.enter .zsx{animation:none}
+@media(prefers-reduced-motion:reduce){html[data-pgfx=slide] .page.enter{animation:pgFade .2s ease}}

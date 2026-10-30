@@ -57,6 +57,11 @@ let STYLE = "default"; try { STYLE = localStorage.getItem("dashStyle") || "defau
 const STYLES = [["default", "Kinetic", "The original look: tinted depth, fine outlines"], ["glass", "Liquid Glass", "Apple style: glass navigation over clear cards"], ["material", "Material", "Google style: tonal surfaces from your colour, pill buttons"], ["minimal", "Minimal", "Flat, thin lines, no effects"]];
 const applyStyle = () => document.documentElement.setAttribute("data-style", STYLES.some(x => x[0] === STYLE) ? STYLE : "default");
 applyStyle();
+// page transition: how a page appears when you move between tabs (Theme page; per device, config pageTransition sets the default)
+const PGFXS = [["rise", "RISE", "Fade, then the cards rise in (default)"], ["slide", "SLIDE", "Pages slide in the direction you moved"], ["fade", "FADE", "A plain, quick fade"], ["off", "OFF", "No animation between pages"]];
+let PGFX = "rise"; try { PGFX = localStorage.getItem("dashPgFx") || CONFIG.pageTransition || "rise"; } catch (_) {}
+const applyPgFx = () => document.documentElement.setAttribute("data-pgfx", PGFXS.some(x => x[0] === PGFX) ? PGFX : "rise");
+applyPgFx();
 let FONT = "jakarta"; try { FONT = localStorage.getItem("dashFont") || "jakarta"; } catch (_) {}
 const FONTS = [["jakarta", "Plus Jakarta Sans", "Modern, friendly", '"Plus Jakarta Sans",Inter,system-ui,sans-serif'], ["google", "Google (Roboto Flex)", "Clean, Android feel", '"Roboto Flex",Roboto,system-ui,sans-serif'], ["googlemono", "Google + mono labels", "Roboto Flex with Roboto Mono labels", '"Roboto Flex",Roboto,system-ui,sans-serif'], ["outfit", "Outfit", "Geometric, rounded", '"Outfit",Inter,system-ui,sans-serif'], ["manrope", "Manrope", "Soft and neutral", '"Manrope",Inter,system-ui,sans-serif'], ["default", "Classic", "Your previous look", 'Inter,"Segoe UI",Roboto,system-ui,sans-serif']];
 const applyFont = () => document.documentElement.setAttribute("data-font", FONTS.some(x => x[0] === FONT) ? FONT : "jakarta");

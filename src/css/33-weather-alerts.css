@@ -11,3 +11,7 @@
 html[data-mode=light] .wxa{background:rgba(0,0,0,.04)}html[data-mode=light] .wxa-g{background:rgba(0,0,0,.12)}html[data-mode=light] .wxa-g u{background:rgba(0,0,0,.35)}
 .wt1{--wc:#e6c84f}.wt2{--wc:#f2a33a}.wt3{--wc:#ff6b5e}html[data-mode=light] .wt1{--wc:#a88a00}html[data-mode=light] .wt2{--wc:#b86a00}html[data-mode=light] .wt3{--wc:#c42a1f}
 #nacc[data-k=wind],#nacc .nai[data-k=wind]{--nk:#f2a33a}#nacc[data-k=rain],#nacc .nai[data-k=rain]{--nk:#6bb8ff}
+/* the wind readout in the greeting: coloured by the same Moderate / Strong / Severe limits */
+.wch.wnd{color:var(--wc);font-weight:500;padding:2px 11px;border-radius:99px;border:1px solid color-mix(in srgb,var(--wc) 45%,transparent);background:color-mix(in srgb,var(--wc) 15%,transparent)}
+.wch.wnd.wt3{animation:bl 2s ease-in-out infinite}
+@media(prefers-reduced-motion:reduce){.wch.wnd.wt3{animation:none}}

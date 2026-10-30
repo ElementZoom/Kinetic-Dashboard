@@ -18,13 +18,15 @@ function wfxInit() {
 }
 function wfxFrame(ts) {
   requestAnimationFrame(wfxFrame);
-  const c = WFX.c; if (!c || document.hidden || curPg() !== "home") return;
+  const c = WFX.c; if (!c || document.hidden || (curPg() !== "home" && !c.closest("header"))) return;   // Home, or any page while the tablet strip sits in the header (hmerge)
   if (ts - WFX.last < 33) return; const FXS = Math.max(0.05, +(CONFIG.weatherFx && CONFIG.weatherFx.speed) || 1), dt = Math.min(3, (ts - WFX.last) / 16.7) * FXS; WFX.last = ts;
   const g = c.getContext("2d"); if (!g) return;
   const W = c.clientWidth, H = c.clientHeight, d = Math.min(window.devicePixelRatio || 1, 2);
   if (!W || !H) return;
   if (c.width !== Math.round(W * d) || c.height !== Math.round(H * d)) { c.width = Math.round(W * d); c.height = Math.round(H * d); WFX.w = W; WFX.h = H; WFX.parts = []; wfxInit(); }
   g.setTransform(d, 0, 0, d, 0, 0); g.clearRect(0, 0, W, H);
+  let ax = W - 90; const hd = c.closest("header"), hr = hd && hd.querySelector(".hr");   // in the header the sun / moon sits in the free space left of the music note and the chips, not under them
+  if (hr) { const hl = hr.getBoundingClientRect().left - c.getBoundingClientRect().left; ax = Math.max(W * 0.4, Math.min(W - 90, hl - 56)); const wm = Math.round(Math.max(40, Math.min(100, (hl - 16) / W * 100))); if (c._wm !== wm) { c._wm = wm; c.style.setProperty("--wm", wm + "%"); } }
   const light = document.documentElement.getAttribute("data-mode") === "light", k = WFX.k, wd = WFX.wind, t = (WFX.t += dt * 0.016);
   const ink = light ? "40,70,110" : "230,240,255", rain = light ? "50,110,200" : "150,200,255", cl = light ? "90,110,140" : "255,255,255";
   const clouds = () => WFX.parts.forEach(p => {
@@ -34,13 +36,13 @@ function wfxFrame(ts) {
   });
   const sunGlow = (x, y, r, col) => { const gr = g.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, "rgba(" + col + ",.55)"); gr.addColorStop(1, "rgba(" + col + ",0)"); g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, 6.283); g.fill(); };
   if (k === "sun" || k === "partly") {
-    const x = W - 90, y = H * 0.5, col = light ? "255,170,40" : "255,205,90"; sunGlow(x, y, 120, col);
+    const x = ax, y = H * 0.5, col = light ? "255,170,40" : "255,205,90"; sunGlow(x, y, 120, col);
     g.strokeStyle = "rgba(" + col + ",.55)"; g.lineWidth = 2.5; g.lineCap = "round";
     for (let i = 0; i < 12; i++) { const a = i * 0.5236 + t * 0.4; g.beginPath(); g.moveTo(x + Math.cos(a) * 34, y + Math.sin(a) * 34); g.lineTo(x + Math.cos(a) * (46 + 5 * Math.sin(t * 2 + i)), y + Math.sin(a) * (46 + 5 * Math.sin(t * 2 + i))); g.stroke(); }
     g.fillStyle = "rgba(" + col + ",.9)"; g.beginPath(); g.arc(x, y, 24, 0, 6.283); g.fill();
   }
   if (k === "night" || k === "pnight") {
-    const x = W - 90, y = H * 0.45; sunGlow(x, y, 90, light ? "120,140,200" : "170,190,255");
+    const x = ax, y = H * 0.45; sunGlow(x, y, 90, light ? "120,140,200" : "170,190,255");
     g.fillStyle = light ? "rgba(90,100,150,.85)" : "rgba(235,240,255,.92)"; g.beginPath(); g.arc(x, y, 22, 0, 6.283); g.fill();
     g.globalCompositeOperation = "destination-out"; g.beginPath(); g.arc(x + 11, y - 6, 20, 0, 6.283); g.fill(); g.globalCompositeOperation = "source-over";
     WFX.parts.forEach(p => { if (p.cloud) return; const a = 0.25 + 0.6 * Math.abs(Math.sin(t * p.v + p.p)); g.fillStyle = "rgba(" + (light ? "90,100,150" : "255,255,255") + "," + a + ")"; g.beginPath(); g.arc(p.x, p.y, p.s * 1.3, 0, 6.283); g.fill(); });

@@ -1,16 +1,21 @@
 // ---------- weather alerts: wind now, wind and rain coming up (Notifications > Alerts card, and the header strip chips) ----------
 // Same tiers as a Home Assistant weather-alert automation: wind 30 / 62 / 89 km/h, rain 0.5 / 2 / 5 mm per hour over the next 6 hours.
-// config weatherAlerts: false = off, or { wind: true, rain: true, windTiers: [30, 62, 89], rainTiers: [0.5, 2, 5], hours: 6, stripWind: 2, stripRain: 3 }
-// stripWind / stripRain = the tier (1 to 3) from which the header strip shows a chip (Strong wind and Heavy rain by default); the Alerts card shows from tier 1.
+// config weatherAlerts: false = off, or { wind: true, rain: true, windTiers: [30, 62, 89], rainTiers: [0.5, 2, 5], hours: 6, stripWind: 1, stripRain: 1 }
+// stripWind / stripRain = the tier (1 to 3) from which the header strip shows a chip (1 = any wind or rain from the first tier, 3 = only Severe wind / Heavy rain); the Alerts card always shows from tier 1.
 const wxaCfg = () => {
   const c = CONFIG.weatherAlerts; if (c === false) return null;
   const o = c && typeof c === "object" ? c : {}, tiers = (a, d) => Array.isArray(a) && a.length === 3 && a.every(x => isFinite(x)) ? a.map(Number) : d;
-  return { wind: o.wind !== false, rain: o.rain !== false, wt: tiers(o.windTiers, [30, 62, 89]), rt: tiers(o.rainTiers, [0.5, 2, 5]), hours: +o.hours > 0 ? +o.hours : 6, sw: +o.stripWind || 2, sr: +o.stripRain || 3 };
+  return { wind: o.wind !== false, rain: o.rain !== false, wt: tiers(o.windTiers, [30, 62, 89]), rt: tiers(o.rainTiers, [0.5, 2, 5]), hours: +o.hours > 0 ? +o.hours : 6, sw: +o.stripWind || 1, sr: +o.stripRain || 1 };
 };
 const wxaTier = (v, t) => v == null || isNaN(v) ? 0 : v > t[2] ? 3 : v > t[1] ? 2 : v > t[0] ? 1 : 0;
 const WXA_COL = ["", "#e6c84f", "#f2a33a", "#ff6b5e"];
 const wxaCol = k => { const w = wxaNow(); const t = w ? (k === "wind" ? (w.wind || {}).tier : (w.rain || {}).tier) : 0; return WXA_COL[t || 1]; };
 const wxaTime = ts => { const d = new Date(ts), td = d.toDateString() === new Date().toDateString(); return (td ? "" : d.toLocaleDateString([], { weekday: "short" }) + " ") + d.toLocaleTimeString([], tmo({ hour: "numeric" })).replace(/\s?([AP])M/i, " $1M"); };
+// the tier (0 to 3) of the wind blowing now, by the same limits as the Alerts card: the greeting's wind readout takes its colour from it
+function wxaLive() {
+  const c = wxaCfg(), a = (states[W] || {}).attributes; if (!c || !c.wind || !a || a.wind_speed == null) return 0;
+  const u = a.wind_speed_unit || "km/h", k = /mph/i.test(u) ? 1.609 : /m\/s/i.test(u) ? 3.6 : /kn|kt/i.test(u) ? 1.852 : 1; return wxaTier(+a.wind_speed * k, c.wt);
+}
 function wxaNow() {
   const c = wxaCfg(), w = states[W]; if (!c) return null;
   const a = w ? w.attributes : {}, now = Date.now(), end = now + c.hours * 3600000, fc = fcH.filter(x => { const t = Date.parse(x.datetime); return t >= now - 3600000 && t <= end; }), out = {};
@@ -46,3 +51,6 @@ function wxaHtml(w) {
   }
   return '<div class="wxa">' + h + '</div>';
 }
+// the header strip: Strong / Severe wind and Heavy rain are urgent (hi = true), the lower tiers are not (see NSK in 32-notifications-popup.js). Each shows from its own first tier (stripWind / stripRain).
+const wxaChip = (k, hi) => { const w = wxaNow(), x = w && w[k]; if (!x || x.tier < (k === "wind" ? w.cfg.sw : w.cfg.sr)) return false; return (k === "wind" ? x.tier >= 2 : x.tier >= 3) === hi; };
+const wxaName = k => () => { const x = (wxaNow() || {})[k]; return x ? (k === "wind" ? WXA_W[x.tier] + " wind" : WXA_R[x.tier]) + (x.now ? "" : " soon") : (k === "wind" ? "Wind" : "Rain"); };

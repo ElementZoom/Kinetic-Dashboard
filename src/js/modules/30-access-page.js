@@ -30,7 +30,7 @@ function accSec(sec) {
   }).join("");
   return accWrap(h);
 }
-function accSave(M) { const v = accEncode(M); if (v.length > 255) return false; const id = E("access"); states[id] = Object.assign({}, states[id], { state: v }); call("input_text", "set_value", id, { value: v }); ruRefresh(); drawPalette(); return true; }
+function accSave(M) { const v = accEncode(M); if (v.length > 255) return false; const id = E("access"); states[id] = Object.assign({}, states[id], { state: v }); call("input_text", "set_value", id, { value: v }); ruRefresh(); if (curPg() === "admin") drawAdmin(); else if (curPg() === "theme") drawPalette(); return true; }   // Access lives on the Admin page now: redraw that (it used to redraw the Theme page, so taps saved but the switch and chips never changed on screen)
 function accClick(b) {
   if (b.dataset.acc === "fold") { const k = b.dataset.u, w = b.closest(".acc-u"), o = !w.classList.contains("open"); ACC.fold[k] = o; w.classList.toggle("open", o); b.setAttribute("aria-expanded", o); $(".acct", b).innerHTML = mdi(o ? "chevron-up" : "chevron-down"); return; }
   if (!states[E("access")]) return;

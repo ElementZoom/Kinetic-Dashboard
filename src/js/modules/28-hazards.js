@@ -91,7 +91,7 @@ function hzFit() {   // phone: the map page and the lists page each fill the spa
   const bt = $("#btab"), br = bt ? bt.getBoundingClientRect() : null, bot = br && br.height ? br.top : innerHeight, hd = $("header"), tw = $("#hazards .hztw"), top = tw && tw.offsetHeight ? tw.getBoundingClientRect().bottom + 8 : hd ? hd.getBoundingClientRect().bottom + 12 : g.getBoundingClientRect().top, h = Math.max(360, bot - top - 54);
   g.style.setProperty("--hzH", h + "px");
 }
-function hzTab(t) { HZ.tab = t; const g = $("#hazards .hzg"); if (g) g.dataset.tab = t; $$("#hazards .hztabs .chip").forEach(c => c.classList.toggle("on", c.dataset.v === t)); hzFit(); }
+function hzTab(t) { const ord = ["map", "quake", "volc"], was = HZ.tab; HZ.tab = t; if (was !== t && was && $("#hazards .hzg")) txGo($("#hazards .hzg"), ord.indexOf(t) > ord.indexOf(was) ? 1 : -1, true); const g = $("#hazards .hzg"); if (g) g.dataset.tab = t; $$("#hazards .hztabs .chip").forEach(c => c.classList.toggle("on", c.dataset.v === t)); hzFit(); }
 function hzPage(i) { hzTab(i ? "quake" : "map"); }
 function hzSel(id, fly) {
   HZ.sel = HZ.sel === id && !fly ? "" : id; const d = HZ.d || hzData();

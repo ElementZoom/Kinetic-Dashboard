@@ -1,7 +1,7 @@
 // ---------- Attention: things worth acting on ----------
-// Notifications > ATTENTION lists the bins, dry soil, devices that have been offline for a while, updates waiting and low batteries. A slim card on Home shows the top few while there is anything. Alerts keeps the urgent things (leak, warnings, doors).
-// Config: attention: false | { offline: true, offlineMinutes: 10, updates: true, soil: true, soilBelow: 25, batteries: true, batteryBelow: 26, home: true, ignore: ["light.hall_lamp"], watch: ["binary_sensor.x"] } (see config.example.js)
-const attnCfg = () => { const a = CONFIG.attention; return a === false ? null : Object.assign({ offline: true, offlineMinutes: 10, updates: true, soil: true, soilBelow: 25, batteries: true, batteryBelow: 26, home: true, ignore: [], watch: [] }, a || {}); };
+// Notifications > ATTENTION lists the bins, dry soil, devices that have been offline for a while, updates waiting and low batteries. Alerts keeps the urgent things (leak, warnings, doors).
+// Config: attention: false | { offline: true, offlineMinutes: 10, updates: true, soil: true, soilBelow: 25, batteries: true, batteryBelow: 26, ignore: ["light.hall_lamp"], watch: ["binary_sensor.x"] } (see config.example.js)
+const attnCfg = () => { const a = CONFIG.attention; return a === false ? null : Object.assign({ offline: true, offlineMinutes: 10, updates: true, soil: true, soilBelow: 25, batteries: true, batteryBelow: 26, ignore: [], watch: [] }, a || {}); };
 const ATD = /^(light|switch|cover|lock|climate|camera|fan|siren|alarm_control_panel|vacuum)\./;   // what counts as a device that can be "offline" (sensors and media players come and go too often); add more with watch
 const ATU = new Set();   // ids that were unavailable at their last change, so the redraw also fires when they come back
 function attnRel(id) {   // a state change that can alter the Attention list (the list redraws only for these)
@@ -33,17 +33,4 @@ function attnHtml(it) {
   const ba = by("bat"); if (ba.length) h += head("battery-low", "Batteries", ba.length) + ba.map(row).join("");
   return h;
 }
-// the slim Home card: opens the Attention tab. One line: the count and a summary ("3 offline · 12 updates · 5 low batteries"); a single item shows its own name. On a tablet it shares the row under the greeting with the Today strip (see hsFit in 10-today-schedule.js)
-const AT_N = { off: n => n + " offline", soil: n => n + " dry soil", bat: n => n + (n > 1 ? " low batteries" : " low battery"), upd: n => n + (n > 1 ? " updates" : " update") };
-function attnSum(it) {
-  if (it.length === 1) return it[0].t + " · " + it[0].sub;
-  const b = it.filter(x => x.k === "bins")[0], n = k => it.filter(x => x.k === k).length;
-  return (b ? [b.t] : []).concat(["off", "soil", "bat", "upd"].filter(n).map(k => AT_N[k](n(k)))).join(" · ");
-}
-function attnCard(it) {
-  const el = $("#attn"); if (!el) return; const c = attnCfg(), on = !!c && c.home !== false && it.length > 0;
-  const h = on ? '<span class="at-h" title="Needs attention">' + mdi("alert-circle") + it.length + '</span><span class="at-l"><span class="at-x">' + esc(attnSum(it)) + '</span></span><span class="at-c">' + mdi("chevron-right") + '</span>' : "";
-  if (el._h !== h) { el._h = h; el.innerHTML = h; } el.hidden = !on; hsFit();
-}
-$("#attn").onclick = () => { npTab = "attention"; document.body.classList.add("np-open"); drawNotif(); };
 setInterval(() => queueNotif(), 60000);   // "offline for N min" needs a clock, not only state changes

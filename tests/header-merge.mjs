@@ -1,4 +1,4 @@
-// Tablet: the greeting strip joins the header while no music plays, and drops back when music starts, on other pages or when the row is too tight.   Run:  node tests/header-merge.mjs
+// Tablet: the greeting strip joins the header on every page, music or not, and drops back below it on phones or when the row is too tight.   Run:  node tests/header-merge.mjs
 import http from "node:http";
 import fs from "node:fs";
 import path from "node:path";
@@ -24,11 +24,11 @@ await S("weather.home", "sunny", { temperature: 21, wind_speed: 12 }); await pag
 let r = await where(); eq("tablet, nothing playing: greeting is in the header", r.inHeader, true); eq("header stays one row", r.h < 100, true);
 await page.screenshot({ path: process.env.SHOT || "/tmp/hdr-merge.png", clip: { x: 0, y: 0, width: 1500, height: 160 } });
 await S("media_player.a", "playing", { friendly_name: "Living", media_title: "Song", media_artist: "Artist", media_duration: 200, media_position: 10, media_position_updated_at: new Date().toISOString() });
-await page.evaluate(() => { npRender(); }); await settle(); r = await where(); eq("music playing: greeting back below the header", r.inHeader, false);
-await S("media_player.a", "idle", {}); await page.evaluate(() => { npRender(); }); await settle(); r = await where(); eq("music stopped: greeting returns to the header", r.inHeader, true);
+await page.evaluate(() => { npRender(); }); await settle(); r = await where(); eq("music playing: the greeting stays in the header (the player is a music note)", r.inHeader, true);
+await S("media_player.a", "idle", {}); await page.evaluate(() => { npRender(); }); await settle(); r = await where(); eq("music stopped: greeting still in the header", r.inHeader, true);
 await page.evaluate(() => { location.hash = "#weather"; }); await settle(); r = await where(); eq("other page: greeting is in the header too", r.inHeader, true);
 await page.evaluate(() => { location.hash = "#home"; }); await settle(); r = await where(); eq("back on Home: still merged", r.inHeader, true);
-await page.evaluate(() => { location.hash = "#weather"; }); await S("media_player.a", "playing", { friendly_name: "Living", media_title: "Song", media_artist: "Artist", media_duration: 200, media_position: 10, media_position_updated_at: new Date().toISOString() }); await page.evaluate(() => { npRender(); }); await settle(); r = await where(); eq("other page + music: player replaces the greeting", r.inHeader, false);
+await page.evaluate(() => { location.hash = "#weather"; }); await S("media_player.a", "playing", { friendly_name: "Living", media_title: "Song", media_artist: "Artist", media_duration: 200, media_position: 10, media_position_updated_at: new Date().toISOString() }); await page.evaluate(() => { npRender(); }); await settle(); r = await where(); eq("other page + music: the greeting stays in the header", r.inHeader, true);
 await S("media_player.a", "idle", {}); await page.evaluate(() => { npRender(); location.hash = "#home"; }); await settle();
 await page.setViewportSize({ width: 700, height: 900 }); await settle(); r = await where(); eq("phone width: not merged", r.inHeader, false);
 await page.setViewportSize({ width: 1000, height: 800 }); await settle(); r = await where(); eq("narrow tablet: merged only when it fits one row", r.inHeader ? r.h < 100 : true, true);

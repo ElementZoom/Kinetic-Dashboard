@@ -3,6 +3,13 @@
 .pre2{display:flex;flex-direction:column;align-items:stretch;gap:10px;padding:10px;border-radius:14px;border:1px solid var(--line);background:rgba(var(--w),.06);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
 .pre2 i{display:block;height:26px;border-radius:8px}.pre2 b{font-weight:500;font-size:15px;padding:0 2px 2px}.pre2:active{background:rgba(var(--w),.14)}.pre2.on{border-color:var(--mint);box-shadow:inset 0 0 0 1px var(--mint)}
 header{position:relative}#hnp{display:none}
+/* tablet: no player bar in the header any more, only a small music note while something plays (it sways, with a soft ring); tap = Media page */
+#hnote{display:none;position:relative;flex:none;width:42px;height:42px;padding:0;border-radius:50%;border:1px solid var(--line);background:rgba(var(--w),.05);color:var(--mint);align-items:center;justify-content:center;cursor:pointer;z-index:2}
+#hnote.on{display:inline-flex}#hnote svg{width:22px;height:22px;fill:currentColor;transform-origin:50% 85%}
+#hnote.pl svg{animation:hnsw 2.4s ease-in-out infinite}#hnote.pl::before{content:"";position:absolute;inset:-1px;border-radius:50%;border:1.5px solid currentColor;opacity:0;pointer-events:none;animation:hnrg 2.4s ease-out infinite}
+@keyframes hnsw{0%,100%{transform:rotate(-9deg) translateY(0)}25%{transform:rotate(0) translateY(-3px)}50%{transform:rotate(9deg) translateY(0)}75%{transform:rotate(0) translateY(-3px)}}
+@keyframes hnrg{0%{transform:scale(1);opacity:.5}100%{transform:scale(1.6);opacity:0}}
+@media(prefers-reduced-motion:reduce){#hnote.pl svg,#hnote.pl::before{animation:none}}
 @media(min-width:761px){
 #hnp:not(.npoff){display:flex;align-items:center;gap:16px;flex:1;min-width:0;max-width:700px;margin:0 20px}
 body.np-hdr header{padding-bottom:14px}

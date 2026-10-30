@@ -48,7 +48,7 @@ function ruApply(o) {   // hides what this person may not use; the engine also s
     css += "#navset,#navset2,#outs,#hnp{display:none!important}#hc{pointer-events:none}#nacc{display:none!important}";   // no Settings link, no notification pop-up (it holds the "all off" switches and admin toggles)
     if (!PAGE_ON("security") || !ruSec("alarm")) css += "#al{display:none!important}";
     if (!["climate", "weather", "energy", "irrigation", "media", "events", "vehicle", "hazards", "theme"].some(PAGE_ON)) css += "#bmore{display:none!important}";
-    if (off.indexOf("media") > -1) css += "#npmini,#npfab,#npsheet{display:none!important}";
+    if (off.indexOf("media") > -1) css += "#npmini,#npfab,#npsheet,#hnote{display:none!important}";
     if (left <= 1 || RU.header === false) css += "#hb{display:none!important}";
     if (!ruSec("alarm")) css += "#alp{display:none!important}";
     if (!ruSec("playback")) css += ".px,.pbk{display:none!important}";

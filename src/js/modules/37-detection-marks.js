@@ -14,10 +14,24 @@ function mkKind(types, ar, area, prev) {   // which of the camera's tags a box i
   return prev || types[0];
 }
 const mkSmall = (oth, ar, per) => per && !(ar > 1.5 && oth.length > 1) ? "Person" : oth.length > 1 && ar > 1.2 ? oth.filter(t => t !== "Person")[0] || "Person" : oth[0];
+// The boxes can be turned off and on with a round button: on the live picture (full screen card, camera view; next to Sound / Talk) and on the Playback and Detections players (top right).
+// Live and recordings are remembered separately on this device (localStorage dashMklive / dashMkrec). Default: on.
+function mkPref(k) { if (window.__mkp && window.__mkp[k]) return window.__mkp[k] !== "off"; try { return localStorage.getItem("dashMk" + k) !== "off"; } catch (_) { return true; } }
+function mkSetPref(k, on) {
+  (window.__mkp = window.__mkp || {})[k] = on ? "on" : "off"; try { localStorage.setItem("dashMk" + k, on ? "on" : "off"); } catch (_) {}
+  document.querySelectorAll(".cam,.pbv,.dtv").forEach(el => { if (el._mkv && (el._mkLive ? "live" : "rec") === k) mkAttach(el, el._mkAll || []); });
+  document.querySelectorAll("[data-mkt]").forEach(b => b.classList.toggle("on", mkPref(b.dataset.mkt)));
+}
+function mkBtn(el) {   // Playback / Detections player: the button only shows for a clip the camera tagged (otherwise there is nothing to mark)
+  if (el.classList.contains("cam")) return;
+  const show = !!mkStyle() && el._mkAll.length > 0; let b = el._mkBtn;
+  if (!b) { if (!show) return; b = el._mkBtn = document.createElement("button"); b.type = "button"; b.className = "mkt"; b.dataset.mkt = "rec"; b.setAttribute("aria-label", "Detection boxes"); b.innerHTML = AUD.det; b.onclick = e => { e.stopPropagation(); mkSetPref("rec", !mkPref("rec")); }; el.append(b); }
+  b.hidden = !show; b.classList.toggle("on", mkPref("rec"));
+}
 function mkAttach(el, tags) {   // el = .pbv or .dtv; call each time a clip is loaded
   const v = el && el.querySelector("video:not(.mkw)"), st = mkStyle(); if (!v) return;
-  el._mkTags = (tags || []).filter(t => MKN[t]); el._mkv = v; el.dataset.mk = st; el._mkTok = (el._mkTok || 0) + 1; el._mkAiBusy = 0; el._mkD = []; el._mkPT = -1; el._mkLaOff = 0; el._mkLaBad = 0; el._mkLaOk = 0;
-  mkClear(el); const on = st && el._mkTags.length; el.classList.toggle("mkon", !!on);
+  el._mkAll = (tags || []).filter(t => MKN[t]); el._mkTags = mkPref(el._mkLive ? "live" : "rec") ? el._mkAll : []; el._mkv = v; el.dataset.mk = st; el._mkTok = (el._mkTok || 0) + 1; el._mkAiBusy = 0; el._mkD = []; el._mkPT = -1; el._mkLaOff = 0; el._mkLaBad = 0; el._mkLaOk = 0;
+  mkClear(el); const on = st && el._mkTags.length; el.classList.toggle("mkon", !!on); mkBtn(el);
   if (!on) { if (el._mkg) el._mkg.innerHTML = ""; mkLaSync(el); return; }
   if (!el._mk) { el._mk = document.createElement("div"); el._mk.className = "mkl"; el._mkg = document.createElement("div"); el._mkg.className = "mkg"; el.append(el._mk, el._mkg); ["seeked", "emptied", "loadstart", "ended"].forEach(n => v.addEventListener(n, () => mkClear(el))); }
   el._mkg.innerHTML = st === "glow" ? el._mkTags.map(t => '<span class="' + t.toLowerCase() + '">' + MKN[t] + '</span>').join("") : "";

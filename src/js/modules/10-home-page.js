@@ -5,6 +5,7 @@ function home() {
   const ic = "", unit = a.temperature_unit || "°C", wsp = null;   // icon and wind come straight from the weather entity
   $("#wchip").innerHTML = w ? (raining ? mdi("weather-pouring") : MDI[ic] ? mdi(ic) : wic(w.state)) + " " + f1(ot != null ? ot : a.temperature) + " " + unit + ", " + (dry ? "Dry" : cd[1]) : "--";
   $("#wwind").innerHTML = w ? mdi("weather-windy") + " " + (wsp != null ? wsp : a.wind_speed != null ? Math.round(a.wind_speed) : "--") + " " + (a.wind_speed_unit || "km/h") : "";
+  { const wt = typeof wxaLive === "function" ? wxaLive() : 0, el = $("#wwind"); el.className = "wch" + (wt ? " wnd wt" + wt : ""); el.title = wt ? WXA_W[wt] + " wind" : ""; }   // Moderate / Strong / Severe wind: coloured like the Alerts card
   wfxSet(w ? w.state : "", raining, parseFloat(wsp != null ? wsp : a.wind_speed) || 0);
   if (fc[0]) $("#whl").textContent = "High " + Math.round(fc[0].temperature) + "° / Low " + Math.round(fc[0].templow != null ? fc[0].templow : fc[0].temperature) + "°";
   if (!CONFIG.outside && w) $("#outs").textContent = f1(a.temperature) + "°C";
@@ -69,7 +70,7 @@ function loadEvents() {
       let d = new Date(s.getFullYear(), s.getMonth(), s.getDate());
       for (let n = 0; n < 42 && d <= last; n++, d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1))
         (map[dk(d)] = map[dk(d)] || []).push({ t: s, ad: ad, s: v.summary, c: evColOf(c, v) || CALCOL[i % CALCOL.length], i: EVS.push({ v: v, cal: c, ci: i }) - 1 });
-    } catch (x) { evErr.push(calName(c) + ": skipped \"" + (v && v.summary || "?") + "\" (" + x.message + ")"); } })).catch(x => { evErr.push(calName(c) + ": " + x.message); }))).then(() => { if (tok === evTok) { evLast = { k: mk, gs: gs, map: map }; drawEvents(gs, map, true); const el = $("#eerr"); if (el) el.textContent = evErr.length ? evErr.join(" · ") + "  |  Calendars HA has: " + Object.keys(states).filter(k => k.indexOf("calendar.") === 0).join(", ") : ""; } });
+    } catch (x) { evErr.push(calName(c) + ": skipped \"" + (v && v.summary || "?") + "\" (" + x.message + ")"); } })).catch(x => { evErr.push(calName(c) + ": " + x.message); }))).then(() => { if (tok === evTok) { evLast = { k: mk, gs: gs, map: map }; drawEvents(gs, map, true); evReveal(); const el = $("#eerr"); if (el) el.textContent = evErr.length ? evErr.join(" · ") + "  |  Calendars HA has: " + Object.keys(states).filter(k => k.indexOf("calendar.") === 0).join(", ") : ""; } });
 }
 let evTy = null;
 function evTitle(y, m) {   // the month name, or its short form when the long one does not fit between the arrows (September on a narrow phone)
@@ -125,6 +126,15 @@ function txGo(el, dir, stag) {
   el.classList.add(stag ? "txc" : "tx");
   clearTimeout(el._tx); el._tx = setTimeout(() => el.classList.remove("tx", "txc"), 1100);
 }
+// the same slide for cards that are shown one at a time (the phone's section pills: no wrapper to animate, the cards themselves slide in)
+function txEls(els, dir) {
+  if (!els || (window.matchMedia && matchMedia("(prefers-reduced-motion:reduce)").matches)) return;
+  els.forEach((el, i) => {
+    el.classList.remove("tx"); void el.offsetWidth;
+    el.style.setProperty("--tx", (dir || 0) * 28 + "px"); el.style.setProperty("--ty", dir ? "6px" : "14px"); el.style.animationDelay = i * 32 + "ms";
+    el.classList.add("tx"); clearTimeout(el._tx); el._tx = setTimeout(() => { el.classList.remove("tx"); el.style.animationDelay = ""; }, 1100);
+  });
+}
 let evS = null;
 function evBtn() { const b = $("#eadd"); if (b) b.style.display = evWritable().length ? "" : "none"; }
 function evOpen(o) {   // o: {ev} to edit, or {date} to add
@@ -137,7 +147,7 @@ function evOpen(o) {   // o: {ev} to edit, or {date} to add
     const r = v.rrule || ""; if (r) { const f = (/FREQ=(\w+)/.exec(r) || [])[1]; st.rep = f ? f.toLowerCase() : ""; const iv = +(/INTERVAL=(\d+)/.exec(r) || [])[1] || 1; if (iv > 1 && st.rep) { st.unit = st.rep; st.n = iv; st.rep = "custom"; } const b = (/BYDAY=([A-Z,]+)/.exec(r) || [])[1]; if (b) st.days = b.split(","); const u = (/UNTIL=(\d{4})(\d{2})(\d{2})/.exec(r)); if (u) st.until = u[1] + "-" + u[2] + "-" + u[3]; }
     st.recur = !!(v.rrule || v.recurrence_id); st.noUid = !v.uid; st.src = e; if (st.recur && !evCanUpdate(st.cal)) st.scope = "following";
   } else { st.ed = st.sd; }
-  st.sig0 = evSig(st); evS = st; evDraw(); document.body.classList.add("ev-open");
+  st.sd0 = st.sd; st.st0 = st.st; st.days0 = st.days.slice(); st.sig0 = evSig(st); evS = st; evDraw(); document.body.classList.add("ev-open");
 }
 function evClose() { $("#evq").classList.remove("on"); document.body.classList.remove("ev-open"); evS = null; }
 function evFreq(s) { return s.rep === "custom" ? s.unit : s.rep; }
@@ -158,8 +168,7 @@ function evDraw() {
     (s.rep ? f("Repeat until (optional)", '<input type="date" id="evun" value="' + s.until + '">') : "") +
     f("Location", '<input type="text" id="evlc" value="' + esc(s.loc) + '" autocomplete="off">') + f("Notes", '<textarea id="evnt">' + esc(s.note) + '</textarea>') +
     (s.edit && s.recur ? '<div><span class="lbl">Apply changes to</span><div class="evc" style="margin-top:6px">' + [["this", "This event"], ["following", "This and following"], ["all", "All events"]].filter(x => x[0] !== "all" || evCanUpdate(s.cal)).map(x => '<button data-sc="' + x[0] + '" class="' + (s.scope === x[0] ? "on" : "") + '">' + x[1] + '</button>').join("") + '</div></div>' : "") +
-    '<div class="evm2" id="evmsg">' + (ro ? "This event can't be edited (no ID from the calendar)." : esc(s.msg)) + '</div>' +
-    '</div></div><div class="evact">' + (s.edit ? '<button class="evdel" data-x="del"' + (ro ? " disabled" : "") + '>Delete</button><button class="evdup" data-x="dup">Duplicate</button>' : "") + '<button class="sv" data-x="save"' + (ro || !cs.length ? " disabled" : "") + '>' + (s.edit ? "Save" : "Add event") + '</button></div>';
+    '</div></div><div class="evm2" id="evmsg">' + (ro ? "This event can't be edited (no ID from the calendar)." : esc(s.msg)) + '</div><div class="evact">' + (s.edit ? '<button class="evdel" data-x="del"' + (ro ? " disabled" : "") + '>Delete</button><button class="evdup" data-x="dup">Duplicate</button>' : "") + '<button class="sv" data-x="save"' + (ro || !cs.length ? " disabled" : "") + '>' + (s.edit ? "Save" : "Add event") + '</button></div>';
 }
 function evRead() {   // keep what was typed when the sheet redraws
   const s = evS; if (!s) return; const g = id => { const x = $("#" + id); return x ? x.value : null; };
@@ -171,19 +180,22 @@ function evSave() {
     const s = evS, t = s.title.trim(), tk = evKey(s.cal, t), old = evUk(s.cal, (s.src || {}).v);
     if (again) { if (old) delete EVCOL[old]; EVPEND = s.col && ev ? { cal: s.cal, t: t.toLowerCase(), start: ev.dtstart, col: s.col } : null; }
     else if (old) { if (s.col) EVCOL[old] = s.col; else if (EVCOL[tk]) EVCOL[old] = "-"; else delete EVCOL[old]; }
-    evColSave(); }; const s = evS, m = t => { s.msg = t; $("#evmsg").textContent = t; };
+    evColSave(); }; const s = evS, m = t => { s.msg = t; const x = $("#evmsg"); x.textContent = t; x.classList.remove("shk"); void x.offsetWidth; x.classList.add("shk"); };
   if (s.edit && s.sig0 === evSig(s)) { fin(null, false); evClose(); loadEvents(); return; }   // only the colour changed: the colour lives on this device (and in your Home Assistant user data), so the calendar is not touched
   if (!s.title.trim()) return m("Add a title first.");
+  if (s.edit && s.recur && !s.scoped && !s.asked && (s.sd !== s.sd0 || (!s.ad && s.st !== s.st0))) return evAskScope();   // moved a repeating event: just this one, or the series too?
   if (!s.sd || !s.ed) return m("Pick the dates.");
   const ev = { summary: s.title.trim() };
   if (s.ad) { ev.dtstart = s.sd; ev.dtend = addDays(s.ed < s.sd ? s.sd : s.ed, 1); }
   else { ev.dtstart = dtIso(s.sd, s.st); ev.dtend = dtIso(s.ed, s.et); if (new Date(ev.dtend) <= new Date(ev.dtstart)) return m("The end has to be after the start."); }
   ev.location = s.loc.trim(); ev.description = s.note.trim();
   if (s.rep) {
-    const fq = evFreq(s); let r = "FREQ=" + fq.toUpperCase(); if (s.rep === "custom" && s.n > 1) r += ";INTERVAL=" + s.n; if (fq === "weekly" && s.days.length) r += ";BYDAY=" + s.days.join(",");
+    const fq = evFreq(s); let r = "FREQ=" + fq.toUpperCase(); if (s.rep === "custom" && s.n > 1) r += ";INTERVAL=" + s.n; if (fq === "weekly" && s.days.length) r += ";BYDAY=" + evDays(s).join(",");
     if (s.until) r += ";UNTIL=" + (s.ad ? s.until.replace(/-/g, "") : new Date(s.until + "T23:59:59").toISOString().replace(/[-:]/g, "").replace(/\.\d+/, ""));
     ev.rrule = r;
-  } else if (s.edit) ev.rrule = "";
+  }
+  if (s.edit && s.recur && s.scope === "this") delete ev.rrule;   // one occurrence on its own: no repeat rule
+  // no rrule key = does not repeat (Home Assistant refuses an empty one, and an update replaces the whole event, so a series turned into a single event loses its rule this way)
   const b = $("#evp .sv"), reset = () => { b.disabled = false; b.textContent = s.edit ? "Save" : "Add event"; };
   if (s.edit && !evCanUpdate(s.cal)) {   // this calendar (e.g. Google) can't update in place: add the new version, then remove the old one
     if (s.recur && s.scope === "all") s.scope = "following";
@@ -194,14 +206,45 @@ function evSave() {
       if (m2 && m2.success === false) { reset(); return m((m2.error && m2.error.message) || "Couldn't save."); }
       send(Object.assign({ type: "calendar/event/delete", entity_id: s.cal }, evTarget()), (r2, m3) => {
         if (m3 && m3.success === false) { evClose(); loadEvents(); alert("The updated event was added, but the old one couldn't be removed. Please delete the old copy."); return; }
-        fin(ev, true); evClose(); loadEvents(); setTimeout(loadEvents, 3000);
+        fin(ev, true); evFocus(ev, s); evClose(); loadEvents(); setTimeout(loadEvents, 3000);
       });
     });
   }
   const msg = { type: "calendar/event/" + (s.edit ? "update" : "create"), entity_id: s.cal, event: ev };
   if (s.edit) Object.assign(msg, evTarget());
   b.disabled = true; b.textContent = "Saving…";
-  send(msg, (r, m2) => { if (m2 && m2.success === false) { b.disabled = false; b.textContent = s.edit ? "Save" : "Add event"; return m((m2.error && m2.error.message) || "Couldn't save."); } fin(ev, !s.edit); evClose(); loadEvents(); setTimeout(loadEvents, 3000); });
+  send(msg, (r, m2) => { if (m2 && m2.success === false) { b.disabled = false; b.textContent = s.edit ? "Save" : "Add event"; return m((m2.error && m2.error.message) || "Couldn't save."); } fin(ev, !s.edit); evFocus(ev, s); evClose(); loadEvents(); setTimeout(loadEvents, 3000); });
+}
+// after adding (or moving) an event: go to its month, scroll to it, pop it in with a glow and say so, instead of dropping back to the old view
+let EVNEW = null, evTt = 0;
+function evFocus(ev, s) {
+  const moved = s.edit && (s.sd !== s.sd0 || (!s.ad && s.st !== s.st0)); if (s.edit && !moved) return;
+  const d = ev.dtstart.slice(0, 10).split("-"); EVNEW = { cal: s.cal, t: s.title.trim().toLowerCase(), day: ev.dtstart.slice(0, 10), tm: s.ad ? "" : s.st, verb: s.edit ? "Moved" : "Added", until: Date.now() + 12000 };
+  cy = +d[0]; cm = +d[1] - 1; evJump = false;
+}
+function evReveal() {   // called after every draw of the month: the highlight survives a redraw until its time is up
+  const n = EVNEW; if (!n || evSq.on) return; if (Date.now() > n.until) { EVNEW = null; return; }
+  const i = EVS.findIndex(x => x.cal === n.cal && (x.v.summary || "").trim().toLowerCase() === n.t && ymd(pd(x.v.start)) === n.day && (!n.tm || hm(pd(x.v.start)) === n.tm)), el = i < 0 ? null : $('#cg [data-ev="' + i + '"]');
+  if (!el) return;
+  const cd = el.closest(".cd"); el.classList.add("evnew"); if (n.shown) el.classList.add("evkeep"); if (cd) cd.classList.add("evnewd");
+  if (n.shown) return; n.shown = true; n.until = Date.now() + 3400;
+  const s0 = pd(EVS[i].v.start), ad = !EVS[i].v.start.dateTime;
+  el.scrollIntoView({ block: "center", behavior: window.matchMedia && matchMedia("(prefers-reduced-motion:reduce)").matches ? "auto" : "smooth" });
+  let tt = $("#evtoast"); if (!tt) { tt = document.createElement("div"); tt.id = "evtoast"; document.body.appendChild(tt); }
+  tt.innerHTML = mdi("check-circle") + '<span><b>' + n.verb + '</b> · ' + esc(calName(n.cal)) + ' · ' + s0.toLocaleDateString([], { weekday: "short", day: "numeric", month: "short" }) + (ad ? "" : ", " + s0.toLocaleTimeString([], tmo({ hour: "numeric", minute: "2-digit" })).replace(" ", "").toLowerCase()) + '</span>';
+  void tt.offsetWidth; tt.classList.add("on"); clearTimeout(evTt);
+  evTt = setTimeout(() => { tt.classList.remove("on"); EVNEW = null; $$("#cg .evnew").forEach(x => x.classList.remove("evnew", "evkeep")); $$("#cg .evnewd").forEach(x => x.classList.remove("evnewd")); }, 3400);
+}
+// the weekly days follow the start when the whole series (or this and following) is moved to another weekday: Tuesdays moved one day later become Wednesdays, otherwise the first one would fall on the next Tuesday and the moved event would vanish
+function evDays(s) {
+  const dd = s.edit ? Math.round((new Date(s.sd + "T12:00") - new Date(s.sd0 + "T12:00")) / 864e5) : 0;
+  return s.edit && dd && s.scope !== "this" && JSON.stringify(s.days) === JSON.stringify(s.days0) ? s.days.map(d => WD[((WD.indexOf(d) + dd) % 7 + 7) % 7]) : s.days;
+}
+function evAskScope() {
+  const s = evS, can = evCanUpdate(s.cal);
+  $("#evq .evqc").innerHTML = '<h4>Repeating event</h4><p><b>' + esc(s.title.trim() || "Untitled") + '</b><br>You changed the date or time. What should change?</p><div class="qb qs">' +
+    '<button data-qs="this">Only this event</button><button data-qs="following">This and following</button>' + (can ? '<button data-qs="all">All events</button>' : "") + '</div><button class="qc" data-q="no">Cancel</button>';
+  $("#evq").classList.add("on"); const f = $("#evq [data-qs=this]"); if (f) f.focus();
 }
 function evTarget() {
   const s = evS, v = (s.src || {}).v || {}, o = { uid: v.uid };
@@ -215,16 +258,21 @@ function evDup() {
 }
 function evDelete() {
   const s = evS, sc = { this: "Only this event will be deleted.", following: "This event and all the ones after it will be deleted.", all: "Every event in this series will be deleted." };
+  if (s.recur && !s.scoped) {   // a repeating event: ask what to delete
+    $("#evq .evqc").innerHTML = '<h4>Delete repeating event</h4><p><b>' + esc(s.title || "Untitled") + '</b><br>What should be deleted?</p><div class="qb qs"><button class="qd" data-qd="this">Only this event</button><button class="qd" data-qd="following">This and following</button><button class="qd" data-qd="all">All events</button></div><button class="qc" data-q="no">Cancel</button>';
+    $("#evq").classList.add("on"); const f = $("#evq [data-q=no]"); if (f) f.focus(); return;
+  }
   $("#evq .evqc").innerHTML = '<h4>Delete this event?</h4><p><b>' + esc(s.title || "Untitled") + '</b><br>' + (s.recur ? sc[s.scope] || sc.all : "This can't be undone.") + '</p><div class="qb"><button data-q="no">Cancel</button><button class="qd" data-q="yes">Delete</button></div>';
   $("#evq").classList.add("on"); const n = $("#evq [data-q=no]"); if (n) n.focus();
 }
 function evDelNo() { $("#evq").classList.remove("on"); }
 function evDelYes() {
-  const s = evS, b = $("#evq [data-q=yes]"); b.disabled = true; b.textContent = "Deleting…";
+  const s = evS, b = $("#evq [data-q=yes]"); if (b) { b.disabled = true; b.textContent = "Deleting…"; }
+  if (s.recur && s.scope !== "all" && !((s.src || {}).v || {}).recurrence_id) { evDelNo(); $("#evmsg").textContent = "This calendar can't delete a single occurrence. Choose All events."; return; }   // without the occurrence id Home Assistant would delete the whole series
   const msg = Object.assign({ type: "calendar/event/delete", entity_id: s.cal }, evTarget());
-  send(msg, (r, m2) => { evDelNo(); if (m2 && m2.success === false) { $("#evmsg").textContent = (m2.error && m2.error.message) || "Couldn't delete."; return; } evClose(); loadEvents(); });
+  send(msg, (r, m2) => { evDelNo(); if (m2 && m2.success === false) { $("#evmsg").textContent = (m2.error && m2.error.message) || "Couldn't delete."; return; } evClose(); loadEvents(); setTimeout(loadEvents, 3000); });
 }
-$("#evq").addEventListener("click", e => { const q = e.target.closest("[data-q]"); if (q) { if (q.dataset.q === "yes") evDelYes(); else evDelNo(); } else if (e.target.id === "evq") evDelNo(); });
+$("#evq").addEventListener("click", e => { const k = e.target.closest("[data-qs]"); if (k && evS) { evS.scope = k.dataset.qs; evS.asked = true; evDelNo(); evSave(); return; } const kd = e.target.closest("[data-qd]"); if (kd && evS) { evS.scope = kd.dataset.qd; evDelYes(); return; } const q = e.target.closest("[data-q]"); if (q) { if (q.dataset.q === "yes") evDelYes(); else evDelNo(); } else if (e.target.id === "evq") evDelNo(); });
 document.addEventListener("keydown", e => { if (e.key === "Escape" && $("#evq").classList.contains("on")) { e.stopPropagation(); evDelNo(); } }, true);
 $("#evp").addEventListener("click", e => {
   const t = e.target; if (!evS) return; evRead();
@@ -233,10 +281,10 @@ $("#evp").addEventListener("click", e => {
   else if (ad) { evS.ad = !evS.ad; evDraw(); }
   else if (cl) { evRead(); evS.col = cl.dataset.col; evDraw(); }
   else if (wd) { const i = evS.days.indexOf(wd.dataset.wd); if (i > -1) evS.days.splice(i, 1); else evS.days.push(wd.dataset.wd); evDraw(); }
-  else if (sc) { evS.scope = sc.dataset.sc; evDraw(); }
+  else if (sc) { evS.scope = sc.dataset.sc; evS.scoped = true; evDraw(); }
   else if (x) { const k = x.dataset.x; if (k === "close") evClose(); else if (k === "save") evSave(); else if (k === "del") evDelete(); else if (k === "dup") evDup(); }
 });
-$("#evp").addEventListener("change", e => { if (!evS) return; if (e.target.id === "evrp") { evRead(); evS.rep = e.target.value; if (evFreq(evS) === "weekly" && !evS.days.length) evS.days = [WD[(new Date(evS.sd + "T00:00").getDay() + 6) % 7]]; evDraw(); } else if (e.target.id === "evun2") { evRead(); if (evFreq(evS) === "weekly" && !evS.days.length) evS.days = [WD[(new Date(evS.sd + "T00:00").getDay() + 6) % 7]]; evDraw(); } else if (e.target.id === "evst") { const o = new Date(evS.sd + "T" + evS.st), d = evS.edit ? new Date(evS.ed + "T" + evS.et) - o : 0; evRead(); const n = new Date(new Date(evS.sd + "T" + evS.st).getTime() + (d > 0 ? d : 30 * 60000)); evS.ed = ymd(n); evS.et = hm(n); evDraw(); } else if (e.target.id === "evsd") { evRead(); if (evS.ed < evS.sd) evS.ed = evS.sd; evDraw(); } });
+$("#evp").addEventListener("change", e => { if (!evS) return; if (e.target.id === "evrp") { evRead(); evS.rep = e.target.value; if (evFreq(evS) === "weekly" && !evS.days.length) evS.days = [WD[(new Date(evS.sd + "T00:00").getDay() + 6) % 7]]; evDraw(); } else if (e.target.id === "evun2") { evRead(); if (evFreq(evS) === "weekly" && !evS.days.length) evS.days = [WD[(new Date(evS.sd + "T00:00").getDay() + 6) % 7]]; evDraw(); } else if (e.target.id === "evst") { const o = new Date(evS.sd + "T" + evS.st), d = evS.edit ? new Date(evS.ed + "T" + evS.et) - o : 0; evRead(); const n = new Date(new Date(evS.sd + "T" + evS.st).getTime() + (d > 0 ? d : 30 * 60000)); evS.ed = ymd(n); evS.et = hm(n); evDraw(); } else if (e.target.id === "evsd") { const o = evS.sd; evRead(); const dd = Math.round((new Date(evS.sd + "T12:00") - new Date(o + "T12:00")) / 864e5); if (dd) evS.ed = addDays(evS.ed || o, dd); if (evS.ed < evS.sd) evS.ed = evS.sd; evDraw(); } });
 $("#evb").onclick = evClose; document.addEventListener("keydown", e => { if (e.key === "Escape" && evS) evClose(); });
 $("#eadd").onclick = () => evOpen({});
 setInterval(evBtn, 2500);

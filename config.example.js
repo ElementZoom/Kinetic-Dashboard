@@ -448,11 +448,17 @@ window.DASH_CONFIG = {
   // bins: { due: [["input_boolean.demo_recycling_day", "Recycling", "recycle"], ["input_boolean.demo_rubbish_day", "Rubbish", "trash-can"], ["input_boolean.demo_garden_day", "Garden", "leaf"]], out: "input_boolean.demo_bins_out", camera: "road", eveningFrom: 16 },
   // Attention: things worth acting on, on the Notifications > ATTENTION tab (it replaces the Batteries tab) and a slim "NEEDS ATTENTION" card on Home that opens it.
   // It lists the bins that are due, dry soil, devices (lights, switches, covers, locks, climate, cameras, fans, sirens, alarm panels, vacuums) that have been offline for a while,
-  // updates waiting in Home Assistant and low batteries. Alerts keeps the urgent things (leak, warnings, doors). All of it is on by default; attention: false hides the lot.
+  // updates waiting in Home Assistant and low batteries. Alerts keeps the urgent things (leak, warnings, doors). All of it is on by default; attention: false hides the lot. It lives in Notifications; Home shows the Leaving card instead.
   // offlineMinutes = how long a device must be unavailable before it is listed. soilBelow / batteryBelow = the percentages under which soil and batteries are listed.
-  // ignore = regular expressions for entities to leave out. watch = more entities (sensors, say) to list when they go offline. home: false removes the card from Home.
-  // attention: { offline: true, offlineMinutes: 10, updates: true, soil: true, soilBelow: 25, batteries: true, batteryBelow: 26, home: true, ignore: ["demo_hall_lamp"], watch: ["binary_sensor.demo_gate"] },
+  // ignore = regular expressions for entities to leave out. watch = more entities (sensors, say) to list when they go offline.
+  // attention: { offline: true, offlineMinutes: 10, updates: true, soil: true, soilBelow: 25, batteries: true, batteryBelow: 26, ignore: ["demo_hall_lamp"], watch: ["binary_sensor.demo_gate"] },
+  // Leaving: the card on Home that lists what is still on or open (lights left on, the garage door, open doors, a disarmed alarm). Tap it for the list, with Lights off and Arm away.
+  // It only shows while there is something to check. Lights come from the rooms on your Rooms page (house); lightEntities replaces that list, ignore = regular expressions for entities to leave out.
+  // Each check can be switched off; leaving: false removes the card. Doors use doorsGroup and the garage uses the sensors in garageAlert.
+  // leaving: { lights: true, garage: true, doors: true, alarm: true, lightEntities: [], ignore: ["demo_hall_lamp"] },
   // Weather alerts: a Weather card in Notifications > Alerts (wind now with a gauge, and rain in the next few hours), from the weather entity and its hourly forecast. On by default.
+  // pageTransition: how a page appears when you switch tabs: "rise" (default), "slide", "fade" or "off". Each device can override it on the Theme page.
+  // pageTransition: "rise",
   // Wind tiers are km/h (Moderate / Strong / Severe), rain tiers are mm per hour (Light / Moderate / Heavy). stripWind / stripRain = the tier (1 to 3) from which the header strip shows a chip: Strong wind and Heavy rain by default.
   // weatherAlerts: false hides it. wind: false or rain: false hides one part. hours = how far ahead the forecast is checked.
   // weatherAlerts: { wind: true, rain: true, windTiers: [30, 62, 89], rainTiers: [0.5, 2, 5], hours: 6, stripWind: 2, stripRain: 3 },

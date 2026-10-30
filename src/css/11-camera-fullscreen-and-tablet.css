@@ -10,6 +10,8 @@ html.camlive[data-style=glass]{--gb:blur(10px) saturate(140%)}
 .aud{display:none;position:absolute;left:12px;top:64px;z-index:4;flex-direction:column;gap:10px}.cam.fs .aud,.cam.vf .aud{display:flex}
 .aud button{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:rgba(0,0,0,.55);cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center}.aud svg{width:21px;height:21px;fill:#fff}
 .aud button.on{background:rgba(var(--mint-rgb),.85);border-color:transparent}.aud button.on svg{fill:var(--onmint,#000)}.aud .mic.on{background:#ff3b3b}.aud .mic.on svg{fill:#fff}.aud button{position:relative}.aud button.err{background:rgba(255,160,0,.8)}.aud button.err::after{content:attr(data-e);position:absolute;left:52px;top:50%;transform:translateY(-50%);white-space:nowrap;font:600 12px var(--sans);color:#fff;background:rgba(0,0,0,.75);padding:7px 11px;border-radius:10px}
+.det .sl,.mkt .sl{display:none}.det:not(.on) .sl,.mkt:not(.on) .sl{display:block}#vw.two .aud .det{display:none}
+.mkt{position:absolute;top:8px;right:8px;z-index:7;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:rgba(0,0,0,.55);padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer}.mkt[hidden]{display:none}.mkt svg{width:20px;height:20px;fill:#fff}.mkt.on{background:rgba(var(--mint-rgb),.85);border-color:transparent}.mkt.on svg{fill:var(--onmint,#000)}
 .cam.ls .aud{left:20px;top:72px}.cam.pb .aud{display:none!important}
 /* tablet full-screen camera: fill the whole screen (no bars, no white edge), buttons keep their on-screen positions */
 @media(min-width:761px){

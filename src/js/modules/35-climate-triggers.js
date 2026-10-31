@@ -2,7 +2,7 @@
 // A room (config rooms: [{ id: "climate.x", heatBelow: "input_number.a", coolAbove: "input_number.b" }]) or the house (config climateTriggers: { heatBelow, coolAbove })
 // A room can also have autoClimate: "input_boolean.x" ("sleeping here tonight": the automations only run for rooms where it is on), a switch in the same place.
 // gets a "Heat below" / "Cool above" stepper that sets those input_number helpers. The automations read the helpers, so no automation has to be edited again.
-const CTROWS = [["heatBelow", "Heat below"], ["coolAbove", "Cool above"]];
+const CTROWS = [["heatBelow", "Heat below", "fire", "wm", "Heating starts under this"], ["coolAbove", "Cool above", "snowflake", "cl2", "Cooling starts over this"]];
 const CTV = {}, CTH = {};   // value waiting to be sent, and the send timers, by helper
 const ctOwner = r => r.main ? (CONFIG.climateTriggers || {}) : r;
 const ctIds = () => { const o = {}; CONFIG.rooms.forEach(r => { CTROWS.forEach(x => { const e = ctOwner(r)[x[0]]; if (e) o[e] = 1; }); if (!r.main && r.autoClimate) o[r.autoClimate] = 1; }); return o; };
@@ -12,7 +12,7 @@ function ctMarks(el, o) {   // the two trigger points as little arrows under the
     const m = $(x[1], el), e = o[x[0]], st = e && states[e], v = st ? (CTV[e] != null ? CTV[e] : parseFloat(st.state)) : NaN; if (!m) return;
     m.hidden = isNaN(v); if (!isNaN(v)) { m.style.left = cbPos(v) + "%"; m.title = x[2] + f1(v) + "°"; }
   });
-  el.classList.toggle("hasmk", !!$(".mk:not([hidden])", el));
+  el.classList.toggle("hasmk", !document.body.classList.contains("ca-off") && !!$(".mk:not([hidden])", el));
 }
 function ctDraw() {
   CONFIG.rooms.forEach(r => {
@@ -23,7 +23,7 @@ function ctDraw() {
     c.el.classList.toggle("slp", !!acOn);
     box.hidden = !rows.length && !ac; if (!rows.length && !ac) { box.innerHTML = ""; return; }
     box.innerHTML = (ac ? '<div class="ct"><span>' + esc(r.autoLabel || "Sleeping here tonight") + '</span><button class="csw" role="switch" aria-checked="' + acOn + '" data-cb="' + esc(ac) + '" aria-label="' + esc(r.autoLabel || "Sleeping here tonight") + '"><i></i></button></div>' : "") + rows.map(x => { const e = o[x[0]], v = CTV[e] != null ? CTV[e] : parseFloat(states[e].state);
-      return '<div class="ct"><span>' + x[1] + '</span><button class="rnd" data-ct="' + esc(e) + '" data-d="-1" aria-label="Lower ' + x[1] + '">−</button><b>' + (isNaN(v) ? "--" : f1(v) + "°") + '</b><button class="rnd" data-ct="' + esc(e) + '" data-d="1" aria-label="Raise ' + x[1] + '">+</button></div>'; }).join("");
+      return '<div class="ct"><div class="cl"><span class="' + x[3] + '">' + mdi(x[2]) + x[1] + '</span><small>' + x[4] + '</small></div><button class="rnd" data-ct="' + esc(e) + '" data-d="-1" aria-label="Lower ' + x[1] + '">−</button><b>' + (isNaN(v) ? "--" : f1(v) + "°") + '</b><button class="rnd" data-ct="' + esc(e) + '" data-d="1" aria-label="Raise ' + x[1] + '">+</button></div>'; }).join("");
   });
 }
 function ctBump(e, d) {

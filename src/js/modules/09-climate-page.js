@@ -18,7 +18,7 @@ function tint(r, s) {
 }
 function build(r) {
   const el = document.createElement("section");
-  el.className = "card" + (r.main ? " main2 czh" : " rm");
+  el.className = "card" + (r.main ? " main2 czh" : " rm"); el.dataset.cl = r.id;
   if (r.main) el.innerHTML = '<div class="lbl il">House</div>' +
     '<div class="czm"><div class="temp"><span class="cur">--</span><small>°</small></div>' +
     '<div class="czs"><div class="czt"><span class="md">--</span><div class="row"><button class="rnd" data-d="-1" aria-label="Lower">−</button><div class="tg"><span>TARGET</span><b class="tgt">--</b></div><button class="rnd" data-d="1" aria-label="Raise">+</button></div></div>' +
@@ -48,7 +48,7 @@ function render(id) {
   { let ct = a.current_temperature; if ((ct == null || isNaN(parseFloat(ct))) && c.r.main) {   // heat pump has no sensor of its own: house average, else the average of the room climates
       ct = null; try { ct = sv(CONFIG.indoor); } catch (e) {}
       if (ct == null || isNaN(parseFloat(ct))) { try { ct = avgOf(CONFIG.derived.houseTemps); } catch (e) {} }
-      if (ct == null || isNaN(parseFloat(ct))) { const z = CONFIG.rooms.filter(r => !r.main).map(r => states[r.id] && parseFloat(states[r.id].attributes.current_temperature)).filter(x => x != null && !isNaN(x)); ct = z.length ? z.reduce((p, x) => p + x, 0) / z.length : null; }
+      if (ct == null || isNaN(parseFloat(ct))) { const z = CONFIG.rooms.filter(r => !r.main && !entHidden(r.id)).map(r => states[r.id] && parseFloat(states[r.id].attributes.current_temperature)).filter(x => x != null && !isNaN(x)); ct = z.length ? z.reduce((p, x) => p + x, 0) / z.length : null; }
     } $(".cur", el).textContent = f1(ct); }
   showT(id);
   const modes = a.hvac_modes || [], key = modes.join() + (c.r.main ? "" : "|" + ((states[MAIN] || {}).state || "")), chips = $(".chips", el);

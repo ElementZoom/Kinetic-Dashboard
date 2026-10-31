@@ -9,7 +9,7 @@ const tileTimer = e => { const m = (CONFIG.tileTimers || {})[e]; if (m) return m
 const npItem = (e, o) => { const z = tapZone(e), tap = /^switch\..*water_tap$/.test(e); return Object.assign({ entity: e, timer: tileTimer(e) }, tap ? { water: (z && z.flow) || true } : {}, o || {}); };
 const gar = x => /garage/i.test(x + " " + fname(x)) || Object.keys(galCfg()).some(k => (galCfg()[k] || {}).sensor === x);   // the garage door has its own alert, so it is not listed with the doors
 // open doors from the external-doors group (garage excluded): a list of ids, [] when the group says "on" but cannot say which one, or null when all are shut
-const doorsOpen = () => { const g = E("doorsGroup"), d0 = members(g).filter(x => x !== g && isOn(x)), d = d0.filter(x => !gar(x)); return d.length || (isOn(g) && !d0.length) ? d : null; };
+const doorsOpen = () => { const g = E("doorsGroup"), all = members(g).filter(x => x !== g && isOn(x)), d0 = all.filter(x => !entHidden(x)); if (all.length && !d0.length) return null; const d = d0.filter(x => !gar(x)); return d.length || (isOn(g) && !d0.length) ? d : null; };   // doors of a room hidden from this person are left out
 function notif(full) {
   let n = 0, h = "";
   const sec = (t, b) => { if (full && b) h += '<div class="lbl np2">' + t + '</div>' + b; };
@@ -17,7 +17,7 @@ function notif(full) {
   const al = volcHtml().concat(quakeHtml() || []), pa = polAlert(); if (pa) al.push(pa); n += al.length; sec("Alerts", al.join(""));
   const dr = doorsOpen();
   if (dr) { n++; sec("Doors", '<div class="alert q"><b>' + (dr.length || 1) + ' open</b><div>' + dr.map(x => esc(fname(x))).join(" · ") + '</div></div>'); }
-  const LK = LEAKS().filter(x => isOn(x[0])), W2 = (CONFIG.alerts || []).filter(x => isOn(x[0]));   // leak sensors first, as red cards
+  const LK = LEAKS().filter(x => isOn(x[0])), W2 = (CONFIG.alerts || []).filter(x => isOn(x[0]) && !entHidden(x[0]));   // leak sensors first, as red cards
   n += LK.length + W2.length; sec("Warnings", LK.map(x => '<div class="alert q"><div class="lbl">' + mdi("water-alert") + ' WATER LEAK</div><b>' + esc(x[1]) + '</b><div>' + esc(x[2]) + '</div></div>').join("") + grid(W2.map(x => npItem(x[0], { name: x[1], sub: x[2], confirm: /rubbish|recycle/.test(x[0]) }))));
   const wr = states[E("weatherWarnings")];
   if (wr && sv(E("weatherWarnings")) && wr.attributes.warnings) { n++; sec("Weather warning", '<div class="alert w">' + esc(wr.attributes.warnings) + '</div>'); }
@@ -34,7 +34,7 @@ function notif(full) {
 }
 // header strip: normally a glowing bar while something is waiting; it turns into an icon for the conditions below. Priority when several are true:
 // water leak, then weather warning, then garage door open, then a door open, then water on, then bins not out yet, then pollen (from the level set by pollen.alertFrom), then laundry running, then towel heating. The top one shows and a small "+n" says how many more there are.
-const LEAKS = () => (CONFIG.leakSensors || []).map(x => { x = [].concat(x); return [x[0], x[1] || fname(x[0]), x[2] || "Water detected"]; });   // config leakSensors: ["binary_sensor.x"] or [["binary_sensor.x", "Washing machine", "Water under the machine"]]
+const LEAKS = () => (CONFIG.leakSensors || []).map(x => { x = [].concat(x); return [x[0], x[1] || fname(x[0]), x[2] || "Water detected"]; }).filter(x => !entHidden(x[0]));   // config leakSensors: ["binary_sensor.x"] or [["binary_sensor.x", "Washing machine", "Water under the machine"]]
 const laundryOn = () => sv(E("laundryState")) === "Run";   // laundry running (the washer integration reports "Run"; "Delay Run" = waiting for its delayed start)
 const towelsOn = () => { const g = E("towelGroup"); return !!g && members(g).some(x => x !== g && isOn(x)); };
 // a washing-machine drum with a wave moving inside: used by the Laundry tile in Active and by the strip icon
@@ -72,13 +72,13 @@ const npLoading = () => !Object.keys(states).length;   // nothing from Home Assi
 const NPOFF = {}; let npHold = 0, npht = 0;   // tiles switched off from the Active list vanish at once (a slow light transition would keep them "on" for seconds)
 const npGone = x => { const t = NPOFF[x]; if (!t) return false; if (!isOn(x) || Date.now() - t > 12000) { delete NPOFF[x]; return false; } return true; };
 const actList = () => {
-  const A = ACTC.map(c => ({ c: c, ids: members(c[1]).filter(x => x !== c[1] && !/^group\./.test(x) && isOn(x) && !npGone(x)) })), seen = {};
+  const A = ACTC.map(c => ({ c: c, ids: members(c[1]).filter(x => x !== c[1] && !/^group\./.test(x) && isOn(x) && !npGone(x) && !entHidden(x)) })), seen = {};
   A.forEach(x => x.ids.forEach(e => { seen[e] = 1; }));
-  const ap = (CONFIG.activeAppliances || []).filter(e => isOn(e) && !npGone(e) && !seen[e]);   // config activeAppliances: ["switch.rice_cooker", ...] get their own "Appliances" group here
+  const ap = (CONFIG.activeAppliances || []).filter(e => isOn(e) && !npGone(e) && !seen[e] && !entHidden(e));   // config activeAppliances: ["switch.rice_cooker", ...] get their own "Appliances" group here
   if ((CONFIG.activeAppliances || []).length) A.push({ c: ["Appliances", "", "m3-plug-connect", "app"], ids: ap });
   const lm = sv(E("laundryState"));
   if (lm === "Run" || lm === "Delay Run") A.push({ c: ["Laundry", "", "washing-machine", "ld"], ids: ["laundry"] });   // one tile: the drum spins while it runs
-  const twg = E("towelGroup"), tw = twg ? members(twg).filter(x => x !== twg && isOn(x) && !npGone(x) && !seen[x]) : [];   // heated towel rails: listed under Active (they used to be in Alerts)
+  const twg = E("towelGroup"), tw = twg ? members(twg).filter(x => x !== twg && isOn(x) && !npGone(x) && !seen[x] && !entHidden(x)) : [];   // heated towel rails: listed under Active (they used to be in Alerts)
   if (tw.length) A.push({ c: ["Towel heating", "", "radiator", "tw"], ids: tw });
   return A;
 };

@@ -6,8 +6,8 @@ const LV = { t: null, q: 0, open: false };
 const lvRx = c => [].concat(c.ignore || []).map(x => { try { return new RegExp(x); } catch (e) { return null; } }).filter(Boolean);
 function lvLights() {
   const c = lvCfg(); if (!c) return [];
-  const src = c.lightEntities && c.lightEntities.length ? c.lightEntities : (CONFIG.house || []).reduce((a, r) => a.concat(r.lights || [], r.lightSwitches || []), []), rx = lvRx(c);
-  return members(src).filter(id => /^(light|switch)\./.test(id) && states[id] && !rx.some(r => r.test(id)));
+  const src = c.lightEntities && c.lightEntities.length ? c.lightEntities : HOUSE().reduce((a, r) => a.concat(r.lights || [], r.lightSwitches || []), []), rx = lvRx(c);
+  return members(src).filter(id => /^(light|switch)\./.test(id) && states[id] && !entHidden(id) && !rx.some(r => r.test(id)));
 }
 const lvGarage = () => Object.keys(galCfg()).map(k => (galCfg()[k] || {}).sensor).filter(Boolean);
 function lvSet() { const c = lvCfg(), s = new Set(); if (!c) return s; lvLights().forEach(x => s.add(x)); lvGarage().forEach(x => s.add(x)); const g = E("doorsGroup"); if (g) { s.add(g); members(g).forEach(x => s.add(x)); } if (CONFIG.alarm) s.add(CONFIG.alarm); return s; }

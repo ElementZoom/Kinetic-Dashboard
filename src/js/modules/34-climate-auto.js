@@ -6,8 +6,9 @@ let caBusy = 0;
 function caIds() { return CAUTO ? CAUTO.ids.filter(x => states[x] && states[x].state !== "unavailable") : []; }
 function caDraw() {
   const el = $("#cauto"); if (!el || !CAUTO) return; const ids = caIds();
-  if (!ids.length) { el.hidden = true; return; }
+  if (!ids.length) { el.hidden = true; document.body.classList.remove("ca-off"); return; }
   const n = ids.filter(x => states[x].state === "on").length, all = n === ids.length, none = n === 0;
+  { const was = document.body.classList.contains("ca-off"); document.body.classList.toggle("ca-off", none); if (was !== none) { try { ctDraw(); } catch (e) {} } }   // auto climate off: the trigger steppers, the sleeping switch and the trigger triangles are hidden (they only matter while it runs)
   el.hidden = false; el.classList.toggle("on", !none); el.classList.toggle("part", !none && !all);
   el.querySelector("b").textContent = CAUTO.name;
   el.querySelector("small").textContent = all ? "On · rooms start and stop by themselves" : none ? "Off · you are in charge, nothing switches by itself" : "Partly on · " + n + " of " + ids.length + " automations running";

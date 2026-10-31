@@ -2,7 +2,7 @@
 // the graph is the average temperature of the rooms over the last 24 hours (the rooms' own climate sensors, from the Home Assistant recorder);
 // config climateGraph: ["climate.a", "climate.b"] picks the rooms, otherwise every room except the heat pump
 const CHZ = { t: 0, pts: null, busy: 0 };
-function hzIds() { const g = CONFIG.climateGraph; if (Array.isArray(g) && g.length) return g.filter(x => typeof x === "string"); return CONFIG.rooms.filter(r => !r.main).map(r => r.id); }
+function hzIds() { const g = CONFIG.climateGraph; if (Array.isArray(g) && g.length) return g.filter(x => typeof x === "string" && !entHidden(x)); return CONFIG.rooms.filter(r => !r.main && !entHidden(r.id)).map(r => r.id); }
 function hzLoad(force) {
   const ids = hzIds(); if (!ids.length || typeof ws === "undefined" || !ws || ws.readyState !== 1) return;
   if ((CHZ.busy && Date.now() - CHZ.busy < 20000) || (!force && CHZ.pts && Date.now() - CHZ.t < 600000)) return;

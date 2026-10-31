@@ -5,6 +5,21 @@ const isOn = id => { const s = states[id]; return !!s && (s.state === "on" || s.
 const roomOK = id => !RU || !Array.isArray(RU.rooms) || RU.rooms.indexOf(id) > -1;   // a restricted person may be limited to some rooms (RU.rooms)
 const HOUSE = () => CONFIG.house.filter(r => roomOK(r.id));
 const ROOM = id => HOUSE().filter(r => r.id === id)[0];
+// Everything that belongs only to a room hidden from this person (its climate, lights, doors, windows, sensors and controls): kept out of Climate, the notification lists, Leaving and the like.
+// An entity that also sits in a room they can see stays visible.
+function hideSet() {
+  if (!RU || !Array.isArray(RU.rooms)) return null;
+  if (hideC && Date.now() - hideT < 1500) return hideC;
+  const vis = {}, hid = {};
+  CONFIG.house.forEach(r => { const o = RU.rooms.indexOf(r.id) > -1 ? vis : hid, add = e => { if (e && typeof e === "string") o[e] = 1; };
+    [r.lights, r.lightSwitches, r.covers, r.fans, r.doors, r.windows, r.climate, r.temp, r.hum, r.occ].forEach(l => { [].concat(l || []).forEach(add); members(l || []).forEach(add); });
+    (r.sections || []).forEach(sc => (sc.items || []).forEach(i => add(typeof i === "string" ? i : i.entity)));
+    ((CONFIG.roomControls || {})[r.id] || []).forEach(i => add(typeof i === "string" ? i : i.entity));
+    Object.keys(r.counts || {}).forEach(k => add(r.counts[k])); });
+  Object.keys(vis).forEach(e => { delete hid[e]; });
+  hideC = hid; hideT = Date.now(); return hid;
+}
+function entHidden(e) { const s = hideSet(); return !!s && !!s[e]; }
 let curPanels = [], curRoom = null, onRooms = false, rq = 0;
 const camOpen = () => onView() || !!document.querySelector(".cam.fs .cpanel:not(:empty)");
 function queueRoom() { if (!rq) rq = requestAnimationFrame(() => { rq = 0; updRooms(); }); }

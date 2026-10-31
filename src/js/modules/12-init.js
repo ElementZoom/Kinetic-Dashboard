@@ -1,5 +1,6 @@
 // ---------- init ----------
 CONFIG.rooms.forEach(r => $("#grid").appendChild(build(r)));
+$("#grid").style.setProperty("--nr", Math.max(1, CONFIG.rooms.filter(r => !r.main).length));   // the House card spans as many rows as there are rooms, so it is as tall as the room list
 let gI = 0;
 $("#gdots").innerHTML = CONFIG.rooms.map((r, i) => '<i data-i="' + i + '" title="' + esc(r.name || "") + '"' + (i ? "" : ' class="on"') + '></i>').join("");
 $("#grid").addEventListener("scroll", () => { const g = $("#grid"); if (!g.clientWidth) return; gI = Math.round(g.scrollLeft / (g.clientWidth + 14)); $$("#gdots i").forEach((d, k) => d.classList.toggle("on", k === gI)); });
@@ -11,7 +12,7 @@ $("#grid").addEventListener("click", e => {
   if (e.target.closest(".shx")) { clClose(); return; }
   if (c.dataset.open) { if (e.target.closest(".lbl.il") && !isMobile()) clClose(); return; }
   if (e.target.closest("button,.cbar,.ctr,.chips,.fanb,input")) return;
-  clClose(); c.dataset.open = "1"; clSync();
+  clClose(); c.style.setProperty("--cy", Math.round(c.offsetHeight / 2) + "px"); c.dataset.open = "1"; clSync();   // --cy: the middle of the closed row, so a tablet's chevron stays where it was when the room opens
 });
 $("#clbk").onclick = clClose; document.addEventListener("keydown", e => { if (e.key === "Escape" && $("#grid .card[data-open]")) clClose(); }); addEventListener("resize", clSync);
 { let y0 = 0; $("#grid").addEventListener("touchstart", e => { y0 = e.touches[0].clientY; }, { passive: true });   // swipe a sheet down to close it

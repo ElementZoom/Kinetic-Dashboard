@@ -13,7 +13,8 @@ function evSetView(v) {
   try { const o = JSON.parse(localStorage.kinEvView || "{}"); o[k] = v; localStorage.kinEvView = JSON.stringify(o); } catch (e) {}
   const t = new Date();
   if (v === "week" && prev !== "week") evw = evMon(t.getFullYear() === cy && t.getMonth() === cm ? t : new Date(cy, cm, 1));
-  if (prev === "week" && v !== "week") { const m = new Date(evw.getFullYear(), evw.getMonth(), evw.getDate() + 3); cy = m.getFullYear(); cm = m.getMonth(); }
+  if (prev === "week" && v !== "week") { const wd = d => new Date(evw.getFullYear(), evw.getMonth(), evw.getDate() + d), m = t >= wd(0) && t < wd(7) ? t : wd(3);   // the week with today in it opens today's month; any other week opens the month of its middle day
+    cy = m.getFullYear(); cm = m.getMonth(); }
   evSel = null; evJump = true; evTitle(cy, cm); txGo($("#cg"), 0, false); loadEvents();
 }
 function evSwitch() {

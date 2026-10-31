@@ -12,6 +12,7 @@ const CONFIG = (() => {
   d.entities = {}; d.volcanoes = []; d.siren = {}; d.alerts = []; d.quickAll = []; d.adminToggles = []; d.relevance = {}; d.vehicle = d.vehicle || null; d.batteryDisplay = "kiosk";
   return Object.assign(d, u);
 })();
+let hideC = null, hideT = 0;   // entities of the rooms hidden from this person (see hideSet in 13-rooms.js)
 let RU = null;   // the signed-in person's restrictions (CONFIG.users[<person id or HA name>]), or null = unrestricted
 const ADMIN_ON = () => !!(ME.admin || CONFIG.token);   // the Admin page (access levels, setup check) is for Home Assistant admins only (or a dashboard running on a long-lived token); ME is declared below, this runs later
 const PAGE_ON = p => p === "admin" ? ADMIN_ON() : (!Array.isArray(CONFIG.pages) || CONFIG.pages.indexOf(p) > -1) && (!RU || !Array.isArray(RU.pages) || RU.pages.indexOf(p) > -1);   // CONFIG.pages = list of page ids to show; leave out = all pages
@@ -45,6 +46,7 @@ function ruApply(o) {   // hides what this person may not use; the engine also s
   let css = "";
   if (RU) {
     off.forEach(p => { css += 'nav a[href="#' + p + '"],#btab a[href="#' + p + '"],#mshe a[href="#' + p + '"]{display:none!important}'; });
+    try { if (Array.isArray(RU.rooms)) { hideT = 0; css += "#grid{--nr:" + Math.max(1, CONFIG.rooms.filter(r => !r.main && !entHidden(r.id)).length) + "}"; CONFIG.rooms.forEach((r, i) => { if (!r.main && entHidden(r.id)) css += '#grid>.card[data-cl="' + r.id + '"]{display:none!important}#gdots i[data-i="' + i + '"]{display:none}'; }); } } catch (_) {}   // a room hidden from this person has no climate control either (not ready yet on the very first call: ruRefresh applies again)
     css += "#navset,#navset2,#outs,#hnp{display:none!important}#hc{pointer-events:none}#nacc{display:none!important}";   // no Settings link, no notification pop-up (it holds the "all off" switches and admin toggles)
     if (!PAGE_ON("security") || !ruSec("alarm")) css += "#al{display:none!important}";
     if (!["climate", "weather", "energy", "irrigation", "media", "events", "vehicle", "hazards", "theme"].some(PAGE_ON)) css += "#bmore{display:none!important}";

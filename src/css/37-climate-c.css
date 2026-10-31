@@ -5,9 +5,9 @@
 .cbar{pointer-events:none;position:relative;height:10px;border-radius:5px;background:linear-gradient(90deg,var(--cool),#ffd27a 50%,var(--heat));margin:6px 6px 4px;transition:opacity .3s}
 .cbar i{position:absolute;top:-7px;width:24px;height:24px;margin-left:-12px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.4),0 0 12px var(--kc,transparent);transition:left .5s}
 .cbar u{position:absolute;top:-4px;width:2px;height:18px;margin-left:-1px;background:var(--ink);opacity:.8;border-radius:1px;transition:left .3s}
-.cbar .mk{position:absolute;top:13px;width:0;height:0;margin-left:-5px;border:5px solid transparent;border-top:0;border-bottom:7px solid var(--heat)}
+.cbar .mk{position:absolute;top:20px;width:0;height:0;margin-left:-5px;border:5px solid transparent;border-top:0;border-bottom:7px solid var(--heat)}
 .cbar .mk.c{border-bottom-color:var(--cool)}.cbar .mk[hidden]{display:none}
-.card.rm.hasmk .cbar{margin-bottom:4px}
+.card.rm.hasmk .cbar{margin-bottom:18px}   /* the trigger triangles sit below the round knob, not under it */
 .card.rm.coff .cbar{opacity:.35}
 html[data-style=minimal] .cbar i{box-shadow:0 1px 3px rgba(0,0,0,.4)}
 /* House card */
@@ -66,27 +66,34 @@ html[data-style=minimal] .cbar i{box-shadow:0 1px 3px rgba(0,0,0,.4)}
 /* tablet: House on the left, rooms as rows on the right */
 @media(min-width:761px){
 #grid{grid-template-columns:360px minmax(0,1fr);gap:12px 22px;align-items:start}
-#grid>.card.main2{grid-column:1;grid-row:1/span 40}
+#grid>.card.main2{grid-column:1;grid-row:1/span var(--nr,40);align-self:stretch}
+#grid>.card.main2 .czg{flex:1;display:flex;flex-direction:column;min-height:96px;max-height:460px}#grid>.card.main2 .czg svg{flex:1;height:auto;min-height:84px}
 .czm{flex-direction:column;align-items:flex-start;gap:6px}
 .czs{align-items:flex-start;text-align:left;padding-bottom:0}.czt,.czh .cout,#grid>.card.main2 .fanb{justify-content:flex-start}
-#grid>.card.rm{grid-column:2;display:grid;grid-template-columns:minmax(100px,140px) minmax(90px,1fr) auto auto;grid-template-areas:"nm bar tp rw" "md bar tp rw" "ch ch ch ch" "fn fn fn fn" "tr tr tr tr";align-items:center;column-gap:18px;row-gap:2px;padding:14px 20px;border-radius:18px}
+#grid>.card.rm{grid-column:2;display:grid;grid-template-columns:minmax(100px,140px) minmax(90px,1fr) auto auto 14px;grid-template-areas:"nm bar tp rw cv" "md bar tp rw cv" "ch ch ch ch ch" "fn fn fn fn fn" "tr tr tr tr tr";align-items:center;column-gap:18px;row-gap:2px;padding:14px 20px;border-radius:18px}
 #grid>.card.rm .lbl.il{grid-area:nm}#grid>.card.rm .md{grid-area:md}#grid>.card.rm .cbar{grid-area:bar}
 #grid>.card.rm .temp{grid-area:tp;font-size:32px;text-align:right}#grid>.card.rm .temp small{font-size:13px}
 #grid>.card.rm .row{grid-area:rw;gap:6px}#grid>.card.rm .rnd{width:38px;height:38px;font-size:18px}
 #grid>.card.rm .tg{display:none}
 #grid>.card.rm .chips{grid-area:ch}#grid>.card.rm .fanb{grid-area:fn}
+#grid>.card.rm .lbl.il::after{right:21px}
+#grid>.card.rm[data-open] .lbl.il::after{top:var(--cy,50%)}
 }
 /* phone: House on top, rooms stacked; a tapped room becomes a bottom sheet */
 @media(max-width:760px){
-#grid{grid-template-columns:1fr;gap:10px}
-#grid>.card.main2 .temp{font-size:72px}
-#grid>.card.rm{grid-column:1;display:grid;grid-template-columns:minmax(0,1fr) auto auto 14px;grid-template-areas:"nm tp rw cv" "md tp rw cv" "bar bar bar bar" "ch ch ch ch" "fn fn fn fn" "tr tr tr tr";align-items:center;column-gap:10px;row-gap:2px;padding:12px 14px 14px;border-radius:18px}
+#grid{grid-template-columns:1fr;gap:8px}
+#grid>.card.main2{padding:16px 16px 14px;gap:10px}
+#grid>.card.main2 .temp{font-size:54px}#grid>.card.main2 .temp small{font-size:20px;margin-top:4px}
+#grid>.card.main2 .czs{gap:4px;padding-bottom:4px}
+#grid>.card.main2 .chip{padding:8px 0}
+.czg svg{height:56px}.czg small{margin-top:4px}
+#grid>.card.rm{grid-column:1;display:grid;grid-template-columns:minmax(0,1fr) auto auto 14px;grid-template-areas:"nm tp rw cv" "md tp rw cv" "bar bar bar bar" "ch ch ch ch" "fn fn fn fn" "tr tr tr tr";align-items:center;column-gap:10px;row-gap:0;padding:9px 12px 10px;border-radius:16px}
 #grid>.card.rm .lbl.il{grid-area:nm;align-self:end;padding-right:0}#grid>.card.rm .md{grid-area:md}
-#grid>.card.rm:not([data-open]) .lbl.il::after{top:27px;right:17px;margin-top:-4px}
-#grid>.card.rm .temp{grid-area:tp;font-size:28px;white-space:nowrap}#grid>.card.rm .temp small{font-size:12px}
-#grid>.card.rm .row{grid-area:rw;gap:6px}#grid>.card.rm .rnd{width:34px;height:34px;font-size:18px}
+#grid>.card.rm:not([data-open]) .lbl.il::after{top:23px;right:17px;margin-top:-4px}
+#grid>.card.rm .temp{grid-area:tp;font-size:24px;white-space:nowrap}#grid>.card.rm .temp small{font-size:12px}
+#grid>.card.rm .row{grid-area:rw;gap:6px}#grid>.card.rm .rnd{width:30px;height:30px;font-size:16px}
 #grid>.card.rm .tg{display:none}
-#grid>.card.rm .cbar{grid-area:bar;margin-top:14px}
+#grid>.card.rm .cbar{grid-area:bar;margin-top:9px;margin-bottom:2px}#grid>.card.rm.hasmk .cbar{margin-bottom:16px}
 #grid>.card.rm .chips{grid-area:ch}#grid>.card.rm .fanb{grid-area:fn}
 #clbk{display:none;position:fixed;inset:0;z-index:69;background:rgba(0,0,0,.5)}
 body.cl-sheet #clbk{display:block;animation:thIn .2s ease}
@@ -99,7 +106,7 @@ body.cl-sheet #clbk{display:block;animation:thIn .2s ease}
 #grid>.card.rm[data-open] .md{font-size:12px;letter-spacing:.14em}#grid>.card.rm[data-open] .md::after{content:none}
 #grid>.card.rm[data-open] .temp{font-size:88px;font-weight:200;line-height:1;letter-spacing:-.04em;justify-self:start}#grid>.card.rm[data-open] .temp small{font-size:22px;margin-left:4px}
 #grid>.card.rm[data-open] .sub{display:block;grid-area:sb;font-size:14px;color:var(--mut)}
-#grid>.card.rm[data-open] .cbar{margin:16px 8px 10px}
+#grid>.card.rm[data-open] .cbar{margin:16px 8px 10px}#grid>.card.rm[data-open].hasmk .cbar{margin-bottom:22px}
 #grid>.card.rm[data-open] .row{justify-content:center;gap:22px;margin:6px 0}
 #grid>.card.rm[data-open] .rnd{width:52px;height:52px;font-size:22px}
 #grid>.card.rm[data-open] .tg{display:block;text-align:center;align-self:center}#grid>.card.rm[data-open] .tg b{font-size:24px;font-weight:300;color:var(--ink)}

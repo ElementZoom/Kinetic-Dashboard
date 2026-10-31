@@ -48,8 +48,8 @@ body.np-hdr header{padding-bottom:6px}
 .main{gap:10px}
 #cauto small{display:none}
 }
-/* tablet: a more compact heat pump card (the side column is narrow and shares the height with Forecast) */
-@media(min-width:761px){
+/* a compact heat pump card (on tablets the side column is narrow and shares its height with Forecast; on phones it keeps Home short) */
+@media all{
 html:not(#x) #mini{gap:6px;padding:14px 18px 14px}
 #mini .mbg b{font-size:44px}#mini .mbg small{font-size:16px;margin-top:3px}
 html:not(#x) #mini .mtop>.row{padding-bottom:2px}
@@ -66,3 +66,6 @@ html:not(#x) #mini .chip{padding:7px 0}
 .hm:has(#cams>*) .camcol .cams{align-content:stretch}
 .hm:has(#cams>*) .camcol .cams>.cam{align-self:stretch}
 }
+/* Climate: the trigger options only matter while Auto climate runs */
+.ctr .cl{flex:1;min-width:0}.ctr .cl span{display:flex;align-items:center;gap:6px}.ctr .cl .wm{color:var(--heat,#ff9a62)}.ctr .cl .cl2{color:var(--cool)}.ctr .cl small{display:block;margin-top:2px;font-size:12px;line-height:1.4;color:var(--mut)}.ctr .cl svg{width:16px;height:16px;flex:none;fill:currentColor}.ctr .ct:has(.cl){align-items:center}.ctr .ct:has(.cl):first-of-type{margin-top:0}
+body.ca-off .ctr,body.ca-off .cbar .mk{display:none!important}

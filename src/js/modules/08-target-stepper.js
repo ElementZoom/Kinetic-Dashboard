@@ -15,8 +15,8 @@ function bump(id, d) {
 function showT(id) {
   const a = (states[id] || {}).attributes || {}, t = T[id], v = t && t.v != null ? t.v : a.temperature;
   const txt = v != null ? f1(v) + "°" : (a.target_temp_low != null ? f1(a.target_temp_low) + "–" + f1(a.target_temp_high) : "--");
-  if (cards[id]) $(".tgt", cards[id].el).textContent = txt;
-  if (id === MAIN) $("#mt").textContent = txt;
+  if (cards[id]) { $(".tgt", cards[id].el).textContent = txt; const md = $(".md", cards[id].el); if (md) md.dataset.tg = txt; if (typeof cbar === "function") cbar(id); if (typeof clSub === "function") clSub(id); }
+  if (id === MAIN) { $("#mt").textContent = txt; if (typeof mbSet === "function") mbSet(v); }
   $$('[data-tgt="' + id + '"]').forEach(x => { x.textContent = txt; });
 }
 

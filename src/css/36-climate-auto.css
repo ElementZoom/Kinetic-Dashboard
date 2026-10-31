@@ -1,0 +1,15 @@
+/* Climate page: auto climate switch */
+#cauto{display:flex;align-items:center;gap:14px;padding:14px 18px;margin-bottom:14px}
+#cauto[hidden]{display:none}
+#cauto .cai{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:rgba(var(--w),.08);color:rgba(var(--w),.6);flex:none}
+#cauto .cai svg{width:22px;height:22px}
+#cauto.on .cai{background:rgba(var(--w),.12);color:var(--mint)}
+#cauto .cat{flex:1;min-width:0}
+#cauto b{display:block;font-weight:600;letter-spacing:.02em}
+#cauto small{display:block;opacity:.65;margin-top:2px}
+#cauto .csw{flex:none;position:relative;width:52px;height:30px;border-radius:15px;border:0;padding:0;background:rgba(var(--w),.18);transition:background .2s;cursor:pointer}
+#cauto .csw i{position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.35);transition:transform .2s}
+#cauto.on .csw{background:var(--mint)}
+#cauto .csw[aria-checked=true] i{transform:translateX(22px)}
+#cauto.part .csw{opacity:.75}
+@media (prefers-reduced-motion:reduce){#cauto .csw,#cauto .csw i{transition:none}}

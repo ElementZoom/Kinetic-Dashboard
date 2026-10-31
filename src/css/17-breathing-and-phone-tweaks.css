@@ -9,7 +9,7 @@
 @keyframes flUp{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
 @media(max-width:760px){
   body.np-on:not(.np-home):not(.np-media) #npmini{animation:flUp .38s cubic-bezier(.2,.8,.2,1) both}
-  #theme.enter .thr,#scenes.enter .sct{animation:flUp .38s cubic-bezier(.2,.8,.2,1) .12s both}#irrigation.enter .zsx{animation:flUp .38s cubic-bezier(.2,.8,.2,1) .12s both}
+  #theme.enter .thr,#scenes.enter .sct{animation:flUp calc(.38s*var(--pgs,1)) cubic-bezier(.2,.8,.2,1) calc(.12s*var(--pgs,1)) both}#irrigation.enter .zsx{animation:flUp calc(.38s*var(--pgs,1)) cubic-bezier(.2,.8,.2,1) calc(.12s*var(--pgs,1)) both}
 }
 /* phone, Theme + Scenes: the Now Playing bar becomes a round album-art button (progress ring + pause) beside the pill */
 #npfab{display:none}

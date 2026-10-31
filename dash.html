@@ -647,16 +647,16 @@ body{-webkit-user-select:none;user-select:none}input,textarea{-webkit-user-selec
 @keyframes lzIn{from{opacity:0;transform:translateY(26px) scale(.97)}to{opacity:1;transform:none}}
 @media(prefers-reduced-motion:no-preference){
 @media(min-width:761px){
-.page.enter{animation:pgFade .3s ease}
-.page.enter>*,.page.enter :is(.rooms,.cams,#grid,.zg,.wcols,.hm,.left,.side,#wx,.vgrid,.hzg,.hzside,.scl,.mlay,.thl)>*{animation:cdIn .5s cubic-bezier(.2,.7,.2,1) both}
-.page.enter>:nth-child(2),.page.enter :is(.rooms,.cams,#grid,.zg,.wcols,.hm,.left,.side,#wx,.vgrid,.hzg,.hzside,.scl,.mlay,.thl)>:nth-child(2){animation-delay:.05s}
-.page.enter>:nth-child(3),.page.enter :is(.rooms,.cams,#grid,.zg,.wcols,.hm,.left,.side,#wx,.vgrid,.hzg,.hzside,.scl,.mlay,.thl)>:nth-child(3){animation-delay:.1s}
-.page.enter>:nth-child(4),.page.enter :is(.rooms,.cams,#grid,.zg,.wcols,.hm,.left,.side,#wx,.vgrid,.hzg,.hzside,.scl,.mlay,.thl)>:nth-child(4){animation-delay:.15s}
-.page.enter>:nth-child(5),.page.enter :is(.rooms,.cams,#grid,.zg,.wcols,.hm,.left,.side,#wx,.vgrid,.hzg,.hzside,.scl,.mlay,.thl)>:nth-child(5){animation-delay:.2s}
-.page.enter>:nth-child(n+6),.page.enter :is(.rooms,.cams,#grid,.zg,.wcols,.hm,.left,.side,#wx,.vgrid,.hzg,.hzside,.scl,.mlay,.thl)>:nth-child(n+6){animation-delay:.25s}
+.page.enter{animation:pgFade calc(.3s*var(--pgs,1)) ease}
+.page.enter>*,.page.enter :is(.rooms,.cams,#grid,.zg,.wcols,.hm,.left,.side,#wx,.vgrid,.hzg,.hzside,.scl,.mlay,.thl)>*{animation:cdIn calc(.5s*var(--pgs,1)) cubic-bezier(.2,.7,.2,1) both}
+.page.enter>:nth-child(2),.page.enter :is(.rooms,.cams,#grid,.zg,.wcols,.hm,.left,.side,#wx,.vgrid,.hzg,.hzside,.scl,.mlay,.thl)>:nth-child(2){animation-delay:calc(.05s*var(--pgs,1))}
+.page.enter>:nth-child(3),.page.enter :is(.rooms,.cams,#grid,.zg,.wcols,.hm,.left,.side,#wx,.vgrid,.hzg,.hzside,.scl,.mlay,.thl)>:nth-child(3){animation-delay:calc(.1s*var(--pgs,1))}
+.page.enter>:nth-child(4),.page.enter :is(.rooms,.cams,#grid,.zg,.wcols,.hm,.left,.side,#wx,.vgrid,.hzg,.hzside,.scl,.mlay,.thl)>:nth-child(4){animation-delay:calc(.15s*var(--pgs,1))}
+.page.enter>:nth-child(5),.page.enter :is(.rooms,.cams,#grid,.zg,.wcols,.hm,.left,.side,#wx,.vgrid,.hzg,.hzside,.scl,.mlay,.thl)>:nth-child(5){animation-delay:calc(.2s*var(--pgs,1))}
+.page.enter>:nth-child(n+6),.page.enter :is(.rooms,.cams,#grid,.zg,.wcols,.hm,.left,.side,#wx,.vgrid,.hzg,.hzside,.scl,.mlay,.thl)>:nth-child(n+6){animation-delay:calc(.25s*var(--pgs,1))}
 }
 @media(max-width:760px){
-.page.enter{animation:pgFade .3s ease}
+.page.enter{animation:pgFade calc(.3s*var(--pgs,1)) ease}
 .lzp{opacity:0;transform:translateY(18px)}
 .lzp.lzo{opacity:1;transform:none;transition:opacity .45s ease,transform .45s cubic-bezier(.2,.7,.2,1)}
 }
@@ -1173,7 +1173,7 @@ html:not(#x) .tl[data-e^="cover."].mv{animation:cvmv 1.6s ease-in-out infinite}
 @keyframes flUp{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
 @media(max-width:760px){
   body.np-on:not(.np-home):not(.np-media) #npmini{animation:flUp .38s cubic-bezier(.2,.8,.2,1) both}
-  #theme.enter .thr,#scenes.enter .sct{animation:flUp .38s cubic-bezier(.2,.8,.2,1) .12s both}#irrigation.enter .zsx{animation:flUp .38s cubic-bezier(.2,.8,.2,1) .12s both}
+  #theme.enter .thr,#scenes.enter .sct{animation:flUp calc(.38s*var(--pgs,1)) cubic-bezier(.2,.8,.2,1) calc(.12s*var(--pgs,1)) both}#irrigation.enter .zsx{animation:flUp calc(.38s*var(--pgs,1)) cubic-bezier(.2,.8,.2,1) calc(.12s*var(--pgs,1)) both}
 }
 /* phone, Theme + Scenes: the Now Playing bar becomes a round album-art button (progress ring + pause) beside the pill */
 #npfab{display:none}
@@ -2087,13 +2087,40 @@ html[data-mode=light] .wxa{background:rgba(0,0,0,.04)}html[data-mode=light] .wxa
 @media(prefers-reduced-motion:reduce){.wch.wnd.wt3{animation:none}}
 /* page transition (Theme > Page transition): variants of the .page.enter entrance, set by html[data-pgfx]. "rise" is the original look. */
 @keyframes pgSlide{from{opacity:0;transform:translateX(var(--pgdx,36px))}}
-html[data-pgfx=slide] .page.enter{animation:pgSlide .36s cubic-bezier(.2,.8,.2,1) backwards}
+html[data-pgfx=slide] .page.enter{animation:pgSlide calc(.36s*var(--pgs,1)) cubic-bezier(.2,.8,.2,1) backwards}
 html[data-pgfx=slide] .page.enter>*,html[data-pgfx=slide] .page.enter :is(.rooms,.cams,#grid,.zg,.wcols,.hm,.left,.side,#wx,.vgrid,.hzg,.hzside,.scl,.mlay,.thl)>*,
 html[data-pgfx=fade] .page.enter>*,html[data-pgfx=fade] .page.enter :is(.rooms,.cams,#grid,.zg,.wcols,.hm,.left,.side,#wx,.vgrid,.hzg,.hzside,.scl,.mlay,.thl)>*{animation:none}
-html[data-pgfx=fade] .page.enter{animation:pgFade .22s ease}
+html[data-pgfx=fade] .page.enter{animation:pgFade calc(.22s*var(--pgs,1)) ease}
 html[data-pgfx=off] .page.enter,html[data-pgfx=off] .page.enter>*,html[data-pgfx=off] .page.enter :is(.rooms,.cams,#grid,.zg,.wcols,.hm,.left,.side,#wx,.vgrid,.hzg,.hzside,.scl,.mlay,.thl)>*{animation:none}
 html[data-pgfx=off] #theme.enter .thr,html[data-pgfx=off] #scenes.enter .sct,html[data-pgfx=off] #irrigation.enter .zsx,html[data-pgfx=fade] #theme.enter .thr,html[data-pgfx=fade] #scenes.enter .sct,html[data-pgfx=fade] #irrigation.enter .zsx,html[data-pgfx=slide] #theme.enter .thr,html[data-pgfx=slide] #scenes.enter .sct,html[data-pgfx=slide] #irrigation.enter .zsx{animation:none}
 @media(prefers-reduced-motion:reduce){html[data-pgfx=slide] .page.enter{animation:pgFade .2s ease}}
+/* zoom, flip, blur, tilt: like slide and fade, the page itself moves and the cards inside stay put */
+@keyframes pgZoom{from{opacity:0;transform:scale(.92)}}
+@keyframes pgFlip{from{opacity:0;transform:perspective(1100px) rotateY(var(--pgdr,-16deg))}}
+@keyframes pgBlur{from{opacity:0;filter:blur(14px)}}
+@keyframes pgTilt{from{opacity:0;transform:perspective(1100px) rotateX(9deg) translateY(26px)}}
+html[data-pgfx=zoom] .page.enter{animation:pgZoom calc(.34s*var(--pgs,1)) cubic-bezier(.2,.8,.2,1) backwards}
+html[data-pgfx=flip] .page.enter{animation:pgFlip calc(.42s*var(--pgs,1)) cubic-bezier(.2,.8,.2,1) backwards}
+html[data-pgfx=blur] .page.enter{animation:pgBlur calc(.36s*var(--pgs,1)) ease backwards}
+html[data-pgfx=tilt] .page.enter{animation:pgTilt calc(.4s*var(--pgs,1)) cubic-bezier(.2,.8,.2,1) backwards}
+html:is([data-pgfx=zoom],[data-pgfx=flip],[data-pgfx=blur],[data-pgfx=tilt]) .page.enter>*,html:is([data-pgfx=zoom],[data-pgfx=flip],[data-pgfx=blur],[data-pgfx=tilt]) .page.enter :is(.rooms,.cams,#grid,.zg,.wcols,.hm,.left,.side,#wx,.vgrid,.hzg,.hzside,.scl,.mlay,.thl)>*,
+html:is([data-pgfx=zoom],[data-pgfx=flip],[data-pgfx=blur],[data-pgfx=tilt]) :is(#theme.enter .thr,#scenes.enter .sct,#irrigation.enter .zsx){animation:none}
+@media(prefers-reduced-motion:reduce){html:is([data-pgfx=zoom],[data-pgfx=flip],[data-pgfx=blur],[data-pgfx=tilt]) .page.enter{animation:pgFade .2s ease}}
+/* one motion style for everything that appears: the chosen transition also drives tab switches inside a page, the Energy range switch and the pop-up panels (set by html[data-pgfx], scaled by --pgs).
+   Rise keeps the original motion; Slide keeps the direction-aware tab slide; Off stills it all. Sheets that rise from the screen edge keep their edge slide. */
+@keyframes mxIn{from{opacity:var(--mx-o,0);transform:var(--mx-t,none);filter:var(--mx-f,none)}}
+html[data-pgfx=slide]{--mx-t:translateX(36px)}
+html[data-pgfx=zoom]{--mx-t:scale(.92)}
+html[data-pgfx=flip]{--mx-t:perspective(1100px) rotateY(-16deg)}
+html[data-pgfx=blur]{--mx-f:blur(14px)}
+html[data-pgfx=tilt]{--mx-t:perspective(1100px) rotateX(9deg) translateY(26px)}
+html:is([data-pgfx=fade],[data-pgfx=zoom],[data-pgfx=flip],[data-pgfx=blur],[data-pgfx=tilt]) :is(.tx,.txc>*,#energy .enin){animation-name:mxIn}
+html:is([data-pgfx=slide],[data-pgfx=fade],[data-pgfx=zoom],[data-pgfx=flip],[data-pgfx=blur],[data-pgfx=tilt]) :is(.evqc,#kp.opening>.kpb,#sp:not(.out)>.spb){animation:mxIn calc(.3s*var(--pgs,1)) cubic-bezier(.2,.85,.3,1) both}
+html[data-pgfx=off] :is(.tx,.txc>*,#energy .enin,.evqc,#kp.opening>.kpb,#sp:not(.out)>.spb){animation:none}
+html .tx{animation-duration:calc(.42s*var(--pgs,1))}
+html .txc>*{animation-duration:calc(.46s*var(--pgs,1));animation-delay:calc(var(--i,0)*32ms*var(--pgs,1))}
+html #energy .enin{animation-duration:calc(.5s*var(--pgs,1))}
+@media(prefers-reduced-motion:reduce){html:is([data-pgfx=slide],[data-pgfx=zoom],[data-pgfx=flip],[data-pgfx=blur],[data-pgfx=tilt]){--mx-t:none;--mx-f:none}}
 /* Leaving: the Home card (#lvc, styled with the strip row in 32-attention.css) and its sheet */
 #lvc .at-x small{font-size:inherit;color:var(--mut)}
 #lvsheet{display:block;position:fixed;inset:0;z-index:85;visibility:hidden;pointer-events:none;transition:visibility 0s .36s}body.lv-open #lvsheet{visibility:visible;pointer-events:auto;transition:none}
@@ -2107,6 +2134,257 @@ html[data-style=material] .lvb{background:var(--bg2)!important}
 @media(max-width:760px){.lvb{left:0;right:0;bottom:0;max-height:88dvh;border-radius:24px 24px 0 0;padding:16px 16px 26px;transform:translateY(102%)}body.lv-open .lvb{transform:none}}
 @media(min-width:761px){.lvb{top:0;right:0;bottom:0;width:min(400px,92vw);border-radius:24px 0 0 24px;padding:20px;transform:translateX(102%)}body.lv-open .lvb{transform:none}}
 @media(prefers-reduced-motion:reduce){.lvb,.lvbk{transition:none}}
+/* Climate page: auto climate switch */
+#cauto{display:flex;align-items:center;gap:14px;padding:14px 18px;margin-bottom:14px}
+#cauto[hidden]{display:none}
+#cauto .cai{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:rgba(var(--w),.08);color:rgba(var(--w),.6);flex:none}
+#cauto .cai svg{width:22px;height:22px}
+#cauto.on .cai{background:rgba(var(--w),.12);color:var(--mint)}
+#cauto .cat{flex:1;min-width:0}
+#cauto b{display:block;font-weight:600;letter-spacing:.02em}
+#cauto small{display:block;opacity:.65;margin-top:2px}
+#cauto .csw{flex:none;position:relative;width:52px;height:30px;border-radius:15px;border:0;padding:0;background:rgba(var(--w),.18);transition:background .2s;cursor:pointer}
+#cauto .csw i{position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.35);transition:transform .2s}
+#cauto.on .csw{background:var(--mint)}
+#cauto .csw[aria-checked=true] i{transform:translateX(22px)}
+#cauto.part .csw{opacity:.75}
+@media (prefers-reduced-motion:reduce){#cauto .csw,#cauto .csw i{transition:none}}
+/* Climate page: a House card (big number, mode switch, 24-hour graph) and a row per room with a cool-to-warm bar; on a phone a room opens as a bottom sheet.
+   The colour follows the heat pump (data-hm) through --hzc; nothing on this page animates on its own. */
+.card[data-hm=heat]{--hzc:var(--heat)}.card[data-hm=cool]{--hzc:var(--cool)}.card[data-hm=auto]{--hzc:var(--mint)}.card[data-hm=fan]{--hzc:var(--mut)}
+/* comfort bar (rooms) */
+.cbar{pointer-events:none;position:relative;height:10px;border-radius:5px;background:linear-gradient(90deg,var(--cool),#ffd27a 50%,var(--heat));margin:6px 6px 4px;transition:opacity .3s}
+.cbar i{position:absolute;top:-7px;width:24px;height:24px;margin-left:-12px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.4),0 0 12px var(--kc,transparent);transition:left .5s}
+.cbar u{position:absolute;top:-4px;width:2px;height:18px;margin-left:-1px;background:var(--ink);opacity:.8;border-radius:1px;transition:left .3s}
+.cbar .mk{position:absolute;top:13px;width:0;height:0;margin-left:-5px;border:5px solid transparent;border-top:0;border-bottom:7px solid var(--heat)}
+.cbar .mk.c{border-bottom-color:var(--cool)}.cbar .mk[hidden]{display:none}
+.card.rm.hasmk .cbar{margin-bottom:4px}
+.card.rm.coff .cbar{opacity:.35}
+html[data-style=minimal] .cbar i{box-shadow:0 1px 3px rgba(0,0,0,.4)}
+/* House card */
+.card.czh{position:relative;isolation:isolate;overflow:hidden}
+.card.czh::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(120% 80% at 0 0,color-mix(in srgb,var(--hzc,transparent) 20%,transparent),transparent 65%)}
+#grid>.card.main2{display:flex;flex-direction:column;align-items:stretch;gap:14px;padding:22px 22px 18px;min-width:0}
+#grid>.card.main2 .lbl.il{justify-content:flex-start;text-align:left;align-self:flex-start;min-height:0;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--mut)}
+.czm{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}
+#grid>.card.main2 .temp{font-size:84px;font-weight:200;line-height:1;letter-spacing:-.04em;display:flex;align-items:flex-start;margin:0}
+#grid>.card.main2 .temp small{font-size:26px;font-weight:300;margin:6px 0 0 3px;letter-spacing:0}
+.czs{display:flex;flex-direction:column;align-items:flex-end;gap:7px;text-align:right;font-size:14px;color:var(--mut);padding-bottom:8px;min-width:0}
+.czt{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+#grid>.card.main2 .czt .md{margin:0;font:inherit;font-size:14px;letter-spacing:0;text-transform:none;color:var(--mut)}
+#grid>.card.main2 .czt .row{display:flex;flex-direction:row;align-items:center;gap:6px;grid-column:auto;grid-row:auto}
+#grid>.card.main2 .czt .tg span{display:none}#grid>.card.main2 .czt .tg b{font-size:16px;font-weight:600;color:var(--ink);min-width:46px;display:inline-block;text-align:center}
+#grid>.card.main2 .czt .rnd{width:28px;height:28px;border-radius:50%;font-size:15px;padding:0}
+#grid>.card.main2.hoff .czt .row{display:none}
+.czh .cout{display:flex;gap:6px;padding:0;border:0;background:none;font:inherit;font-size:14px;letter-spacing:0;justify-content:flex-end}
+.czh .cout b{color:var(--ink);font-weight:600}
+#grid>.card.main2 .fanb{display:flex;gap:6px;padding:0;border:0;background:none;font:inherit;font-size:14px;color:var(--mut);align-items:center;width:auto;justify-content:flex-end;grid-column:auto}
+#grid>.card.main2 .fanb span{font:inherit;letter-spacing:0}
+#grid>.card.main2 .fanb b{display:inline-block;color:var(--ink);font-weight:600;text-transform:lowercase}#grid>.card.main2 .fanb b::first-letter{text-transform:uppercase}
+#grid>.card.main2 .chips{display:flex;flex-wrap:nowrap;gap:0;padding:4px;border-radius:999px;background:rgba(var(--w),.07);border:1px solid var(--line)}
+#grid>.card.main2 .chip{flex:1 1 0;min-width:0;padding:10px 0;border:0;background:transparent;border-radius:999px;font-size:11px;letter-spacing:.03em;box-shadow:none}
+#grid>.card.main2 .chip.on{background:var(--hzc,var(--ink));color:var(--onmint,#07241a);box-shadow:0 2px 12px color-mix(in srgb,var(--hzc,transparent) 45%,transparent)}
+.czg{margin-top:2px}.czg[hidden]{display:none}
+.czg svg{width:100%;height:84px;display:block;overflow:visible}
+.czg small{display:block;margin-top:6px;font:11px var(--mono);letter-spacing:.14em;color:var(--mut)}
+/* a room */
+#grid>.card.rm{position:relative;min-width:0}
+#grid>.card.rm .lbl.il{cursor:pointer;font-size:15px;letter-spacing:0;text-transform:none;font-weight:500;color:var(--ink);min-height:0;white-space:normal;line-height:1.2;overflow:hidden;min-width:0;padding-right:22px;align-items:center}
+#grid>.card.rm .lbl.il::after{content:"";position:absolute;top:50%;right:13px;width:8px;height:8px;margin-top:-6px;border:solid var(--mut);border-width:0 2px 2px 0;transform:rotate(45deg);transition:transform .2s;opacity:1}
+#grid>.card.rm[data-open] .lbl.il::after{transform:rotate(-135deg);margin-top:-2px;top:50%}
+#grid>.card.rm .md{margin:0;font-size:11px;white-space:nowrap;color:var(--mut)}
+#grid>.card.rm[data-hm] .md{color:var(--hzc)}
+#grid>.card.rm .temp{font-weight:300}
+#grid>.card.rm .rnd,#grid>.card.main2 .rnd{border-radius:50%;display:inline-flex;align-items:center;justify-content:center;padding:0;line-height:1}
+#grid>.card.rm .tg span{display:none}
+#grid>.card.rm .sub,#grid>.card.rm .shx{display:none}
+#grid>.card.rm .chips{display:none;margin-top:10px}#grid>.card.rm .fanb{display:none;margin-top:8px}
+#grid>.card.rm[data-open] .chips,#grid>.card.rm[data-open] .fanb{display:flex}
+#grid>.card.rm .chip{flex:1 1 0}
+#grid>.card.rm .md[data-tg]::after{content:" · " attr(data-tg)}
+.ctr{display:flex;flex-direction:column;gap:8px}.ctr[hidden]{display:none}
+.ct{display:flex;align-items:center;gap:8px}
+.ct span{flex:1;font:12px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
+.ct b{min-width:60px;text-align:center;font-weight:600;font-size:15px}
+.ct .rnd{width:34px;height:34px;border-radius:50%;font-size:16px;flex:none}
+#grid>.card.rm .ctr{grid-area:tr;display:none;margin-top:8px}
+#grid>.card.rm[data-open] .ctr:not([hidden]){display:flex}
+.ct .csw{flex:none;position:relative;width:52px;height:30px;border-radius:15px;border:0;padding:0;background:rgba(var(--w),.18);transition:background .2s;cursor:pointer}
+.ct .csw i{position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.35);transition:transform .2s}
+.ct .csw[aria-checked=true]{background:var(--mint)}.ct .csw[aria-checked=true] i{transform:translateX(22px)}
+.card.rm.slp .md::before{content:"☾ "}
+@media(prefers-reduced-motion:reduce){.cbar i,.cbar u,.ct .csw,.ct .csw i{transition:none}}
+/* tablet: House on the left, rooms as rows on the right */
+@media(min-width:761px){
+#grid{grid-template-columns:360px minmax(0,1fr);gap:12px 22px;align-items:start}
+#grid>.card.main2{grid-column:1;grid-row:1/span 40}
+.czm{flex-direction:column;align-items:flex-start;gap:6px}
+.czs{align-items:flex-start;text-align:left;padding-bottom:0}.czt,.czh .cout,#grid>.card.main2 .fanb{justify-content:flex-start}
+#grid>.card.rm{grid-column:2;display:grid;grid-template-columns:minmax(100px,140px) minmax(90px,1fr) auto auto;grid-template-areas:"nm bar tp rw" "md bar tp rw" "ch ch ch ch" "fn fn fn fn" "tr tr tr tr";align-items:center;column-gap:18px;row-gap:2px;padding:14px 20px;border-radius:18px}
+#grid>.card.rm .lbl.il{grid-area:nm}#grid>.card.rm .md{grid-area:md}#grid>.card.rm .cbar{grid-area:bar}
+#grid>.card.rm .temp{grid-area:tp;font-size:32px;text-align:right}#grid>.card.rm .temp small{font-size:13px}
+#grid>.card.rm .row{grid-area:rw;gap:6px}#grid>.card.rm .rnd{width:38px;height:38px;font-size:18px}
+#grid>.card.rm .tg{display:none}
+#grid>.card.rm .chips{grid-area:ch}#grid>.card.rm .fanb{grid-area:fn}
+}
+/* phone: House on top, rooms stacked; a tapped room becomes a bottom sheet */
+@media(max-width:760px){
+#grid{grid-template-columns:1fr;gap:10px}
+#grid>.card.main2 .temp{font-size:72px}
+#grid>.card.rm{grid-column:1;display:grid;grid-template-columns:minmax(0,1fr) auto auto 14px;grid-template-areas:"nm tp rw cv" "md tp rw cv" "bar bar bar bar" "ch ch ch ch" "fn fn fn fn" "tr tr tr tr";align-items:center;column-gap:10px;row-gap:2px;padding:12px 14px 14px;border-radius:18px}
+#grid>.card.rm .lbl.il{grid-area:nm;align-self:end;padding-right:0}#grid>.card.rm .md{grid-area:md}
+#grid>.card.rm:not([data-open]) .lbl.il::after{top:27px;right:17px;margin-top:-4px}
+#grid>.card.rm .temp{grid-area:tp;font-size:28px;white-space:nowrap}#grid>.card.rm .temp small{font-size:12px}
+#grid>.card.rm .row{grid-area:rw;gap:6px}#grid>.card.rm .rnd{width:34px;height:34px;font-size:18px}
+#grid>.card.rm .tg{display:none}
+#grid>.card.rm .cbar{grid-area:bar;margin-top:14px}
+#grid>.card.rm .chips{grid-area:ch}#grid>.card.rm .fanb{grid-area:fn}
+#clbk{display:none;position:fixed;inset:0;z-index:69;background:rgba(0,0,0,.5)}
+body.cl-sheet #clbk{display:block;animation:thIn .2s ease}
+#grid>.card.rm[data-open]{position:fixed;left:0;right:0;bottom:0;top:auto;z-index:70;max-height:88vh;overflow-y:auto;overscroll-behavior:contain;border-radius:26px 26px 0 0;border-width:1px 0 0;padding:22px 22px calc(24px + env(safe-area-inset-bottom));background:var(--bg);-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:0 -10px 40px rgba(0,0,0,.35);
+  grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"nm x" "md md" "tp tp" "sb sb" "bar bar" "rw rw" "ch ch" "fn fn" "tr tr";row-gap:10px;animation:shUp .32s cubic-bezier(.2,.85,.3,1) both}
+#grid>.card.rm[data-open]::before{content:"";position:absolute;top:8px;left:50%;width:38px;height:4px;margin-left:-19px;border-radius:2px;background:rgba(var(--w),.25)}
+#grid>.card.rm[data-open] .lbl.il{font-size:22px;font-weight:600;padding-right:0}#grid>.card.rm[data-open] .lbl.il::after{display:none}
+#grid>.card.rm[data-open] .shx{display:flex;grid-area:x;align-self:start;width:34px;height:34px;border-radius:50%;border:0;background:rgba(var(--w),.1);color:var(--ink);align-items:center;justify-content:center;cursor:pointer}
+#grid>.card.rm[data-open] .shx svg{width:18px;height:18px;fill:currentColor}
+#grid>.card.rm[data-open] .md{font-size:12px;letter-spacing:.14em}#grid>.card.rm[data-open] .md::after{content:none}
+#grid>.card.rm[data-open] .temp{font-size:88px;font-weight:200;line-height:1;letter-spacing:-.04em;justify-self:start}#grid>.card.rm[data-open] .temp small{font-size:22px;margin-left:4px}
+#grid>.card.rm[data-open] .sub{display:block;grid-area:sb;font-size:14px;color:var(--mut)}
+#grid>.card.rm[data-open] .cbar{margin:16px 8px 10px}
+#grid>.card.rm[data-open] .row{justify-content:center;gap:22px;margin:6px 0}
+#grid>.card.rm[data-open] .rnd{width:52px;height:52px;font-size:22px}
+#grid>.card.rm[data-open] .tg{display:block;text-align:center;align-self:center}#grid>.card.rm[data-open] .tg b{font-size:24px;font-weight:300;color:var(--ink)}
+#grid>.card.rm[data-open] .chips{margin-top:4px}
+#grid>.card.rm[data-open] .chip{padding:12px 4px;font-size:12px}
+}
+/* Events: view switch, tablet week + list, phone week + month */
+.evvw{gap:0;padding:4px;border-radius:999px;border:1px solid var(--line);background:rgba(var(--w),.05)}
+.evvw .eb{padding:9px 16px;border:0;background:transparent;border-radius:999px;font-size:12px}
+.evvw .eb.on{background:var(--mint);color:var(--onmint,#07241a)}
+#events.srch .evvw{display:none}
+@media(max-width:760px){.evvw{order:5;flex:1 1 100%;display:flex}.evvw .eb{flex:1;padding:9px 6px}}
+/* shared */
+.cg.ag .evnone{margin:12px 2px}
+.cg.ag .ah.t{color:var(--mint)}
+/* tablet week */
+.cg.evwk{display:block}
+.wk{border:1px solid var(--line);border-radius:22px;overflow:hidden;background:linear-gradient(160deg,rgba(var(--w),.05),rgba(var(--w),.015))}
+.wkh,.wka,.wkb{display:grid;grid-template-columns:54px repeat(7,minmax(0,1fr))}
+.wkh>div{text-align:center;padding:10px 4px 6px;font:12px var(--mono);letter-spacing:.14em;color:var(--mut)}
+.wkh b{display:block;font:300 22px var(--sans,inherit);letter-spacing:0;color:var(--ink);margin-top:2px}
+.wkh .t,.wkh .t b{color:var(--mint)}
+.wka{border-bottom:1px solid var(--line);padding-bottom:6px;min-height:34px}
+.wka>i{font:normal 10px var(--mono);letter-spacing:.12em;color:var(--mut);padding:6px 0 0 10px}
+.wka>div{padding:2px 3px;display:flex;flex-direction:column;gap:3px;min-width:0}
+.wka .ce{font-size:12.5px;padding:3px 7px}
+.wkb{max-height:calc(100vh - 290px);min-height:260px;overflow-y:auto;position:relative;overscroll-behavior:contain}
+.wh{position:relative}
+.wh span{position:absolute;right:8px;transform:translateY(-50%);font:11px var(--mono);color:var(--mut)}
+.wh span:first-child{transform:none}
+.wc{position:relative;border-left:1px solid var(--line);background:repeating-linear-gradient(to bottom,transparent 0,transparent 39px,rgba(var(--w),.07) 39px,rgba(var(--w),.07) 40px)}
+.wc.t{background-color:rgba(var(--w),.03)}
+.wev{position:absolute;box-sizing:border-box;border-left:3px solid var(--c);border-radius:8px;padding:3px 7px;overflow:hidden;cursor:pointer;background:color-mix(in srgb,var(--c) 22%,transparent);font-size:12.5px;line-height:1.25}
+.wev b{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.wev small{color:var(--mut);font-size:11px}
+.wn{position:absolute;left:0;right:0;height:0;border-top:2px solid var(--heat,#ff6b6b);z-index:2;pointer-events:none}
+.wn::before{content:"";position:absolute;left:-5px;top:-6px;width:9px;height:9px;border-radius:50%;background:var(--heat,#ff6b6b)}
+/* tablet list */
+.cg.evl{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:24px;align-items:start}
+.evl .evla .ah:first-child{margin-top:4px}
+.evl .ce{display:flex;align-items:center;gap:18px;padding:11px 14px;font-size:16px;margin-bottom:6px;white-space:normal;background:color-mix(in srgb,var(--c) 14%,rgba(var(--w),.04))}
+.evl .ce .mo{flex:0 0 170px;color:var(--mut);font-size:13px}
+.evl .ce b{flex:1;font-weight:500;min-width:0}
+.evl .ce em{font:normal 12px var(--mono);color:var(--mut)}
+.evlm{position:sticky;top:0;border:1px solid var(--line);border-radius:22px;padding:16px;background:linear-gradient(160deg,rgba(var(--w),.05),rgba(var(--w),.015))}
+.evlm h4{margin:0 0 10px;text-align:center;font-weight:400;font-size:15px}
+.evlm .emg{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
+.evlm .dnm{font:11px var(--mono);color:var(--mut)}
+.evlm button{border:0;background:none;color:var(--ink);font:13px var(--mono);padding:7px 0;border-radius:50%;cursor:pointer}
+.evlm button.o{opacity:.35}.evlm button.t{background:var(--mint);color:var(--onmint,#07241a)}
+/* phone week strip + month grid */
+.evstrip,.evmg{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin:4px 0 6px}
+.evstrip button,.evmg button{border:1px solid var(--line);background:rgba(var(--w),.05);color:var(--ink);border-radius:14px;padding:7px 0 6px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;font-family:inherit}
+.evstrip small{font:10px var(--mono);letter-spacing:.08em;color:var(--mut)}
+.evstrip b,.evmg b{font:500 16px var(--mono)}
+.evstrip button span,.evmg button span{display:flex;gap:3px;height:6px}
+.evstrip i,.evmg i{width:5px;height:5px;border-radius:50%;background:var(--c)}
+.evmg{gap:5px}.evmg .dnm{font:10px var(--mono);color:var(--mut);text-align:center;padding:2px 0}
+.evmg button{padding:7px 0 5px;border-radius:12px}.evmg button.o{opacity:.4}
+.evstrip button.t b,.evmg button.t b{color:var(--mint)}
+.evstrip button.on,.evmg button.on{background:var(--mint);border-color:var(--mint);color:var(--onmint,#07241a)}
+.evstrip button.on b,.evstrip button.on small,.evmg button.on b{color:inherit}
+.evstrip button.on i,.evmg button.on i{box-shadow:0 0 0 1px rgba(0,0,0,.35)}
+@media(min-width:761px){#events .eh{gap:10px}#events .eh .eb{padding:12px 18px}#events .eh .evvw .eb{padding:9px 14px}#events .eh h2{min-width:0;flex:0 1 auto}}
+@media(max-width:760px){.evmg button{padding:4px 0 3px}.evmg b{font-size:15px}}
+/* Weather > Now (phone): as tall as the Sun and moon card, the 7-day strip sits at the bottom instead of leaving a gap under the card */
+@media(max-width:760px){#weather .wnow{min-height:430px;box-sizing:border-box;display:flex;flex-direction:column}#weather .wnow>.wn7{margin-top:auto}}
+/* Home heat pump card: big indoor number, target stepper, a cool-to-warm bar with outside / inside / target, mode icons */
+#mini[data-hm=heat]{--hzc:var(--heat)}#mini[data-hm=cool]{--hzc:var(--cool)}#mini[data-hm=auto]{--hzc:var(--mint)}#mini[data-hm=fan]{--hzc:var(--mut)}
+html:not(#x) #mini{display:flex;flex-direction:column;align-items:stretch;gap:12px;padding:18px 20px 16px;overflow:hidden;isolation:isolate}
+#mini::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(120% 80% at 0 0,color-mix(in srgb,var(--hzc,transparent) 18%,transparent),transparent 65%)}
+#mini>.lbl{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--mut);justify-content:flex-start;padding-right:22px}
+#mini .mtop{display:flex;align-items:flex-end;justify-content:space-between;gap:8px}
+#mini .mbg{display:flex;align-items:flex-start;line-height:1}
+#mini .mbg b{font-size:58px;font-weight:200;letter-spacing:-.04em;line-height:1;display:block;margin:0}
+#mini .mbg small{font-size:20px;font-weight:300;margin:5px 0 0 2px}
+html:not(#x) #mini .mtop>.row{display:flex;flex-direction:row;align-items:center;gap:6px;margin:0!important;padding-bottom:6px;min-width:0}
+#mini .mtop .big{font-size:17px;font-weight:600;min-width:46px;text-align:center}
+html:not(#x) #mini .rnd{width:32px;height:32px;border-radius:50%;font-size:16px;padding:0;display:inline-flex;align-items:center;justify-content:center;line-height:1}
+#mini .mbar{position:relative;height:10px;border-radius:5px;background:linear-gradient(90deg,var(--cool),#ffd27a 50%,var(--heat));margin:12px 8px 2px;pointer-events:none}
+#mini .mbar>*{position:absolute;display:block}
+#mini .mbar .n{top:-7px;width:24px;height:24px;margin-left:-12px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.4),0 0 12px var(--kc,transparent);transition:left .5s}
+#mini .mbar .t{top:-4px;width:2px;height:18px;margin-left:-1px;background:var(--ink);opacity:.85;border-radius:1px;transition:left .3s}
+#mini .mbar .o{top:-3px;width:10px;height:10px;margin-left:-5px;border-radius:50%;border:2px solid var(--cool);background:var(--bg);box-sizing:content-box;transition:left .5s}
+#mini .mleg{display:flex;justify-content:space-between;gap:6px;font-size:12px;color:var(--mut);white-space:nowrap}
+#mini .mleg b{color:var(--ink);font-weight:600;font-size:12px;margin:0;display:inline}
+#mini .mleg span{display:inline-flex;align-items:center;gap:5px;min-width:0}
+#mini .dot{display:inline-block;width:8px;height:8px;border-radius:50%;flex:none}
+#mini .dot.o{border:2px solid var(--cool);box-sizing:border-box}#mini .dot.n{background:var(--ink)}#mini .dot.t{width:2px;height:10px;border-radius:1px;background:var(--ink)}
+html:not(#x) #mini .chips{display:flex;flex-wrap:nowrap;gap:0;padding:4px;border-radius:999px;background:rgba(var(--w),.07);border:1px solid var(--line)}
+html:not(#x) #mini .chip{flex:1 1 0;min-width:0;padding:10px 0;border:0;background:transparent;border-radius:999px;box-shadow:none;display:flex;align-items:center;justify-content:center}
+html:not(#x) #mini .chip.on{background:var(--hzc,var(--ink));color:var(--onmint,#07241a);box-shadow:0 2px 12px color-mix(in srgb,var(--hzc,transparent) 45%,transparent)}
+@media(prefers-reduced-motion:reduce){#mini .mbar>*{transition:none}}
+
+/* Auto climate: one slim row */
+#cauto{gap:10px;padding:8px 14px;margin-bottom:10px;border-radius:16px}
+#cauto .cai{width:30px;height:30px;border-radius:10px}#cauto .cai svg{width:18px;height:18px}
+#cauto b{font-size:14px}#cauto small{font-size:11px;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#cauto .csw{width:44px;height:26px;border-radius:13px}#cauto .csw i{top:3px;left:3px;width:20px;height:20px}#cauto .csw[aria-checked=true] i{transform:translateX(18px)}
+
+/* phone: a slimmer top bar on every page */
+@media(max-width:760px){
+html:not(#x) header{padding:5px 10px;row-gap:2px;min-height:0;border-radius:16px}
+html[data-style=material] header{border-radius:22px}
+html:not(#x) header h1{font-size:18px}
+html:not(#x) #ttl:not(.bk){margin-left:-2px;padding:4px 10px 4px 2px}
+html:not(#x) #ttl.bk{margin-left:-2px;padding:4px 10px 4px 2px}
+html:not(#x) #clk{font-size:16px}
+html:not(#x) .hr{gap:8px}
+html:not(#x) #hb,html:not(#x) #al,html:not(#x) #hnote{width:32px;height:32px}
+html:not(#x) #st{font-size:9px;padding:3px 7px}
+html:not(#x) #bat{font-size:11px;padding:3px 9px 3px 7px}
+html:not(#x) #hc{padding:2px 0}
+body.np-hdr header{padding-bottom:6px}
+.main{gap:10px}
+#cauto small{display:none}
+}
+/* tablet: a more compact heat pump card (the side column is narrow and shares the height with Forecast) */
+@media(min-width:761px){
+html:not(#x) #mini{gap:6px;padding:14px 18px 14px}
+#mini .mbg b{font-size:44px}#mini .mbg small{font-size:16px;margin-top:3px}
+html:not(#x) #mini .mtop>.row{padding-bottom:2px}
+html:not(#x) #mini .rnd{width:28px;height:28px;font-size:15px}
+#mini .mtop .big{font-size:15px;min-width:42px}
+#mini .mbar{margin:8px 8px 0}
+#mini .mleg{font-size:11px}#mini .mleg b{font-size:11px}
+#mini .mleg>span:last-child{display:none}
+html:not(#x) #mini .chips{padding:3px}
+html:not(#x) #mini .chip{padding:7px 0}
+}
+/* tablet: the camera tiles stretch to the height of the heat pump + forecast column, so the bottoms line up */
+@media(min-width:1101px){
+.hm:has(#cams>*) .camcol .cams{align-content:stretch}
+.hm:has(#cams>*) .camcol .cams>.cam{align-self:stretch}
+}
 </style>
 </head>
 <body>
@@ -2131,8 +2409,9 @@ html[data-style=material] .lvb{background:var(--bg2)!important}
       <div class="left"><div class="camcol"><div class="cams" id="cams"></div><div class="pn sch" id="sch" hidden></div></div><div class="rooms" id="rooms"></div></div>
       <div class="side">
         <div class="pn" id="mini"><div class="lbl">Heat pump</div>
-          <div class="mrow"><div id="mid"><span class="lbl">Indoor</span><b id="mi">--</b></div><div id="mod"><span class="lbl">Outdoor</span><b id="mo">--</b></div></div>
-          <div class="row" style="margin:10px 0"><button class="rnd" data-d="-1">−</button><b id="mt" class="big">--</b><button class="rnd" data-d="1">+</button></div>
+          <div class="mtop"><div class="mbg"><b id="mbg">--</b><small>°</small></div><div class="row"><button class="rnd" data-d="-1">−</button><b id="mt" class="big">--</b><button class="rnd" data-d="1">+</button></div></div>
+          <div class="mbar" id="mbar"><b class="o"></b><i class="n"></i><u class="t"></u></div>
+          <div class="mleg"><span id="mod"><em class="dot o"></em>Outside <b id="mo">--</b></span><span id="mid"><em class="dot n"></em>Inside <b id="mi">--</b></span><span><em class="dot t"></em>Target <b id="mtg">--</b></span></div>
           <div class="chips" id="mm"><button class="chip" data-m="heat" id="i-heat" data-i="fire"></button><button class="chip" data-m="cool" id="i-cool" data-i="snowflake"></button><button class="chip" data-m="fan_only" id="i-fan" data-i="fan"></button><button class="chip" data-m="pwr" id="i-pwr" data-i="power"></button></div></div>
         <div class="pn npw npoff" id="npw"></div>
         <div class="pn" id="fcp"><div class="lbl">Forecast</div><div id="fc"></div></div>
@@ -2162,11 +2441,12 @@ html[data-style=material] .lvb{background:var(--bg2)!important}
   <div id="climate" class="page"><div id="gsum" class="pn"></div><div id="grid"></div><div class="dots" id="gdots"></div></div>
 
   <div id="events" class="page">
-    <div class="eh"><button class="eb" id="ep" data-i="chevron-left"></button><h2 id="et"></h2><button class="eb" id="en" data-i="chevron-right"></button><button class="eb" id="etd">TODAY</button><button class="eb" id="esrch" aria-label="Search events" data-i="magnify"></button><input type="search" id="esq" class="esq" placeholder="Search all events" autocomplete="off" aria-label="Search all events"><button class="eb" id="eadd" aria-label="Add event" style="display:none">+</button><div class="lg" id="elg"></div></div>
+    <div class="eh"><button class="eb" id="ep" data-i="chevron-left"></button><h2 id="et"></h2><button class="eb" id="en" data-i="chevron-right"></button><div class="seg evvw" id="evsw" role="tablist" aria-label="Events view"></div><button class="eb" id="etd">TODAY</button><button class="eb" id="esrch" aria-label="Search events" data-i="magnify"></button><input type="search" id="esq" class="esq" placeholder="Search all events" autocomplete="off" aria-label="Search all events"><button class="eb" id="eadd" aria-label="Add event" style="display:none">+</button><div class="lg" id="elg"></div></div>
     <div class="cg" id="cg"></div>
   </div>
 </div>
 
+<div id="clbk"></div>
 <div id="evm"><div id="evb"></div><div id="evp"></div><div id="evq" role="alertdialog" aria-modal="true"><div class="evqc"></div></div></div>
 <div id="npop"><div id="nbd"></div><aside id="np"></aside></div>
 <div id="cpp"></div>
@@ -2180,7 +2460,7 @@ html[data-style=material] .lvb{background:var(--bg2)!important}
 // (notification tap such as #view/driveway, #security ...), not the return from the login, and the device has not asked for reduced motion.
 window.brandLogo = function () { var L = window.DASH_LOGO, B = (window.DASH_CONFIG || {}).brand; return L && L.svg ? { svg: L.svg, lockup: !!L.lockup } : B && B.mark ? { svg: B.mark, lockup: false } : null; };   // brand-logo.js wins over brand.mark in config.js
 window.brandMark = function (s) { var g = window.brandLogo(); if (!g) return ""; return g.svg.replace(/\bid="([\w-]+)"/g, 'id="$1' + s + '"').replace(/url\(#([\w-]+)\)/g, 'url(#$1' + s + ')'); };
-window.DASH_VER = "1.14.6";   // the one place to change the version
+window.DASH_VER = "1.14.6.17";   // the one place to change the version
 (function () { try {
   var B = (window.DASH_CONFIG || {}).brand, el = document.getElementById("bootld"), r = document.documentElement, lp = "on";
   try { lp = localStorage.getItem("dashLogo") || "on"; } catch (e) {}   // Theme page -> "Start-up logo": on | load (no intro) | off (plain spinner, as before)
@@ -2319,9 +2599,12 @@ const STYLES = [["default", "Kinetic", "The original look: tinted depth, fine ou
 const applyStyle = () => document.documentElement.setAttribute("data-style", STYLES.some(x => x[0] === STYLE) ? STYLE : "default");
 applyStyle();
 // page transition: how a page appears when you move between tabs (Theme page; per device, config pageTransition sets the default)
-const PGFXS = [["rise", "RISE", "Fade, then the cards rise in (default)"], ["slide", "SLIDE", "Pages slide in the direction you moved"], ["fade", "FADE", "A plain, quick fade"], ["off", "OFF", "No animation between pages"]];
+const PGFXS = [["rise", "RISE", "Fade, then the cards rise in (default)"], ["slide", "SLIDE", "Pages slide in the direction you moved"], ["fade", "FADE", "A plain, quick fade"], ["zoom", "ZOOM", "The page grows in from slightly smaller"], ["flip", "FLIP", "The page turns in like a card, in the direction you moved"], ["blur", "BLUR", "The page comes into focus"], ["tilt", "TILT", "The page tips up from below"], ["off", "OFF", "No animation between pages"]];
 let PGFX = "rise"; try { PGFX = localStorage.getItem("dashPgFx") || CONFIG.pageTransition || "rise"; } catch (_) {}
-const applyPgFx = () => document.documentElement.setAttribute("data-pgfx", PGFXS.some(x => x[0] === PGFX) ? PGFX : "rise");
+const PGSPS = [["fast", "FAST", .6], ["normal", "NORMAL", 1], ["slow", "SLOW", 1.6]];   // how long the page transition takes: a multiplier on every duration (--pgs)
+let PGSP = "normal"; try { PGSP = localStorage.getItem("dashPgSp") || CONFIG.pageTransitionSpeed || "normal"; } catch (_) {}
+const pgScale = () => (PGSPS.filter(x => x[0] === PGSP)[0] || PGSPS[1])[2];
+const applyPgFx = () => { document.documentElement.setAttribute("data-pgfx", PGFXS.some(x => x[0] === PGFX) ? PGFX : "rise"); document.documentElement.style.setProperty("--pgs", pgScale()); };
 applyPgFx();
 let FONT = "jakarta"; try { FONT = localStorage.getItem("dashFont") || "jakarta"; } catch (_) {}
 const FONTS = [["jakarta", "Plus Jakarta Sans", "Modern, friendly", '"Plus Jakarta Sans",Inter,system-ui,sans-serif'], ["google", "Google (Roboto Flex)", "Clean, Android feel", '"Roboto Flex",Roboto,system-ui,sans-serif'], ["googlemono", "Google + mono labels", "Roboto Flex with Roboto Mono labels", '"Roboto Flex",Roboto,system-ui,sans-serif'], ["outfit", "Outfit", "Geometric, rounded", '"Outfit",Inter,system-ui,sans-serif'], ["manrope", "Manrope", "Soft and neutral", '"Manrope",Inter,system-ui,sans-serif'], ["default", "Classic", "Your previous look", 'Inter,"Segoe UI",Roboto,system-ui,sans-serif']];
@@ -2615,10 +2898,12 @@ function setState(s) {
   const id = s.entity_id;
   if (!vBusy) { REAL[id] = 1; if (VGM[id]) { clearTimeout(vTm); vTm = setTimeout(vGroups, 120); } }
   if (id === (CONFIG.houseAvg || CONFIG.indoor)) { states[id] = s; drawGsum(); }
-  if (id === CONFIG.outside) $("#outs").textContent = f1(s.state) + "°C";
+  if (id === CONFIG.outside) { $("#outs").textContent = f1(s.state) + "°C"; if (cards[MAIN]) setTimeout(() => render(MAIN), 0); }
   states[id] = s;
   galOnState(id, s);
   if (id === E("access")) ruRefresh();
+  if (CAUTO && CAUTO.ids.indexOf(id) > -1) caDraw();
+  if (CTSET[id]) ctDraw();
   if (/_camera_(person|vehicle)$/.test(id)) detAll();
   if (T[id] && T[id].sent) { T[id].v = null; T[id].sent = 0; }
   if (cards[MAIN] && id !== MAIN && CONFIG.derived.houseTemps.indexOf(id) > -1) render(MAIN);   // heat pump card shows the house average when the unit has no sensor
@@ -2654,13 +2939,24 @@ function bump(id, d) {
 function showT(id) {
   const a = (states[id] || {}).attributes || {}, t = T[id], v = t && t.v != null ? t.v : a.temperature;
   const txt = v != null ? f1(v) + "°" : (a.target_temp_low != null ? f1(a.target_temp_low) + "–" + f1(a.target_temp_high) : "--");
-  if (cards[id]) $(".tgt", cards[id].el).textContent = txt;
-  if (id === MAIN) $("#mt").textContent = txt;
+  if (cards[id]) { $(".tgt", cards[id].el).textContent = txt; const md = $(".md", cards[id].el); if (md) md.dataset.tg = txt; if (typeof cbar === "function") cbar(id); if (typeof clSub === "function") clSub(id); }
+  if (id === MAIN) { $("#mt").textContent = txt; if (typeof mbSet === "function") mbSet(v); }
   $$('[data-tgt="' + id + '"]').forEach(x => { x.textContent = txt; });
 }
 
 // ---------- climate page ----------
-function label(r, m) { return (!r.main && m === "heat_cool") ? "ON" : (MODE[m] || String(m).toUpperCase()); }
+function label(r, m) {   // a room that is on shows what the heat pump is doing (HEAT, COOL, AUTO ...); off stays OFF
+  if (!r.main && m === "heat_cool") { const h = states[MAIN], hs = h && h.state; return hs && hs !== "off" && hs !== "unavailable" && hs !== "unknown" ? (MODE[hs] || String(hs).toUpperCase()) : "ON"; }
+  return MODE[m] || String(m).toUpperCase();
+}
+const CBAR = [14, 30];   // the comfort bar runs from cool to warm
+const cbPos = v => Math.max(0, Math.min(100, (parseFloat(v) - CBAR[0]) / (CBAR[1] - CBAR[0]) * 100));
+function cbar(id) {   // the room's comfort bar: dot = the room now, tick = the target
+  const c = cards[id]; if (!c || c.r.main) return; const a = (states[id] || {}).attributes || {}, t = T[id], tv = t && t.v != null ? t.v : a.temperature, ct = parseFloat(a.current_temperature);
+  const dot = $(".cbar i", c.el), tick = $(".cbar u", c.el); if (!dot) return;
+  dot.style.left = isNaN(ct) ? "50%" : cbPos(ct) + "%"; dot.style.setProperty("--kc", isNaN(ct) ? "transparent" : tempColor(ct));
+  tick.style.display = tv == null || isNaN(parseFloat(tv)) ? "none" : ""; if (tv != null) tick.style.left = cbPos(tv) + "%";
+}
 function tint(r, s) {
   if (r.main) return cls[s.state] || "";
   if (s.state === "off") return "";
@@ -2668,11 +2964,16 @@ function tint(r, s) {
 }
 function build(r) {
   const el = document.createElement("section");
-  el.className = "card" + (r.main ? " main2" : "");
-  el.innerHTML = '<div class="lbl il">' + (r.icon ? mdi(r.icon) : "") + esc(r.name) + '</div><div class="md">--</div>' +
-    '<div class="temp"><span class="cur">--</span><small>°C</small></div>' +
+  el.className = "card" + (r.main ? " main2 czh" : " rm");
+  if (r.main) el.innerHTML = '<div class="lbl il">House</div>' +
+    '<div class="czm"><div class="temp"><span class="cur">--</span><small>°</small></div>' +
+    '<div class="czs"><div class="czt"><span class="md">--</span><div class="row"><button class="rnd" data-d="-1" aria-label="Lower">−</button><div class="tg"><span>TARGET</span><b class="tgt">--</b></div><button class="rnd" data-d="1" aria-label="Raise">+</button></div></div>' +
+    '<div class="cout"><span>Outside</span><b>--</b></div><button class="fanb"><span>Fan</span><b>--</b></button></div></div>' +
+    '<div class="chips"></div><div class="czg" hidden><svg viewBox="0 0 300 84" preserveAspectRatio="none" aria-hidden="true"></svg><small>LAST 24 HOURS</small></div>';
+  else el.innerHTML = '<div class="lbl il">' + (r.icon ? mdi(r.icon) : "") + esc(r.name) + '</div><button class="shx" aria-label="Close">' + mdi("close") + '</button><div class="md">--</div>' +
+    '<div class="temp"><span class="cur">--</span><small>°C</small></div><div class="sub"></div>' +
     '<div class="row"><button class="rnd" data-d="-1" aria-label="Lower">−</button><div class="tg"><span>TARGET</span><b class="tgt">--</b></div><button class="rnd" data-d="1" aria-label="Raise">+</button></div>' +
-    '<div class="chips"></div><button class="fanb"><span>FAN</span><b>--</b></button>';
+    '<div class="chips"></div><button class="fanb"><span>FAN</span><b>--</b></button><div class="cbar"><u></u><i></i><b class="mk h" hidden></b><b class="mk c" hidden></b></div>';
   cards[r.id] = { el: el, r: r, key: "" };
   $$(".rnd", el).forEach(b => b.onclick = () => bump(r.id, +b.dataset.d));
   $(".chips", el).onclick = e => { const m = e.target.dataset.m; if (m) call("climate", "set_hvac_mode", r.id, { hvac_mode: m }); };
@@ -2683,26 +2984,39 @@ function build(r) {
   return el;
 }
 function render(id) {
-  const c = cards[id], s = states[id], el = c.el, base = "card" + (c.r.main ? " main2" : "");
-  if (!s || s.state === "unavailable" || s.state === "unknown") { el.className = base + " na"; $(".md", el).textContent = "UNAVAILABLE"; return; }
-  const a = s.attributes;
-  { const tt = tint(c.r, s), hp = states[MAIN], on = s.state !== "off" && hp && hp.state !== "off" && hp.state !== "unavailable" && hp.state !== "unknown" && tt; el.className = base + " " + tt + (on ? " aur" : ""); if (on) el.dataset.hm = hp.state; else delete el.dataset.hm; }
-  $(".md", el).textContent = label(c.r, s.state);
+  const c = cards[id], s = states[id], el = c.el;
+  if (!s || s.state === "unavailable" || s.state === "unknown") { el.classList.add("na"); $(".md", el).textContent = "UNAVAILABLE"; return; }
+  el.classList.remove("na");
+  const a = s.attributes, hp = states[MAIN], hs = hp && hp.state, hon = !!hs && hs !== "off" && hs !== "unavailable" && hs !== "unknown";
+  { const hm = c.r.main ? (s.state !== "off" ? cls[s.state] || "auto" : "") : (s.state !== "off" && hon ? cls[hs] || "auto" : ""); if ((el.dataset.hm || "") !== hm) { if (hm) el.dataset.hm = hm; else delete el.dataset.hm; } }   // the colour follows the heat pump; classes are only touched when something really changed (no redraw flicker)
+  $(".md", el).textContent = c.r.main ? ({ heat: "Heating to", cool: "Cooling to", heat_cool: "Auto at", auto: "Auto at", fan_only: "Fan only", dry: "Drying to", off: "Off" }[s.state] || label(c.r, s.state)) : label(c.r, s.state);
+  if (c.r.main) el.classList.toggle("hoff", s.state === "off");
   { let ct = a.current_temperature; if ((ct == null || isNaN(parseFloat(ct))) && c.r.main) {   // heat pump has no sensor of its own: house average, else the average of the room climates
       ct = null; try { ct = sv(CONFIG.indoor); } catch (e) {}
       if (ct == null || isNaN(parseFloat(ct))) { try { ct = avgOf(CONFIG.derived.houseTemps); } catch (e) {} }
       if (ct == null || isNaN(parseFloat(ct))) { const z = CONFIG.rooms.filter(r => !r.main).map(r => states[r.id] && parseFloat(states[r.id].attributes.current_temperature)).filter(x => x != null && !isNaN(x)); ct = z.length ? z.reduce((p, x) => p + x, 0) / z.length : null; }
     } $(".cur", el).textContent = f1(ct); }
   showT(id);
-  const modes = a.hvac_modes || [], key = modes.join(), chips = $(".chips", el);
+  const modes = a.hvac_modes || [], key = modes.join() + (c.r.main ? "" : "|" + ((states[MAIN] || {}).state || "")), chips = $(".chips", el);
   if (c.key !== key) { chips.innerHTML = modes.map(m => '<button class="chip" data-m="' + m + '">' + label(c.r, m) + '</button>').join(""); c.key = key; }
   $$(".chip", chips).forEach(b => b.classList.toggle("on", b.dataset.m === s.state));
   const fan = $(".fanb", el);
   fan.style.display = a.fan_modes ? "" : "none";
   $("b", fan).textContent = (a.fan_mode || "--").toUpperCase();
+  if (c.r.main) { const o = $(".cout", el), ov = CONFIG.outside ? sv(CONFIG.outside) : null; if (o) { o.style.display = ov != null && !isNaN(parseFloat(ov)) ? "" : "none"; $("b", o).textContent = f1(ov) + "°"; } }
+  else { el.classList.toggle("coff", s.state === "off"); cbar(id); clSub(id); }
+  if (c.r.main) hzLoad();
 }
 
 // ---------- home page ----------
+let mbIn = NaN, mbOut = NaN;   // heat pump card: indoor and outdoor temperature for the comfort bar
+function mbSet(tv) {
+  const bar = $("#mbar"); if (!bar) return;
+  const pos = x => isNaN(x) || x == null ? null : Math.max(0, Math.min(100, (x - 10) / 20 * 100)) + "%";   // 10° to 30° across the bar
+  [["o", mbOut], ["n", mbIn], ["t", parseFloat(tv)]].forEach(([c, x]) => { const el = bar.querySelector("." + c), p = pos(x); el.style.display = p ? "" : "none"; if (p) el.style.left = p; });
+  const n = bar.querySelector(".n"); if (!isNaN(mbIn)) n.style.setProperty("--kc", tempColor(mbIn));
+  $("#mtg").textContent = tv != null && !isNaN(parseFloat(tv)) ? f1(parseFloat(tv)) + "°" : "--";
+}
 function home() {
   const w = states[W], a = w ? w.attributes : {}, hp = states[MAIN], ha = hp ? hp.attributes : {};
   const cd = w ? (COND[w.state] || ["", title(w.state)]) : ["", ""], ot = sv(E("outdoorTemp")), rd = states[E("rainDetected")], raining = !!rd && rd.state === "on", dry = !!rd && rd.state === "off";
@@ -2713,9 +3027,11 @@ function home() {
   wfxSet(w ? w.state : "", raining, parseFloat(wsp != null ? wsp : a.wind_speed) || 0);
   if (fc[0]) $("#whl").textContent = "High " + Math.round(fc[0].temperature) + "° / Low " + Math.round(fc[0].templow != null ? fc[0].templow : fc[0].temperature) + "°";
   if (!CONFIG.outside && w) $("#outs").textContent = f1(a.temperature) + "°C";
-  $("#mi").textContent = f1(sv(CONFIG.indoor) != null ? sv(CONFIG.indoor) : ha.current_temperature) + "°C";
-  $("#mo").textContent = f1(a.temperature) + "°C";
-  { const iv = parseFloat(sv(CONFIG.indoor) != null ? sv(CONFIG.indoor) : ha.current_temperature), ov = parseFloat(a.temperature); $("#mid").style.setProperty("--tc", tempColor(iv)); $("#mod").style.setProperty("--tc", tempColor(ov)); }
+  $("#mi").textContent = f1(sv(CONFIG.indoor) != null ? sv(CONFIG.indoor) : ha.current_temperature) + "°";
+  $("#mbg").textContent = f1(sv(CONFIG.indoor) != null ? sv(CONFIG.indoor) : ha.current_temperature);
+  $("#mo").textContent = f1(a.temperature) + "°";
+  { const iv = parseFloat(sv(CONFIG.indoor) != null ? sv(CONFIG.indoor) : ha.current_temperature), ov = parseFloat(a.temperature); $("#mid").style.setProperty("--tc", tempColor(iv)); $("#mod").style.setProperty("--tc", tempColor(ov)); mbIn = iv; mbOut = ov; }
+  { const m = hp ? hp.state : ""; const k = m === "heat" ? "heat" : m === "cool" ? "cool" : m === "fan_only" ? "fan" : m === "heat_cool" || m === "auto" ? "auto" : ""; if ($("#mini").dataset.hm !== k) $("#mini").dataset.hm = k; }
   showT(MAIN);
   $$("#mm .chip").forEach(b => b.classList.toggle("on", !!hp && b.dataset.m === hp.state));
   tileEls.forEach(x => { x.el.style.display = x.t.room && !roomOK(x.t.room) ? "none" : ""; fillCard(x.el, ROOM(x.t.room) || x.t); });
@@ -2761,24 +3077,32 @@ const dk = d => d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "
 const pd = v => { if (v.dateTime) return new Date(v.dateTime); const p = v.date.split("-"); return new Date(+p[0], +p[1] - 1, +p[2]); };
 const calName = c => (CONFIG.calNames || {})[c] || (states[c] && states[c].attributes.friendly_name) || c.replace("calendar.", "").replace(/_/g, " ");
 const mrows = () => Math.ceil(((new Date(cy, cm, 1).getDay() + 6) % 7 + new Date(cy, cm + 1, 0).getDate()) / 7);
+const EVV = { t: ["month", "week", "list"], p: ["agenda", "week", "month"] };   // the views each device offers (phone: agenda | week | month, tablet: month | week | list)
+let evw = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - (new Date().getDay() + 6) % 7), evSel = null, evVs = {};   // week shown (its Monday), day picked on the phone, view chosen this session
 let EVS = [], evLast = {}, evSq = { on: false, all: null, busy: false, q: "" };
 function loadEvents() {
   EVS = []; evColSync(); const evErr = [];
-  const gs = new Date(cy, cm, 1 - (new Date(cy, cm, 1).getDay() + 6) % 7), ge = new Date(gs.getFullYear(), gs.getMonth(), gs.getDate() + mrows() * 7), map = {}, tok = ++evTok;
+  const wk = evView() === "week", gs = wk ? new Date(evw.getFullYear(), evw.getMonth(), evw.getDate()) : new Date(cy, cm, 1 - (new Date(cy, cm, 1).getDay() + 6) % 7), ge = new Date(gs.getFullYear(), gs.getMonth(), gs.getDate() + (wk ? 7 : mrows() * 7)), map = {}, tok = ++evTok;
   const q = "?start=" + encodeURIComponent(gs.toISOString()) + "&end=" + encodeURIComponent(ge.toISOString());
-  const mk = cy + "-" + cm; if (evLast.k === mk) drawEvents(evLast.gs, evLast.map); else drawEvents(gs, map);   // same month: keep what is on screen until the new answer is in (no blink)
+  const mk = (wk ? "w" + dk(evw) : cy + "-" + cm); if (evLast.k === mk) drawEvents(evLast.gs, evLast.map); else drawEvents(gs, map);   // same month: keep what is on screen until the new answer is in (no blink)
   Promise.all(CONFIG.calendars.map((c, i) => getToken().then(tk => fetch(CONFIG.url + "/api/calendars/" + c + q, { headers: { Authorization: "Bearer " + tk } }))
     .then(r => r.text().then(t => { let j = null; try { j = JSON.parse(t); } catch (x) {} if (!Array.isArray(j)) { const st = states[c]; throw new Error(r.status === 404 || !t ? (st ? "HTTP " + r.status + " (HA sent no events: the calendar may be unavailable or still loading)" : "no calendar with this id exists in Home Assistant") : (j && (j.message || j.error)) || ("HTTP " + r.status)); } return j; })).then(l => l.forEach(v => { try {
       evPend(c, v); const s = pd(v.start), e = pd(v.end), ad = !v.start.dateTime;
       const last = ad ? new Date(e.getFullYear(), e.getMonth(), e.getDate() - 1) : new Date(e.getFullYear(), e.getMonth(), e.getDate());
       let d = new Date(s.getFullYear(), s.getMonth(), s.getDate());
       for (let n = 0; n < 42 && d <= last; n++, d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1))
-        (map[dk(d)] = map[dk(d)] || []).push({ t: s, ad: ad, s: v.summary, c: evColOf(c, v) || CALCOL[i % CALCOL.length], i: EVS.push({ v: v, cal: c, ci: i }) - 1 });
+        (map[dk(d)] = map[dk(d)] || []).push({ t: s, e: e, n: calName(c), ad: ad, s: v.summary, c: evColOf(c, v) || CALCOL[i % CALCOL.length], i: EVS.push({ v: v, cal: c, ci: i }) - 1 });
     } catch (x) { evErr.push(calName(c) + ": skipped \"" + (v && v.summary || "?") + "\" (" + x.message + ")"); } })).catch(x => { evErr.push(calName(c) + ": " + x.message); }))).then(() => { if (tok === evTok) { evLast = { k: mk, gs: gs, map: map }; drawEvents(gs, map, true); evReveal(); const el = $("#eerr"); if (el) el.textContent = evErr.length ? evErr.join(" · ") + "  |  Calendars HA has: " + Object.keys(states).filter(k => k.indexOf("calendar.") === 0).join(", ") : ""; } });
 }
 let evTy = null;
 function evTitle(y, m) {   // the month name, or its short form when the long one does not fit between the arrows (September on a narrow phone)
   if (y != null) evTy = [y, m]; if (!evTy) return; const t = $("#et"), d = new Date(evTy[0], evTy[1], 1);
+  if (evView() === "week") {   // "26 Oct – 1 Nov 2026"
+    const a = evw, z = new Date(a.getFullYear(), a.getMonth(), a.getDate() + 6), f = (x, y2) => x.toLocaleDateString([], y2 ? { day: "numeric", month: "short", year: "numeric" } : { day: "numeric", month: "short" });
+    t.textContent = f(a, a.getFullYear() !== z.getFullYear()) + " – " + f(z, true);
+    if (t.clientWidth && t.scrollWidth > t.clientWidth + 1) t.textContent = f(a) + " – " + f(z);   // no year when it does not fit
+    return;
+  }
   t.textContent = d.toLocaleDateString([], { month: "long", year: "numeric" });
   if (t.clientWidth && t.scrollWidth > t.clientWidth + 1) t.textContent = d.toLocaleDateString([], { month: "short", year: "numeric" });
 }
@@ -2789,10 +3113,11 @@ function drawEvents(gs, map, fin) {
   evBtn();
   if (!$("#eerr")) { const e = document.createElement("div"); e.id = "eerr"; e.style.cssText = "color:var(--heat);font-size:12px;margin:6px 2px;empty-cells:hide"; $("#elg").after(e); }
   $("#elg").innerHTML = CONFIG.calendars.map((c, i) => '<span><i style="--c:' + CALCOL[i % CALCOL.length] + '"></i>' + esc(calName(c)) + '</span>').join("");
-  const today = dk(new Date()), rows = mrows(), g = $("#cg");
+  const today = dk(new Date()), rows = mrows(), g = $("#cg"), V = evView();
   const tm = v => v.t.toLocaleTimeString([], tmo({ hour: "numeric", minute: "2-digit" })).replace(" ", "").toLowerCase();
   const srt = l => l.sort((a, b) => (b.ad - a.ad) || (a.t - b.t));
-  let h = "";
+  let h = ""; evSwitch();
+  if (V === "week" || (V === "month" && isMobile()) || V === "list") return evViews(V, gs, map, today, tm, srt, fin);
   if (isMobile()) {   // phones: agenda list instead of a month grid
     for (let i = 1, dim = new Date(cy, cm + 1, 0).getDate(); i <= dim; i++) {
       const d = new Date(cy, cm, i), l = srt(map[dk(d)] || []); if (!l.length) continue;
@@ -2823,20 +3148,20 @@ const dtIso = (d, t) => { const x = new Date(d + "T" + t + ":00"); return d + "T
 const WD = ["MO", "TU", "WE", "TH", "FR", "SA", "SU"], WDN = ["M", "T", "W", "T", "F", "S", "S"];
 // restart the tab-switch animation on el (dir: +1 slides in from the right, -1 from the left; stag: stagger its children)
 function txGo(el, dir, stag) {
-  if (!el || (window.matchMedia && matchMedia("(prefers-reduced-motion:reduce)").matches)) return;
+  if (!el || (window.matchMedia && matchMedia("(prefers-reduced-motion:reduce)").matches) || el.closest(".page.enter,.page.hold")) return;   // a page that is just arriving already plays its entrance: no second effect on top
   el.classList.remove("tx", "txc"); void el.offsetWidth;
   el.style.setProperty("--tx", (dir || 0) * 28 + "px"); el.style.setProperty("--ty", dir ? "6px" : "14px");
   if (stag) Array.prototype.forEach.call(el.children, (c, i) => c.style.setProperty("--i", Math.min(i, 14)));
   el.classList.add(stag ? "txc" : "tx");
-  clearTimeout(el._tx); el._tx = setTimeout(() => el.classList.remove("tx", "txc"), 1100);
+  clearTimeout(el._tx); el._tx = setTimeout(() => el.classList.remove("tx", "txc"), 1100 * Math.max(1, pgScale()));
 }
 // the same slide for cards that are shown one at a time (the phone's section pills: no wrapper to animate, the cards themselves slide in)
 function txEls(els, dir) {
-  if (!els || (window.matchMedia && matchMedia("(prefers-reduced-motion:reduce)").matches)) return;
+  if (!els || (window.matchMedia && matchMedia("(prefers-reduced-motion:reduce)").matches) || (els[0] && els[0].closest && els[0].closest(".page.enter,.page.hold"))) return;
   els.forEach((el, i) => {
     el.classList.remove("tx"); void el.offsetWidth;
     el.style.setProperty("--tx", (dir || 0) * 28 + "px"); el.style.setProperty("--ty", dir ? "6px" : "14px"); el.style.animationDelay = i * 32 + "ms";
-    el.classList.add("tx"); clearTimeout(el._tx); el._tx = setTimeout(() => { el.classList.remove("tx"); el.style.animationDelay = ""; }, 1100);
+    el.classList.add("tx"); clearTimeout(el._tx); el._tx = setTimeout(() => { el.classList.remove("tx"); el.style.animationDelay = ""; }, 1100 * Math.max(1, pgScale()));
   });
 }
 let evS = null;
@@ -2995,19 +3320,19 @@ setInterval(evBtn, 2500);
 setInterval(() => { if (curPg() === "events" && !evS && !document.hidden) loadEvents(); }, 60000);
 document.addEventListener("visibilitychange", () => { if (!document.hidden && curPg() === "events" && !evS) loadEvents(); });
 $("#cg").addEventListener("click", e => {
-  const ce = e.target.closest("[data-ev]"), cd = e.target.closest("[data-d]");
+  const ce = e.target.closest("[data-ev]"), cd = e.target.closest("[data-d]"), pk = e.target.closest("[data-pick]");
+  if (pk) { evSel = pk.dataset.pick; evRedraw(); return; }
   if (ce) { const x = EVS[+ce.dataset.ev]; if (x) evOpen({ ev: x }); }
   else if (cd && evWritable().length) evOpen({ date: cd.dataset.d });
 });
-function shiftMonth(d) { txGo($("#cg"), d, false); evJump = true; cm += d; if (cm < 0) { cm = 11; cy--; } if (cm > 11) { cm = 0; cy++; } loadEvents(); }
+function shiftMonth(d) { txGo($("#cg"), d, false); evJump = true; if (evView() === "week") { evw = new Date(evw.getFullYear(), evw.getMonth(), evw.getDate() + 7 * d); evSel = null; cy = evw.getFullYear(); cm = evw.getMonth(); loadEvents(); return; } evSel = null; cm += d; if (cm < 0) { cm = 11; cy--; } if (cm > 11) { cm = 0; cy++; } loadEvents(); }
 $("#ep").onclick = () => shiftMonth(-1); $("#en").onclick = () => shiftMonth(1);
-$("#etd").onclick = () => { evJump = true; cy = new Date().getFullYear(); cm = new Date().getMonth(); loadEvents(); };
+$("#etd").onclick = () => { evJump = true; cy = new Date().getFullYear(); cm = new Date().getMonth(); evw = evMon(new Date()); evSel = null; loadEvents(); };
 const HOME = { status: ".hs", cams: "#cams", schedule: "#sch", rooms: "#rooms", heatpump: "#mini", nowplaying: "#npw", forecast: "#fcp" };
 const layout = () => {
   const L = ((CONFIG.layout || {})[isMobile() ? "mobile" : "tablet"] || Object.keys(HOME)).slice();
   if (L.indexOf("schedule") < 0 && CONFIG.schedule !== false) { const i = isMobile() ? L.indexOf("status") : L.indexOf("cams"); if (i > -1) L.splice(i + 1, 0, "schedule"); }   // new card: sits after the greeting (phone) / the cameras (tablet) unless config.js places it
-  if (!isMobile()) { const k = L.indexOf("nowplaying"); if (k > -1) L.splice(k, 1); return L; }
-  if (L.indexOf("nowplaying") < 0) { const i = L.indexOf("heatpump") > -1 ? L.indexOf("heatpump") : L.indexOf("status"); L.splice(i + 1, 0, "nowplaying"); }
+  const k = L.indexOf("nowplaying"); if (k > -1) L.splice(k, 1);   // no Now playing card on Home any more: tablets use the music note in the header, phones the floating player bar
   return L;
 };
 const camsOn = () => layout().indexOf("cams") > -1;
@@ -3183,7 +3508,19 @@ CONFIG.rooms.forEach(r => $("#grid").appendChild(build(r)));
 let gI = 0;
 $("#gdots").innerHTML = CONFIG.rooms.map((r, i) => '<i data-i="' + i + '" title="' + esc(r.name || "") + '"' + (i ? "" : ' class="on"') + '></i>').join("");
 $("#grid").addEventListener("scroll", () => { const g = $("#grid"); if (!g.clientWidth) return; gI = Math.round(g.scrollLeft / (g.clientWidth + 14)); $$("#gdots i").forEach((d, k) => d.classList.toggle("on", k === gI)); });
-$("#grid").addEventListener("click", e => { const l = e.target.closest(".lbl.il"), c = l && l.parentNode; if (c && !c.classList.contains("main2") && isMobile()) { if (c.dataset.open) delete c.dataset.open; else c.dataset.open = "1"; } });
+// a room opens on tap: inline under its row on a tablet, as a bottom sheet on a phone (closed by x, the dimmed background, Escape or swiping down)
+function clClose() { $$("#grid .card[data-open]").forEach(c => { delete c.dataset.open; }); clSync(); }
+function clSync() { document.body.classList.toggle("cl-sheet", isMobile() && !!$("#grid .card[data-open]")); }
+$("#grid").addEventListener("click", e => {
+  const c = e.target.closest(".card.rm"); if (!c) return;
+  if (e.target.closest(".shx")) { clClose(); return; }
+  if (c.dataset.open) { if (e.target.closest(".lbl.il") && !isMobile()) clClose(); return; }
+  if (e.target.closest("button,.cbar,.ctr,.chips,.fanb,input")) return;
+  clClose(); c.dataset.open = "1"; clSync();
+});
+$("#clbk").onclick = clClose; document.addEventListener("keydown", e => { if (e.key === "Escape" && $("#grid .card[data-open]")) clClose(); }); addEventListener("resize", clSync);
+{ let y0 = 0; $("#grid").addEventListener("touchstart", e => { y0 = e.touches[0].clientY; }, { passive: true });   // swipe a sheet down to close it
+  $("#grid").addEventListener("touchend", e => { const c = e.target.closest(".card.rm[data-open]"); if (c && isMobile() && e.changedTouches[0].clientY - y0 > 90 && c.scrollTop <= 0 && !e.target.closest(".cbar")) clClose(); }, { passive: true }); }
 $("#mini").addEventListener("click", e => { if (!e.target.closest("button")) location.hash = "#climate"; });
 $("#gdots").onclick = e => { const d = e.target.closest("[data-i]"); if (d) { const g = $("#grid"); g.scrollTo({ left: +d.dataset.i * (g.clientWidth + 14), behavior: "smooth" }); } };
 CONFIG.house.forEach(r => Object.keys(r.counts || {}).forEach(k => { sensorIds[r.counts[k]] = 1; }));
@@ -4836,7 +5173,7 @@ function drawPalette() {
     sec("Mode", '<div class="seg" style="margin-top:12px;flex-wrap:wrap">' + [["dark", "DARK"], ["light", "LIGHT"], ["auto", "FOLLOW DEVICE"], ["sun", "FOLLOW SUN"], ["time", "SCHEDULE"]].map(x => '<button class="eb' + (PAL.mode === x[0] ? " on" : "") + '" data-mode="' + x[0] + '">' + x[1] + '</button>').join("") + '</div>' +
       (PAL.mode === "time" ? '<div class="lbl" style="margin-top:12px;text-transform:none;letter-spacing:0;display:flex;gap:10px;align-items:center;flex-wrap:wrap">Dark from <input type="time" data-tm="from" value="' + esc(PAL.from || "18:00") + '"> until <input type="time" data-tm="to" value="' + esc(PAL.to || "06:00") + '"></div>' : "") + (PAL.mode === "sun" ? '<div class="lbl" style="margin-top:12px;text-transform:none;letter-spacing:0">Dark from sunset to sunrise, from <b>sun.sun</b> in Home Assistant' + (states["sun.sun"] ? "" : " (not found, using 6am–7pm)") + '. Saved on this device only.</div>' : "")) +
     sznSec(sec) +
-    sec("Page transition", '<div class="seg" style="margin-top:12px;flex-wrap:wrap">' + PGFXS.map(x => '<button class="eb' + (PGFX === x[0] ? " on" : "") + '" data-pgfx="' + x[0] + '">' + x[1] + '</button>').join("") + '</div><div class="lbl" style="margin-top:10px;text-transform:none;letter-spacing:0">' + esc((PGFXS.filter(x => x[0] === PGFX)[0] || PGFXS[0])[2]) + '. Plays when you switch between pages, on this device only.</div>') +
+    sec("Page transition", '<div class="seg" style="margin-top:12px;flex-wrap:wrap">' + PGFXS.map(x => '<button class="eb' + (PGFX === x[0] ? " on" : "") + '" data-pgfx="' + x[0] + '">' + x[1] + '</button>').join("") + '</div><div class="lbl" style="margin-top:10px;text-transform:none;letter-spacing:0">' + esc((PGFXS.filter(x => x[0] === PGFX)[0] || PGFXS[0])[2]) + '. Plays when you switch between pages, on this device only.</div>' + (PGFX === "off" ? "" : '<div class="seg" style="margin-top:12px;flex-wrap:wrap">' + PGSPS.map(x => '<button class="eb' + (PGSP === x[0] ? " on" : "") + '" data-pgsp="' + x[0] + '">' + x[1] + '</button>').join("") + '</div><div class="lbl" style="margin-top:10px;text-transform:none;letter-spacing:0">Speed of the transition.</div>')) +
     sec("Clock", '<div class="seg" style="margin-top:12px">' + [["auto", "DEVICE"], ["12", "12-HOUR"], ["24", "24-HOUR"]].map(x => '<button class="eb' + (CLOCK === x[0] ? " on" : "") + '" data-clock="' + x[0] + '">' + x[1] + '</button>').join("") + '</div><div class="lbl" style="margin-top:10px;text-transform:none;letter-spacing:0">How times are shown on this dashboard. DEVICE follows the language of this phone or tablet. Saved on this device only.</div>') +
     (brandOn() ? sec("Start-up logo", '<div class="seg" style="margin-top:12px">' + [["on", "LOGO + INTRO"], ["load", "WHILE LOADING ONLY"], ["off", "OFF"]].map(x => '<button class="eb' + (logoPref() === x[0] ? " on" : "") + '" data-logo="' + x[0] + '">' + x[1] + '</button>').join("") + '</div><div class="lbl" style="margin-top:10px;text-transform:none;letter-spacing:0">Applies the next time the dashboard starts. Saved on this device only.</div>') : "") +
     (AUTH && !AUTH.borrowed && !CONFIG.token ? sec("Account", '<div style="margin-top:12px"><button class="eb" data-signout="1">SIGN OUT OF THIS DEVICE</button><span class="lbl" style="margin-left:14px">Signed in on this device only</span></div>') : "") +
@@ -4859,6 +5196,8 @@ $("#theme").onclick = e => {
   if (sznClick(e)) return;
   const px = e.target.closest("button[data-pgfx]");
   if (px) { PGFX = px.dataset.pgfx; try { localStorage.setItem("dashPgFx", PGFX); } catch (_) {} applyPgFx(); drawPalette(); pgEnter($("#theme")); return; }   // plays once so you can see it
+  const ps = e.target.closest("button[data-pgsp]");
+  if (ps) { PGSP = ps.dataset.pgsp; try { localStorage.setItem("dashPgSp", PGSP); } catch (_) {} applyPgFx(); drawPalette(); pgEnter($("#theme")); return; }
   const ck = e.target.closest("button[data-clock]");
   if (ck) { CLOCK = ck.dataset.clock; try { localStorage.setItem("dashClock", CLOCK); } catch (_) {} tick(); drawPalette(); queueHome(); return; }
   const lg = e.target.closest("button[data-logo]");
@@ -5356,6 +5695,200 @@ $("#lvsheet").onclick = e => {
 };
 addEventListener("keydown", e => { if (e.key === "Escape" && LV.open) lvClose(); });
 setInterval(() => { LV.t = null; lvQ(); }, 60000);   // "for 12 min" needs a clock, and the room list may have changed
+// ---------- Climate page: one switch for the climate automations ----------
+// config climateAuto: ["automation.x", ...]  or  { name: "Auto climate", entities: ["automation.x", ...] }
+// It only turns those automations on or off (nothing else is needed in Home Assistant). Off = the house stays as you set it.
+const CAUTO = (() => { const c = CONFIG.climateAuto; if (!c) return null; const o = Array.isArray(c) ? { entities: c } : c; return o.entities && o.entities.length ? { name: o.name || "Auto climate", ids: o.entities } : null; })();
+let caBusy = 0;
+function caIds() { return CAUTO ? CAUTO.ids.filter(x => states[x] && states[x].state !== "unavailable") : []; }
+function caDraw() {
+  const el = $("#cauto"); if (!el || !CAUTO) return; const ids = caIds();
+  if (!ids.length) { el.hidden = true; return; }
+  const n = ids.filter(x => states[x].state === "on").length, all = n === ids.length, none = n === 0;
+  el.hidden = false; el.classList.toggle("on", !none); el.classList.toggle("part", !none && !all);
+  el.querySelector("b").textContent = CAUTO.name;
+  el.querySelector("small").textContent = all ? "On · rooms start and stop by themselves" : none ? "Off · you are in charge, nothing switches by itself" : "Partly on · " + n + " of " + ids.length + " automations running";
+  const sw = el.querySelector(".csw"); sw.setAttribute("aria-checked", none ? "false" : "true");
+}
+function caInit() {
+  if (!CAUTO || $("#cauto")) return;
+  const el = document.createElement("div"); el.className = "pn"; el.id = "cauto"; el.hidden = true;
+  el.innerHTML = '<span class="cai">' + mdi("thermometer") + '</span><div class="cat"><b></b><small></small></div><button class="csw" role="switch" aria-checked="false" aria-label="Auto climate"><i></i></button>';
+  $("#climate").insertBefore(el, $("#climate").firstChild);
+  el.querySelector(".csw").onclick = () => { const ids = caIds(); if (!ids.length) return; const off = ids.some(x => states[x].state === "on"); call("automation", off ? "turn_off" : "turn_on", ids); };
+  caDraw();
+}
+caInit();
+// ---------- Climate page: change when the automations start heating / cooling ----------
+// A room (config rooms: [{ id: "climate.x", heatBelow: "input_number.a", coolAbove: "input_number.b" }]) or the house (config climateTriggers: { heatBelow, coolAbove })
+// A room can also have autoClimate: "input_boolean.x" ("sleeping here tonight": the automations only run for rooms where it is on), a switch in the same place.
+// gets a "Heat below" / "Cool above" stepper that sets those input_number helpers. The automations read the helpers, so no automation has to be edited again.
+const CTROWS = [["heatBelow", "Heat below"], ["coolAbove", "Cool above"]];
+const CTV = {}, CTH = {};   // value waiting to be sent, and the send timers, by helper
+const ctOwner = r => r.main ? (CONFIG.climateTriggers || {}) : r;
+const ctIds = () => { const o = {}; CONFIG.rooms.forEach(r => { CTROWS.forEach(x => { const e = ctOwner(r)[x[0]]; if (e) o[e] = 1; }); if (!r.main && r.autoClimate) o[r.autoClimate] = 1; }); return o; };
+const CTSET = ctIds();
+function ctMarks(el, o) {   // the two trigger points as little arrows under the room's comfort bar
+  [["heatBelow", ".mk.h", "Heats below "], ["coolAbove", ".mk.c", "Cools above "]].forEach(x => {
+    const m = $(x[1], el), e = o[x[0]], st = e && states[e], v = st ? (CTV[e] != null ? CTV[e] : parseFloat(st.state)) : NaN; if (!m) return;
+    m.hidden = isNaN(v); if (!isNaN(v)) { m.style.left = cbPos(v) + "%"; m.title = x[2] + f1(v) + "°"; }
+  });
+  el.classList.toggle("hasmk", !!$(".mk:not([hidden])", el));
+}
+function ctDraw() {
+  CONFIG.rooms.forEach(r => {
+    const c = cards[r.id], box = c && $(".ctr", c.el); if (!box) return; const o = ctOwner(r);
+    const rows = CTROWS.filter(x => o[x[0]] && states[o[x[0]]] && states[o[x[0]]].state !== "unavailable");
+    ctMarks(c.el, o);
+    const ac = !r.main && r.autoClimate && states[r.autoClimate] && states[r.autoClimate].state !== "unavailable" ? r.autoClimate : "", acOn = ac && states[ac].state === "on";
+    c.el.classList.toggle("slp", !!acOn);
+    box.hidden = !rows.length && !ac; if (!rows.length && !ac) { box.innerHTML = ""; return; }
+    box.innerHTML = (ac ? '<div class="ct"><span>' + esc(r.autoLabel || "Sleeping here tonight") + '</span><button class="csw" role="switch" aria-checked="' + acOn + '" data-cb="' + esc(ac) + '" aria-label="' + esc(r.autoLabel || "Sleeping here tonight") + '"><i></i></button></div>' : "") + rows.map(x => { const e = o[x[0]], v = CTV[e] != null ? CTV[e] : parseFloat(states[e].state);
+      return '<div class="ct"><span>' + x[1] + '</span><button class="rnd" data-ct="' + esc(e) + '" data-d="-1" aria-label="Lower ' + x[1] + '">−</button><b>' + (isNaN(v) ? "--" : f1(v) + "°") + '</b><button class="rnd" data-ct="' + esc(e) + '" data-d="1" aria-label="Raise ' + x[1] + '">+</button></div>'; }).join("");
+  });
+}
+function ctBump(e, d) {
+  const s = states[e]; if (!s) return; const a = s.attributes || {}, step = parseFloat(a.step) || 0.5, mn = a.min != null ? +a.min : 10, mx = a.max != null ? +a.max : 35;
+  const base = CTV[e] != null ? CTV[e] : parseFloat(s.state); if (isNaN(base)) return;
+  CTV[e] = Math.min(mx, Math.max(mn, Math.round((base + step * d) / step) * step)); ctDraw();
+  clearTimeout(CTH[e]); CTH[e] = setTimeout(() => { call("input_number", "set_value", e, { value: CTV[e] }); setTimeout(() => { delete CTV[e]; ctDraw(); }, 4000); }, 700);
+}
+CONFIG.rooms.forEach(r => { const c = cards[r.id]; if (!c || !Object.keys(CTSET).length) return; const o = ctOwner(r); if (!CTROWS.some(x => o[x[0]]) && !(!r.main && r.autoClimate)) return; const box = document.createElement("div"); box.className = "ctr"; box.hidden = true; c.el.appendChild(box); });
+$("#grid").addEventListener("click", e => { const b = e.target.closest("[data-ct]"); if (b) ctBump(b.dataset.ct, +b.dataset.d);
+  const t = e.target.closest("[data-cb]"); if (t) { const id = t.dataset.cb; call("input_boolean", states[id] && states[id].state === "on" ? "turn_off" : "turn_on", id); } });
+ctDraw();
+// ---------- Events: more ways to look at the calendar ----------
+// tablet: MONTH | WEEK | LIST      phone: AGENDA | WEEK | MONTH
+// the choice is kept per device (localStorage); config.js can set the starting view: eventsView: { tablet: "month", mobile: "agenda" }
+function evView() {
+  const m = isMobile(), k = m ? "p" : "t", ok = EVV[k]; let v = evVs[k];
+  if (ok.indexOf(v) < 0) { try { v = (JSON.parse(localStorage.kinEvView || "{}"))[k]; } catch (e) { v = ""; } }
+  if (ok.indexOf(v) < 0) v = (CONFIG.eventsView || {})[m ? "mobile" : "tablet"];
+  return ok.indexOf(v) < 0 ? ok[0] : v;
+}
+const evMon = d => new Date(d.getFullYear(), d.getMonth(), d.getDate() - (d.getDay() + 6) % 7);
+function evSetView(v) {
+  const prev = evView(), k = isMobile() ? "p" : "t"; evVs[k] = v;
+  try { const o = JSON.parse(localStorage.kinEvView || "{}"); o[k] = v; localStorage.kinEvView = JSON.stringify(o); } catch (e) {}
+  const t = new Date();
+  if (v === "week" && prev !== "week") evw = evMon(t.getFullYear() === cy && t.getMonth() === cm ? t : new Date(cy, cm, 1));
+  if (prev === "week" && v !== "week") { const m = new Date(evw.getFullYear(), evw.getMonth(), evw.getDate() + 3); cy = m.getFullYear(); cm = m.getMonth(); }
+  evSel = null; evJump = true; evTitle(cy, cm); txGo($("#cg"), 0, false); loadEvents();
+}
+function evSwitch() {
+  const b = $("#evsw"), v = evView(), k = isMobile() ? "p" : "t", nm = { month: "Month", week: "Week", list: "List", agenda: "Agenda" }, sig = k + v;
+  if (b.dataset.s === sig) return; b.dataset.s = sig;
+  b.innerHTML = EVV[k].map(x => '<button data-v="' + x + '" role="tab" aria-selected="' + (x === v) + '" class="eb' + (x === v ? " on" : "") + '">' + nm[x].toUpperCase() + '</button>').join("");
+}
+$("#evsw").addEventListener("click", e => { const b = e.target.closest("[data-v]"); if (b && b.dataset.v !== evView()) evSetView(b.dataset.v); });
+function evRedraw() { if (evLast.gs) drawEvents(evLast.gs, evLast.map); }
+const evTr = (a, b2, tm) => a.ad ? "All day" : tm(a) + (b2 && a.e && a.e > a.t ? " – " + tm({ t: a.e }) : "");
+const evDots = (l, max) => { const c = []; l.forEach(v => { if (c.indexOf(v.c) < 0) c.push(v.c); }); return c.slice(0, max || 3).map(x => '<i style="--c:' + x + '"></i>').join(""); };
+function evDayList(k, map, tm, srt, head) {   // one day's events as rows (phone week + phone month)
+  const a = k.split("-"), d = new Date(+a[0], +a[1] - 1, +a[2]), l = srt((map[k] || []).slice());
+  return '<div class="ah' + (k === dk(new Date()) ? " t" : "") + '">' + d.toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" }).toUpperCase() + '</div>' +
+    (l.length ? l.map(v => '<div class="ce" data-ev="' + v.i + '" style="--c:' + v.c + '"><span class="mo">' + evTr(v, false, tm) + '</span> ' + esc(v.s) + '</div>').join("") : '<div class="lbl evnone">Nothing on this day</div>');
+}
+function evSelDay(gs, today, wk) {   // the day the phone shows under the strip / grid
+  const days = wk ? 7 : 0, first = wk ? dk(gs) : dk(new Date(cy, cm, 1)), inr = k => wk ? (k >= dk(gs) && k <= dk(new Date(gs.getFullYear(), gs.getMonth(), gs.getDate() + 6))) : (k.slice(0, 7) === dk(new Date(cy, cm, 1)).slice(0, 7));
+  if (evSel && inr(evSel)) return evSel; return inr(today) ? today : first;
+}
+function evViews(V, gs, map, today, tm, srt, fin) {
+  const g = $("#cg"), mob = isMobile(), WDS = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
+  g.style.removeProperty("--rows");
+  if (V === "week" && !mob) return evWeekGrid(g, gs, map, today, tm, srt, fin);
+  if (V === "list") {   // tablet: day-grouped list with a little month beside it
+    let h = ""; const m0 = new Date(cy, cm, 1), start = dk(m0) > today || dk(m0).slice(0, 7) !== today.slice(0, 7) ? dk(m0) : today, end = dk(new Date(gs.getFullYear(), gs.getMonth(), gs.getDate() + mrows() * 7));
+    for (let i = 0, d = new Date(gs); i < mrows() * 7; i++, d = new Date(gs.getFullYear(), gs.getMonth(), gs.getDate() + i)) {
+      const k = dk(d), l = srt((map[k] || []).slice()); if (!l.length || k < start || k >= end) continue;
+      const tt = k === today ? "TODAY · " : k === dk(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 1)) ? "TOMORROW · " : "";
+      h += '<div class="ah' + (k >= today ? " up" : "") + (k === today ? " t" : "") + '" data-k="' + k + '">' + tt + d.toLocaleDateString([], { weekday: "short", day: "numeric", month: "short" }).toUpperCase() + '</div>' +
+        l.map(v => '<div class="ce" data-ev="' + v.i + '" style="--c:' + v.c + '"><span class="mo">' + evTr(v, true, tm) + '</span><b>' + esc(v.s) + '</b><em>' + esc(v.n) + '</em></div>').join("");
+    }
+    let mm = WDS.map(n => '<span class="dnm">' + n[0] + '</span>').join("");
+    for (let i = 0; i < mrows() * 7; i++) { const d = new Date(gs.getFullYear(), gs.getMonth(), gs.getDate() + i), k = dk(d); mm += '<button class="' + (d.getMonth() !== cm ? "o " : "") + (k === today ? "t" : "") + '" data-jump="' + k + '">' + d.getDate() + '</button>'; }
+    g.className = "cg ag evl"; g.innerHTML = '<div class="evla">' + (h || '<div class="lbl" style="margin-top:18px">No events this month</div>') + '</div><div class="evlm"><h4>' + esc(new Date(cy, cm, 1).toLocaleDateString([], { month: "long", year: "numeric" })) + '</h4><div class="emg">' + mm + '</div></div>';
+    return;
+  }
+  if (V === "week") {   // phone: the week as a strip of days, the picked day's events underneath
+    const sel = evSelDay(gs, today, true); let st = "";
+    for (let i = 0; i < 7; i++) { const d = new Date(gs.getFullYear(), gs.getMonth(), gs.getDate() + i), k = dk(d); st += '<button data-pick="' + k + '" class="' + (k === today ? "t " : "") + (k === sel ? "on" : "") + '"><small>' + WDS[i] + '</small><b>' + d.getDate() + '</b><span>' + evDots(map[k] || [], 3) + '</span></button>'; }
+    g.className = "cg ag evp"; g.innerHTML = '<div class="evstrip">' + st + '</div>' + evDayList(sel, map, tm, srt);
+    return;
+  }
+  // phone month: compact grid with a dot per calendar, the picked day's events underneath
+  const sel = evSelDay(gs, today, false), rows = mrows(); let c = WDS.map(n => '<span class="dnm">' + n[0] + '</span>').join("");
+  for (let i = 0; i < rows * 7; i++) { const d = new Date(gs.getFullYear(), gs.getMonth(), gs.getDate() + i), k = dk(d); c += '<button data-pick="' + k + '" class="' + (d.getMonth() !== cm ? "o " : "") + (k === today ? "t " : "") + (k === sel ? "on" : "") + '"><b>' + d.getDate() + '</b><span>' + evDots(map[k] || [], 3) + '</span></button>'; }
+  g.className = "cg ag evp"; g.innerHTML = '<div class="evmg">' + c + '</div>' + evDayList(sel, map, tm, srt);
+}
+function evWeekGrid(g, gs, map, today, tm, srt, fin) {   // tablet week: 7 columns, hours down the side, an all-day strip on top, a line for now
+  const HH = 40, WDS = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"], days = [];
+  let h0 = 7, h1 = 20; const now = new Date();
+  for (let i = 0; i < 7; i++) {
+    const d0 = new Date(gs.getFullYear(), gs.getMonth(), gs.getDate() + i), d1 = new Date(d0.getFullYear(), d0.getMonth(), d0.getDate() + 1), k = dk(d0), l = srt((map[k] || []).slice()), ad = [], tl = [];
+    l.forEach(v => { if (v.ad) return ad.push(v); const a = v.t > d0 ? v.t : d0, b = v.e && v.e < d1 ? v.e : d1; tl.push({ v: v, a: a, b: b > a ? b : new Date(a.getTime() + 30 * 6e4) }); });
+    tl.forEach(x => { h0 = Math.min(h0, x.a.getHours()); h1 = Math.max(h1, x.b.getHours() + (x.b.getMinutes() || x.b.getDate() !== x.a.getDate() ? 1 : 0)); });
+    tl.sort((p, q) => p.a - q.a); const ends = [];   // side by side when they overlap
+    tl.forEach(x => { let ln = ends.findIndex(e => e <= x.a); if (ln < 0) ln = ends.length; ends[ln] = x.b; x.ln = ln; }); tl.forEach(x => x.n = ends.length);
+    days.push({ d: d0, k: k, ad: ad, tl: tl });
+  }
+  if (days.some(d => d.k === today)) { h0 = Math.min(h0, Math.max(0, now.getHours() - 1)); h1 = Math.max(h1, Math.min(24, now.getHours() + 2)); }
+  h1 = Math.min(24, Math.max(h1, h0 + 6));
+  const y = d => (d.getHours() - h0 + d.getMinutes() / 60) * HH, hl = [];
+  for (let hh = h0; hh < h1; hh++) hl.push('<span style="top:' + (hh - h0) * HH + 'px">' + (new Date(2000, 0, 1, hh)).toLocaleTimeString([], tmo({ hour: "numeric" })).replace(" ", "").toLowerCase() + '</span>');
+  let hd = '<i></i>', al = '<i>ALL DAY</i>', bd = '<div class="wh" style="height:' + (h1 - h0) * HH + 'px">' + hl.join("") + '</div>';
+  days.forEach((x, i) => {
+    hd += '<div class="' + (x.k === today ? "t" : "") + '"><small>' + WDS[i] + '</small><b>' + x.d.getDate() + '</b></div>';
+    al += '<div data-d="' + x.k + '">' + x.ad.map(v => '<div class="ce" data-ev="' + v.i + '" style="--c:' + v.c + '">' + esc(v.s) + '</div>').join("") + '</div>';
+    bd += '<div class="wc' + (x.k === today ? " t" : "") + '" data-d="' + x.k + '" style="height:' + (h1 - h0) * HH + 'px">' + x.tl.map(o => {
+      const t0 = y(o.a), t1 = o.b.getDate() !== o.a.getDate() ? (h1 - h0) * HH : y(o.b), ht = Math.max(22, t1 - t0 - 2);
+      return '<div class="wev" data-ev="' + o.v.i + '" style="--c:' + o.v.c + ';top:' + t0 + 'px;height:' + ht + 'px;left:calc(' + o.ln + '*100%/' + o.n + ' + 2px);width:calc(100%/' + o.n + ' - 4px)"><b>' + esc(o.v.s) + '</b>' + (ht > 34 ? '<small>' + tm(o.v) + '</small>' : "") + '</div>';
+    }).join("") + (x.k === today ? '<u class="wn" style="top:' + y(now) + 'px"></u>' : "") + '</div>';
+  });
+  g.className = "cg ag evwk"; g.innerHTML = '<div class="wk"><div class="wkh">' + hd + '</div><div class="wka">' + al + '</div><div class="wkb">' + bd + '</div></div>';
+  const sc = g.querySelector(".wkb"); if (sc && fin && evJump) { evJump = false; const first = days.some(d => d.k === today) ? y(now) - HH : Math.min.apply(null, days.reduce((a, d) => a.concat(d.tl.map(o => y(o.a))), [h1 * HH])) - 10; sc.scrollTop = Math.max(0, first); }
+}
+document.addEventListener("click", e => { const j = e.target.closest("[data-jump]"); if (!j || !$("#events").contains(j)) return; const t = $('#cg .ah[data-k="' + j.dataset.jump + '"]') || [].slice.call($$("#cg .ah[data-k]")).filter(x => x.dataset.k >= j.dataset.jump)[0]; if (t) t.scrollIntoView({ block: "start", behavior: "smooth" }); });
+{ let x0 = 0, y0 = 0;   // phone: swipe along the week strip / month for the next or previous one
+  $("#cg").addEventListener("touchstart", e => { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }, { passive: true });
+  $("#cg").addEventListener("touchend", e => { const t = e.changedTouches[0], dx = t.clientX - x0, dy = t.clientY - y0; if (isMobile() && evView() !== "agenda" && Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.6 && !evSq.on) shiftMonth(dx < 0 ? 1 : -1); }, { passive: true }); }
+// ---------- Climate page: the House card's 24-hour graph, and the line under a room's temperature ----------
+// the graph is the average temperature of the rooms over the last 24 hours (the rooms' own climate sensors, from the Home Assistant recorder);
+// config climateGraph: ["climate.a", "climate.b"] picks the rooms, otherwise every room except the heat pump
+const CHZ = { t: 0, pts: null, busy: 0 };
+function hzIds() { const g = CONFIG.climateGraph; if (Array.isArray(g) && g.length) return g.filter(x => typeof x === "string"); return CONFIG.rooms.filter(r => !r.main).map(r => r.id); }
+function hzLoad(force) {
+  const ids = hzIds(); if (!ids.length || typeof ws === "undefined" || !ws || ws.readyState !== 1) return;
+  if ((CHZ.busy && Date.now() - CHZ.busy < 20000) || (!force && CHZ.pts && Date.now() - CHZ.t < 600000)) return;
+  CHZ.busy = Date.now(); const end = new Date(), st = new Date(end.getTime() - 24 * 3600000);
+  send({ type: "history/history_during_period", start_time: st.toISOString(), end_time: end.toISOString(), entity_ids: ids, minimal_response: false, no_attributes: false, significant_changes_only: false }, r => {
+    CHZ.busy = 0; if (!r) return; const t0 = st.getTime(), step = 1800000, n = 48, all = [];
+    ids.forEach(id => {
+      const a = (r[id] || []).map(x => { const at = x.a || x.attributes || {}; return [(x.lu != null ? x.lu * 1000 : Date.parse(x.last_updated || x.last_changed)), parseFloat(at.current_temperature)]; }).filter(x => !isNaN(x[0]) && !isNaN(x[1])).sort((p, q) => p[0] - q[0]);
+      if (!a.length) return; const pts = []; let k = 0, cur = a[0][1];
+      for (let i = 0; i <= n; i++) { const t = t0 + i * step; while (k < a.length && a[k][0] <= t) cur = a[k++][1]; pts.push(cur); }
+      all.push(pts);
+    });
+    if (!all.length) return; CHZ.pts = all[0].map((_, i) => all.reduce((p, q) => p + q[i], 0) / all.length); CHZ.t = Date.now(); hzDraw();
+  });
+}
+function hzDraw() {
+  const c = cards[MAIN]; if (!c) return; const g = $(".czg", c.el); if (!g) return; const p = CHZ.pts;
+  if (!p || p.length < 3) { g.hidden = true; return; }
+  const mn = Math.min.apply(null, p), mx = Math.max.apply(null, p), pad = Math.max(0.6, (mx - mn) * 0.25), lo = mn - pad, hi = mx + pad, W = 300, H = 84, X = i => i / (p.length - 1) * W, Y = v => H - 6 - (v - lo) / (hi - lo) * (H - 14);
+  let d = "M" + X(0) + " " + Y(p[0]).toFixed(1); for (let i = 1; i < p.length; i++) { const mx2 = (X(i - 1) + X(i)) / 2, my = (Y(p[i - 1]) + Y(p[i])) / 2; d += " Q" + X(i - 1).toFixed(1) + " " + Y(p[i - 1]).toFixed(1) + " " + mx2.toFixed(1) + " " + my.toFixed(1); }
+  d += " T" + W + " " + Y(p[p.length - 1]).toFixed(1);
+  const cs = [12, 14.5, 17.5, 20.5, 23, 25.5, 28], pc = PAL.temp.map(x => rgbOf(x).split(",").map(Number));   // the room cards' temperature colours, blended between their bands so the line shifts hue smoothly
+  const col = t => { if (t <= cs[0]) return pc[0]; if (t >= cs[6]) return pc[6]; let k = 0; while (t > cs[k + 1]) k++; const f = (t - cs[k]) / (cs[k + 1] - cs[k]); return pc[k].map((v, n) => Math.round(v + (pc[k + 1][n] - v) * f)); };
+  const stops = p.map((v, i) => '<stop offset="' + (i / (p.length - 1)).toFixed(3) + '" stop-color="rgb(' + col(v).join(",") + ')"/>').join("");
+  $("svg", g).innerHTML = '<defs><linearGradient id="hzh" x1="0" y1="0" x2="1" y2="0">' + stops + '</linearGradient><linearGradient id="hzv" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><mask id="hzk" maskUnits="userSpaceOnUse" x="0" y="0" width="' + W + '" height="' + H + '"><rect width="' + W + '" height="' + H + '" fill="url(#hzv)"/></mask></defs><path d="' + d + ' L' + W + " " + H + " L0 " + H + ' Z" fill="url(#hzh)" mask="url(#hzk)"/><path d="' + d + '" fill="none" stroke="url(#hzh)" stroke-width="2.5" vector-effect="non-scaling-stroke" stroke-linecap="round"/>';
+  $("small", g).textContent = "LAST 24 HOURS · " + f1(mn) + "–" + f1(mx) + "°"; g.hidden = false;
+}
+setInterval(() => { if (typeof curPg === "function" && curPg() === "climate" && !document.hidden) hzLoad(true); }, 600000);
+function clSub(id) {   // "Target 21° · humidity 55%" (shown in the phone sheet)
+  const c = cards[id]; if (!c || c.r.main) return; const s = $(".sub", c.el); if (!s) return; const a = (states[id] || {}).attributes || {}, tg = $(".tgt", c.el).textContent, hu = a.current_humidity;
+  const t = "Target " + tg + (hu != null && !isNaN(parseFloat(hu)) ? " · humidity " + Math.round(hu) + "%" : ""); if (s.textContent !== t) s.textContent = t;
+}
 // ---------- media (Sonos / Spotify) ----------
 // cover art: real picture, else CONFIG.mediaArt match by title (optional), else a generated waveform tile
 // ---------- dominant colour of the album art, used for the Now playing glow ----------
@@ -5515,7 +6048,7 @@ function npRender() {
   const onMed = curPg() === "media";
   { const nt = $("#hnote"), pl = act.some(x => (states[x.ctl] || {}).state === "playing"); nt.classList.toggle("on", !!act.length && !isMobile()); nt.classList.toggle("pl", pl); if (act.length) nt.title = "Open Media"; }   // tablet: the music note in the header on every page, Media included (the player bar is gone)
   document.body.classList.toggle("np-fab", !!act.length && isMobile() && ["scenes", "irrigation"].indexOf(curPg()) > -1);   // pages with a floating pill: the music bar becomes a round button beside it
-  document.body.classList.toggle("np-home", onHome()); document.body.classList.toggle("np-media", onMed); document.body.classList.remove("np-hdr");
+  document.body.classList.toggle("np-home", onHome() && !isMobile()); document.body.classList.toggle("np-media", onMed); document.body.classList.remove("np-hdr");   // phones: no Now playing card on Home, the floating player bar is used instead
   w.classList.toggle("npoff", !act.length); mi.classList.toggle("npoff", !act.length || onMed); hn0.classList.add("npoff");
   if (!act.length) { npSheet = false; document.body.classList.remove("nps-open"); w.innerHTML = mi.innerHTML = hn0.innerHTML = ""; return; }
   if (dragging) return;
@@ -5677,7 +6210,7 @@ document.addEventListener("click", e => {
   if (isMobile()) lyOpen(c ? c.dataset.c : ""); else { if (c) LY.sel = c.dataset.c; LY.open = true; try { localStorage.setItem("dashLyr", "1"); } catch (_) {} LY.drawn = ""; lyrUpdate(); }
 }, true);
 // ---------- Lyrics (Media page) · LRCLIB, fetched by this browser; synced lines follow the song position ----------
-const LY = { off: 0, key: "", ctl: "", sel: "", tabs: [], lines: null, plain: "", st: "", dbg: "", drawn: "", open: true, cache: {} };
+const LY = { off: 0, key: "", ctl: "", sel: "", tabs: [], lines: null, plain: "", st: "", dbg: "", drawn: "", open: true, cache: {}, tries: {} };
 try { LY.open = localStorage.getItem("dashLyr") !== "0"; LY.off = +localStorage.getItem("dashLyOff") || 0; } catch (_) {}
 function lyrTracks() {   // every group that has a song (playing or paused), playing ones first
   const mk = (ctl, name) => { const s = states[ctl], a = s ? s.attributes : {}; return s && /^(playing|paused)$/.test(s.state) && a.media_title ? { ctl: ctl, play: s.state === "playing", name: name, title: a.media_title, artist: a.media_artist || "", album: a.media_album_name || "", dur: Math.round(a.media_duration || 0) } : null; };
@@ -5702,12 +6235,15 @@ async function lyrFetch(tr, dbg) {
   const q = o => Object.keys(o).filter(k => o[k]).map(k => k + "=" + encodeURIComponent(o[k])).join("&"), B = "https://lrclib.net/api/";
   const clean = tr.title.replace(/\s*[\(\[][^\)\]]*(remaster|version|live|mono|stereo|edit|deluxe|feat)[^\)\]]*[\)\]]/ig, "").replace(/\s+-\s+(remaster|\d{4}).*$/i, "").trim();
   const best = l => Array.isArray(l) ? (l.filter(x => x.syncedLyrics)[0] || l.filter(x => x.plainLyrics)[0] || null) : null;
-  let r = await fetch(B + "get?" + q({ track_name: tr.title, artist_name: tr.artist, album_name: tr.album, duration: tr.dur }));
-  dbg.push("get " + r.status); if (r.ok) return r.json();
+  // a request that fails (timeout, 429, 5xx, no network) is not the same as "no lyrics": it marks dbg.soft so the caller tries again instead of giving up
+  const get = async u => { const ac = new AbortController(), tm = setTimeout(() => ac.abort(), 9000); try { const r = await fetch(B + u, { signal: ac.signal }); if (!r.ok && r.status !== 404 && r.status !== 400) dbg.soft = true; return r; } catch (e) { dbg.soft = true; dbg.push(u.split("?")[0] + " " + (e && e.name === "AbortError" ? "timeout" : "failed")); return null; } finally { clearTimeout(tm); } };
+  let r = await get("get?" + q({ track_name: tr.title, artist_name: tr.artist, album_name: tr.album, duration: tr.dur }));
+  if (r) { dbg.push("get " + r.status); if (r.ok) return r.json(); }
   for (const u of ["search?" + q({ track_name: clean, artist_name: tr.artist }), "search?" + q({ q: (tr.artist + " " + clean).trim() })]) {
-    r = await fetch(B + u); dbg.push(u.split("?")[0] + " " + r.status);
+    r = await get(u); if (!r) continue; dbg.push(u.split("?")[0] + " " + r.status);
     if (r.ok) { const d = best(await r.json()); dbg[dbg.length - 1] += " " + (d ? "found" : "0 results"); if (d) return d; }
   }
+  if (dbg.soft && dbg.length && !dbg.some(x => /search \d+ .*results/.test(x) || / 404/.test(x))) throw new Error("lyrics service busy");
   return null;
 }
 function lyrUpdate() {
@@ -5728,6 +6264,9 @@ function lyrLoad(tr, key) {
   lyrFetch(tr, dbg).then(d => {
     const r = !d || d.instrumental && !d.syncedLyrics && !d.plainLyrics ? { st: d && d.instrumental ? "inst" : "none", lines: null, plain: "", dbg: dbg.join(" · ") }
       : d.syncedLyrics ? { st: "sync", lines: parseLrc(d.syncedLyrics), plain: "" } : { st: "plain", lines: null, plain: d.plainLyrics || "" };
+    if (r.st === "none" && (LY.tries[key] || 0) < 2) {   // "no lyrics" can be a service hiccup: look again twice, a few seconds apart, before saying so
+      LY.tries[key] = (LY.tries[key] || 0) + 1; setTimeout(() => { if (LY.busy === key) { LY.busy = ""; lyrUpdate(); } }, 2500 * LY.tries[key]); return;
+    }
     LY.busy = ""; LY.cache[key] = r; if (LY.key === key) { Object.assign(LY, r); lyrDraw(); }
   }).catch(e => { LY.busy = ""; LY.cache[key] = { st: "err", lines: null, plain: "", t: Date.now(), dbg: dbg.join(" · ") + " · " + String(e && e.message || e) }; if (LY.key === key) { Object.assign(LY, LY.cache[key]); lyrDraw(); } });
 }
@@ -5765,7 +6304,7 @@ $("#lyr").onclick = e => {
   if (of) { LY.off = Math.max(-10, Math.min(10, Math.round((LY.off + (of.dataset.ly === "off+" ? 0.5 : -0.5)) * 10) / 10)); try { localStorage.setItem("dashLyOff", LY.off); } catch (_) {} LY.drawn = ""; lyrDraw(); return; }
   const tt = e.target.closest("[data-ly=tab]"); if (tt) { AI.tab = tt.dataset.t === "artist" ? "artist" : "lyrics"; try { localStorage.setItem("dashLyTab", AI.tab); } catch (_) {} if (!LY.open) { LY.open = true; try { localStorage.setItem("dashLyr", "1"); } catch (_) {} } LY.drawn = ""; lyrUpdate(); txGo($("#lyr"), AI.tab === "artist" ? 1 : -1, false); return; }
   const sb = e.target.closest("[data-ly=sel]"); if (sb) { const was = LY.sel; LY.sel = sb.dataset.c; LY.drawn = ""; lyrUpdate(); if (was !== LY.sel) txGo($("#lyr"), 0, false); return; }
-  if (e.target.closest("[data-ly=retry]")) { delete LY.cache[LY.key]; LY.busy = ""; LY.drawn = ""; LY.st = ""; lyrUpdate(); return; }
+  if (e.target.closest("[data-ly=retry]")) { delete LY.cache[LY.key]; delete LY.tries[LY.key]; LY.busy = ""; LY.drawn = ""; LY.st = ""; lyrUpdate(); return; }
   if (e.target.closest("[data-ly]") && innerWidth <= 760) { lyClose(); return; }
   if (e.target.closest("[data-ly]")) { LY.open = !LY.open; try { localStorage.setItem("dashLyr", LY.open ? "1" : "0"); } catch (_) {} LY.drawn = ""; lyrUpdate(); return; }
   const l = e.target.closest(".ly"); if (l && LY.ctl) { mpSeek(LY.ctl); call("media_player", "media_seek", LY.ctl, { seek_position: +l.dataset.t }); }
@@ -6417,7 +6956,7 @@ function pgDir(el) {   // slide direction: +1 when the new page is further along
   const id = x => x && x.id === "roomspg" ? "rooms" : x && x.id, ord = $$("nav a").map(a => a.getAttribute("href").slice(1)), a = ord.indexOf(id(lastPg)), b = ord.indexOf(id(el));
   return a < 0 || b < 0 || b >= a ? 1 : -1;
 }
-function pgEnter(el) { el.style.setProperty("--pgdx", pgDir(el) * 36 + "px"); clearTimeout(el._hold); el.classList.remove("hold", "enter"); void el.offsetWidth; el._enT = performance.now(); el.classList.add("enter"); clearTimeout(el._enX); el._enX = setTimeout(() => el.classList.remove("enter"), 900); }
+function pgEnter(el) { const dr = pgDir(el); el.style.setProperty("--pgdx", dr * 36 + "px"); el.style.setProperty("--pgdr", (dr || -1) * 16 + "deg"); clearTimeout(el._hold); el.classList.remove("hold", "enter"); void el.offsetWidth; el._enT = performance.now(); el.classList.add("enter"); clearTimeout(el._enX); el._enX = setTimeout(() => el.classList.remove("enter"), 900 * Math.max(1, pgScale())); }
 function pgHold(el, ms) { el.classList.remove("enter"); el.classList.add("hold"); clearTimeout(el._hold); el._hold = setTimeout(() => pgEnter(el), ms); }   // wait (briefly) for the page's data so it fades in once, complete
 function lazyIn(pg) {
   if (!lzIO || !isMobile() || matchMedia("(prefers-reduced-motion:reduce)").matches) return;
@@ -6450,6 +6989,7 @@ function route() {
   stopCams(); if (p === "home") { applyLayout(); queueHome(); schLoad(); schDraw(); }
   if (p === "home" || (p === "security" && h[1] !== "detections") || p === "view") startCams();
   if (p === "events") { if (!evWasOn) evJump = true; loadEvents(); } evWasOn = p === "events";
+  if (p === "climate") hzLoad(); else if (typeof clClose === "function") clClose();
   if (onRooms) {
     if (h[1]) { const was = curRoom && curRoom.id === h[1]; if (h[2] === "doors") SECP.want = { page: "roomspg", q: '[data-sec="doors"]' }; drawRoom(h[1]); if (!was) txGo($("#rv"), 1, true);
       if (h[2] === "doors") [120, 700, 1800].forEach(ms => setTimeout(() => { if (curRoom && curRoom.id === h[1] && location.hash.split("/")[2] === "doors") { const t = $('#rv [data-sec="doors"]'); if (t) { t.scrollIntoView({ block: "center", behavior: ms > 120 ? "auto" : "smooth" }); if (ms === 120) { t.classList.add("flash"); setTimeout(() => t.classList.remove("flash"), 1800); } } } }, ms)); }   // #rooms/<room>/doors scrolls to that room's Doors & windows panel   // list -> room slides in from the right

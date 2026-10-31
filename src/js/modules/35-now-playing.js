@@ -52,7 +52,7 @@ function npRender() {
   const onMed = curPg() === "media";
   { const nt = $("#hnote"), pl = act.some(x => (states[x.ctl] || {}).state === "playing"); nt.classList.toggle("on", !!act.length && !isMobile()); nt.classList.toggle("pl", pl); if (act.length) nt.title = "Open Media"; }   // tablet: the music note in the header on every page, Media included (the player bar is gone)
   document.body.classList.toggle("np-fab", !!act.length && isMobile() && ["scenes", "irrigation"].indexOf(curPg()) > -1);   // pages with a floating pill: the music bar becomes a round button beside it
-  document.body.classList.toggle("np-home", onHome()); document.body.classList.toggle("np-media", onMed); document.body.classList.remove("np-hdr");
+  document.body.classList.toggle("np-home", onHome() && !isMobile()); document.body.classList.toggle("np-media", onMed); document.body.classList.remove("np-hdr");   // phones: no Now playing card on Home, the floating player bar is used instead
   w.classList.toggle("npoff", !act.length); mi.classList.toggle("npoff", !act.length || onMed); hn0.classList.add("npoff");
   if (!act.length) { npSheet = false; document.body.classList.remove("nps-open"); w.innerHTML = mi.innerHTML = hn0.innerHTML = ""; return; }
   if (dragging) return;

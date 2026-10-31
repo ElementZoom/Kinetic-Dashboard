@@ -457,8 +457,10 @@ window.DASH_CONFIG = {
   // Each check can be switched off; leaving: false removes the card. Doors use doorsGroup and the garage uses the sensors in garageAlert.
   // leaving: { lights: true, garage: true, doors: true, alarm: true, lightEntities: [], ignore: ["demo_hall_lamp"] },
   // Weather alerts: a Weather card in Notifications > Alerts (wind now with a gauge, and rain in the next few hours), from the weather entity and its hourly forecast. On by default.
-  // pageTransition: how a page appears when you switch tabs: "rise" (default), "slide", "fade" or "off". Each device can override it on the Theme page.
+  // pageTransition: how a page appears when you switch tabs: "rise" (default), "slide", "fade", "zoom", "flip", "blur", "tilt" or "off". Each device can override it on the Theme page.
   // pageTransition: "rise",
+  // pageTransitionSpeed: "normal",   // "fast", "normal" or "slow" (each device can change it on the Theme page)
+  // eventsView: { tablet: "month", mobile: "agenda" },   // the Events page view a device starts on (tablet: month | week | list, phone: agenda | week | month); each device remembers what you pick
   // Wind tiers are km/h (Moderate / Strong / Severe), rain tiers are mm per hour (Light / Moderate / Heavy). stripWind / stripRain = the tier (1 to 3) from which the header strip shows a chip: Strong wind and Heavy rain by default.
   // weatherAlerts: false hides it. wind: false or rain: false hides one part. hours = how far ahead the forecast is checked.
   // weatherAlerts: { wind: true, rain: true, windTiers: [30, 62, 89], rainTiers: [0.5, 2, 5], hours: 6, stripWind: 2, stripRain: 3 },
@@ -511,6 +513,15 @@ window.DASH_CONFIG = {
       ]
     ]
   ],
+  // climateGraph: ["climate.living", "climate.master"],   // rooms averaged in the Climate page 24-hour graph (default: every room except the heat pump)
+  climateAuto: [   // a switch at the top of the Climate page that turns these automations on / off together (nothing else is needed in Home Assistant)
+    "automation.demo_climate_control",
+    "automation.demo_climate_off_time"
+  ],   // or { name: "Auto climate", entities: [...] }
+  climateTriggers: {   // house-wide: Heat below / Cool above steppers in the heat pump card, set these input_number helpers (the automations read them)
+    heatBelow: "input_number.demo_climate_heat_below",
+    coolAbove: "input_number.demo_climate_cool_above"
+  },   // a room can have its own: add  heatBelow: "input_number.demo_master_heat_below", coolAbove: "input_number.demo_master_cool_above"  to its entry in rooms. A room can also have  autoClimate: "input_boolean.demo_master_auto_climate"  (a "Sleeping here tonight" switch; autoLabel: "..." renames it)
   roomControls: {   // extra tiles at the top of a room's AUTOMATIONS pop-up
     master: [{ entity: "input_boolean.demo_master_auto_climate", name: "Auto climate", icon: "thermometer" }],
     kids:   [{ entity: "input_boolean.demo_kids_auto_climate", name: "Auto climate", icon: "thermometer" }],

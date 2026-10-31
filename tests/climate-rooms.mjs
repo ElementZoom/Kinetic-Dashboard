@@ -1,0 +1,38 @@
+// Climate page: a room that is on shows the heat pump's mode; the comfort bar places the room and its target.   Run:  node tests/climate-rooms.mjs
+import http from "node:http";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const cfg = `window.DASH_CONFIG = { url: location.origin, token: "tok", rooms: [{ id: "climate.heat_pump", name: "Heat pump", main: true }, { id: "climate.living", name: "Living" }, { id: "climate.kids", name: "Kids" }], notifTimers: [], outside: "sensor.out" };`;
+const server = http.createServer((q, r) => { const u = q.url.split("?")[0]; if (u === "/config.js") { r.writeHead(200, { "content-type": "text/javascript" }); return r.end(cfg); }
+  if (u !== "/dash.html") { r.writeHead(404); return r.end(); } r.writeHead(200, { "content-type": "text/html" }); r.end(fs.readFileSync(path.join(root, "dash.html"))); }).listen(0);
+await new Promise(r => server.once("listening", r));
+const { chromium } = await import("playwright");
+const browser = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});
+const problems = [], errors = []; let checks = 0;
+const eq = (what, got, want) => { checks++; if (JSON.stringify(got) !== JSON.stringify(want)) problems.push(`${what}: got ${JSON.stringify(got)}, wanted ${JSON.stringify(want)}`); };
+const calls = [];
+const page = await (await browser.newContext({ viewport: { width: 1280, height: 800 } })).newPage();
+page.on("pageerror", e => errors.push(String(e).slice(0, 300)));
+await page.routeWebSocket(/api\/websocket/, ws => { ws.send(JSON.stringify({ type: "auth_required" })); ws.onMessage(raw => { const m = JSON.parse(raw); if (m.type === "auth") ws.send(JSON.stringify({ type: "auth_ok" })); else { if (m.type === "call_service" && m.domain === "climate") calls.push([m.domain, m.service, m.service_data.temperature]); if (m.id) ws.send(JSON.stringify({ id: m.id, type: "result", success: true, result: m.type === "get_states" ? [] : null })); } }); });
+await page.goto(`http://127.0.0.1:${server.address().port}/dash.html#climate`); await page.waitForTimeout(1500);
+await page.evaluate(() => { document.documentElement.classList.remove("boot"); const l = document.getElementById("lg"); if (l) l.hidden = true; });
+const S = (id, st, a) => page.evaluate(([i, s, a]) => { setState({ entity_id: i, state: s, attributes: Object.assign({ friendly_name: i }, a || {}) }); }, [id, st, a]);
+const info = () => page.evaluate(() => { const c = id => cards[id].el; return { living: $(".md", c("climate.living")).textContent, livingChip: [...c("climate.living").querySelectorAll(".chip")].map(x => x.textContent), kids: $(".md", c("climate.kids")).textContent, dot: Math.round(parseFloat($(".cbar i", c("climate.living")).style.left)), tick: Math.round(parseFloat($(".cbar u", c("climate.living")).style.left)), off: c("climate.kids").classList.contains("coff"), out: $(".cout b", c("climate.heat_pump")).textContent }; });
+const rm = ["off", "heat_cool"];
+await S("climate.heat_pump", "heat", { hvac_modes: ["off", "heat", "cool", "heat_cool"], current_temperature: 21, temperature: 23 }); await S("sensor.out", "14.6");
+await S("climate.living", "heat_cool", { hvac_modes: rm, current_temperature: 22, temperature: 24 }); await S("climate.kids", "off", { hvac_modes: rm, current_temperature: 20, temperature: 21 }); await page.waitForTimeout(300);
+let r = await info();
+eq("heat pump heating: an on room says HEAT", r.living, "HEAT"); eq("its on chip says HEAT too", r.livingChip, ["OFF", "HEAT"]); eq("an off room says OFF", r.kids, "OFF"); eq("an off room is dimmed", r.off, true);
+eq("comfort bar: dot at the room temperature (22 on 14 to 30)", r.dot, 50); eq("comfort bar: tick at the target (24)", r.tick, 63); eq("outside temperature shown", r.out, "14.6°");
+await S("climate.heat_pump", "cool", { hvac_modes: ["off", "heat", "cool", "heat_cool"] }); await page.waitForTimeout(300); r = await info(); eq("heat pump cooling: the room follows", r.living, "COOL"); eq("chip follows", r.livingChip, ["OFF", "COOL"]);
+await S("climate.heat_pump", "heat_cool", { hvac_modes: ["off", "heat", "cool", "heat_cool"] }); await page.waitForTimeout(300); r = await info(); eq("heat pump auto: AUTO", r.living, "AUTO");
+await S("climate.heat_pump", "off", { hvac_modes: ["off", "heat", "cool", "heat_cool"] }); await page.waitForTimeout(300); r = await info(); eq("heat pump off while the room is on: ON", r.living, "ON");
+const bb = await page.evaluate(() => { const b = cards["climate.living"].el.querySelector(".cbar").getBoundingClientRect(); return { x: b.left, w: b.width, y: b.top + b.height / 2 }; });
+const tgt0 = await page.evaluate(() => cards["climate.living"].el.querySelector(".tgt").textContent);
+await page.mouse.move(bb.x + bb.w * 0.1, bb.y); await page.mouse.down(); await page.mouse.move(bb.x + bb.w * 0.75, bb.y, { steps: 5 }); await page.waitForTimeout(100); await page.mouse.up(); await page.waitForTimeout(200);
+eq("the bar only shows: dragging it changes and sends nothing", [calls.length, await page.evaluate(() => cards["climate.living"].el.querySelector(".tgt").textContent)], [0, tgt0]);
+eq("no page errors", errors, []);
+await browser.close(); server.close();
+if (problems.length) { console.log("FAIL\n" + problems.join("\n")); process.exit(1); } console.log(`climate-rooms: ${checks} checks passed`);

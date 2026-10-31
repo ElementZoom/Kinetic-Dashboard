@@ -1,0 +1,68 @@
+/* Home heat pump card: big indoor number, target stepper, a cool-to-warm bar with outside / inside / target, mode icons */
+#mini[data-hm=heat]{--hzc:var(--heat)}#mini[data-hm=cool]{--hzc:var(--cool)}#mini[data-hm=auto]{--hzc:var(--mint)}#mini[data-hm=fan]{--hzc:var(--mut)}
+html:not(#x) #mini{display:flex;flex-direction:column;align-items:stretch;gap:12px;padding:18px 20px 16px;overflow:hidden;isolation:isolate}
+#mini::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(120% 80% at 0 0,color-mix(in srgb,var(--hzc,transparent) 18%,transparent),transparent 65%)}
+#mini>.lbl{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--mut);justify-content:flex-start;padding-right:22px}
+#mini .mtop{display:flex;align-items:flex-end;justify-content:space-between;gap:8px}
+#mini .mbg{display:flex;align-items:flex-start;line-height:1}
+#mini .mbg b{font-size:58px;font-weight:200;letter-spacing:-.04em;line-height:1;display:block;margin:0}
+#mini .mbg small{font-size:20px;font-weight:300;margin:5px 0 0 2px}
+html:not(#x) #mini .mtop>.row{display:flex;flex-direction:row;align-items:center;gap:6px;margin:0!important;padding-bottom:6px;min-width:0}
+#mini .mtop .big{font-size:17px;font-weight:600;min-width:46px;text-align:center}
+html:not(#x) #mini .rnd{width:32px;height:32px;border-radius:50%;font-size:16px;padding:0;display:inline-flex;align-items:center;justify-content:center;line-height:1}
+#mini .mbar{position:relative;height:10px;border-radius:5px;background:linear-gradient(90deg,var(--cool),#ffd27a 50%,var(--heat));margin:12px 8px 2px;pointer-events:none}
+#mini .mbar>*{position:absolute;display:block}
+#mini .mbar .n{top:-7px;width:24px;height:24px;margin-left:-12px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.4),0 0 12px var(--kc,transparent);transition:left .5s}
+#mini .mbar .t{top:-4px;width:2px;height:18px;margin-left:-1px;background:var(--ink);opacity:.85;border-radius:1px;transition:left .3s}
+#mini .mbar .o{top:-3px;width:10px;height:10px;margin-left:-5px;border-radius:50%;border:2px solid var(--cool);background:var(--bg);box-sizing:content-box;transition:left .5s}
+#mini .mleg{display:flex;justify-content:space-between;gap:6px;font-size:12px;color:var(--mut);white-space:nowrap}
+#mini .mleg b{color:var(--ink);font-weight:600;font-size:12px;margin:0;display:inline}
+#mini .mleg span{display:inline-flex;align-items:center;gap:5px;min-width:0}
+#mini .dot{display:inline-block;width:8px;height:8px;border-radius:50%;flex:none}
+#mini .dot.o{border:2px solid var(--cool);box-sizing:border-box}#mini .dot.n{background:var(--ink)}#mini .dot.t{width:2px;height:10px;border-radius:1px;background:var(--ink)}
+html:not(#x) #mini .chips{display:flex;flex-wrap:nowrap;gap:0;padding:4px;border-radius:999px;background:rgba(var(--w),.07);border:1px solid var(--line)}
+html:not(#x) #mini .chip{flex:1 1 0;min-width:0;padding:10px 0;border:0;background:transparent;border-radius:999px;box-shadow:none;display:flex;align-items:center;justify-content:center}
+html:not(#x) #mini .chip.on{background:var(--hzc,var(--ink));color:var(--onmint,#07241a);box-shadow:0 2px 12px color-mix(in srgb,var(--hzc,transparent) 45%,transparent)}
+@media(prefers-reduced-motion:reduce){#mini .mbar>*{transition:none}}
+
+/* Auto climate: one slim row */
+#cauto{gap:10px;padding:8px 14px;margin-bottom:10px;border-radius:16px}
+#cauto .cai{width:30px;height:30px;border-radius:10px}#cauto .cai svg{width:18px;height:18px}
+#cauto b{font-size:14px}#cauto small{font-size:11px;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#cauto .csw{width:44px;height:26px;border-radius:13px}#cauto .csw i{top:3px;left:3px;width:20px;height:20px}#cauto .csw[aria-checked=true] i{transform:translateX(18px)}
+
+/* phone: a slimmer top bar on every page */
+@media(max-width:760px){
+html:not(#x) header{padding:5px 10px;row-gap:2px;min-height:0;border-radius:16px}
+html[data-style=material] header{border-radius:22px}
+html:not(#x) header h1{font-size:18px}
+html:not(#x) #ttl:not(.bk){margin-left:-2px;padding:4px 10px 4px 2px}
+html:not(#x) #ttl.bk{margin-left:-2px;padding:4px 10px 4px 2px}
+html:not(#x) #clk{font-size:16px}
+html:not(#x) .hr{gap:8px}
+html:not(#x) #hb,html:not(#x) #al,html:not(#x) #hnote{width:32px;height:32px}
+html:not(#x) #st{font-size:9px;padding:3px 7px}
+html:not(#x) #bat{font-size:11px;padding:3px 9px 3px 7px}
+html:not(#x) #hc{padding:2px 0}
+body.np-hdr header{padding-bottom:6px}
+.main{gap:10px}
+#cauto small{display:none}
+}
+/* tablet: a more compact heat pump card (the side column is narrow and shares the height with Forecast) */
+@media(min-width:761px){
+html:not(#x) #mini{gap:6px;padding:14px 18px 14px}
+#mini .mbg b{font-size:44px}#mini .mbg small{font-size:16px;margin-top:3px}
+html:not(#x) #mini .mtop>.row{padding-bottom:2px}
+html:not(#x) #mini .rnd{width:28px;height:28px;font-size:15px}
+#mini .mtop .big{font-size:15px;min-width:42px}
+#mini .mbar{margin:8px 8px 0}
+#mini .mleg{font-size:11px}#mini .mleg b{font-size:11px}
+#mini .mleg>span:last-child{display:none}
+html:not(#x) #mini .chips{padding:3px}
+html:not(#x) #mini .chip{padding:7px 0}
+}
+/* tablet: the camera tiles stretch to the height of the heat pump + forecast column, so the bottoms line up */
+@media(min-width:1101px){
+.hm:has(#cams>*) .camcol .cams{align-content:stretch}
+.hm:has(#cams>*) .camcol .cams>.cam{align-self:stretch}
+}

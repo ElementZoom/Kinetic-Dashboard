@@ -1,5 +1,5 @@
 // ---------- Lyrics (Media page) · LRCLIB, fetched by this browser; synced lines follow the song position ----------
-const LY = { off: 0, key: "", ctl: "", sel: "", tabs: [], lines: null, plain: "", st: "", dbg: "", drawn: "", open: true, cache: {} };
+const LY = { off: 0, key: "", ctl: "", sel: "", tabs: [], lines: null, plain: "", st: "", dbg: "", drawn: "", open: true, cache: {}, tries: {} };
 try { LY.open = localStorage.getItem("dashLyr") !== "0"; LY.off = +localStorage.getItem("dashLyOff") || 0; } catch (_) {}
 function lyrTracks() {   // every group that has a song (playing or paused), playing ones first
   const mk = (ctl, name) => { const s = states[ctl], a = s ? s.attributes : {}; return s && /^(playing|paused)$/.test(s.state) && a.media_title ? { ctl: ctl, play: s.state === "playing", name: name, title: a.media_title, artist: a.media_artist || "", album: a.media_album_name || "", dur: Math.round(a.media_duration || 0) } : null; };
@@ -24,12 +24,15 @@ async function lyrFetch(tr, dbg) {
   const q = o => Object.keys(o).filter(k => o[k]).map(k => k + "=" + encodeURIComponent(o[k])).join("&"), B = "https://lrclib.net/api/";
   const clean = tr.title.replace(/\s*[\(\[][^\)\]]*(remaster|version|live|mono|stereo|edit|deluxe|feat)[^\)\]]*[\)\]]/ig, "").replace(/\s+-\s+(remaster|\d{4}).*$/i, "").trim();
   const best = l => Array.isArray(l) ? (l.filter(x => x.syncedLyrics)[0] || l.filter(x => x.plainLyrics)[0] || null) : null;
-  let r = await fetch(B + "get?" + q({ track_name: tr.title, artist_name: tr.artist, album_name: tr.album, duration: tr.dur }));
-  dbg.push("get " + r.status); if (r.ok) return r.json();
+  // a request that fails (timeout, 429, 5xx, no network) is not the same as "no lyrics": it marks dbg.soft so the caller tries again instead of giving up
+  const get = async u => { const ac = new AbortController(), tm = setTimeout(() => ac.abort(), 9000); try { const r = await fetch(B + u, { signal: ac.signal }); if (!r.ok && r.status !== 404 && r.status !== 400) dbg.soft = true; return r; } catch (e) { dbg.soft = true; dbg.push(u.split("?")[0] + " " + (e && e.name === "AbortError" ? "timeout" : "failed")); return null; } finally { clearTimeout(tm); } };
+  let r = await get("get?" + q({ track_name: tr.title, artist_name: tr.artist, album_name: tr.album, duration: tr.dur }));
+  if (r) { dbg.push("get " + r.status); if (r.ok) return r.json(); }
   for (const u of ["search?" + q({ track_name: clean, artist_name: tr.artist }), "search?" + q({ q: (tr.artist + " " + clean).trim() })]) {
-    r = await fetch(B + u); dbg.push(u.split("?")[0] + " " + r.status);
+    r = await get(u); if (!r) continue; dbg.push(u.split("?")[0] + " " + r.status);
     if (r.ok) { const d = best(await r.json()); dbg[dbg.length - 1] += " " + (d ? "found" : "0 results"); if (d) return d; }
   }
+  if (dbg.soft && dbg.length && !dbg.some(x => /search \d+ .*results/.test(x) || / 404/.test(x))) throw new Error("lyrics service busy");
   return null;
 }
 function lyrUpdate() {
@@ -50,6 +53,9 @@ function lyrLoad(tr, key) {
   lyrFetch(tr, dbg).then(d => {
     const r = !d || d.instrumental && !d.syncedLyrics && !d.plainLyrics ? { st: d && d.instrumental ? "inst" : "none", lines: null, plain: "", dbg: dbg.join(" · ") }
       : d.syncedLyrics ? { st: "sync", lines: parseLrc(d.syncedLyrics), plain: "" } : { st: "plain", lines: null, plain: d.plainLyrics || "" };
+    if (r.st === "none" && (LY.tries[key] || 0) < 2) {   // "no lyrics" can be a service hiccup: look again twice, a few seconds apart, before saying so
+      LY.tries[key] = (LY.tries[key] || 0) + 1; setTimeout(() => { if (LY.busy === key) { LY.busy = ""; lyrUpdate(); } }, 2500 * LY.tries[key]); return;
+    }
     LY.busy = ""; LY.cache[key] = r; if (LY.key === key) { Object.assign(LY, r); lyrDraw(); }
   }).catch(e => { LY.busy = ""; LY.cache[key] = { st: "err", lines: null, plain: "", t: Date.now(), dbg: dbg.join(" · ") + " · " + String(e && e.message || e) }; if (LY.key === key) { Object.assign(LY, LY.cache[key]); lyrDraw(); } });
 }
@@ -87,7 +93,7 @@ $("#lyr").onclick = e => {
   if (of) { LY.off = Math.max(-10, Math.min(10, Math.round((LY.off + (of.dataset.ly === "off+" ? 0.5 : -0.5)) * 10) / 10)); try { localStorage.setItem("dashLyOff", LY.off); } catch (_) {} LY.drawn = ""; lyrDraw(); return; }
   const tt = e.target.closest("[data-ly=tab]"); if (tt) { AI.tab = tt.dataset.t === "artist" ? "artist" : "lyrics"; try { localStorage.setItem("dashLyTab", AI.tab); } catch (_) {} if (!LY.open) { LY.open = true; try { localStorage.setItem("dashLyr", "1"); } catch (_) {} } LY.drawn = ""; lyrUpdate(); txGo($("#lyr"), AI.tab === "artist" ? 1 : -1, false); return; }
   const sb = e.target.closest("[data-ly=sel]"); if (sb) { const was = LY.sel; LY.sel = sb.dataset.c; LY.drawn = ""; lyrUpdate(); if (was !== LY.sel) txGo($("#lyr"), 0, false); return; }
-  if (e.target.closest("[data-ly=retry]")) { delete LY.cache[LY.key]; LY.busy = ""; LY.drawn = ""; LY.st = ""; lyrUpdate(); return; }
+  if (e.target.closest("[data-ly=retry]")) { delete LY.cache[LY.key]; delete LY.tries[LY.key]; LY.busy = ""; LY.drawn = ""; LY.st = ""; lyrUpdate(); return; }
   if (e.target.closest("[data-ly]") && innerWidth <= 760) { lyClose(); return; }
   if (e.target.closest("[data-ly]")) { LY.open = !LY.open; try { localStorage.setItem("dashLyr", LY.open ? "1" : "0"); } catch (_) {} LY.drawn = ""; lyrUpdate(); return; }
   const l = e.target.closest(".ly"); if (l && LY.ctl) { mpSeek(LY.ctl); call("media_player", "media_seek", LY.ctl, { seek_position: +l.dataset.t }); }

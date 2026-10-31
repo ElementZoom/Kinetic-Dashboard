@@ -80,10 +80,12 @@ function setState(s) {
   const id = s.entity_id;
   if (!vBusy) { REAL[id] = 1; if (VGM[id]) { clearTimeout(vTm); vTm = setTimeout(vGroups, 120); } }
   if (id === (CONFIG.houseAvg || CONFIG.indoor)) { states[id] = s; drawGsum(); }
-  if (id === CONFIG.outside) $("#outs").textContent = f1(s.state) + "°C";
+  if (id === CONFIG.outside) { $("#outs").textContent = f1(s.state) + "°C"; if (cards[MAIN]) setTimeout(() => render(MAIN), 0); }
   states[id] = s;
   galOnState(id, s);
   if (id === E("access")) ruRefresh();
+  if (CAUTO && CAUTO.ids.indexOf(id) > -1) caDraw();
+  if (CTSET[id]) ctDraw();
   if (/_camera_(person|vehicle)$/.test(id)) detAll();
   if (T[id] && T[id].sent) { T[id].v = null; T[id].sent = 0; }
   if (cards[MAIN] && id !== MAIN && CONFIG.derived.houseTemps.indexOf(id) > -1) render(MAIN);   // heat pump card shows the house average when the unit has no sensor

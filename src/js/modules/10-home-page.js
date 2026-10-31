@@ -1,4 +1,12 @@
 // ---------- home page ----------
+let mbIn = NaN, mbOut = NaN;   // heat pump card: indoor and outdoor temperature for the comfort bar
+function mbSet(tv) {
+  const bar = $("#mbar"); if (!bar) return;
+  const pos = x => isNaN(x) || x == null ? null : Math.max(0, Math.min(100, (x - 10) / 20 * 100)) + "%";   // 10° to 30° across the bar
+  [["o", mbOut], ["n", mbIn], ["t", parseFloat(tv)]].forEach(([c, x]) => { const el = bar.querySelector("." + c), p = pos(x); el.style.display = p ? "" : "none"; if (p) el.style.left = p; });
+  const n = bar.querySelector(".n"); if (!isNaN(mbIn)) n.style.setProperty("--kc", tempColor(mbIn));
+  $("#mtg").textContent = tv != null && !isNaN(parseFloat(tv)) ? f1(parseFloat(tv)) + "°" : "--";
+}
 function home() {
   const w = states[W], a = w ? w.attributes : {}, hp = states[MAIN], ha = hp ? hp.attributes : {};
   const cd = w ? (COND[w.state] || ["", title(w.state)]) : ["", ""], ot = sv(E("outdoorTemp")), rd = states[E("rainDetected")], raining = !!rd && rd.state === "on", dry = !!rd && rd.state === "off";
@@ -9,9 +17,11 @@ function home() {
   wfxSet(w ? w.state : "", raining, parseFloat(wsp != null ? wsp : a.wind_speed) || 0);
   if (fc[0]) $("#whl").textContent = "High " + Math.round(fc[0].temperature) + "° / Low " + Math.round(fc[0].templow != null ? fc[0].templow : fc[0].temperature) + "°";
   if (!CONFIG.outside && w) $("#outs").textContent = f1(a.temperature) + "°C";
-  $("#mi").textContent = f1(sv(CONFIG.indoor) != null ? sv(CONFIG.indoor) : ha.current_temperature) + "°C";
-  $("#mo").textContent = f1(a.temperature) + "°C";
-  { const iv = parseFloat(sv(CONFIG.indoor) != null ? sv(CONFIG.indoor) : ha.current_temperature), ov = parseFloat(a.temperature); $("#mid").style.setProperty("--tc", tempColor(iv)); $("#mod").style.setProperty("--tc", tempColor(ov)); }
+  $("#mi").textContent = f1(sv(CONFIG.indoor) != null ? sv(CONFIG.indoor) : ha.current_temperature) + "°";
+  $("#mbg").textContent = f1(sv(CONFIG.indoor) != null ? sv(CONFIG.indoor) : ha.current_temperature);
+  $("#mo").textContent = f1(a.temperature) + "°";
+  { const iv = parseFloat(sv(CONFIG.indoor) != null ? sv(CONFIG.indoor) : ha.current_temperature), ov = parseFloat(a.temperature); $("#mid").style.setProperty("--tc", tempColor(iv)); $("#mod").style.setProperty("--tc", tempColor(ov)); mbIn = iv; mbOut = ov; }
+  { const m = hp ? hp.state : ""; const k = m === "heat" ? "heat" : m === "cool" ? "cool" : m === "fan_only" ? "fan" : m === "heat_cool" || m === "auto" ? "auto" : ""; if ($("#mini").dataset.hm !== k) $("#mini").dataset.hm = k; }
   showT(MAIN);
   $$("#mm .chip").forEach(b => b.classList.toggle("on", !!hp && b.dataset.m === hp.state));
   tileEls.forEach(x => { x.el.style.display = x.t.room && !roomOK(x.t.room) ? "none" : ""; fillCard(x.el, ROOM(x.t.room) || x.t); });
@@ -57,24 +67,32 @@ const dk = d => d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "
 const pd = v => { if (v.dateTime) return new Date(v.dateTime); const p = v.date.split("-"); return new Date(+p[0], +p[1] - 1, +p[2]); };
 const calName = c => (CONFIG.calNames || {})[c] || (states[c] && states[c].attributes.friendly_name) || c.replace("calendar.", "").replace(/_/g, " ");
 const mrows = () => Math.ceil(((new Date(cy, cm, 1).getDay() + 6) % 7 + new Date(cy, cm + 1, 0).getDate()) / 7);
+const EVV = { t: ["month", "week", "list"], p: ["agenda", "week", "month"] };   // the views each device offers (phone: agenda | week | month, tablet: month | week | list)
+let evw = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - (new Date().getDay() + 6) % 7), evSel = null, evVs = {};   // week shown (its Monday), day picked on the phone, view chosen this session
 let EVS = [], evLast = {}, evSq = { on: false, all: null, busy: false, q: "" };
 function loadEvents() {
   EVS = []; evColSync(); const evErr = [];
-  const gs = new Date(cy, cm, 1 - (new Date(cy, cm, 1).getDay() + 6) % 7), ge = new Date(gs.getFullYear(), gs.getMonth(), gs.getDate() + mrows() * 7), map = {}, tok = ++evTok;
+  const wk = evView() === "week", gs = wk ? new Date(evw.getFullYear(), evw.getMonth(), evw.getDate()) : new Date(cy, cm, 1 - (new Date(cy, cm, 1).getDay() + 6) % 7), ge = new Date(gs.getFullYear(), gs.getMonth(), gs.getDate() + (wk ? 7 : mrows() * 7)), map = {}, tok = ++evTok;
   const q = "?start=" + encodeURIComponent(gs.toISOString()) + "&end=" + encodeURIComponent(ge.toISOString());
-  const mk = cy + "-" + cm; if (evLast.k === mk) drawEvents(evLast.gs, evLast.map); else drawEvents(gs, map);   // same month: keep what is on screen until the new answer is in (no blink)
+  const mk = (wk ? "w" + dk(evw) : cy + "-" + cm); if (evLast.k === mk) drawEvents(evLast.gs, evLast.map); else drawEvents(gs, map);   // same month: keep what is on screen until the new answer is in (no blink)
   Promise.all(CONFIG.calendars.map((c, i) => getToken().then(tk => fetch(CONFIG.url + "/api/calendars/" + c + q, { headers: { Authorization: "Bearer " + tk } }))
     .then(r => r.text().then(t => { let j = null; try { j = JSON.parse(t); } catch (x) {} if (!Array.isArray(j)) { const st = states[c]; throw new Error(r.status === 404 || !t ? (st ? "HTTP " + r.status + " (HA sent no events: the calendar may be unavailable or still loading)" : "no calendar with this id exists in Home Assistant") : (j && (j.message || j.error)) || ("HTTP " + r.status)); } return j; })).then(l => l.forEach(v => { try {
       evPend(c, v); const s = pd(v.start), e = pd(v.end), ad = !v.start.dateTime;
       const last = ad ? new Date(e.getFullYear(), e.getMonth(), e.getDate() - 1) : new Date(e.getFullYear(), e.getMonth(), e.getDate());
       let d = new Date(s.getFullYear(), s.getMonth(), s.getDate());
       for (let n = 0; n < 42 && d <= last; n++, d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1))
-        (map[dk(d)] = map[dk(d)] || []).push({ t: s, ad: ad, s: v.summary, c: evColOf(c, v) || CALCOL[i % CALCOL.length], i: EVS.push({ v: v, cal: c, ci: i }) - 1 });
+        (map[dk(d)] = map[dk(d)] || []).push({ t: s, e: e, n: calName(c), ad: ad, s: v.summary, c: evColOf(c, v) || CALCOL[i % CALCOL.length], i: EVS.push({ v: v, cal: c, ci: i }) - 1 });
     } catch (x) { evErr.push(calName(c) + ": skipped \"" + (v && v.summary || "?") + "\" (" + x.message + ")"); } })).catch(x => { evErr.push(calName(c) + ": " + x.message); }))).then(() => { if (tok === evTok) { evLast = { k: mk, gs: gs, map: map }; drawEvents(gs, map, true); evReveal(); const el = $("#eerr"); if (el) el.textContent = evErr.length ? evErr.join(" · ") + "  |  Calendars HA has: " + Object.keys(states).filter(k => k.indexOf("calendar.") === 0).join(", ") : ""; } });
 }
 let evTy = null;
 function evTitle(y, m) {   // the month name, or its short form when the long one does not fit between the arrows (September on a narrow phone)
   if (y != null) evTy = [y, m]; if (!evTy) return; const t = $("#et"), d = new Date(evTy[0], evTy[1], 1);
+  if (evView() === "week") {   // "26 Oct – 1 Nov 2026"
+    const a = evw, z = new Date(a.getFullYear(), a.getMonth(), a.getDate() + 6), f = (x, y2) => x.toLocaleDateString([], y2 ? { day: "numeric", month: "short", year: "numeric" } : { day: "numeric", month: "short" });
+    t.textContent = f(a, a.getFullYear() !== z.getFullYear()) + " – " + f(z, true);
+    if (t.clientWidth && t.scrollWidth > t.clientWidth + 1) t.textContent = f(a) + " – " + f(z);   // no year when it does not fit
+    return;
+  }
   t.textContent = d.toLocaleDateString([], { month: "long", year: "numeric" });
   if (t.clientWidth && t.scrollWidth > t.clientWidth + 1) t.textContent = d.toLocaleDateString([], { month: "short", year: "numeric" });
 }
@@ -85,10 +103,11 @@ function drawEvents(gs, map, fin) {
   evBtn();
   if (!$("#eerr")) { const e = document.createElement("div"); e.id = "eerr"; e.style.cssText = "color:var(--heat);font-size:12px;margin:6px 2px;empty-cells:hide"; $("#elg").after(e); }
   $("#elg").innerHTML = CONFIG.calendars.map((c, i) => '<span><i style="--c:' + CALCOL[i % CALCOL.length] + '"></i>' + esc(calName(c)) + '</span>').join("");
-  const today = dk(new Date()), rows = mrows(), g = $("#cg");
+  const today = dk(new Date()), rows = mrows(), g = $("#cg"), V = evView();
   const tm = v => v.t.toLocaleTimeString([], tmo({ hour: "numeric", minute: "2-digit" })).replace(" ", "").toLowerCase();
   const srt = l => l.sort((a, b) => (b.ad - a.ad) || (a.t - b.t));
-  let h = "";
+  let h = ""; evSwitch();
+  if (V === "week" || (V === "month" && isMobile()) || V === "list") return evViews(V, gs, map, today, tm, srt, fin);
   if (isMobile()) {   // phones: agenda list instead of a month grid
     for (let i = 1, dim = new Date(cy, cm + 1, 0).getDate(); i <= dim; i++) {
       const d = new Date(cy, cm, i), l = srt(map[dk(d)] || []); if (!l.length) continue;
@@ -119,20 +138,20 @@ const dtIso = (d, t) => { const x = new Date(d + "T" + t + ":00"); return d + "T
 const WD = ["MO", "TU", "WE", "TH", "FR", "SA", "SU"], WDN = ["M", "T", "W", "T", "F", "S", "S"];
 // restart the tab-switch animation on el (dir: +1 slides in from the right, -1 from the left; stag: stagger its children)
 function txGo(el, dir, stag) {
-  if (!el || (window.matchMedia && matchMedia("(prefers-reduced-motion:reduce)").matches)) return;
+  if (!el || (window.matchMedia && matchMedia("(prefers-reduced-motion:reduce)").matches) || el.closest(".page.enter,.page.hold")) return;   // a page that is just arriving already plays its entrance: no second effect on top
   el.classList.remove("tx", "txc"); void el.offsetWidth;
   el.style.setProperty("--tx", (dir || 0) * 28 + "px"); el.style.setProperty("--ty", dir ? "6px" : "14px");
   if (stag) Array.prototype.forEach.call(el.children, (c, i) => c.style.setProperty("--i", Math.min(i, 14)));
   el.classList.add(stag ? "txc" : "tx");
-  clearTimeout(el._tx); el._tx = setTimeout(() => el.classList.remove("tx", "txc"), 1100);
+  clearTimeout(el._tx); el._tx = setTimeout(() => el.classList.remove("tx", "txc"), 1100 * Math.max(1, pgScale()));
 }
 // the same slide for cards that are shown one at a time (the phone's section pills: no wrapper to animate, the cards themselves slide in)
 function txEls(els, dir) {
-  if (!els || (window.matchMedia && matchMedia("(prefers-reduced-motion:reduce)").matches)) return;
+  if (!els || (window.matchMedia && matchMedia("(prefers-reduced-motion:reduce)").matches) || (els[0] && els[0].closest && els[0].closest(".page.enter,.page.hold"))) return;
   els.forEach((el, i) => {
     el.classList.remove("tx"); void el.offsetWidth;
     el.style.setProperty("--tx", (dir || 0) * 28 + "px"); el.style.setProperty("--ty", dir ? "6px" : "14px"); el.style.animationDelay = i * 32 + "ms";
-    el.classList.add("tx"); clearTimeout(el._tx); el._tx = setTimeout(() => { el.classList.remove("tx"); el.style.animationDelay = ""; }, 1100);
+    el.classList.add("tx"); clearTimeout(el._tx); el._tx = setTimeout(() => { el.classList.remove("tx"); el.style.animationDelay = ""; }, 1100 * Math.max(1, pgScale()));
   });
 }
 let evS = null;
@@ -291,19 +310,19 @@ setInterval(evBtn, 2500);
 setInterval(() => { if (curPg() === "events" && !evS && !document.hidden) loadEvents(); }, 60000);
 document.addEventListener("visibilitychange", () => { if (!document.hidden && curPg() === "events" && !evS) loadEvents(); });
 $("#cg").addEventListener("click", e => {
-  const ce = e.target.closest("[data-ev]"), cd = e.target.closest("[data-d]");
+  const ce = e.target.closest("[data-ev]"), cd = e.target.closest("[data-d]"), pk = e.target.closest("[data-pick]");
+  if (pk) { evSel = pk.dataset.pick; evRedraw(); return; }
   if (ce) { const x = EVS[+ce.dataset.ev]; if (x) evOpen({ ev: x }); }
   else if (cd && evWritable().length) evOpen({ date: cd.dataset.d });
 });
-function shiftMonth(d) { txGo($("#cg"), d, false); evJump = true; cm += d; if (cm < 0) { cm = 11; cy--; } if (cm > 11) { cm = 0; cy++; } loadEvents(); }
+function shiftMonth(d) { txGo($("#cg"), d, false); evJump = true; if (evView() === "week") { evw = new Date(evw.getFullYear(), evw.getMonth(), evw.getDate() + 7 * d); evSel = null; cy = evw.getFullYear(); cm = evw.getMonth(); loadEvents(); return; } evSel = null; cm += d; if (cm < 0) { cm = 11; cy--; } if (cm > 11) { cm = 0; cy++; } loadEvents(); }
 $("#ep").onclick = () => shiftMonth(-1); $("#en").onclick = () => shiftMonth(1);
-$("#etd").onclick = () => { evJump = true; cy = new Date().getFullYear(); cm = new Date().getMonth(); loadEvents(); };
+$("#etd").onclick = () => { evJump = true; cy = new Date().getFullYear(); cm = new Date().getMonth(); evw = evMon(new Date()); evSel = null; loadEvents(); };
 const HOME = { status: ".hs", cams: "#cams", schedule: "#sch", rooms: "#rooms", heatpump: "#mini", nowplaying: "#npw", forecast: "#fcp" };
 const layout = () => {
   const L = ((CONFIG.layout || {})[isMobile() ? "mobile" : "tablet"] || Object.keys(HOME)).slice();
   if (L.indexOf("schedule") < 0 && CONFIG.schedule !== false) { const i = isMobile() ? L.indexOf("status") : L.indexOf("cams"); if (i > -1) L.splice(i + 1, 0, "schedule"); }   // new card: sits after the greeting (phone) / the cameras (tablet) unless config.js places it
-  if (!isMobile()) { const k = L.indexOf("nowplaying"); if (k > -1) L.splice(k, 1); return L; }
-  if (L.indexOf("nowplaying") < 0) { const i = L.indexOf("heatpump") > -1 ? L.indexOf("heatpump") : L.indexOf("status"); L.splice(i + 1, 0, "nowplaying"); }
+  const k = L.indexOf("nowplaying"); if (k > -1) L.splice(k, 1);   // no Now playing card on Home any more: tablets use the music note in the header, phones the floating player bar
   return L;
 };
 const camsOn = () => layout().indexOf("cams") > -1;

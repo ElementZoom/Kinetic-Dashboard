@@ -58,9 +58,12 @@ const STYLES = [["default", "Kinetic", "The original look: tinted depth, fine ou
 const applyStyle = () => document.documentElement.setAttribute("data-style", STYLES.some(x => x[0] === STYLE) ? STYLE : "default");
 applyStyle();
 // page transition: how a page appears when you move between tabs (Theme page; per device, config pageTransition sets the default)
-const PGFXS = [["rise", "RISE", "Fade, then the cards rise in (default)"], ["slide", "SLIDE", "Pages slide in the direction you moved"], ["fade", "FADE", "A plain, quick fade"], ["off", "OFF", "No animation between pages"]];
+const PGFXS = [["rise", "RISE", "Fade, then the cards rise in (default)"], ["slide", "SLIDE", "Pages slide in the direction you moved"], ["fade", "FADE", "A plain, quick fade"], ["zoom", "ZOOM", "The page grows in from slightly smaller"], ["flip", "FLIP", "The page turns in like a card, in the direction you moved"], ["blur", "BLUR", "The page comes into focus"], ["tilt", "TILT", "The page tips up from below"], ["off", "OFF", "No animation between pages"]];
 let PGFX = "rise"; try { PGFX = localStorage.getItem("dashPgFx") || CONFIG.pageTransition || "rise"; } catch (_) {}
-const applyPgFx = () => document.documentElement.setAttribute("data-pgfx", PGFXS.some(x => x[0] === PGFX) ? PGFX : "rise");
+const PGSPS = [["fast", "FAST", .6], ["normal", "NORMAL", 1], ["slow", "SLOW", 1.6]];   // how long the page transition takes: a multiplier on every duration (--pgs)
+let PGSP = "normal"; try { PGSP = localStorage.getItem("dashPgSp") || CONFIG.pageTransitionSpeed || "normal"; } catch (_) {}
+const pgScale = () => (PGSPS.filter(x => x[0] === PGSP)[0] || PGSPS[1])[2];
+const applyPgFx = () => { document.documentElement.setAttribute("data-pgfx", PGFXS.some(x => x[0] === PGFX) ? PGFX : "rise"); document.documentElement.style.setProperty("--pgs", pgScale()); };
 applyPgFx();
 let FONT = "jakarta"; try { FONT = localStorage.getItem("dashFont") || "jakarta"; } catch (_) {}
 const FONTS = [["jakarta", "Plus Jakarta Sans", "Modern, friendly", '"Plus Jakarta Sans",Inter,system-ui,sans-serif'], ["google", "Google (Roboto Flex)", "Clean, Android feel", '"Roboto Flex",Roboto,system-ui,sans-serif'], ["googlemono", "Google + mono labels", "Roboto Flex with Roboto Mono labels", '"Roboto Flex",Roboto,system-ui,sans-serif'], ["outfit", "Outfit", "Geometric, rounded", '"Outfit",Inter,system-ui,sans-serif'], ["manrope", "Manrope", "Soft and neutral", '"Manrope",Inter,system-ui,sans-serif'], ["default", "Classic", "Your previous look", 'Inter,"Segoe UI",Roboto,system-ui,sans-serif']];

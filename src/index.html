@@ -44,6 +44,10 @@
 <!-- @include css/33-weather-alerts.css -->
 <!-- @include css/34-page-transition.css -->
 <!-- @include css/35-leaving.css -->
+<!-- @include css/36-climate-auto.css -->
+<!-- @include css/37-climate-c.css -->
+<!-- @include css/38-events-views.css -->
+<!-- @include css/39-mini-and-phone-bar.css -->
 </style>
 </head>
 <body>
@@ -68,8 +72,9 @@
       <div class="left"><div class="camcol"><div class="cams" id="cams"></div><div class="pn sch" id="sch" hidden></div></div><div class="rooms" id="rooms"></div></div>
       <div class="side">
         <div class="pn" id="mini"><div class="lbl">Heat pump</div>
-          <div class="mrow"><div id="mid"><span class="lbl">Indoor</span><b id="mi">--</b></div><div id="mod"><span class="lbl">Outdoor</span><b id="mo">--</b></div></div>
-          <div class="row" style="margin:10px 0"><button class="rnd" data-d="-1">−</button><b id="mt" class="big">--</b><button class="rnd" data-d="1">+</button></div>
+          <div class="mtop"><div class="mbg"><b id="mbg">--</b><small>°</small></div><div class="row"><button class="rnd" data-d="-1">−</button><b id="mt" class="big">--</b><button class="rnd" data-d="1">+</button></div></div>
+          <div class="mbar" id="mbar"><b class="o"></b><i class="n"></i><u class="t"></u></div>
+          <div class="mleg"><span id="mod"><em class="dot o"></em>Outside <b id="mo">--</b></span><span id="mid"><em class="dot n"></em>Inside <b id="mi">--</b></span><span><em class="dot t"></em>Target <b id="mtg">--</b></span></div>
           <div class="chips" id="mm"><button class="chip" data-m="heat" id="i-heat" data-i="fire"></button><button class="chip" data-m="cool" id="i-cool" data-i="snowflake"></button><button class="chip" data-m="fan_only" id="i-fan" data-i="fan"></button><button class="chip" data-m="pwr" id="i-pwr" data-i="power"></button></div></div>
         <div class="pn npw npoff" id="npw"></div>
         <div class="pn" id="fcp"><div class="lbl">Forecast</div><div id="fc"></div></div>
@@ -99,11 +104,12 @@
   <div id="climate" class="page"><div id="gsum" class="pn"></div><div id="grid"></div><div class="dots" id="gdots"></div></div>
 
   <div id="events" class="page">
-    <div class="eh"><button class="eb" id="ep" data-i="chevron-left"></button><h2 id="et"></h2><button class="eb" id="en" data-i="chevron-right"></button><button class="eb" id="etd">TODAY</button><button class="eb" id="esrch" aria-label="Search events" data-i="magnify"></button><input type="search" id="esq" class="esq" placeholder="Search all events" autocomplete="off" aria-label="Search all events"><button class="eb" id="eadd" aria-label="Add event" style="display:none">+</button><div class="lg" id="elg"></div></div>
+    <div class="eh"><button class="eb" id="ep" data-i="chevron-left"></button><h2 id="et"></h2><button class="eb" id="en" data-i="chevron-right"></button><div class="seg evvw" id="evsw" role="tablist" aria-label="Events view"></div><button class="eb" id="etd">TODAY</button><button class="eb" id="esrch" aria-label="Search events" data-i="magnify"></button><input type="search" id="esq" class="esq" placeholder="Search all events" autocomplete="off" aria-label="Search all events"><button class="eb" id="eadd" aria-label="Add event" style="display:none">+</button><div class="lg" id="elg"></div></div>
     <div class="cg" id="cg"></div>
   </div>
 </div>
 
+<div id="clbk"></div>
 <div id="evm"><div id="evb"></div><div id="evp"></div><div id="evq" role="alertdialog" aria-modal="true"><div class="evqc"></div></div></div>
 <div id="npop"><div id="nbd"></div><aside id="np"></aside></div>
 <div id="cpp"></div>
@@ -157,6 +163,10 @@
 <!-- @include js/modules/32-bins-card.js -->
 <!-- @include js/modules/33-attention.js -->
 <!-- @include js/modules/33-leaving.js -->
+<!-- @include js/modules/34-climate-auto.js -->
+<!-- @include js/modules/35-climate-triggers.js -->
+<!-- @include js/modules/37-events-views.js -->
+<!-- @include js/modules/38-climate-house.js -->
 <!-- @include js/modules/33-media.js -->
 <!-- @include js/modules/34-album-art-colour.js -->
 <!-- @include js/modules/35-now-playing.js -->

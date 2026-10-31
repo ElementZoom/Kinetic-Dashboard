@@ -3,7 +3,19 @@ CONFIG.rooms.forEach(r => $("#grid").appendChild(build(r)));
 let gI = 0;
 $("#gdots").innerHTML = CONFIG.rooms.map((r, i) => '<i data-i="' + i + '" title="' + esc(r.name || "") + '"' + (i ? "" : ' class="on"') + '></i>').join("");
 $("#grid").addEventListener("scroll", () => { const g = $("#grid"); if (!g.clientWidth) return; gI = Math.round(g.scrollLeft / (g.clientWidth + 14)); $$("#gdots i").forEach((d, k) => d.classList.toggle("on", k === gI)); });
-$("#grid").addEventListener("click", e => { const l = e.target.closest(".lbl.il"), c = l && l.parentNode; if (c && !c.classList.contains("main2") && isMobile()) { if (c.dataset.open) delete c.dataset.open; else c.dataset.open = "1"; } });
+// a room opens on tap: inline under its row on a tablet, as a bottom sheet on a phone (closed by x, the dimmed background, Escape or swiping down)
+function clClose() { $$("#grid .card[data-open]").forEach(c => { delete c.dataset.open; }); clSync(); }
+function clSync() { document.body.classList.toggle("cl-sheet", isMobile() && !!$("#grid .card[data-open]")); }
+$("#grid").addEventListener("click", e => {
+  const c = e.target.closest(".card.rm"); if (!c) return;
+  if (e.target.closest(".shx")) { clClose(); return; }
+  if (c.dataset.open) { if (e.target.closest(".lbl.il") && !isMobile()) clClose(); return; }
+  if (e.target.closest("button,.cbar,.ctr,.chips,.fanb,input")) return;
+  clClose(); c.dataset.open = "1"; clSync();
+});
+$("#clbk").onclick = clClose; document.addEventListener("keydown", e => { if (e.key === "Escape" && $("#grid .card[data-open]")) clClose(); }); addEventListener("resize", clSync);
+{ let y0 = 0; $("#grid").addEventListener("touchstart", e => { y0 = e.touches[0].clientY; }, { passive: true });   // swipe a sheet down to close it
+  $("#grid").addEventListener("touchend", e => { const c = e.target.closest(".card.rm[data-open]"); if (c && isMobile() && e.changedTouches[0].clientY - y0 > 90 && c.scrollTop <= 0 && !e.target.closest(".cbar")) clClose(); }, { passive: true }); }
 $("#mini").addEventListener("click", e => { if (!e.target.closest("button")) location.hash = "#climate"; });
 $("#gdots").onclick = e => { const d = e.target.closest("[data-i]"); if (d) { const g = $("#grid"); g.scrollTo({ left: +d.dataset.i * (g.clientWidth + 14), behavior: "smooth" }); } };
 CONFIG.house.forEach(r => Object.keys(r.counts || {}).forEach(k => { sensorIds[r.counts[k]] = 1; }));

@@ -170,7 +170,7 @@ function pgDir(el) {   // slide direction: +1 when the new page is further along
   const id = x => x && x.id === "roomspg" ? "rooms" : x && x.id, ord = $$("nav a").map(a => a.getAttribute("href").slice(1)), a = ord.indexOf(id(lastPg)), b = ord.indexOf(id(el));
   return a < 0 || b < 0 || b >= a ? 1 : -1;
 }
-function pgEnter(el) { el.style.setProperty("--pgdx", pgDir(el) * 36 + "px"); clearTimeout(el._hold); el.classList.remove("hold", "enter"); void el.offsetWidth; el._enT = performance.now(); el.classList.add("enter"); clearTimeout(el._enX); el._enX = setTimeout(() => el.classList.remove("enter"), 900); }
+function pgEnter(el) { const dr = pgDir(el); el.style.setProperty("--pgdx", dr * 36 + "px"); el.style.setProperty("--pgdr", (dr || -1) * 16 + "deg"); clearTimeout(el._hold); el.classList.remove("hold", "enter"); void el.offsetWidth; el._enT = performance.now(); el.classList.add("enter"); clearTimeout(el._enX); el._enX = setTimeout(() => el.classList.remove("enter"), 900 * Math.max(1, pgScale())); }
 function pgHold(el, ms) { el.classList.remove("enter"); el.classList.add("hold"); clearTimeout(el._hold); el._hold = setTimeout(() => pgEnter(el), ms); }   // wait (briefly) for the page's data so it fades in once, complete
 function lazyIn(pg) {
   if (!lzIO || !isMobile() || matchMedia("(prefers-reduced-motion:reduce)").matches) return;
@@ -203,6 +203,7 @@ function route() {
   stopCams(); if (p === "home") { applyLayout(); queueHome(); schLoad(); schDraw(); }
   if (p === "home" || (p === "security" && h[1] !== "detections") || p === "view") startCams();
   if (p === "events") { if (!evWasOn) evJump = true; loadEvents(); } evWasOn = p === "events";
+  if (p === "climate") hzLoad(); else if (typeof clClose === "function") clClose();
   if (onRooms) {
     if (h[1]) { const was = curRoom && curRoom.id === h[1]; if (h[2] === "doors") SECP.want = { page: "roomspg", q: '[data-sec="doors"]' }; drawRoom(h[1]); if (!was) txGo($("#rv"), 1, true);
       if (h[2] === "doors") [120, 700, 1800].forEach(ms => setTimeout(() => { if (curRoom && curRoom.id === h[1] && location.hash.split("/")[2] === "doors") { const t = $('#rv [data-sec="doors"]'); if (t) { t.scrollIntoView({ block: "center", behavior: ms > 120 ? "auto" : "smooth" }); if (ms === 120) { t.classList.add("flash"); setTimeout(() => t.classList.remove("flash"), 1800); } } } }, ms)); }   // #rooms/<room>/doors scrolls to that room's Doors & windows panel   // list -> room slides in from the right

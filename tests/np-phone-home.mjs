@@ -1,4 +1,4 @@
-// Home Now playing card: the title row toggles the card (down / up chevron beside the title), the top-right chevron opens Media.   Run:  node tests/np-chevrons.mjs
+// Phone Home: no Now playing card, the floating player bar is shown instead and opens Media.   Run:  node tests/np-phone-home.mjs
 import http from "node:http";
 import fs from "node:fs";
 import path from "node:path";
@@ -18,12 +18,10 @@ await page.routeWebSocket(/api\/websocket/, ws => { ws.send(JSON.stringify({ typ
 await page.goto(`http://127.0.0.1:${server.address().port}/dash.html#weather`); await page.waitForTimeout(1500);
 await page.evaluate(() => { document.documentElement.classList.remove("boot"); const l = document.getElementById("lg"); if (l) l.hidden = true; });
 await page.evaluate(() => { states["media_player.a"] = { entity_id: "media_player.a", state: "playing", attributes: { friendly_name: "Living", media_title: "Song", media_artist: "Artist", media_duration: 200, media_position: 10, media_position_updated_at: new Date().toISOString() } }; location.hash = "#home"; npRender(); }); await page.waitForTimeout(800);
-const row = () => page.evaluate(() => [...document.querySelectorAll("#npw .nph > button")].map(b => [b.dataset.np, b.getAttribute("aria-label"), Math.round(b.getBoundingClientRect().left)]));
-let r = await row(); eq("two buttons: the title row toggles, the right one opens Media", r.map(x => x[0]), ["tog", "media"]); eq("the Media chevron is on the right of the title", r[1][2] > r[0][2] + 100, true);
-const open0 = await page.evaluate(() => npOpen); await page.click("#npw .npl"); await page.waitForTimeout(500);
-eq("tapping the title row collapses / expands the card and stays on Home", await page.evaluate(() => [npOpen, location.hash]), [!open0, "#home"]);
-await page.click("#npw .npt2"); await page.waitForTimeout(500);
-eq("the top-right chevron opens Media", await page.evaluate(() => location.hash), "#media");
+eq("no Now playing card on Home", await page.evaluate(() => getComputedStyle(document.querySelector("#npw")).display), "none");
+eq("the floating player bar is shown on Home", await page.evaluate(() => { const m = document.querySelector("#npmini"), r = m.getBoundingClientRect(); return [getComputedStyle(m).display !== "none", r.height > 30, r.bottom <= document.querySelector("#btab").getBoundingClientRect().top + 1]; }), [true, true, true]);
+await page.click("#npmini .npart"); await page.waitForTimeout(500);
+eq("tapping the player bar art opens Media", await page.evaluate(() => location.hash), "#media");
 eq("no page errors", errors, []);
 await browser.close(); server.close();
-if (problems.length) { console.log("FAIL\n" + problems.join("\n")); process.exit(1); } console.log(`np-chevrons: ${checks} checks passed`);
+if (problems.length) { console.log("FAIL\n" + problems.join("\n")); process.exit(1); } console.log(`np-phone-home: ${checks} checks passed`);

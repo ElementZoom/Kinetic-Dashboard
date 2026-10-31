@@ -1,0 +1,108 @@
+/* Climate page: a House card (big number, mode switch, 24-hour graph) and a row per room with a cool-to-warm bar; on a phone a room opens as a bottom sheet.
+   The colour follows the heat pump (data-hm) through --hzc; nothing on this page animates on its own. */
+.card[data-hm=heat]{--hzc:var(--heat)}.card[data-hm=cool]{--hzc:var(--cool)}.card[data-hm=auto]{--hzc:var(--mint)}.card[data-hm=fan]{--hzc:var(--mut)}
+/* comfort bar (rooms) */
+.cbar{pointer-events:none;position:relative;height:10px;border-radius:5px;background:linear-gradient(90deg,var(--cool),#ffd27a 50%,var(--heat));margin:6px 6px 4px;transition:opacity .3s}
+.cbar i{position:absolute;top:-7px;width:24px;height:24px;margin-left:-12px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.4),0 0 12px var(--kc,transparent);transition:left .5s}
+.cbar u{position:absolute;top:-4px;width:2px;height:18px;margin-left:-1px;background:var(--ink);opacity:.8;border-radius:1px;transition:left .3s}
+.cbar .mk{position:absolute;top:13px;width:0;height:0;margin-left:-5px;border:5px solid transparent;border-top:0;border-bottom:7px solid var(--heat)}
+.cbar .mk.c{border-bottom-color:var(--cool)}.cbar .mk[hidden]{display:none}
+.card.rm.hasmk .cbar{margin-bottom:4px}
+.card.rm.coff .cbar{opacity:.35}
+html[data-style=minimal] .cbar i{box-shadow:0 1px 3px rgba(0,0,0,.4)}
+/* House card */
+.card.czh{position:relative;isolation:isolate;overflow:hidden}
+.card.czh::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(120% 80% at 0 0,color-mix(in srgb,var(--hzc,transparent) 20%,transparent),transparent 65%)}
+#grid>.card.main2{display:flex;flex-direction:column;align-items:stretch;gap:14px;padding:22px 22px 18px;min-width:0}
+#grid>.card.main2 .lbl.il{justify-content:flex-start;text-align:left;align-self:flex-start;min-height:0;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--mut)}
+.czm{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}
+#grid>.card.main2 .temp{font-size:84px;font-weight:200;line-height:1;letter-spacing:-.04em;display:flex;align-items:flex-start;margin:0}
+#grid>.card.main2 .temp small{font-size:26px;font-weight:300;margin:6px 0 0 3px;letter-spacing:0}
+.czs{display:flex;flex-direction:column;align-items:flex-end;gap:7px;text-align:right;font-size:14px;color:var(--mut);padding-bottom:8px;min-width:0}
+.czt{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+#grid>.card.main2 .czt .md{margin:0;font:inherit;font-size:14px;letter-spacing:0;text-transform:none;color:var(--mut)}
+#grid>.card.main2 .czt .row{display:flex;flex-direction:row;align-items:center;gap:6px;grid-column:auto;grid-row:auto}
+#grid>.card.main2 .czt .tg span{display:none}#grid>.card.main2 .czt .tg b{font-size:16px;font-weight:600;color:var(--ink);min-width:46px;display:inline-block;text-align:center}
+#grid>.card.main2 .czt .rnd{width:28px;height:28px;border-radius:50%;font-size:15px;padding:0}
+#grid>.card.main2.hoff .czt .row{display:none}
+.czh .cout{display:flex;gap:6px;padding:0;border:0;background:none;font:inherit;font-size:14px;letter-spacing:0;justify-content:flex-end}
+.czh .cout b{color:var(--ink);font-weight:600}
+#grid>.card.main2 .fanb{display:flex;gap:6px;padding:0;border:0;background:none;font:inherit;font-size:14px;color:var(--mut);align-items:center;width:auto;justify-content:flex-end;grid-column:auto}
+#grid>.card.main2 .fanb span{font:inherit;letter-spacing:0}
+#grid>.card.main2 .fanb b{display:inline-block;color:var(--ink);font-weight:600;text-transform:lowercase}#grid>.card.main2 .fanb b::first-letter{text-transform:uppercase}
+#grid>.card.main2 .chips{display:flex;flex-wrap:nowrap;gap:0;padding:4px;border-radius:999px;background:rgba(var(--w),.07);border:1px solid var(--line)}
+#grid>.card.main2 .chip{flex:1 1 0;min-width:0;padding:10px 0;border:0;background:transparent;border-radius:999px;font-size:11px;letter-spacing:.03em;box-shadow:none}
+#grid>.card.main2 .chip.on{background:var(--hzc,var(--ink));color:var(--onmint,#07241a);box-shadow:0 2px 12px color-mix(in srgb,var(--hzc,transparent) 45%,transparent)}
+.czg{margin-top:2px}.czg[hidden]{display:none}
+.czg svg{width:100%;height:84px;display:block;overflow:visible}
+.czg small{display:block;margin-top:6px;font:11px var(--mono);letter-spacing:.14em;color:var(--mut)}
+/* a room */
+#grid>.card.rm{position:relative;min-width:0}
+#grid>.card.rm .lbl.il{cursor:pointer;font-size:15px;letter-spacing:0;text-transform:none;font-weight:500;color:var(--ink);min-height:0;white-space:normal;line-height:1.2;overflow:hidden;min-width:0;padding-right:22px;align-items:center}
+#grid>.card.rm .lbl.il::after{content:"";position:absolute;top:50%;right:13px;width:8px;height:8px;margin-top:-6px;border:solid var(--mut);border-width:0 2px 2px 0;transform:rotate(45deg);transition:transform .2s;opacity:1}
+#grid>.card.rm[data-open] .lbl.il::after{transform:rotate(-135deg);margin-top:-2px;top:50%}
+#grid>.card.rm .md{margin:0;font-size:11px;white-space:nowrap;color:var(--mut)}
+#grid>.card.rm[data-hm] .md{color:var(--hzc)}
+#grid>.card.rm .temp{font-weight:300}
+#grid>.card.rm .rnd,#grid>.card.main2 .rnd{border-radius:50%;display:inline-flex;align-items:center;justify-content:center;padding:0;line-height:1}
+#grid>.card.rm .tg span{display:none}
+#grid>.card.rm .sub,#grid>.card.rm .shx{display:none}
+#grid>.card.rm .chips{display:none;margin-top:10px}#grid>.card.rm .fanb{display:none;margin-top:8px}
+#grid>.card.rm[data-open] .chips,#grid>.card.rm[data-open] .fanb{display:flex}
+#grid>.card.rm .chip{flex:1 1 0}
+#grid>.card.rm .md[data-tg]::after{content:" · " attr(data-tg)}
+.ctr{display:flex;flex-direction:column;gap:8px}.ctr[hidden]{display:none}
+.ct{display:flex;align-items:center;gap:8px}
+.ct span{flex:1;font:12px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
+.ct b{min-width:60px;text-align:center;font-weight:600;font-size:15px}
+.ct .rnd{width:34px;height:34px;border-radius:50%;font-size:16px;flex:none}
+#grid>.card.rm .ctr{grid-area:tr;display:none;margin-top:8px}
+#grid>.card.rm[data-open] .ctr:not([hidden]){display:flex}
+.ct .csw{flex:none;position:relative;width:52px;height:30px;border-radius:15px;border:0;padding:0;background:rgba(var(--w),.18);transition:background .2s;cursor:pointer}
+.ct .csw i{position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.35);transition:transform .2s}
+.ct .csw[aria-checked=true]{background:var(--mint)}.ct .csw[aria-checked=true] i{transform:translateX(22px)}
+.card.rm.slp .md::before{content:"☾ "}
+@media(prefers-reduced-motion:reduce){.cbar i,.cbar u,.ct .csw,.ct .csw i{transition:none}}
+/* tablet: House on the left, rooms as rows on the right */
+@media(min-width:761px){
+#grid{grid-template-columns:360px minmax(0,1fr);gap:12px 22px;align-items:start}
+#grid>.card.main2{grid-column:1;grid-row:1/span 40}
+.czm{flex-direction:column;align-items:flex-start;gap:6px}
+.czs{align-items:flex-start;text-align:left;padding-bottom:0}.czt,.czh .cout,#grid>.card.main2 .fanb{justify-content:flex-start}
+#grid>.card.rm{grid-column:2;display:grid;grid-template-columns:minmax(100px,140px) minmax(90px,1fr) auto auto;grid-template-areas:"nm bar tp rw" "md bar tp rw" "ch ch ch ch" "fn fn fn fn" "tr tr tr tr";align-items:center;column-gap:18px;row-gap:2px;padding:14px 20px;border-radius:18px}
+#grid>.card.rm .lbl.il{grid-area:nm}#grid>.card.rm .md{grid-area:md}#grid>.card.rm .cbar{grid-area:bar}
+#grid>.card.rm .temp{grid-area:tp;font-size:32px;text-align:right}#grid>.card.rm .temp small{font-size:13px}
+#grid>.card.rm .row{grid-area:rw;gap:6px}#grid>.card.rm .rnd{width:38px;height:38px;font-size:18px}
+#grid>.card.rm .tg{display:none}
+#grid>.card.rm .chips{grid-area:ch}#grid>.card.rm .fanb{grid-area:fn}
+}
+/* phone: House on top, rooms stacked; a tapped room becomes a bottom sheet */
+@media(max-width:760px){
+#grid{grid-template-columns:1fr;gap:10px}
+#grid>.card.main2 .temp{font-size:72px}
+#grid>.card.rm{grid-column:1;display:grid;grid-template-columns:minmax(0,1fr) auto auto 14px;grid-template-areas:"nm tp rw cv" "md tp rw cv" "bar bar bar bar" "ch ch ch ch" "fn fn fn fn" "tr tr tr tr";align-items:center;column-gap:10px;row-gap:2px;padding:12px 14px 14px;border-radius:18px}
+#grid>.card.rm .lbl.il{grid-area:nm;align-self:end;padding-right:0}#grid>.card.rm .md{grid-area:md}
+#grid>.card.rm:not([data-open]) .lbl.il::after{top:27px;right:17px;margin-top:-4px}
+#grid>.card.rm .temp{grid-area:tp;font-size:28px;white-space:nowrap}#grid>.card.rm .temp small{font-size:12px}
+#grid>.card.rm .row{grid-area:rw;gap:6px}#grid>.card.rm .rnd{width:34px;height:34px;font-size:18px}
+#grid>.card.rm .tg{display:none}
+#grid>.card.rm .cbar{grid-area:bar;margin-top:14px}
+#grid>.card.rm .chips{grid-area:ch}#grid>.card.rm .fanb{grid-area:fn}
+#clbk{display:none;position:fixed;inset:0;z-index:69;background:rgba(0,0,0,.5)}
+body.cl-sheet #clbk{display:block;animation:thIn .2s ease}
+#grid>.card.rm[data-open]{position:fixed;left:0;right:0;bottom:0;top:auto;z-index:70;max-height:88vh;overflow-y:auto;overscroll-behavior:contain;border-radius:26px 26px 0 0;border-width:1px 0 0;padding:22px 22px calc(24px + env(safe-area-inset-bottom));background:var(--bg);-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:0 -10px 40px rgba(0,0,0,.35);
+  grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"nm x" "md md" "tp tp" "sb sb" "bar bar" "rw rw" "ch ch" "fn fn" "tr tr";row-gap:10px;animation:shUp .32s cubic-bezier(.2,.85,.3,1) both}
+#grid>.card.rm[data-open]::before{content:"";position:absolute;top:8px;left:50%;width:38px;height:4px;margin-left:-19px;border-radius:2px;background:rgba(var(--w),.25)}
+#grid>.card.rm[data-open] .lbl.il{font-size:22px;font-weight:600;padding-right:0}#grid>.card.rm[data-open] .lbl.il::after{display:none}
+#grid>.card.rm[data-open] .shx{display:flex;grid-area:x;align-self:start;width:34px;height:34px;border-radius:50%;border:0;background:rgba(var(--w),.1);color:var(--ink);align-items:center;justify-content:center;cursor:pointer}
+#grid>.card.rm[data-open] .shx svg{width:18px;height:18px;fill:currentColor}
+#grid>.card.rm[data-open] .md{font-size:12px;letter-spacing:.14em}#grid>.card.rm[data-open] .md::after{content:none}
+#grid>.card.rm[data-open] .temp{font-size:88px;font-weight:200;line-height:1;letter-spacing:-.04em;justify-self:start}#grid>.card.rm[data-open] .temp small{font-size:22px;margin-left:4px}
+#grid>.card.rm[data-open] .sub{display:block;grid-area:sb;font-size:14px;color:var(--mut)}
+#grid>.card.rm[data-open] .cbar{margin:16px 8px 10px}
+#grid>.card.rm[data-open] .row{justify-content:center;gap:22px;margin:6px 0}
+#grid>.card.rm[data-open] .rnd{width:52px;height:52px;font-size:22px}
+#grid>.card.rm[data-open] .tg{display:block;text-align:center;align-self:center}#grid>.card.rm[data-open] .tg b{font-size:24px;font-weight:300;color:var(--ink)}
+#grid>.card.rm[data-open] .chips{margin-top:4px}
+#grid>.card.rm[data-open] .chip{padding:12px 4px;font-size:12px}
+}

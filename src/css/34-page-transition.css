@@ -1,9 +1,36 @@
 /* page transition (Theme > Page transition): variants of the .page.enter entrance, set by html[data-pgfx]. "rise" is the original look. */
 @keyframes pgSlide{from{opacity:0;transform:translateX(var(--pgdx,36px))}}
-html[data-pgfx=slide] .page.enter{animation:pgSlide .36s cubic-bezier(.2,.8,.2,1) backwards}
+html[data-pgfx=slide] .page.enter{animation:pgSlide calc(.36s*var(--pgs,1)) cubic-bezier(.2,.8,.2,1) backwards}
 html[data-pgfx=slide] .page.enter>*,html[data-pgfx=slide] .page.enter :is(.rooms,.cams,#grid,.zg,.wcols,.hm,.left,.side,#wx,.vgrid,.hzg,.hzside,.scl,.mlay,.thl)>*,
 html[data-pgfx=fade] .page.enter>*,html[data-pgfx=fade] .page.enter :is(.rooms,.cams,#grid,.zg,.wcols,.hm,.left,.side,#wx,.vgrid,.hzg,.hzside,.scl,.mlay,.thl)>*{animation:none}
-html[data-pgfx=fade] .page.enter{animation:pgFade .22s ease}
+html[data-pgfx=fade] .page.enter{animation:pgFade calc(.22s*var(--pgs,1)) ease}
 html[data-pgfx=off] .page.enter,html[data-pgfx=off] .page.enter>*,html[data-pgfx=off] .page.enter :is(.rooms,.cams,#grid,.zg,.wcols,.hm,.left,.side,#wx,.vgrid,.hzg,.hzside,.scl,.mlay,.thl)>*{animation:none}
 html[data-pgfx=off] #theme.enter .thr,html[data-pgfx=off] #scenes.enter .sct,html[data-pgfx=off] #irrigation.enter .zsx,html[data-pgfx=fade] #theme.enter .thr,html[data-pgfx=fade] #scenes.enter .sct,html[data-pgfx=fade] #irrigation.enter .zsx,html[data-pgfx=slide] #theme.enter .thr,html[data-pgfx=slide] #scenes.enter .sct,html[data-pgfx=slide] #irrigation.enter .zsx{animation:none}
 @media(prefers-reduced-motion:reduce){html[data-pgfx=slide] .page.enter{animation:pgFade .2s ease}}
+/* zoom, flip, blur, tilt: like slide and fade, the page itself moves and the cards inside stay put */
+@keyframes pgZoom{from{opacity:0;transform:scale(.92)}}
+@keyframes pgFlip{from{opacity:0;transform:perspective(1100px) rotateY(var(--pgdr,-16deg))}}
+@keyframes pgBlur{from{opacity:0;filter:blur(14px)}}
+@keyframes pgTilt{from{opacity:0;transform:perspective(1100px) rotateX(9deg) translateY(26px)}}
+html[data-pgfx=zoom] .page.enter{animation:pgZoom calc(.34s*var(--pgs,1)) cubic-bezier(.2,.8,.2,1) backwards}
+html[data-pgfx=flip] .page.enter{animation:pgFlip calc(.42s*var(--pgs,1)) cubic-bezier(.2,.8,.2,1) backwards}
+html[data-pgfx=blur] .page.enter{animation:pgBlur calc(.36s*var(--pgs,1)) ease backwards}
+html[data-pgfx=tilt] .page.enter{animation:pgTilt calc(.4s*var(--pgs,1)) cubic-bezier(.2,.8,.2,1) backwards}
+html:is([data-pgfx=zoom],[data-pgfx=flip],[data-pgfx=blur],[data-pgfx=tilt]) .page.enter>*,html:is([data-pgfx=zoom],[data-pgfx=flip],[data-pgfx=blur],[data-pgfx=tilt]) .page.enter :is(.rooms,.cams,#grid,.zg,.wcols,.hm,.left,.side,#wx,.vgrid,.hzg,.hzside,.scl,.mlay,.thl)>*,
+html:is([data-pgfx=zoom],[data-pgfx=flip],[data-pgfx=blur],[data-pgfx=tilt]) :is(#theme.enter .thr,#scenes.enter .sct,#irrigation.enter .zsx){animation:none}
+@media(prefers-reduced-motion:reduce){html:is([data-pgfx=zoom],[data-pgfx=flip],[data-pgfx=blur],[data-pgfx=tilt]) .page.enter{animation:pgFade .2s ease}}
+/* one motion style for everything that appears: the chosen transition also drives tab switches inside a page, the Energy range switch and the pop-up panels (set by html[data-pgfx], scaled by --pgs).
+   Rise keeps the original motion; Slide keeps the direction-aware tab slide; Off stills it all. Sheets that rise from the screen edge keep their edge slide. */
+@keyframes mxIn{from{opacity:var(--mx-o,0);transform:var(--mx-t,none);filter:var(--mx-f,none)}}
+html[data-pgfx=slide]{--mx-t:translateX(36px)}
+html[data-pgfx=zoom]{--mx-t:scale(.92)}
+html[data-pgfx=flip]{--mx-t:perspective(1100px) rotateY(-16deg)}
+html[data-pgfx=blur]{--mx-f:blur(14px)}
+html[data-pgfx=tilt]{--mx-t:perspective(1100px) rotateX(9deg) translateY(26px)}
+html:is([data-pgfx=fade],[data-pgfx=zoom],[data-pgfx=flip],[data-pgfx=blur],[data-pgfx=tilt]) :is(.tx,.txc>*,#energy .enin){animation-name:mxIn}
+html:is([data-pgfx=slide],[data-pgfx=fade],[data-pgfx=zoom],[data-pgfx=flip],[data-pgfx=blur],[data-pgfx=tilt]) :is(.evqc,#kp.opening>.kpb,#sp:not(.out)>.spb){animation:mxIn calc(.3s*var(--pgs,1)) cubic-bezier(.2,.85,.3,1) both}
+html[data-pgfx=off] :is(.tx,.txc>*,#energy .enin,.evqc,#kp.opening>.kpb,#sp:not(.out)>.spb){animation:none}
+html .tx{animation-duration:calc(.42s*var(--pgs,1))}
+html .txc>*{animation-duration:calc(.46s*var(--pgs,1));animation-delay:calc(var(--i,0)*32ms*var(--pgs,1))}
+html #energy .enin{animation-duration:calc(.5s*var(--pgs,1))}
+@media(prefers-reduced-motion:reduce){html:is([data-pgfx=slide],[data-pgfx=zoom],[data-pgfx=flip],[data-pgfx=blur],[data-pgfx=tilt]){--mx-t:none;--mx-f:none}}
